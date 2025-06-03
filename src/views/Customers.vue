@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCustomerStorage } from '@/storages/CustomerStorage'
 import { useContactStorage } from '@/storages/contactStorage'
@@ -17,6 +17,20 @@ interface BreadcrumbItem {
 const router = useRouter()
 const customerStore = useCustomerStorage()
 const contactStore = useContactStorage()
+
+// =============================================================================
+// LIFECYCLE HOOKS
+// =============================================================================
+
+// Automatically fetch data when component is mounted
+onMounted(async () => {
+  console.log('Customers component mounted, fetching data...')
+  await customerStore.fetchCustomers()
+  // Also fetch contact data if needed
+  if (contactStore.fetchContacts) {
+    await contactStore.fetchContacts()
+  }
+})
 
 // =============================================================================
 // COMPUTED DATA USING SEPARATED STORES

@@ -194,11 +194,8 @@ export const useCustomerStorage = defineStore('Customer', {
       try {
         this.loading = true
         this.error = null
-        console.log("Fetching customers...")
         
         const url = baseURL + "/Customers?page=0"
-        console.log("Request URL:", url)
-        
         const response = await fetch(url, {
           method: "GET",
           credentials: "include",
@@ -207,27 +204,18 @@ export const useCustomerStorage = defineStore('Customer', {
             "Accept": "application/json"
           },
         });
-
-        console.log("Response status:", response.status)
-        console.log("Response URL:", response.url)
-        console.log("Response redirected:", response.redirected)
-        console.log("Response headers:", response.headers.get('content-type'))
         
         if (!response.ok) {
-          const errorText = await response.text()
-          console.log("Error response body:", errorText)
-          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText.substring(0, 200)}...`)
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
 
         const contentType = response.headers.get('content-type')
         if (!contentType || !contentType.includes('application/json')) {
           const responseText = await response.text()
-          console.log("Non-JSON response received:", responseText.substring(0, 500))
-          throw new Error(`Expected JSON but received: ${contentType}. Response: ${responseText.substring(0, 200)}...`)
+          throw new Error(`Expected JSON but received: ${contentType}`)
         }
 
         const data = await response.json()
-        console.log("Raw API response:", data)
         this.customers = data || []
         
         this.lastUpdated = new Date()
@@ -236,7 +224,7 @@ export const useCustomerStorage = defineStore('Customer', {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
         this.error = `Failed to fetch customers: ${errorMessage}`
         console.error("Error fetching customers:", errorMessage)
-                
+        
         // Ensure customers is always an array to prevent length errors
         this.customers = []
       } finally {
