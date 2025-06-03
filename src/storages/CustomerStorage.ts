@@ -8,11 +8,12 @@ import {
   cascadeDelete, 
   generateId 
 } from './baseTypes'
-import customersData from './customers.json'
 
 // =============================================================================
 // ENTITY INTERFACES
 // =============================================================================
+
+const baseURL = "http://localhost:41812/API"; // Replace with your actual backend URL
 
 export interface Customer extends BaseEntity {
   id: number
@@ -51,11 +52,7 @@ interface CustomerStoreState extends BaseStoreState {
 
 export const useCustomerStorage = defineStore('Customer', {
   state: (): CustomerStoreState => ({
-    customers: customersData.map(customer => ({
-      ...customer,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    })) as Customer[],
+    customers: [] as Customer[],
     loading: false,
     error: null,
     lastUpdated: null
@@ -192,21 +189,56 @@ export const useCustomerStorage = defineStore('Customer', {
     // =============================================================================
     // DATA FETCHING
     // =============================================================================
-
+    
     async fetchCustomers(): Promise<void> {
       try {
         this.loading = true
         this.error = null
+        console.log("Fetching customers...")
         
-        // TODO: Replace with actual API call
-        // const response = await axios.get('/api/customers')
-        // this.customers = response.data
+        const url = baseURL + "/Customers?page=0"
+        console.log("Request URL:", url)
         
-        // For now, data is already loaded from JSON file
+        const response = await fetch(url, {
+          method: "GET",
+          credentials: "include",
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+        });
+
+        console.log("Response status:", response.status)
+        console.log("Response URL:", response.url)
+        console.log("Response redirected:", response.redirected)
+        console.log("Response headers:", response.headers.get('content-type'))
+        
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.log("Error response body:", errorText)
+          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText.substring(0, 200)}...`)
+        }
+
+        const contentType = response.headers.get('content-type')
+        if (!contentType || !contentType.includes('application/json')) {
+          const responseText = await response.text()
+          console.log("Non-JSON response received:", responseText.substring(0, 500))
+          throw new Error(`Expected JSON but received: ${contentType}. Response: ${responseText.substring(0, 200)}...`)
+        }
+
+        const data = await response.json()
+        console.log("Raw API response:", data)
+        this.customers = data || []
+        
         this.lastUpdated = new Date()
+        console.log("Customers fetched successfully:", this.customers.length)
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
         this.error = `Failed to fetch customers: ${errorMessage}`
+        console.error("Error fetching customers:", errorMessage)
+                
+        // Ensure customers is always an array to prevent length errors
+        this.customers = []
       } finally {
         this.loading = false
       }
@@ -221,11 +253,7 @@ export const useCustomerStorage = defineStore('Customer', {
     },
 
     resetStore() {
-      this.customers = customersData.map(customer => ({
-        ...customer,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })) as Customer[]
+      this.customers = [] as Customer[]
       this.loading = false
       this.error = null
       this.lastUpdated = null

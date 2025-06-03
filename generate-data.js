@@ -118,7 +118,7 @@ for (let i = 1; i <= 50; i++) {
 }
 
 // Write files
-fs.writeFileSync('src/storages/customers.json', JSON.stringify(customers, null, 2));
+fs.writeFileSync('src/storages/customers-move-to-backend.json', JSON.stringify(customers, null, 2));
 fs.writeFileSync('src/storages/contacts.json', JSON.stringify(contacts, null, 2));
 
 console.log(`Generated ${customers.length} customers and ${contacts.length} contacts`);
