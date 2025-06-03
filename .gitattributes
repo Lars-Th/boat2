@@ -1,0 +1,12 @@
+# Treat everything as text and ensure CRLF line endings
+* text eol=crlf
+
+# (Optional) Explicitly mark common binary file types to avoid any accidental normalization
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.exe binary
