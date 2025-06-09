@@ -1,26 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue';
 // import { useRouter } from 'vue-router'
-import PageLayout from '@/components/layout/PageLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Switch } from '@/components/ui/switch'
-import { 
-  Palette, 
-  Save, 
-  RotateCcw, 
-  Eye, 
-  Check,
-  Download,
-} from 'lucide-vue-next'
-import { useToast } from "@/composables/useToast"
-
-
+import PageLayout from '@/components/layout/PageLayout.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import { Check, Download, Eye, Palette, RotateCcw, Save } from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
 
 // Standard themes
 const standardThemes = ref([
@@ -40,8 +31,8 @@ const standardThemes = ref([
       border: '#e2e8f0',
       success: '#10b981',
       warning: '#f59e0b',
-      error: '#ef4444'
-    }
+      error: '#ef4444',
+    },
   },
   {
     id: 'stadsmission-green',
@@ -59,8 +50,8 @@ const standardThemes = ref([
       border: '#dcfce7',
       success: '#10b981',
       warning: '#f59e0b',
-      error: '#ef4444'
-    }
+      error: '#ef4444',
+    },
   },
   {
     id: 'stadsmission-purple',
@@ -78,8 +69,8 @@ const standardThemes = ref([
       border: '#e9d5ff',
       success: '#10b981',
       warning: '#f59e0b',
-      error: '#ef4444'
-    }
+      error: '#ef4444',
+    },
   },
   {
     id: 'dark-mode',
@@ -97,13 +88,13 @@ const standardThemes = ref([
       border: '#374151',
       success: '#10b981',
       warning: '#f59e0b',
-      error: '#ef4444'
-    }
-  }
-])
+      error: '#ef4444',
+    },
+  },
+]);
 
 // Current theme state
-const currentTheme = ref('stadsmission-blue')
+const currentTheme = ref('stadsmission-blue');
 const customColors = ref({
   primary: '#2563eb',
   secondary: '#64748b',
@@ -115,8 +106,8 @@ const customColors = ref({
   border: '#e2e8f0',
   success: '#10b981',
   warning: '#f59e0b',
-  error: '#ef4444'
-})
+  error: '#ef4444',
+});
 
 // Color definitions with descriptions
 interface ColorDefinition {
@@ -131,140 +122,147 @@ const colorDefinitions: ColorDefinition[] = [
     key: 'primary',
     label: 'Primärfärg',
     description: 'Huvudfärg för knappar, länkar och viktiga element',
-    category: 'brand'
+    category: 'brand',
   },
   {
     key: 'secondary',
     label: 'Sekundärfärg',
     description: 'Kompletterande färg för mindre viktiga element',
-    category: 'brand'
+    category: 'brand',
   },
   {
     key: 'accent',
     label: 'Accentfärg',
     description: 'Färg för att framhäva specifika element',
-    category: 'brand'
+    category: 'brand',
   },
   {
     key: 'background',
     label: 'Bakgrundsfärg',
     description: 'Huvudbakgrund för hela applikationen',
-    category: 'layout'
+    category: 'layout',
   },
   {
     key: 'surface',
     label: 'Ytfärg',
     description: 'Bakgrund för kort, modaler och upphöjda element',
-    category: 'layout'
+    category: 'layout',
   },
   {
     key: 'text',
     label: 'Textfärg',
     description: 'Huvudfärg för all text',
-    category: 'content'
+    category: 'content',
   },
   {
     key: 'textMuted',
     label: 'Dämpad textfärg',
     description: 'Färg för mindre viktig text och beskrivningar',
-    category: 'content'
+    category: 'content',
   },
   {
     key: 'border',
     label: 'Kantfärg',
     description: 'Färg för ramar och avgränsningar',
-    category: 'layout'
+    category: 'layout',
   },
   {
     key: 'success',
     label: 'Framgångsfärg',
     description: 'Färg för positiva meddelanden och status',
-    category: 'status'
+    category: 'status',
   },
   {
     key: 'warning',
     label: 'Varningsfärg',
     description: 'Färg för varningar och uppmärksamhet',
-    category: 'status'
+    category: 'status',
   },
   {
     key: 'error',
     label: 'Felfärg',
     description: 'Färg för fel och negativa meddelanden',
-    category: 'status'
-  }
-]
+    category: 'status',
+  },
+];
 
 // Get current theme colors
 const activeColors = computed(() => {
   if (currentTheme.value === 'custom') {
-    return customColors.value
+    return customColors.value;
   }
-  const theme = standardThemes.value.find(t => t.id === currentTheme.value)
-  return theme?.colors ?? standardThemes.value[0]?.colors ?? {}
-})
+  const theme = standardThemes.value.find(t => t.id === currentTheme.value);
+  return theme?.colors ?? standardThemes.value[0]?.colors ?? {};
+});
 
 // Apply theme to CSS variables
 const applyTheme = (colors: Record<string, string>) => {
-  const root = document.documentElement
+  const root = document.documentElement;
   Object.entries(colors).forEach(([key, value]) => {
-    root.style.setProperty(`--color-${key}`, value)
-  })
-}
+    root.style.setProperty(`--color-${key}`, value);
+  });
+};
 
 // Watch for theme changes and apply them
-watch(activeColors, (newColors) => {
-  applyTheme(newColors)
-}, { immediate: true })
+watch(
+  activeColors,
+  newColors => {
+    applyTheme(newColors);
+  },
+  { immediate: true }
+);
 
 // Theme actions
 const selectStandardTheme = (themeId: string) => {
-  currentTheme.value = themeId
+  currentTheme.value = themeId;
   if (themeId !== 'custom') {
-    const theme = standardThemes.value.find(t => t.id === themeId)
+    const theme = standardThemes.value.find(t => t.id === themeId);
     if (theme) {
-      customColors.value = { ...theme.colors }
+      customColors.value = { ...theme.colors };
     }
   }
-}
+};
 
 const switchToCustom = () => {
-  currentTheme.value = 'custom'
-}
+  currentTheme.value = 'custom';
+};
 
 const resetToDefault = () => {
-  selectStandardTheme('stadsmission-blue')
-}
+  selectStandardTheme('stadsmission-blue');
+};
 
-const { success, error } = useToast()
+const { success, error } = useToast();
 
 const saveTheme = () => {
   try {
-    localStorage.setItem('stadsmission-theme', JSON.stringify({
-      id: currentTheme.value,
-      colors: activeColors.value
-    }))
-    success('Tema sparat', 'Ditt anpassade tema har sparats framgångsrikt')
+    localStorage.setItem(
+      'stadsmission-theme',
+      JSON.stringify({
+        id: currentTheme.value,
+        colors: activeColors.value,
+      })
+    );
+    success('Tema sparat', 'Ditt anpassade tema har sparats framgångsrikt');
   } catch (e) {
-    console.error('Failed to save theme:', e)
-    error('Sparning misslyckades', 'Ett fel uppstod när temat skulle sparas')
+    console.error('Failed to save theme:', e);
+    error('Sparning misslyckades', 'Ett fel uppstod när temat skulle sparas');
   }
-}
+};
 
 const exportTheme = () => {
   const themeData = {
     name: 'Anpassat tema',
     colors: activeColors.value,
-    exportDate: new Date().toISOString()
-  }
-  const blob = new Blob([JSON.stringify(themeData, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'stadsmission-tema.json'
-  a.click()
-  URL.revokeObjectURL(url)
-}
+    exportDate: new Date().toISOString(),
+  };
+  const blob = new Blob([JSON.stringify(themeData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'stadsmission-tema.json';
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 // Group colors by category
 const colorsByCategory = computed(() => {
@@ -272,25 +270,25 @@ const colorsByCategory = computed(() => {
     brand: [],
     layout: [],
     content: [],
-    status: []
-  }
-  
+    status: [],
+  };
+
   colorDefinitions.forEach(def => {
-    categories[def.category]?.push(def)
-  })
-  
-  return categories
-})
+    categories[def.category]?.push(def);
+  });
+
+  return categories;
+});
 
 // Load saved theme on mount
 const loadSavedTheme = () => {
-  const saved = localStorage.getItem('stadsmission-theme')
+  const saved = localStorage.getItem('stadsmission-theme');
   if (saved) {
     try {
-      const themeData = JSON.parse(saved) as Record<string, unknown>
-      currentTheme.value = themeData['id'] as string
+      const themeData = JSON.parse(saved) as Record<string, unknown>;
+      currentTheme.value = themeData['id'] as string;
       if (themeData['id'] === 'custom') {
-        const colors = themeData['colors'] as Record<string, string>
+        const colors = themeData['colors'] as Record<string, string>;
         if (colors && typeof colors === 'object') {
           customColors.value = {
             primary: colors['primary'] ?? '#3b82f6',
@@ -304,17 +302,17 @@ const loadSavedTheme = () => {
             success: colors['success'] ?? '#10b981',
             warning: colors['warning'] ?? '#f59e0b',
             error: colors['error'] ?? '#ef4444',
-          }
+          };
         }
       }
     } catch (e) {
-      console.error('Failed to load saved theme:', e)
+      console.error('Failed to load saved theme:', e);
     }
   }
-}
+};
 
 // Initialize
-loadSavedTheme()
+loadSavedTheme();
 </script>
 
 <template>
@@ -326,62 +324,35 @@ loadSavedTheme()
       <!-- Header Actions -->
       <div class="flex justify-between items-center px-6">
         <div>
-          <h2 class="text-lg font-semibold">
-            Anpassa utseende och färger
-          </h2>
-          <p class="text-sm text-muted-foreground">
-            Välj ett standardtema eller skapa ditt eget
-          </p>
+          <h2 class="text-lg font-semibold">Anpassa utseende och färger</h2>
+          <p class="text-sm text-muted-foreground">Välj ett standardtema eller skapa ditt eget</p>
         </div>
-        
+
         <div class="flex gap-2">
-          <Button
-            variant="outline"
-            class="gap-2"
-            @click="exportTheme"
-          >
+          <Button variant="outline" class="gap-2" @click="exportTheme">
             <Download class="h-4 w-4" />
             Exportera
           </Button>
-          <Button
-            variant="outline"
-            class="gap-2"
-            @click="resetToDefault"
-          >
+          <Button variant="outline" class="gap-2" @click="resetToDefault">
             <RotateCcw class="h-4 w-4" />
             Återställ
           </Button>
-          <Button
-            class="gap-2"
-            @click="saveTheme"
-          >
+          <Button class="gap-2" @click="saveTheme">
             <Save class="h-4 w-4" />
             Spara tema
           </Button>
         </div>
       </div>
 
-      <Tabs
-        default-value="themes"
-        class="w-full"
-      >
+      <Tabs default-value="themes" class="w-full">
         <TabsList class="mx-6">
-          <TabsTrigger value="themes">
-            Standardteman
-          </TabsTrigger>
-          <TabsTrigger value="custom">
-            Anpassa färger
-          </TabsTrigger>
-          <TabsTrigger value="preview">
-            Förhandsgranskning
-          </TabsTrigger>
+          <TabsTrigger value="themes">Standardteman</TabsTrigger>
+          <TabsTrigger value="custom">Anpassa färger</TabsTrigger>
+          <TabsTrigger value="preview">Förhandsgranskning</TabsTrigger>
         </TabsList>
 
         <!-- Standard Themes Tab -->
-        <TabsContent
-          value="themes"
-          class="space-y-6"
-        >
+        <TabsContent value="themes" class="space-y-6">
           <Card class="mx-6">
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -391,19 +362,23 @@ loadSavedTheme()
             </CardHeader>
             <CardContent>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div 
-                  v-for="theme in standardThemes" 
+                <div
+                  v-for="theme in standardThemes"
                   :key="theme.id"
                   class="relative cursor-pointer group"
                   @click="selectStandardTheme(theme.id)"
                 >
-                  <div 
+                  <div
                     class="border-2 rounded-lg p-4 transition-all"
-                    :class="currentTheme === theme.id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'"
+                    :class="
+                      currentTheme === theme.id
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    "
                   >
                     <!-- Theme preview -->
                     <div class="flex items-center gap-3 mb-3">
-                      <div 
+                      <div
                         class="w-8 h-8 rounded-full border-2 border-white shadow-sm"
                         :style="{ backgroundColor: theme.preview }"
                       />
@@ -415,16 +390,13 @@ loadSavedTheme()
                           {{ theme.description }}
                         </p>
                       </div>
-                      <Check 
-                        v-if="currentTheme === theme.id"
-                        class="h-5 w-5 text-primary"
-                      />
+                      <Check v-if="currentTheme === theme.id" class="h-5 w-5 text-primary" />
                     </div>
-                    
+
                     <!-- Color palette preview -->
                     <div class="flex gap-1">
-                      <div 
-                        v-for="(color, key) in theme.colors" 
+                      <div
+                        v-for="(color, key) in theme.colors"
                         :key="key"
                         class="w-4 h-4 rounded border border-white/50"
                         :style="{ backgroundColor: color }"
@@ -439,10 +411,7 @@ loadSavedTheme()
         </TabsContent>
 
         <!-- Custom Colors Tab -->
-        <TabsContent
-          value="custom"
-          class="space-y-6"
-        >
+        <TabsContent value="custom" class="space-y-6">
           <div class="mx-6 space-y-6">
             <!-- Brand Colors -->
             <Card>
@@ -451,8 +420,8 @@ loadSavedTheme()
               </CardHeader>
               <CardContent>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div 
-                    v-for="colorDef in colorsByCategory['brand']" 
+                  <div
+                    v-for="colorDef in colorsByCategory['brand']"
                     :key="colorDef.key"
                     class="space-y-2"
                   >
@@ -487,8 +456,8 @@ loadSavedTheme()
               </CardHeader>
               <CardContent>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div 
-                    v-for="colorDef in colorsByCategory['layout']" 
+                  <div
+                    v-for="colorDef in colorsByCategory['layout']"
                     :key="colorDef.key"
                     class="space-y-2"
                   >
@@ -523,8 +492,8 @@ loadSavedTheme()
               </CardHeader>
               <CardContent>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div 
-                    v-for="colorDef in colorsByCategory['content']" 
+                  <div
+                    v-for="colorDef in colorsByCategory['content']"
                     :key="colorDef.key"
                     class="space-y-2"
                   >
@@ -559,8 +528,8 @@ loadSavedTheme()
               </CardHeader>
               <CardContent>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div 
-                    v-for="colorDef in colorsByCategory['status']" 
+                  <div
+                    v-for="colorDef in colorsByCategory['status']"
                     :key="colorDef.key"
                     class="space-y-2"
                   >
@@ -591,10 +560,7 @@ loadSavedTheme()
         </TabsContent>
 
         <!-- Preview Tab -->
-        <TabsContent
-          value="preview"
-          class="space-y-6"
-        >
+        <TabsContent value="preview" class="space-y-6">
           <div class="mx-6 space-y-6">
             <!-- UI Elements Preview -->
             <Card>
@@ -607,23 +573,13 @@ loadSavedTheme()
               <CardContent class="space-y-8">
                 <!-- Buttons -->
                 <div class="space-y-4">
-                  <h3 class="font-medium">
-                    Knappar
-                  </h3>
+                  <h3 class="font-medium">Knappar</h3>
                   <div class="flex flex-wrap gap-3">
                     <Button>Primär knapp</Button>
-                    <Button variant="secondary">
-                      Sekundär knapp
-                    </Button>
-                    <Button variant="outline">
-                      Outline knapp
-                    </Button>
-                    <Button variant="ghost">
-                      Ghost knapp
-                    </Button>
-                    <Button variant="destructive">
-                      Destructive knapp
-                    </Button>
+                    <Button variant="secondary">Sekundär knapp</Button>
+                    <Button variant="outline">Outline knapp</Button>
+                    <Button variant="ghost">Ghost knapp</Button>
+                    <Button variant="destructive">Destructive knapp</Button>
                   </div>
                 </div>
 
@@ -631,20 +587,12 @@ loadSavedTheme()
 
                 <!-- Badges -->
                 <div class="space-y-4">
-                  <h3 class="font-medium">
-                    Badges och status
-                  </h3>
+                  <h3 class="font-medium">Badges och status</h3>
                   <div class="flex flex-wrap gap-3">
                     <Badge>Standard badge</Badge>
-                    <Badge variant="secondary">
-                      Sekundär badge
-                    </Badge>
-                    <Badge variant="outline">
-                      Outline badge
-                    </Badge>
-                    <Badge variant="destructive">
-                      Destructive badge
-                    </Badge>
+                    <Badge variant="secondary">Sekundär badge</Badge>
+                    <Badge variant="outline">Outline badge</Badge>
+                    <Badge variant="destructive">Destructive badge</Badge>
                   </div>
                 </div>
 
@@ -652,9 +600,7 @@ loadSavedTheme()
 
                 <!-- Cards -->
                 <div class="space-y-4">
-                  <h3 class="font-medium">
-                    Kort och ytor
-                  </h3>
+                  <h3 class="font-medium">Kort och ytor</h3>
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card>
                       <CardHeader>
@@ -666,21 +612,17 @@ loadSavedTheme()
                         </p>
                       </CardContent>
                     </Card>
-                    
+
                     <Card>
                       <CardHeader>
                         <CardTitle>Statistik</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div class="text-2xl font-bold">
-                          1,234
-                        </div>
-                        <p class="text-xs text-muted-foreground">
-                          Totalt antal
-                        </p>
+                        <div class="text-2xl font-bold">1,234</div>
+                        <p class="text-xs text-muted-foreground">Totalt antal</p>
                       </CardContent>
                     </Card>
-                    
+
                     <Card>
                       <CardHeader>
                         <CardTitle>Status</CardTitle>
@@ -703,9 +645,7 @@ loadSavedTheme()
 
                 <!-- Form Elements -->
                 <div class="space-y-4">
-                  <h3 class="font-medium">
-                    Formulärelement
-                  </h3>
+                  <h3 class="font-medium">Formulärelement</h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
                       <Label>Textfält</Label>
@@ -725,22 +665,12 @@ loadSavedTheme()
 
                 <!-- Text Examples -->
                 <div class="space-y-4">
-                  <h3 class="font-medium">
-                    Textexempel
-                  </h3>
+                  <h3 class="font-medium">Textexempel</h3>
                   <div class="space-y-2">
-                    <h1 class="text-2xl font-bold">
-                      Huvudrubrik (H1)
-                    </h1>
-                    <h2 class="text-xl font-semibold">
-                      Underrubrik (H2)
-                    </h2>
-                    <h3 class="text-lg font-medium">
-                      Mindre rubrik (H3)
-                    </h3>
-                    <p class="text-base">
-                      Normal brödtext med standardfärg.
-                    </p>
+                    <h1 class="text-2xl font-bold">Huvudrubrik (H1)</h1>
+                    <h2 class="text-xl font-semibold">Underrubrik (H2)</h2>
+                    <h3 class="text-lg font-medium">Mindre rubrik (H3)</h3>
+                    <p class="text-base">Normal brödtext med standardfärg.</p>
                     <p class="text-sm text-muted-foreground">
                       Mindre text med dämpad färg för beskrivningar.
                     </p>
@@ -765,4 +695,4 @@ loadSavedTheme()
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-</style> 
+</style>

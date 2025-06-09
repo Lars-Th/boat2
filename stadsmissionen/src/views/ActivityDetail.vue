@@ -1,41 +1,41 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
+  ArrowLeft,
+  BarChart3,
   Calendar,
   Clock,
-  MapPin,
-  Users,
   Edit,
+  MapPin,
   Save,
-  X,
   UserCheck,
   UserX,
-  BarChart3,
-  ArrowLeft,
-} from "lucide-vue-next";
+  Users,
+  X,
+} from 'lucide-vue-next';
 
 // Use API service and composables
-import { useApiItem, useApiList } from "@/composables/useApi";
-import api from "@/services/api";
-import type { ActivityType, Activity } from "@/types";
+import { useApiItem, useApiList } from '@/composables/useApi';
+import api from '@/services/api';
+import type { Activity, ActivityType } from '@/types';
 
 // Define interfaces locally to ensure proper typing
 interface Attendance {
@@ -54,7 +54,7 @@ interface ParticipantData {
   Personnummer: string;
   Kon: string;
   Telefon: string;
-  "E-post": string;
+  'E-post': string;
   Adress: string;
   Postnummer: string;
   Ort: string;
@@ -93,11 +93,23 @@ const {
 
 // Helper functions to properly type the API calls
 const getAttendancesByActivityId = (activityId: string) => {
-  return (api.attendances as unknown as { getByActivityId: (id: string) => Promise<{ data: Attendance[]; success: boolean; message?: string }> }).getByActivityId(activityId);
+  return (
+    api.attendances as unknown as {
+      getByActivityId: (
+        id: string
+      ) => Promise<{ data: Attendance[]; success: boolean; message?: string }>;
+    }
+  ).getByActivityId(activityId);
 };
 
 const getParticipantsByActivityId = (activityId: string) => {
-  return (api.participants as unknown as { getByActivityId: (id: string) => Promise<{ data: ParticipantData[]; success: boolean; message?: string }> }).getByActivityId(activityId);
+  return (
+    api.participants as unknown as {
+      getByActivityId: (
+        id: string
+      ) => Promise<{ data: ParticipantData[]; success: boolean; message?: string }>;
+    }
+  ).getByActivityId(activityId);
 };
 
 const {
@@ -119,35 +131,35 @@ const {
 // Get activity type
 const activityType = computed(() => {
   if (!activity.value || !activityTypes.value) return null;
-  return activityTypes.value.find(
-    (at) => at.ActivityTypeID === activity.value?.ActivityTypeID
-  );
+  return activityTypes.value.find(at => at.ActivityTypeID === activity.value?.ActivityTypeID);
 });
 
 // Loading states
-const isLoading = computed(() =>
-  activityLoading.value ||
-  activityTypesLoading.value ||
-  attendancesLoading.value ||
-  participantsLoading.value
+const isLoading = computed(
+  () =>
+    activityLoading.value ||
+    activityTypesLoading.value ||
+    attendancesLoading.value ||
+    participantsLoading.value
 );
 
 // Error states
-const hasError = computed(() =>
-  activityError.value !== null ||
-  activityTypesError.value !== null ||
-  attendancesError.value !== null ||
-  participantsError.value !== null
+const hasError = computed(
+  () =>
+    activityError.value !== null ||
+    activityTypesError.value !== null ||
+    attendancesError.value !== null ||
+    participantsError.value !== null
 );
 
 // Statistics
 const stats = computed(() => {
   if (!attendances.value) {
     return [
-      { title: "Totala registreringar", value: 0, color: "blue" },
-      { title: "Närvarande", value: 0, color: "green" },
-      { title: "Frånvarande", value: 0, color: "red" },
-      { title: "Närvarograd", value: "0%", color: "purple" },
+      { title: 'Totala registreringar', value: 0, color: 'blue' },
+      { title: 'Närvarande', value: 0, color: 'green' },
+      { title: 'Frånvarande', value: 0, color: 'red' },
+      { title: 'Närvarograd', value: '0%', color: 'purple' },
     ];
   }
 
@@ -155,30 +167,28 @@ const stats = computed(() => {
   const presentCount = attendances.value.filter((a: Attendance) => a.Närvaro).length;
   const absentCount = totalAttendances - presentCount;
   const attendanceRate =
-    totalAttendances > 0
-      ? Math.round((presentCount / totalAttendances) * 100)
-      : 0;
+    totalAttendances > 0 ? Math.round((presentCount / totalAttendances) * 100) : 0;
 
   return [
     {
-      title: "Totala registreringar",
+      title: 'Totala registreringar',
       value: totalAttendances,
-      color: "blue",
+      color: 'blue',
     },
     {
-      title: "Närvarande",
+      title: 'Närvarande',
       value: presentCount,
-      color: "green",
+      color: 'green',
     },
     {
-      title: "Frånvarande",
+      title: 'Frånvarande',
       value: absentCount,
-      color: "red",
+      color: 'red',
     },
     {
-      title: "Närvarograd",
+      title: 'Närvarograd',
       value: `${attendanceRate}%`,
-      color: "purple",
+      color: 'purple',
     },
   ];
 });
@@ -186,10 +196,10 @@ const stats = computed(() => {
 // Edit mode
 const isEditing = ref(false);
 const editForm = ref({
-  Namn: "",
-  Beskrivning: "",
-  Plats: "",
-  DatumTid: "",
+  Namn: '',
+  Beskrivning: '',
+  Plats: '',
+  DatumTid: '',
   ActivityTypeID: 0,
 });
 
@@ -198,8 +208,8 @@ const initEditForm = () => {
   if (activity.value) {
     editForm.value = {
       Namn: activity.value.Namn,
-      Beskrivning: activity.value.Beskrivning ?? "",
-      Plats: activity.value.Plats ?? "",
+      Beskrivning: activity.value.Beskrivning ?? '',
+      Plats: activity.value.Plats ?? '',
       DatumTid: activity.value.DatumTid,
       ActivityTypeID: activity.value.ActivityTypeID,
     };
@@ -208,29 +218,29 @@ const initEditForm = () => {
 
 // Format date
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleString("sv-SE", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  return new Date(dateString).toLocaleString('sv-SE', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 // Format time only
 const formatTime = (dateString: string) => {
-  return new Date(dateString).toLocaleString("sv-SE", {
-    hour: "2-digit",
-    minute: "2-digit",
+  return new Date(dateString).toLocaleString('sv-SE', {
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 // Attendance table columns
 const attendanceColumns = [
-  { key: "participant", label: "Deltagare" },
-  { key: "attendance", label: "Närvaro" },
-  { key: "datetime", label: "Registrerad" },
-  { key: "notes", label: "Anteckningar" },
+  { key: 'participant', label: 'Deltagare' },
+  { key: 'attendance', label: 'Närvaro' },
+  { key: 'datetime', label: 'Registrerad' },
+  { key: 'notes', label: 'Anteckningar' },
 ];
 
 // Attendance table data
@@ -243,10 +253,12 @@ const attendanceTableData = computed(() => {
     );
     return {
       id: attendance.AttendanceID,
-      participant: participant ? `${participant.Fornamn} ${participant.Efternamn}` : "Okänd deltagare",
+      participant: participant
+        ? `${participant.Fornamn} ${participant.Efternamn}`
+        : 'Okänd deltagare',
       attendance: attendance.Närvaro,
       datetime: attendance.DatumTid,
-      notes: attendance.Anteckningar ?? "-",
+      notes: attendance.Anteckningar ?? '-',
     };
   });
 });
@@ -254,7 +266,7 @@ const attendanceTableData = computed(() => {
 // Save changes
 const saveChanges = () => {
   // In a real app, this would make an API call
-  console.log("Saving changes:", editForm.value);
+  console.log('Saving changes:', editForm.value);
   isEditing.value = false;
   // Here you would update the activity data
 };
@@ -267,7 +279,7 @@ const cancelEdit = () => {
 
 // Go back to activity list
 const goBack = () => {
-  router.push("/activities");
+  router.push('/activities');
 };
 
 // Initialize on mount
@@ -277,7 +289,7 @@ onMounted(() => {
 
 // Breadcrumbs
 const breadcrumbs = computed(() => {
-  if (!activity.value) return "Aktiviteter / Aktivitet";
+  if (!activity.value) return 'Aktiviteter / Aktivitet';
   return `Aktiviteter / ${activity.value.Namn}`;
 });
 </script>
@@ -290,10 +302,7 @@ const breadcrumbs = computed(() => {
     :stats="stats"
   >
     <!-- Loading State -->
-    <div
-      v-if="isLoading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
         <p class="text-muted-foreground">Laddar aktivitet...</p>
@@ -301,15 +310,16 @@ const breadcrumbs = computed(() => {
     </div>
 
     <!-- Error State -->
-    <div
-      v-else-if="hasError"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
       <div class="text-center">
         <p class="text-destructive mb-2">Ett fel uppstod vid laddning av aktivitet</p>
         <Button
           variant="outline"
-          @click="() => { /* Add refresh logic */ }"
+          @click="
+            () => {
+              /* Add refresh logic */
+            }
+          "
         >
           Försök igen
         </Button>
@@ -317,62 +327,36 @@ const breadcrumbs = computed(() => {
     </div>
 
     <!-- Activity not found -->
-    <div
-      v-else-if="!activity"
-      class="flex items-center justify-center h-64"
-    >
+    <div v-else-if="!activity" class="flex items-center justify-center h-64">
       <div class="text-center">
-        <h3 class="text-lg font-semibold text-muted-foreground">
-          Aktivitet hittades inte
-        </h3>
-        <p class="text-sm text-muted-foreground mt-2">
-          Den begärda aktiviteten kunde inte hittas.
-        </p>
-        <Button
-          class="mt-4"
-          @click="goBack"
-        >
+        <h3 class="text-lg font-semibold text-muted-foreground">Aktivitet hittades inte</h3>
+        <p class="text-sm text-muted-foreground mt-2">Den begärda aktiviteten kunde inte hittas.</p>
+        <Button class="mt-4" @click="goBack">
           <ArrowLeft class="mr-2 h-4 w-4" />
           Tillbaka till aktiviteter
         </Button>
       </div>
     </div>
 
-    <div
-      v-else
-      class="space-y-6"
-    >
+    <div v-else class="space-y-6">
       <!-- Header Actions -->
       <div class="flex items-center justify-between">
-        <Button
-          variant="outline"
-          @click="goBack"
-        >
+        <Button variant="outline" @click="goBack">
           <ArrowLeft class="mr-2 h-4 w-4" />
           Tillbaka
         </Button>
 
         <div class="flex gap-2">
-          <Button
-            v-if="!isEditing"
-            variant="outline"
-            @click="isEditing = true"
-          >
+          <Button v-if="!isEditing" variant="outline" @click="isEditing = true">
             <Edit class="mr-2 h-4 w-4" />
             Redigera
           </Button>
           <template v-else>
-            <Button
-              variant="default"
-              @click="saveChanges"
-            >
+            <Button variant="default" @click="saveChanges">
               <Save class="mr-2 h-4 w-4" />
               Spara
             </Button>
-            <Button
-              variant="outline"
-              @click="cancelEdit"
-            >
+            <Button variant="outline" @click="cancelEdit">
               <X class="mr-2 h-4 w-4" />
               Avbryt
             </Button>
@@ -389,10 +373,7 @@ const breadcrumbs = computed(() => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div
-            v-if="!isEditing"
-            class="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
+          <div v-if="!isEditing" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
               <div>
                 <Label class="text-sm font-medium text-muted-foreground">Namn</Label>
@@ -403,11 +384,8 @@ const breadcrumbs = computed(() => {
 
               <div>
                 <Label class="text-sm font-medium text-muted-foreground">Typ</Label>
-                <Badge
-                  variant="secondary"
-                  class="mt-1"
-                >
-                  {{ activityType?.Typnamn || "Okänd typ" }}
+                <Badge variant="secondary" class="mt-1">
+                  {{ activityType?.Typnamn || 'Okänd typ' }}
                 </Badge>
               </div>
 
@@ -432,24 +410,18 @@ const breadcrumbs = computed(() => {
               <div>
                 <Label class="text-sm font-medium text-muted-foreground">Beskrivning</Label>
                 <p class="mt-1 text-sm">
-                  {{ activity.Beskrivning || "Ingen beskrivning tillgänglig" }}
+                  {{ activity.Beskrivning || 'Ingen beskrivning tillgänglig' }}
                 </p>
               </div>
             </div>
           </div>
 
           <!-- Edit Form -->
-          <div
-            v-else
-            class="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-4">
               <div>
                 <Label for="name">Namn</Label>
-                <Input
-                  id="name"
-                  v-model="editForm.Namn"
-                />
+                <Input id="name" v-model="editForm.Namn" />
               </div>
 
               <div>
@@ -472,30 +444,19 @@ const breadcrumbs = computed(() => {
 
               <div>
                 <Label for="location">Plats</Label>
-                <Input
-                  id="location"
-                  v-model="editForm.Plats"
-                />
+                <Input id="location" v-model="editForm.Plats" />
               </div>
             </div>
 
             <div class="space-y-4">
               <div>
                 <Label for="datetime">Datum och tid</Label>
-                <Input
-                  id="datetime"
-                  v-model="editForm.DatumTid"
-                  type="datetime-local"
-                />
+                <Input id="datetime" v-model="editForm.DatumTid" type="datetime-local" />
               </div>
 
               <div>
                 <Label for="description">Beskrivning</Label>
-                <Textarea
-                  id="description"
-                  v-model="editForm.Beskrivning"
-                  rows="3"
-                />
+                <Textarea id="description" v-model="editForm.Beskrivning" rows="3" />
               </div>
             </div>
           </div>
@@ -503,68 +464,42 @@ const breadcrumbs = computed(() => {
       </Card>
 
       <!-- Tabs for different views -->
-      <Tabs
-        default-value="attendances"
-        class="w-full"
-      >
+      <Tabs default-value="attendances" class="w-full">
         <TabsList class="grid w-full grid-cols-3">
-          <TabsTrigger
-            value="attendances"
-            class="flex items-center gap-2"
-          >
+          <TabsTrigger value="attendances" class="flex items-center gap-2">
             <UserCheck class="h-4 w-4" />
             Närvaroregistreringar
           </TabsTrigger>
-          <TabsTrigger
-            value="participants"
-            class="flex items-center gap-2"
-          >
+          <TabsTrigger value="participants" class="flex items-center gap-2">
             <Users class="h-4 w-4" />
             Deltagare
           </TabsTrigger>
-          <TabsTrigger
-            value="statistics"
-            class="flex items-center gap-2"
-          >
+          <TabsTrigger value="statistics" class="flex items-center gap-2">
             <BarChart3 class="h-4 w-4" />
             Statistik
           </TabsTrigger>
         </TabsList>
 
         <!-- Attendance Registrations -->
-        <TabsContent
-          value="attendances"
-          class="space-y-4"
-        >
+        <TabsContent value="attendances" class="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Närvaroregistreringar</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable
-                :data="attendanceTableData"
-                :columns="attendanceColumns"
-              >
+              <DataTable :data="attendanceTableData" :columns="attendanceColumns">
                 <template #attendance="{ item }">
                   <Badge :variant="item.attendance ? 'default' : 'destructive'">
-                    <UserCheck
-                      v-if="item.attendance"
-                      class="mr-1 h-3 w-3"
-                    />
-                    <UserX
-                      v-else
-                      class="mr-1 h-3 w-3"
-                    />
-                    {{ item.attendance ? "Närvarande" : "Frånvarande" }}
+                    <UserCheck v-if="item.attendance" class="mr-1 h-3 w-3" />
+                    <UserX v-else class="mr-1 h-3 w-3" />
+                    {{ item.attendance ? 'Närvarande' : 'Frånvarande' }}
                   </Badge>
                 </template>
                 <template #datetime="{ item }">
                   {{ formatDate(item.datetime) }}
                 </template>
                 <template #notes="{ item }">
-                  <span class="text-sm text-muted-foreground">{{
-                    item.notes
-                  }}</span>
+                  <span class="text-sm text-muted-foreground">{{ item.notes }}</span>
                 </template>
               </DataTable>
             </CardContent>
@@ -572,15 +507,10 @@ const breadcrumbs = computed(() => {
         </TabsContent>
 
         <!-- Participants -->
-        <TabsContent
-          value="participants"
-          class="space-y-4"
-        >
+        <TabsContent value="participants" class="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>
-                Deltagare ({{ activityParticipants?.length || 0 }})
-              </CardTitle>
+              <CardTitle>Deltagare ({{ activityParticipants?.length || 0 }})</CardTitle>
             </CardHeader>
             <CardContent>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -596,7 +526,7 @@ const breadcrumbs = computed(() => {
                     {{ participant.Telefon }}
                   </p>
                   <p class="text-sm text-muted-foreground">
-                    {{ participant["E-post"] }}
+                    {{ participant['E-post'] }}
                   </p>
 
                   <!-- Attendance status for this participant -->
@@ -610,7 +540,7 @@ const breadcrumbs = computed(() => {
                       class="text-xs"
                     >
                       {{ formatTime(attendance.DatumTid) }} -
-                      {{ attendance.Närvaro ? "Närvarande" : "Frånvarande" }}
+                      {{ attendance.Närvaro ? 'Närvarande' : 'Frånvarande' }}
                     </Badge>
                   </div>
                 </div>
@@ -620,15 +550,9 @@ const breadcrumbs = computed(() => {
         </TabsContent>
 
         <!-- Statistics -->
-        <TabsContent
-          value="statistics"
-          class="space-y-4"
-        >
+        <TabsContent value="statistics" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card
-              v-for="stat in stats"
-              :key="stat.title"
-            >
+            <Card v-for="stat in stats" :key="stat.title">
               <CardContent class="p-6">
                 <div class="flex items-center justify-between">
                   <div>
@@ -660,15 +584,11 @@ const breadcrumbs = computed(() => {
                     <div class="space-y-2">
                       <div class="flex justify-between">
                         <span class="text-sm">Totala registreringar:</span>
-                        <span class="font-medium">{{
-                          attendances?.length || 0
-                        }}</span>
+                        <span class="font-medium">{{ attendances?.length || 0 }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm">Unika deltagare:</span>
-                        <span class="font-medium">{{
-                          activityParticipants?.length || 0
-                        }}</span>
+                        <span class="font-medium">{{ activityParticipants?.length || 0 }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm">Genomsnittlig närvaro per deltagare:</span>
@@ -676,9 +596,8 @@ const breadcrumbs = computed(() => {
                           {{
                             (activityParticipants?.length || 0) > 0
                               ? (
-                                (attendances?.length || 0) /
-                                (activityParticipants?.length || 1)
-                              ).toFixed(1)
+                                  (attendances?.length || 0) / (activityParticipants?.length || 1)
+                                ).toFixed(1)
                               : 0
                           }}
                         </span>
@@ -691,9 +610,7 @@ const breadcrumbs = computed(() => {
                     <div class="space-y-2">
                       <div class="flex justify-between">
                         <span class="text-sm">Aktivitetstyp:</span>
-                        <span class="font-medium">{{
-                          activityType?.Typnamn || "Okänd"
-                        }}</span>
+                        <span class="font-medium">{{ activityType?.Typnamn || 'Okänd' }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm">Plats:</span>
@@ -701,9 +618,7 @@ const breadcrumbs = computed(() => {
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm">Datum:</span>
-                        <span class="font-medium">{{
-                          formatDate(activity.DatumTid)
-                        }}</span>
+                        <span class="font-medium">{{ formatDate(activity.DatumTid) }}</span>
                       </div>
                     </div>
                   </div>

@@ -1,9 +1,11 @@
 // .eslintrc.js
-import js from '@eslint/js'
-import pluginVue from 'eslint-plugin-vue'
-import vueEslintParser from 'vue-eslint-parser'
-import tsEslintPlugin from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
+import js from '@eslint/js';
+import pluginVue from 'eslint-plugin-vue';
+import vueEslintParser from 'vue-eslint-parser';
+import tsEslintPlugin from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
 
 export default [
   // Global ignores - must be first
@@ -15,8 +17,11 @@ export default [
       '.git/**/*',
       'coverage/**/*',
       '*.min.js',
-      '*.bundle.js'
-    ]
+      '*.bundle.js',
+      '.vscode/**/*',
+      '.cursor/**/*',
+      'public/**/*',
+    ],
   },
 
   // Base ESLint recommended rules
@@ -25,16 +30,20 @@ export default [
   // Vue 3 recommended rules
   ...pluginVue.configs['flat/recommended'],
 
+  // Prettier config to disable conflicting rules
+  eslintConfigPrettier,
+
   {
-    files: ['src/**/*.{vue,ts}'], // Only apply TypeScript rules to source files
+    files: ['src/**/*.{vue,ts,js}'],
     languageOptions: {
       parser: vueEslintParser,
       parserOptions: {
         parser: tsParser,
-        ecmaVersion: 2021,
+        ecmaVersion: 'latest',
         sourceType: 'module',
         extraFileExtensions: ['.vue'],
-        project: './tsconfig.eslint.json'  // Dedicated ESLint TypeScript config
+        project: './tsconfig.eslint.json',
+        tsconfigRootDir: import.meta.dirname,
       },
       globals: {
         // Node.js globals
@@ -48,34 +57,54 @@ export default [
         console: 'readonly',
         alert: 'readonly',
         confirm: 'readonly',
-        // ES2021 globals
-        globalThis: 'readonly'
-      }
+        // ES2021+ globals
+        globalThis: 'readonly',
+        // Vite globals
+        import: 'readonly',
+      },
     },
     plugins: {
       vue: pluginVue,
-      '@typescript-eslint': tsEslintPlugin
+      '@typescript-eslint': tsEslintPlugin,
+      prettier: eslintPluginPrettier,
     },
     rules: {
-      // Turn off forcing multi-word component names if you prefer single-word names
+      // Prettier integration
+      'prettier/prettier': 'error',
+
+      // Vue specific rules
       'vue/multi-word-component-names': 'off',
-
-      // Warn on unused vars instead of error
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': 'warn',
-
-      // Allow optional chaining without errors
       'vue/no-deprecated-v-on-native-modifier': 'off',
+      'vue/no-deprecated-filter': 'error',
+      'vue/component-definition-name-casing': ['error', 'PascalCase'],
+      'vue/component-name-in-template-casing': ['error', 'PascalCase'],
+      'vue/define-props-declaration': ['error', 'type-based'],
+      'vue/define-emits-declaration': ['error', 'type-based'],
+      'vue/no-unused-refs': 'warn',
+      'vue/no-useless-v-bind': 'warn',
+      'vue/prefer-true-attribute-shorthand': 'warn',
+      'vue/no-template-shadow': 'warn',
+      'vue/require-default-prop': 'off',
+      'vue/no-v-html': 'warn',
+      'vue/no-mutating-props': 'error',
+      'vue/no-unused-components': 'warn',
+      'vue/no-unused-vars': 'warn',
+      'vue/valid-v-slot': 'error',
+      'vue/no-multiple-template-root': 'off', // Vue 3 allows multiple roots
 
-      // Allow undefined globals (for browser APIs)
-      'no-undef': 'off',
-
-      // TypeScript strict mode rules (gradual enforcement)
+      // TypeScript rules
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off', // Too strict for Vue components
-      '@typescript-eslint/explicit-module-boundary-types': 'off', // Too strict for Vue components
-      
-      // Enable more TypeScript safety rules
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
       '@typescript-eslint/no-unsafe-call': 'warn',
@@ -83,34 +112,64 @@ export default [
       '@typescript-eslint/prefer-nullish-coalescing': 'warn',
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
+      ],
 
-      // Vue specific improvements
-      'vue/no-template-shadow': 'warn',
-      'vue/singleline-html-element-content-newline': 'off',
-      'vue/component-definition-name-casing': ['error', 'PascalCase'],
-      'vue/component-name-in-template-casing': ['error', 'PascalCase'],
-      'vue/define-props-declaration': ['error', 'type-based'],
-      'vue/define-emits-declaration': ['error', 'type-based'],
-      'vue/no-unused-refs': 'warn',
-      'vue/no-useless-v-bind': 'warn',
-      'vue/prefer-true-attribute-shorthand': 'warn'
-    }
+      // General JavaScript/TypeScript rules
+      'no-undef': 'off', // TypeScript handles this
+      // 'no-console': 'warn',
+      'no-debugger': 'warn',
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'object-shorthand': 'error',
+      'prefer-template': 'error',
+      'prefer-arrow-callback': 'error',
+      'arrow-spacing': 'error',
+      'no-duplicate-imports': 'warn', // Allow but warn for UI components
+      'no-useless-rename': 'error',
+      'no-useless-computed-key': 'error',
+      'no-useless-constructor': 'error',
+      'prefer-destructuring': [
+        'warn',
+        {
+          array: false,
+          object: true,
+        },
+      ],
+
+      // Import/Export rules
+      'sort-imports': [
+        'error',
+        {
+          ignoreCase: false,
+          ignoreDeclarationSort: true,
+          ignoreMemberSort: false,
+          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        },
+      ],
+    },
   },
 
+  // Vue-specific overrides
   {
-    // Vue-specific overrides
     files: ['**/*.vue'],
     rules: {
-      // Suppress some warnings in <template> or <script setup> if needed
-      'vue/require-default-prop': 'off'
-    }
+      // Allow single-word component names in certain cases
+      'vue/multi-word-component-names': 'off',
+      // More lenient for Vue files
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+    },
   },
 
+  // Configuration files
   {
-    // JavaScript config files (no TypeScript checking)
-    files: ['**/*.{js,mjs,cjs}', '*.config.{js,ts}', '*.config.*.{js,ts}'],
+    files: ['**/*.config.{js,ts}', '*.config.{js,ts}', 'vite.config.*', 'tailwind.config.*'],
     languageOptions: {
-      ecmaVersion: 2021,
+      ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         module: 'readonly',
@@ -123,12 +182,14 @@ export default [
         window: 'readonly',
         document: 'readonly',
         console: 'readonly',
-        globalThis: 'readonly'
-      }
+        globalThis: 'readonly',
+        import: 'readonly',
+      },
     },
     rules: {
       'no-unused-vars': 'warn',
-      'no-undef': 'off'
-    }
-  }
-]
+      'no-undef': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+];

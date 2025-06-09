@@ -1,18 +1,14 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
-import {
-  NavigationMenuViewport,
-  type NavigationMenuViewportProps,
-  useForwardProps,
-} from 'reka-ui'
-import { cn } from '@/utils/libraryHelper'
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { NavigationMenuViewport, type NavigationMenuViewportProps, useForwardProps } from 'reka-ui';
+import { cn } from '@/utils/libraryHelper';
 
-const props = defineProps<NavigationMenuViewportProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<NavigationMenuViewportProps & { class?: HTMLAttributes['class'] }>();
 
-const delegatedProps = reactiveOmit(props, 'class')
+const delegatedProps = reactiveOmit(props, 'class');
 
-const forwardedProps = useForwardProps(delegatedProps)
+const forwardedProps = useForwardProps(delegatedProps);
 </script>
 
 <template>
@@ -23,7 +19,7 @@ const forwardedProps = useForwardProps(delegatedProps)
       :class="
         cn(
           'origin-top-center bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--reka-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow md:w-[var(--reka-navigation-menu-viewport-width)]',
-          props.class,
+          props.class
         )
       "
     />

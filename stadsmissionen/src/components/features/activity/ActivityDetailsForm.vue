@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "lucide-vue-next";
+import { computed } from 'vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from 'lucide-vue-next';
 
 interface ActivityFormData {
   namn: string;
@@ -29,7 +29,7 @@ const emit = defineEmits<Emits>();
 // Duration helpers
 const durationHours = computed({
   get: () => Math.floor(props.formData.varaktighet / 60),
-  set: (value) => {
+  set: value => {
     const newDuration = value * 60 + (props.formData.varaktighet % 60);
     emit('update:formData', { varaktighet: newDuration });
   },
@@ -37,7 +37,7 @@ const durationHours = computed({
 
 const durationMinutes = computed({
   get: () => props.formData.varaktighet % 60,
-  set: (value) => {
+  set: value => {
     const newDuration = Math.floor(props.formData.varaktighet / 60) * 60 + value;
     emit('update:formData', { varaktighet: newDuration });
   },
@@ -65,7 +65,7 @@ const updateField = (field: keyof ActivityFormData, value: string | number) => {
             :model-value="formData.namn"
             placeholder="T.ex. Läxhjälp för barn"
             required
-            @update:model-value="(value) => updateField('namn', value)"
+            @update:model-value="value => updateField('namn', value)"
           />
         </div>
 
@@ -75,7 +75,7 @@ const updateField = (field: keyof ActivityFormData, value: string | number) => {
             id="plats"
             :model-value="formData.plats"
             placeholder="T.ex. Studierum A"
-            @update:model-value="(value) => updateField('plats', value)"
+            @update:model-value="value => updateField('plats', value)"
           />
         </div>
       </div>
@@ -87,7 +87,7 @@ const updateField = (field: keyof ActivityFormData, value: string | number) => {
           :model-value="formData.beskrivning"
           placeholder="Beskriv aktiviteten..."
           rows="3"
-          @update:model-value="(value) => updateField('beskrivning', value)"
+          @update:model-value="value => updateField('beskrivning', value)"
         />
       </div>
 
@@ -100,7 +100,7 @@ const updateField = (field: keyof ActivityFormData, value: string | number) => {
             :model-value="formData.startDatum"
             type="date"
             required
-            @update:model-value="(value) => updateField('startDatum', value)"
+            @update:model-value="value => updateField('startDatum', value)"
           />
         </div>
 
@@ -111,7 +111,7 @@ const updateField = (field: keyof ActivityFormData, value: string | number) => {
             :model-value="formData.startTid"
             type="time"
             required
-            @update:model-value="(value) => updateField('startTid', value)"
+            @update:model-value="value => updateField('startTid', value)"
           />
         </div>
 
@@ -119,13 +119,7 @@ const updateField = (field: keyof ActivityFormData, value: string | number) => {
           <Label>Varaktighet</Label>
           <div class="flex gap-2 items-center">
             <div class="flex items-center gap-1">
-              <Input
-                v-model.number="durationHours"
-                type="number"
-                min="0"
-                max="23"
-                class="w-16"
-              />
+              <Input v-model.number="durationHours" type="number" min="0" max="23" class="w-16" />
               <span class="text-sm text-muted-foreground">h</span>
             </div>
             <div class="flex items-center gap-1">
@@ -144,4 +138,4 @@ const updateField = (field: keyof ActivityFormData, value: string | number) => {
       </div>
     </CardContent>
   </Card>
-</template> 
+</template>

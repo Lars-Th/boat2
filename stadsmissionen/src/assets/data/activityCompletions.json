@@ -16,7 +16,7 @@
             "kommentar": "Mycket engagerad och förstod materialet bra"
           },
           {
-            "fragaId": "q2", 
+            "fragaId": "q2",
             "svar": true,
             "kommentar": "Deltog aktivt i diskussionerna"
           },
@@ -40,7 +40,7 @@
             "kommentar": ""
           },
           {
-            "fragaId": "q3", 
+            "fragaId": "q3",
             "svar": "Bra framsteg, fortsätt så här"
           }
         ]
@@ -59,7 +59,7 @@
     "skapadDatum": "2025-01-15T18:30:00Z"
   },
   {
-    "id": "completion-2", 
+    "id": "completion-2",
     "aktivitetId": "activity-2",
     "genomfordDatum": "2025-01-12T14:00:00Z",
     "antalInbjudna": 1,
@@ -100,7 +100,7 @@
   },
   {
     "id": "completion-3",
-    "aktivitetId": "activity-3", 
+    "aktivitetId": "activity-3",
     "genomfordDatum": "2025-01-10T10:00:00Z",
     "antalInbjudna": 0,
     "antalNarvarande": 25,
@@ -149,4 +149,4 @@
     "genomfordAv": "eventcoordinator",
     "skapadDatum": "2025-01-10T16:45:00Z"
   }
-] 
+]

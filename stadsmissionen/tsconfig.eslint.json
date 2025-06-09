@@ -13,9 +13,5 @@
     "*.ts",
     "*.js"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "coverage"
-  ]
+  "exclude": ["node_modules", "dist", "coverage"]
 }

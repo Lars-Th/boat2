@@ -1,53 +1,53 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+import { computed, ref } from 'vue';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
-  User,
   Building,
-  Shield,
-  Settings,
-  Edit,
-  Save,
-  Eye,
-  EyeOff,
   Calendar,
   Clock,
-  UserCheck,
   Crown,
-} from "lucide-vue-next";
-import { useToast } from "@/composables/useToast";
+  Edit,
+  Eye,
+  EyeOff,
+  Save,
+  Settings,
+  Shield,
+  User,
+  UserCheck,
+} from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
 
 // Import data
-import usersData from "@/assets/data/users.json";
-import organizationSettingsData from "@/assets/data/organizationSettings.json";
+import usersData from '@/assets/data/users.json';
+import organizationSettingsData from '@/assets/data/organizationSettings.json';
 
 // Reactive data
 const users = ref(usersData);
 const organizations = ref(organizationSettingsData.organizations);
 
 // Simulate current logged in user (in real app this would come from auth store)
-const currentUserId = ref("user-1"); // Anna Andersson
+const currentUserId = ref('user-1'); // Anna Andersson
 const editingProfile = ref(false);
 const showChangePasswordDialog = ref(false);
 
 // Password form
 const passwordForm = ref({
-  currentPassword: "",
-  newPassword: "",
-  confirmPassword: "",
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
 });
 
 // Show password states
@@ -57,20 +57,18 @@ const showConfirmPassword = ref(false);
 
 // Current user
 const currentUser = computed(() => {
-  return users.value.find((user) => user.id === currentUserId.value);
+  return users.value.find(user => user.id === currentUserId.value);
 });
 
 // Enhanced current user with organization info
 const enhancedCurrentUser = computed(() => {
   if (!currentUser.value) return null;
 
-  const org = organizations.value.find(
-    (o) => o.id === currentUser.value?.organisationId
-  );
+  const org = organizations.value.find(o => o.id === currentUser.value?.organisationId);
 
   return {
     ...currentUser.value,
-    organisationNamn: org?.namn ?? "Okänd organisation",
+    organisationNamn: org?.namn ?? 'Okänd organisation',
     organisationEnheter: org?.enheter ?? [],
   };
 });
@@ -78,24 +76,24 @@ const enhancedCurrentUser = computed(() => {
 // Role definitions
 const roleDefinitions = [
   {
-    id: "handlaggare",
-    namn: "Handläggare",
-    beskrivning: "Grundläggande funktioner för en specifik enhet",
-    color: "outline" as const,
+    id: 'handlaggare',
+    namn: 'Handläggare',
+    beskrivning: 'Grundläggande funktioner för en specifik enhet',
+    color: 'outline' as const,
     icon: UserCheck,
   },
   {
-    id: "administrator",
-    namn: "Administratör",
-    beskrivning: "Full åtkomst inom en stadsmission",
-    color: "default" as const,
+    id: 'administrator',
+    namn: 'Administratör',
+    beskrivning: 'Full åtkomst inom en stadsmission',
+    color: 'default' as const,
     icon: Shield,
   },
   {
-    id: "systemadministrator",
-    namn: "Systemadministratör",
-    beskrivning: "Full åtkomst till hela systemet",
-    color: "destructive" as const,
+    id: 'systemadministrator',
+    namn: 'Systemadministratör',
+    beskrivning: 'Full åtkomst till hela systemet',
+    color: 'destructive' as const,
     icon: Crown,
   },
 ];
@@ -104,37 +102,37 @@ const roleDefinitions = [
 const userRoles = computed(() => {
   if (!currentUser.value) return [];
   return currentUser.value.roller
-    .map((roleId) => roleDefinitions.find((r) => r.id === roleId))
+    .map(roleId => roleDefinitions.find(r => r.id === roleId))
     .filter(Boolean) as typeof roleDefinitions;
 });
 
 // Statistics
 const stats = computed(() => [
   {
-    title: "Aktiv sedan",
-    value: formatDate(currentUser.value?.skapadDatum ?? ""),
+    title: 'Aktiv sedan',
+    value: formatDate(currentUser.value?.skapadDatum ?? ''),
     icon: Calendar,
-    color: "blue",
+    color: 'blue',
   },
   {
-    title: "Senast inloggad",
+    title: 'Senast inloggad',
     value: currentUser.value?.senastInloggad
       ? formatDate(currentUser.value.senastInloggad)
-      : "Aldrig",
+      : 'Aldrig',
     icon: Clock,
-    color: "green",
+    color: 'green',
   },
   {
-    title: "Roller",
+    title: 'Roller',
     value: currentUser.value?.roller.length ?? 0,
     icon: Shield,
-    color: "purple",
+    color: 'purple',
   },
   {
-    title: "Enheter",
+    title: 'Enheter',
     value: currentUser.value?.enheter.length ?? 0,
     icon: Building,
-    color: "orange",
+    color: 'orange',
   },
 ]);
 
@@ -145,14 +143,14 @@ const saveProfile = () => {
   if (currentUser.value) {
     currentUser.value.uppdateradDatum = new Date().toISOString();
     editingProfile.value = false;
-    console.log("Profile updated");
+    console.log('Profile updated');
   }
 };
 
 // Change password
 const changePassword = () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    error("Lösenordsfel", "Lösenorden matchar inte. Kontrollera att båda fälten är identiska.");
+    error('Lösenordsfel', 'Lösenorden matchar inte. Kontrollera att båda fälten är identiska.');
     return;
   }
 
@@ -160,34 +158,34 @@ const changePassword = () => {
     currentUser.value.losenord = passwordForm.value.newPassword;
     showChangePasswordDialog.value = false;
     passwordForm.value = {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
     };
-    success("Lösenord ändrat", "Ditt lösenord har uppdaterats framgångsrikt");
-    console.log("Password changed");
+    success('Lösenord ändrat', 'Ditt lösenord har uppdaterats framgångsrikt');
+    console.log('Password changed');
   }
 };
 
 // Format date
 const formatDate = (dateString: string) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString("sv-SE", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('sv-SE', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 };
 
 // Format datetime
 const formatDateTime = (dateString: string) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString("sv-SE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleString('sv-SE', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 </script>
@@ -199,16 +197,11 @@ const formatDateTime = (dateString: string) => {
     show-stats
     :stats="stats"
   >
-    <div
-      v-if="enhancedCurrentUser"
-      class="space-y-6 p-6"
-    >
+    <div v-if="enhancedCurrentUser" class="space-y-6 p-6">
       <!-- Profile Header -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <div
-            class="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center"
-          >
+          <div class="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
             <User class="h-8 w-8 text-primary" />
           </div>
           <div>
@@ -219,17 +212,10 @@ const formatDateTime = (dateString: string) => {
               {{ enhancedCurrentUser.epost }}
             </p>
             <div class="flex items-center gap-2 mt-1">
-              <Badge
-                :variant="enhancedCurrentUser.aktiv ? 'default' : 'outline'"
-              >
-                {{ enhancedCurrentUser.aktiv ? "Aktiv" : "Inaktiv" }}
+              <Badge :variant="enhancedCurrentUser.aktiv ? 'default' : 'outline'">
+                {{ enhancedCurrentUser.aktiv ? 'Aktiv' : 'Inaktiv' }}
               </Badge>
-              <Badge
-                v-for="role in userRoles"
-                :key="role.id"
-                :variant="role.color"
-                class="text-xs"
-              >
+              <Badge v-for="role in userRoles" :key="role.id" :variant="role.color" class="text-xs">
                 {{ role.namn }}
               </Badge>
             </div>
@@ -239,10 +225,7 @@ const formatDateTime = (dateString: string) => {
         <div class="flex gap-2">
           <Dialog v-model:open="showChangePasswordDialog">
             <DialogTrigger as-child>
-              <Button
-                variant="outline"
-                class="gap-2"
-              >
+              <Button variant="outline" class="gap-2">
                 <Shield class="h-4 w-4" />
                 Ändra lösenord
               </Button>
@@ -267,14 +250,8 @@ const formatDateTime = (dateString: string) => {
                       class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
                       @click="showCurrentPassword = !showCurrentPassword"
                     >
-                      <Eye
-                        v-if="!showCurrentPassword"
-                        class="h-4 w-4"
-                      />
-                      <EyeOff
-                        v-else
-                        class="h-4 w-4"
-                      />
+                      <Eye v-if="!showCurrentPassword" class="h-4 w-4" />
+                      <EyeOff v-else class="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -294,14 +271,8 @@ const formatDateTime = (dateString: string) => {
                       class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
                       @click="showNewPassword = !showNewPassword"
                     >
-                      <Eye
-                        v-if="!showNewPassword"
-                        class="h-4 w-4"
-                      />
-                      <EyeOff
-                        v-else
-                        class="h-4 w-4"
-                      />
+                      <Eye v-if="!showNewPassword" class="h-4 w-4" />
+                      <EyeOff v-else class="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -321,30 +292,21 @@ const formatDateTime = (dateString: string) => {
                       class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
                       @click="showConfirmPassword = !showConfirmPassword"
                     >
-                      <Eye
-                        v-if="!showConfirmPassword"
-                        class="h-4 w-4"
-                      />
-                      <EyeOff
-                        v-else
-                        class="h-4 w-4"
-                      />
+                      <Eye v-if="!showConfirmPassword" class="h-4 w-4" />
+                      <EyeOff v-else class="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
                 <div class="flex gap-4 justify-end pt-4">
-                  <Button
-                    variant="outline"
-                    @click="showChangePasswordDialog = false"
-                  >
+                  <Button variant="outline" @click="showChangePasswordDialog = false">
                     Avbryt
                   </Button>
                   <Button
                     :disabled="
                       !passwordForm.currentPassword ||
-                        !passwordForm.newPassword ||
-                        !passwordForm.confirmPassword
+                      !passwordForm.newPassword ||
+                      !passwordForm.confirmPassword
                     "
                     @click="changePassword"
                   >
@@ -355,13 +317,9 @@ const formatDateTime = (dateString: string) => {
             </DialogContent>
           </Dialog>
 
-          <Button
-            variant="outline"
-            class="gap-2"
-            @click="editingProfile = !editingProfile"
-          >
+          <Button variant="outline" class="gap-2" @click="editingProfile = !editingProfile">
             <Edit class="h-4 w-4" />
-            {{ editingProfile ? "Avbryt" : "Redigera profil" }}
+            {{ editingProfile ? 'Avbryt' : 'Redigera profil' }}
           </Button>
         </div>
       </div>
@@ -384,10 +342,7 @@ const formatDateTime = (dateString: string) => {
                 v-model="enhancedCurrentUser.namn"
                 placeholder="För- och efternamn"
               />
-              <p
-                v-else
-                class="text-sm bg-muted p-2 rounded"
-              >
+              <p v-else class="text-sm bg-muted p-2 rounded">
                 {{ enhancedCurrentUser.namn }}
               </p>
             </div>
@@ -400,28 +355,19 @@ const formatDateTime = (dateString: string) => {
                 type="email"
                 placeholder="anvandare@stadsmission.se"
               />
-              <p
-                v-else
-                class="text-sm bg-muted p-2 rounded"
-              >
+              <p v-else class="text-sm bg-muted p-2 rounded">
                 {{ enhancedCurrentUser.epost }}
               </p>
             </div>
 
             <div class="space-y-2">
               <Label>Status</Label>
-              <div
-                v-if="editingProfile"
-                class="flex items-center space-x-2"
-              >
+              <div v-if="editingProfile" class="flex items-center space-x-2">
                 <Switch v-model:checked="enhancedCurrentUser.aktiv" />
                 <Label>Aktiv användare</Label>
               </div>
-              <p
-                v-else
-                class="text-sm bg-muted p-2 rounded"
-              >
-                {{ enhancedCurrentUser.aktiv ? "Aktiv" : "Inaktiv" }}
+              <p v-else class="text-sm bg-muted p-2 rounded">
+                {{ enhancedCurrentUser.aktiv ? 'Aktiv' : 'Inaktiv' }}
               </p>
             </div>
           </CardContent>
@@ -472,10 +418,7 @@ const formatDateTime = (dateString: string) => {
                   :variant="role.color"
                   class="text-xs"
                 >
-                  <component
-                    :is="role.icon"
-                    class="h-3 w-3 mr-1"
-                  />
+                  <component :is="role.icon" class="h-3 w-3 mr-1" />
                   {{ role.namn }}
                 </Badge>
               </div>
@@ -494,21 +437,11 @@ const formatDateTime = (dateString: string) => {
         </CardHeader>
         <CardContent>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-              v-for="role in userRoles"
-              :key="role.id"
-              class="p-4 border rounded-lg"
-            >
+            <div v-for="role in userRoles" :key="role.id" class="p-4 border rounded-lg">
               <div class="flex items-center gap-2 mb-2">
-                <component
-                  :is="role.icon"
-                  class="h-4 w-4"
-                />
+                <component :is="role.icon" class="h-4 w-4" />
                 <span class="font-medium">{{ role.namn }}</span>
-                <Badge
-                  :variant="role.color"
-                  class="text-xs"
-                >
+                <Badge :variant="role.color" class="text-xs">
                   {{ role.id }}
                 </Badge>
               </div>
@@ -542,8 +475,7 @@ const formatDateTime = (dateString: string) => {
                 <p class="text-sm text-muted-foreground">
                   {{
                     formatDateTime(
-                      enhancedCurrentUser.uppdateradDatum ||
-                        enhancedCurrentUser.skapadDatum
+                      enhancedCurrentUser.uppdateradDatum || enhancedCurrentUser.skapadDatum
                     )
                   }}
                 </p>
@@ -556,7 +488,7 @@ const formatDateTime = (dateString: string) => {
                   {{
                     enhancedCurrentUser.senastInloggad
                       ? formatDateTime(enhancedCurrentUser.senastInloggad)
-                      : "Aldrig"
+                      : 'Aldrig'
                   }}
                 </p>
               </div>
@@ -572,20 +504,9 @@ const formatDateTime = (dateString: string) => {
       </Card>
 
       <!-- Save Changes -->
-      <div
-        v-if="editingProfile"
-        class="flex gap-4 justify-end pt-4 border-t"
-      >
-        <Button
-          variant="outline"
-          @click="editingProfile = false"
-        >
-          Avbryt
-        </Button>
-        <Button
-          class="gap-2"
-          @click="saveProfile"
-        >
+      <div v-if="editingProfile" class="flex gap-4 justify-end pt-4 border-t">
+        <Button variant="outline" @click="editingProfile = false">Avbryt</Button>
+        <Button class="gap-2" @click="saveProfile">
           <Save class="h-4 w-4" />
           Spara ändringar
         </Button>
@@ -593,15 +514,10 @@ const formatDateTime = (dateString: string) => {
     </div>
 
     <!-- No user found -->
-    <div
-      v-else
-      class="text-center py-12"
-    >
+    <div v-else class="text-center py-12">
       <User class="h-12 w-12 mx-auto text-muted-foreground mb-4" />
       <h3 class="text-lg font-medium mb-2">Användare hittades inte</h3>
-      <p class="text-muted-foreground">
-        Det gick inte att ladda användarinformation
-      </p>
+      <p class="text-muted-foreground">Det gick inte att ladda användarinformation</p>
     </div>
   </PageLayout>
 </template>

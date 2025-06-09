@@ -1,57 +1,63 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
-import { Calendar, Clock, Users } from 'lucide-vue-next'
-import { useValidation } from '@/composables/useValidation'
-import { activityValidationSchema } from '@/schemas/validationSchemas'
+import { computed, watch } from 'vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Calendar, Clock, Users } from 'lucide-vue-next';
+import { useValidation } from '@/composables/useValidation';
+import { activityValidationSchema } from '@/schemas/validationSchemas';
 
 interface ActivityFormData {
-  templateId: string
-  namn: string
-  beskrivning: string
-  plats: string
-  startDatum: string
-  startTid: string
-  varaktighet: number
-  arSerie: boolean
+  templateId: string;
+  namn: string;
+  beskrivning: string;
+  plats: string;
+  startDatum: string;
+  startTid: string;
+  varaktighet: number;
+  arSerie: boolean;
   serieInställningar: {
-    veckodag: string
-    antalVeckor: number
-    slutDatum: string
-  }
-  deltagare: string[]
-  deltagargrupper: string[]
-  maxDeltagare: number | null
-  enhet: string
-  anteckningar: string
+    veckodag: string;
+    antalVeckor: number;
+    slutDatum: string;
+  };
+  deltagare: string[];
+  deltagargrupper: string[];
+  maxDeltagare: number | null;
+  enhet: string;
+  anteckningar: string;
 }
 
 interface Props {
-  modelValue: ActivityFormData
-  templates: Array<{ id: string; namn: string; beskrivning: string; malltyp: string }>
-  enheter: string[]
-  participantGroups: Array<{ id: string; namn: string }>
-  participants: Array<{ id: string; namn: string }>
+  modelValue: ActivityFormData;
+  templates: Array<{ id: string; namn: string; beskrivning: string; malltyp: string }>;
+  enheter: string[];
+  participantGroups: Array<{ id: string; namn: string }>;
+  participants: Array<{ id: string; namn: string }>;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: ActivityFormData]
-  'template-change': [templateId: string]
-}>()
+  'update:modelValue': [value: ActivityFormData];
+  'template-change': [templateId: string];
+}>();
 
-const { validateWithSchema, hasError, getError, touchField } = useValidation()
+const { validateWithSchema, hasError, getError, touchField } = useValidation();
 
 const formData = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
-})
+  set: value => emit('update:modelValue', value),
+});
 
 const weekdays = [
   { value: 'måndag', label: 'Måndag' },
@@ -61,69 +67,77 @@ const weekdays = [
   { value: 'fredag', label: 'Fredag' },
   { value: 'lördag', label: 'Lördag' },
   { value: 'söndag', label: 'Söndag' },
-]
+];
 
 const selectedTemplate = computed(() => {
-  if (!formData.value.templateId) return null
-  return props.templates.find(t => t.id === formData.value.templateId)
-})
+  if (!formData.value.templateId) return null;
+  return props.templates.find(t => t.id === formData.value.templateId);
+});
 
 const updateField = (field: keyof ActivityFormData, value: unknown) => {
-  const updated = { ...formData.value, [field]: value }
-  emit('update:modelValue', updated)
-  touchField(field)
-}
+  const updated = { ...formData.value, [field]: value };
+  emit('update:modelValue', updated);
+  touchField(field);
+};
 
 const updateNestedField = (parentField: string, childField: string, value: unknown) => {
   const updated = {
     ...formData.value,
     [parentField]: {
       ...(formData.value[parentField as keyof ActivityFormData] as Record<string, unknown>),
-      [childField]: value
-    }
-  }
-  emit('update:modelValue', updated)
-  touchField(`${parentField}.${childField}`)
-}
+      [childField]: value,
+    },
+  };
+  emit('update:modelValue', updated);
+  touchField(`${parentField}.${childField}`);
+};
 
 // Watch for template changes
-watch(() => formData.value.templateId, (newTemplateId) => {
-  if (newTemplateId) {
-    emit('template-change', newTemplateId)
+watch(
+  () => formData.value.templateId,
+  newTemplateId => {
+    if (newTemplateId) {
+      emit('template-change', newTemplateId);
+    }
   }
-})
+);
 
 // Calculate series end date
 watch(
   [() => formData.value.startDatum, () => formData.value.serieInställningar.antalVeckor],
   () => {
     if (formData.value.startDatum && formData.value.serieInställningar.antalVeckor > 1) {
-      const startDate = new Date(formData.value.startDatum)
-      const endDate = new Date(startDate)
-      endDate.setDate(startDate.getDate() + (formData.value.serieInställningar.antalVeckor - 1) * 7)
-      const endDateString = endDate.toISOString().split('T')[0]
+      const startDate = new Date(formData.value.startDatum);
+      const endDate = new Date(startDate);
+      endDate.setDate(
+        startDate.getDate() + (formData.value.serieInställningar.antalVeckor - 1) * 7
+      );
+      const endDateString = endDate.toISOString().split('T')[0];
       if (endDateString) {
-        updateNestedField('serieInställningar', 'slutDatum', endDateString)
+        updateNestedField('serieInställningar', 'slutDatum', endDateString);
       }
     }
   }
-)
+);
 
 const validateForm = (): boolean => {
   try {
     // Use validateWithSchema which returns boolean
-    const validationResult = validateWithSchema(formData.value as unknown as Record<string, unknown>, activityValidationSchema)
-    return validationResult
+    const validationResult = validateWithSchema(
+      formData.value as unknown as Record<string, unknown>,
+      activityValidationSchema
+    );
+    return validationResult;
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown validation error'
-    console.error('Validation error:', errorMessage)
-    return false
+    const errorMessage = error instanceof Error ? error.message : 'Unknown validation error';
+    console.error('Validation error:', errorMessage);
+    return false;
   }
-}
+};
 
 defineExpose({
-  validateForm
-})
+  validateForm,
+});
 </script>
 
 <template>
@@ -139,29 +153,22 @@ defineExpose({
       <CardContent>
         <div class="space-y-2">
           <Label for="template">Aktivitetsmall</Label>
-          <Select 
-            :model-value="formData.templateId" 
-            @update:model-value="(value) => updateField('templateId', value)"
+          <Select
+            :model-value="formData.templateId"
+            @update:model-value="value => updateField('templateId', value)"
           >
             <SelectTrigger>
               <SelectValue placeholder="Välj en mall..." />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem 
-                v-for="template in templates" 
-                :key="template.id" 
-                :value="template.id"
-              >
+              <SelectItem v-for="template in templates" :key="template.id" :value="template.id">
                 {{ template.namn }}
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
-        
-        <div
-          v-if="selectedTemplate"
-          class="mt-4 p-3 bg-muted rounded-md"
-        >
+
+        <div v-if="selectedTemplate" class="mt-4 p-3 bg-muted rounded-md">
           <p class="text-sm text-muted-foreground">{{ selectedTemplate.beskrivning }}</p>
         </div>
       </CardContent>
@@ -184,39 +191,29 @@ defineExpose({
               :model-value="formData.namn"
               :class="{ 'border-red-500': hasError('namn') }"
               placeholder="Ange aktivitetsnamn"
-              @update:model-value="(value) => updateField('namn', value)"
+              @update:model-value="value => updateField('namn', value)"
             />
-            <p
-              v-if="hasError('namn')"
-              class="text-sm text-red-500"
-            >
+            <p v-if="hasError('namn')" class="text-sm text-red-500">
               {{ getError('namn') }}
             </p>
           </div>
 
           <div class="space-y-2">
             <Label for="enhet">Enhet *</Label>
-            <Select 
-              :model-value="formData.enhet" 
-              @update:model-value="(value) => updateField('enhet', value)"
+            <Select
+              :model-value="formData.enhet"
+              @update:model-value="value => updateField('enhet', value)"
             >
               <SelectTrigger :class="{ 'border-red-500': hasError('enhet') }">
                 <SelectValue placeholder="Välj enhet" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem
-                  v-for="enhet in enheter"
-                  :key="enhet"
-                  :value="enhet"
-                >
+                <SelectItem v-for="enhet in enheter" :key="enhet" :value="enhet">
                   {{ enhet }}
                 </SelectItem>
               </SelectContent>
             </Select>
-            <p
-              v-if="hasError('enhet')"
-              class="text-sm text-red-500"
-            >
+            <p v-if="hasError('enhet')" class="text-sm text-red-500">
               {{ getError('enhet') }}
             </p>
           </div>
@@ -229,7 +226,7 @@ defineExpose({
             :model-value="formData.beskrivning"
             placeholder="Beskriv aktiviteten..."
             rows="3"
-            @update:model-value="(value) => updateField('beskrivning', value)"
+            @update:model-value="value => updateField('beskrivning', value)"
           />
         </div>
 
@@ -239,7 +236,7 @@ defineExpose({
             id="plats"
             :model-value="formData.plats"
             placeholder="Ange plats"
-            @update:model-value="(value) => updateField('plats', value)"
+            @update:model-value="value => updateField('plats', value)"
           />
         </div>
       </CardContent>
@@ -262,12 +259,9 @@ defineExpose({
               type="date"
               :model-value="formData.startDatum"
               :class="{ 'border-red-500': hasError('startDatum') }"
-              @update:model-value="(value) => updateField('startDatum', value)"
+              @update:model-value="value => updateField('startDatum', value)"
             />
-            <p
-              v-if="hasError('startDatum')"
-              class="text-sm text-red-500"
-            >
+            <p v-if="hasError('startDatum')" class="text-sm text-red-500">
               {{ getError('startDatum') }}
             </p>
           </div>
@@ -279,12 +273,9 @@ defineExpose({
               type="time"
               :model-value="formData.startTid"
               :class="{ 'border-red-500': hasError('startTid') }"
-              @update:model-value="(value) => updateField('startTid', value)"
+              @update:model-value="value => updateField('startTid', value)"
             />
-            <p
-              v-if="hasError('startTid')"
-              class="text-sm text-red-500"
-            >
+            <p v-if="hasError('startTid')" class="text-sm text-red-500">
               {{ getError('startTid') }}
             </p>
           </div>
@@ -298,12 +289,9 @@ defineExpose({
               :class="{ 'border-red-500': hasError('varaktighet') }"
               min="1"
               max="1440"
-              @update:model-value="(value) => updateField('varaktighet', Number(value))"
+              @update:model-value="value => updateField('varaktighet', Number(value))"
             />
-            <p
-              v-if="hasError('varaktighet')"
-              class="text-sm text-red-500"
-            >
+            <p v-if="hasError('varaktighet')" class="text-sm text-red-500">
               {{ getError('varaktighet') }}
             </p>
           </div>
@@ -325,19 +313,17 @@ defineExpose({
           >
             <div class="space-y-2">
               <Label for="veckodag">Veckodag</Label>
-              <Select 
-                :model-value="formData.serieInställningar.veckodag" 
-                @update:model-value="(value) => updateNestedField('serieInställningar', 'veckodag', value)"
+              <Select
+                :model-value="formData.serieInställningar.veckodag"
+                @update:model-value="
+                  value => updateNestedField('serieInställningar', 'veckodag', value)
+                "
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Välj veckodag" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="day in weekdays"
-                    :key="day.value"
-                    :value="day.value"
-                  >
+                  <SelectItem v-for="day in weekdays" :key="day.value" :value="day.value">
                     {{ day.label }}
                   </SelectItem>
                 </SelectContent>
@@ -352,7 +338,9 @@ defineExpose({
                 :model-value="formData.serieInställningar.antalVeckor"
                 min="1"
                 max="52"
-                @update:model-value="(value) => updateNestedField('serieInställningar', 'antalVeckor', Number(value))"
+                @update:model-value="
+                  value => updateNestedField('serieInställningar', 'antalVeckor', Number(value))
+                "
               />
             </div>
 
@@ -388,7 +376,7 @@ defineExpose({
             :model-value="formData.maxDeltagare ?? undefined"
             placeholder="Ingen begränsning"
             min="1"
-            @update:model-value="(value) => updateField('maxDeltagare', value ? Number(value) : null)"
+            @update:model-value="value => updateField('maxDeltagare', value ? Number(value) : null)"
           />
         </div>
 
@@ -399,10 +387,10 @@ defineExpose({
             :model-value="formData.anteckningar"
             placeholder="Övriga anteckningar..."
             rows="3"
-            @update:model-value="(value) => updateField('anteckningar', value)"
+            @update:model-value="value => updateField('anteckningar', value)"
           />
         </div>
       </CardContent>
     </Card>
   </div>
-</template> 
+</template>

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRouter } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import { useApiList } from "@/composables/useApi";
-import api from "@/services/api";
-import type { ActivityType } from "@/types";
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import { useApiList } from '@/composables/useApi';
+import api from '@/services/api';
+import type { ActivityType } from '@/types';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Plus } from "lucide-vue-next";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar, MapPin, Plus, Users } from 'lucide-vue-next';
 
 const router = useRouter();
 
@@ -33,15 +33,15 @@ const {
 // Combine activities with their types
 const activitiesWithTypes = computed(() => {
   if (!activities.value || !activityTypes.value) return [];
-  
-  return activities.value.map((activity) => {
+
+  return activities.value.map(activity => {
     const activityType = (activityTypes.value as unknown as ActivityType[])?.find(
-      (type) => type.ActivityTypeID === activity.ActivityTypeID
+      type => type.ActivityTypeID === activity.ActivityTypeID
     );
     return {
       ...activity,
-      typeName: activityType?.Typnamn ?? "Okänd typ",
-      typeDescription: activityType?.Beskrivning ?? "",
+      typeName: activityType?.Typnamn ?? 'Okänd typ',
+      typeDescription: activityType?.Beskrivning ?? '',
     };
   });
 });
@@ -50,36 +50,38 @@ const activitiesWithTypes = computed(() => {
 const isLoading = computed(() => activitiesLoading.value || activityTypesLoading.value);
 
 // Error state
-const hasError = computed(() => activitiesError.value !== null || activityTypesError.value !== null);
+const hasError = computed(
+  () => activitiesError.value !== null || activityTypesError.value !== null
+);
 
 // Remove the filteredActivities since DataTable handles filtering internally
 
 // Table columns
 const columns = [
   {
-    key: "Namn",
-    label: "Aktivitet",
+    key: 'Namn',
+    label: 'Aktivitet',
     sortable: true,
   },
   {
-    key: "typeName",
-    label: "Typ",
+    key: 'typeName',
+    label: 'Typ',
     sortable: true,
   },
   {
-    key: "DatumTid",
-    label: "Datum & Tid",
+    key: 'DatumTid',
+    label: 'Datum & Tid',
     sortable: true,
-    render: (value: unknown) => new Date(value as string).toLocaleString("sv-SE"),
+    render: (value: unknown) => new Date(value as string).toLocaleString('sv-SE'),
   },
   {
-    key: "Plats",
-    label: "Plats",
+    key: 'Plats',
+    label: 'Plats',
     sortable: true,
   },
   {
-    key: "actions",
-    label: "Åtgärder",
+    key: 'actions',
+    label: 'Åtgärder',
     sortable: false,
   },
 ];
@@ -88,23 +90,23 @@ const columns = [
 const stats = computed(() => {
   if (!activities.value || !activityTypes.value) {
     return [
-      { title: "Totalt aktiviteter", value: 0, icon: Calendar, color: "blue" },
-      { title: "Denna vecka", value: 0, icon: Calendar, color: "green" },
-      { title: "Unika platser", value: 0, icon: MapPin, color: "purple" },
-      { title: "Aktivitetstyper", value: 0, icon: Users, color: "orange" },
+      { title: 'Totalt aktiviteter', value: 0, icon: Calendar, color: 'blue' },
+      { title: 'Denna vecka', value: 0, icon: Calendar, color: 'green' },
+      { title: 'Unika platser', value: 0, icon: MapPin, color: 'purple' },
+      { title: 'Aktivitetstyper', value: 0, icon: Users, color: 'orange' },
     ];
   }
 
   return [
     {
-      title: "Totalt aktiviteter",
+      title: 'Totalt aktiviteter',
       value: activities.value.length,
       icon: Calendar,
-      color: "blue",
+      color: 'blue',
     },
     {
-      title: "Denna vecka",
-      value: activities.value.filter((activity) => {
+      title: 'Denna vecka',
+      value: activities.value.filter(activity => {
         const activityDate = new Date(activity.DatumTid);
         const now = new Date();
         const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
@@ -113,19 +115,19 @@ const stats = computed(() => {
         return activityDate >= weekStart && activityDate <= weekEnd;
       }).length,
       icon: Calendar,
-      color: "green",
+      color: 'green',
     },
     {
-      title: "Unika platser",
-      value: new Set(activities.value.map((activity) => activity.Plats)).size,
+      title: 'Unika platser',
+      value: new Set(activities.value.map(activity => activity.Plats)).size,
       icon: MapPin,
-      color: "purple",
+      color: 'purple',
     },
     {
-      title: "Aktivitetstyper",
+      title: 'Aktivitetstyper',
       value: activityTypes.value.length,
       icon: Users,
-      color: "orange",
+      color: 'orange',
     },
   ];
 });
@@ -133,7 +135,7 @@ const stats = computed(() => {
 // Filters removed since DataTable handles filtering internally
 
 const handleNewActivity = () => {
-  router.push("/activities/new");
+  router.push('/activities/new');
 };
 
 const handleRowClick = (activity: Record<string, unknown>) => {
@@ -150,28 +152,17 @@ const handleEditActivity = (activity: Record<string, unknown>) => {
 </script>
 
 <template>
-  <PageLayout
-    title="Aktiviteter"
-    breadcrumbs="Dashboard / Aktiviteter"
-    show-stats
-    :stats="stats"
-  >
+  <PageLayout title="Aktiviteter" breadcrumbs="Dashboard / Aktiviteter" show-stats :stats="stats">
     <!-- Actions with padding -->
     <div class="px-6 py-4 flex justify-end">
-      <Button
-        class="gap-2"
-        @click="handleNewActivity"
-      >
+      <Button class="gap-2" @click="handleNewActivity">
         <Plus class="h-4 w-4" />
         Ny aktivitet
       </Button>
     </div>
 
     <!-- Loading State -->
-    <div
-      v-if="isLoading"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
         <p class="text-muted-foreground">Laddar aktiviteter...</p>
@@ -179,15 +170,16 @@ const handleEditActivity = (activity: Record<string, unknown>) => {
     </div>
 
     <!-- Error State -->
-    <div
-      v-else-if="hasError"
-      class="flex items-center justify-center py-12"
-    >
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
       <div class="text-center">
         <p class="text-destructive mb-2">Ett fel uppstod vid laddning av aktiviteter</p>
         <Button
           variant="outline"
-          @click="() => { /* Add refresh logic */ }"
+          @click="
+            () => {
+              /* Add refresh logic */
+            }
+          "
         >
           Försök igen
         </Button>
@@ -210,20 +202,8 @@ const handleEditActivity = (activity: Record<string, unknown>) => {
 
       <template #cell-actions="{ row }">
         <div class="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            @click="handleViewActivity(row)"
-          >
-            Visa
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            @click="handleEditActivity(row)"
-          >
-            Redigera
-          </Button>
+          <Button size="sm" variant="outline" @click="handleViewActivity(row)">Visa</Button>
+          <Button size="sm" variant="outline" @click="handleEditActivity(row)">Redigera</Button>
         </div>
       </template>
     </DataTable>

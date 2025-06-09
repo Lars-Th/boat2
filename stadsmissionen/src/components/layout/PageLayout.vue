@@ -1,40 +1,39 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Component } from 'vue'
-import StandardHeader from '@/components/layout/StandardHeader.vue'
-import type { BreadcrumbItem } from '@/types'
+import { type Component, computed } from 'vue';
+import StandardHeader from '@/components/layout/StandardHeader.vue';
+import type { BreadcrumbItem } from '@/types';
 
 interface Props {
-  title: string
-  breadcrumbs?: string | BreadcrumbItem[]
-  showStats?: boolean
+  title: string;
+  breadcrumbs?: string | BreadcrumbItem[];
+  showStats?: boolean;
   stats?: Array<{
-    title: string
-    value: string | number
-    icon?: Component
-    color?: string
-    change?: string
-  }>
+    title: string;
+    value: string | number;
+    icon?: Component;
+    color?: string;
+    change?: string;
+  }>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showStats: false,
-  stats: () => []
-})
+  stats: () => [],
+});
 
 // const router = useRouter()
 
 // Convert breadcrumbs string to array format with proper navigation
 const breadcrumbsArray = computed(() => {
   if (typeof props.breadcrumbs === 'string') {
-    const parts = props.breadcrumbs.split(' / ')
+    const parts = props.breadcrumbs.split(' / ');
     return parts.map((part, index) => ({
       label: part.trim(),
-      isCurrentPage: index === parts.length - 1
-    }))
+      isCurrentPage: index === parts.length - 1,
+    }));
   }
-  return props.breadcrumbs ?? []
-})
+  return props.breadcrumbs ?? [];
+});
 
 // Convert stats format to match StandardHeader expectations
 const mappedStats = computed(() => {
@@ -42,9 +41,9 @@ const mappedStats = computed(() => {
     label: stat.title,
     value: stat.value,
     color: stat.color ?? '',
-    variant: 'default' as const
-  }))
-})
+    variant: 'default' as const,
+  }));
+});
 </script>
 
 <template>
@@ -62,4 +61,4 @@ const mappedStats = computed(() => {
       <slot />
     </div>
   </div>
-</template> 
+</template>

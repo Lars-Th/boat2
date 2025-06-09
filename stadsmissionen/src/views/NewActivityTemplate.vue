@@ -1,44 +1,44 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { computed, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import {
-  FileText,
-  Save,
   ArrowLeft,
-  Plus,
-  Trash2,
+  FileText,
   HelpCircle,
-  Users,
   MessageSquare,
-} from "lucide-vue-next";
-import { useToast } from "@/composables/useToast";
+  Plus,
+  Save,
+  Trash2,
+  Users,
+} from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
 
 // Import data
-import activityTypesData from "@/assets/data/activityTypes.json";
-import activityTemplatesData from "@/assets/data/activityTemplates.json";
+import activityTypesData from '@/assets/data/activityTypes.json';
+import activityTemplatesData from '@/assets/data/activityTemplates.json';
 
 const router = useRouter();
 const route = useRoute();
 const { success, error, warning } = useToast();
 
 // Check if we're in edit mode
-const isEditMode = computed(() => route.name === "edit-activity-template");
+const isEditMode = computed(() => route.name === 'edit-activity-template');
 const templateId = computed(() => route.params['id'] as string);
 
 // Question interface
@@ -55,11 +55,11 @@ interface Question {
 
 // Form data with proper typing
 const form = ref({
-  namn: "",
-  beskrivning: "",
-  malltyp: "",
+  namn: '',
+  beskrivning: '',
+  malltyp: '',
   aktivitetstyper: [] as string[],
-  standardPlats: "",
+  standardPlats: '',
   standardVaraktighet: 60,
   resultatformular: [] as Question[],
 });
@@ -67,67 +67,67 @@ const form = ref({
 // Template type options
 const templateTypes = [
   {
-    value: "Standard",
-    label: "Standard",
+    value: 'Standard',
+    label: 'Standard',
     icon: Users,
-    description: "Aktiviteter med specifika deltagare som bjuds in",
+    description: 'Aktiviteter med specifika deltagare som bjuds in',
   },
   {
-    value: "Samtal",
-    label: "Samtal",
+    value: 'Samtal',
+    label: 'Samtal',
     icon: MessageSquare,
-    description: "Individuella eller gruppsamtal med fokus på dokumentation",
+    description: 'Individuella eller gruppsamtal med fokus på dokumentation',
   },
   {
-    value: "OppetHus",
-    label: "Öppet hus",
+    value: 'OppetHus',
+    label: 'Öppet hus',
     icon: FileText,
-    description: "Öppna aktiviteter utan förhandsanmälan",
+    description: 'Öppna aktiviteter utan förhandsanmälan',
   },
 ];
 
 // Question types
 const questionTypes = [
   {
-    value: "Skala",
-    label: "Skala-fråga",
-    description: "Betygsättning från 1 till X",
+    value: 'Skala',
+    label: 'Skala-fråga',
+    description: 'Betygsättning från 1 till X',
   },
   {
-    value: "JaNej",
-    label: "Ja/Nej-fråga",
-    description: "Enkel ja/nej-fråga med valfri kommentar",
+    value: 'JaNej',
+    label: 'Ja/Nej-fråga',
+    description: 'Enkel ja/nej-fråga med valfri kommentar',
   },
   {
-    value: "Kommentar",
-    label: "Kommentar-fråga",
-    description: "Öppen textfråga",
+    value: 'Kommentar',
+    label: 'Kommentar-fråga',
+    description: 'Öppen textfråga',
   },
 ];
 
 // Get selected activity types details
 const selectedActivityTypes = computed(() => {
   return form.value.aktivitetstyper
-    .map((id) => {
-      return activityTypesData.find((type) => type.ActivityTypeID.toString() === id);
+    .map(id => {
+      return activityTypesData.find(type => type.ActivityTypeID.toString() === id);
     })
     .filter((type): type is NonNullable<typeof type> => Boolean(type));
 });
 
 // Auto-generate purpose from selected activity types
 const autoPurpose = computed(() => {
-  if (selectedActivityTypes.value.length === 0) return "";
+  if (selectedActivityTypes.value.length === 0) return '';
   if (selectedActivityTypes.value.length === 1 && selectedActivityTypes.value[0])
     return selectedActivityTypes.value[0].Syfte;
-  return `Kombinerad aktivitet: ${selectedActivityTypes.value.map((t) => t.Syfte).join(", ")}`;
+  return `Kombinerad aktivitet: ${selectedActivityTypes.value.map(t => t.Syfte).join(', ')}`;
 });
 
 // Validation
 const isFormValid = computed(() => {
   return (
-    form.value.namn.trim() !== "" &&
-    form.value.beskrivning.trim() !== "" &&
-    form.value.malltyp !== "" &&
+    form.value.namn.trim() !== '' &&
+    form.value.beskrivning.trim() !== '' &&
+    form.value.malltyp !== '' &&
     form.value.aktivitetstyper.length > 0
   );
 });
@@ -148,20 +148,20 @@ const handleActivityTypeChange = (typeId: string, checked: boolean) => {
 const addQuestion = () => {
   const newQuestion: Question = {
     id: `q${Date.now()}`,
-    fraga: "",
-    typ: "Kommentar",
+    fraga: '',
+    typ: 'Kommentar',
     obligatorisk: false,
   };
-  
+
   // Add type-specific properties based on question type
-  if (newQuestion.typ === "Skala") {
+  if (newQuestion.typ === 'Skala') {
     newQuestion.skalaMin = 1;
     newQuestion.skalaMax = 5;
     newQuestion.skalaKommentar = false;
-  } else if (newQuestion.typ === "JaNej") {
+  } else if (newQuestion.typ === 'JaNej') {
     newQuestion.harKommentar = false;
   }
-  
+
   form.value.resultatformular.push(newQuestion);
 };
 
@@ -169,8 +169,8 @@ const removeQuestion = (index: number) => {
   form.value.resultatformular.splice(index, 1);
 };
 
-const moveQuestion = (index: number, direction: "up" | "down") => {
-  const newIndex = direction === "up" ? index - 1 : index + 1;
+const moveQuestion = (index: number, direction: 'up' | 'down') => {
+  const newIndex = direction === 'up' ? index - 1 : index + 1;
   if (newIndex >= 0 && newIndex < form.value.resultatformular.length) {
     const questions = [...form.value.resultatformular];
     const temp = questions[index];
@@ -186,16 +186,14 @@ const moveQuestion = (index: number, direction: "up" | "down") => {
 // Load existing template if in edit mode
 const loadTemplate = () => {
   if (isEditMode.value && templateId.value) {
-    const existingTemplate = activityTemplatesData.find(
-      (t) => t.id === templateId.value
-    );
+    const existingTemplate = activityTemplatesData.find(t => t.id === templateId.value);
     if (existingTemplate) {
       form.value = {
         namn: existingTemplate.namn,
         beskrivning: existingTemplate.beskrivning,
         malltyp: existingTemplate.malltyp,
         aktivitetstyper: [...existingTemplate.aktivitetstyper],
-        standardPlats: existingTemplate.standardPlats || "",
+        standardPlats: existingTemplate.standardPlats || '',
         standardVaraktighet: existingTemplate.standardVaraktighet || 60,
         resultatformular: [...existingTemplate.resultatformular],
       };
@@ -206,16 +204,14 @@ const loadTemplate = () => {
 // Save template
 const handleSave = () => {
   if (!isFormValid.value) {
-    warning("Validering misslyckades", "Vänligen fyll i alla obligatoriska fält");
+    warning('Validering misslyckades', 'Vänligen fyll i alla obligatoriska fält');
     return;
   }
 
   try {
     if (isEditMode.value && templateId.value) {
       // Update existing template
-      const index = activityTemplatesData.findIndex(
-        (t) => t.id === templateId.value
-      );
+      const index = activityTemplatesData.findIndex(t => t.id === templateId.value);
       if (index > -1) {
         const existingTemplate = activityTemplatesData[index];
         (activityTemplatesData as Record<string, unknown>[])[index] = {
@@ -234,15 +230,15 @@ const handleSave = () => {
               typ: q.typ,
               obligatorisk: q.obligatorisk,
             };
-            
-            if (q.typ === "Skala") {
+
+            if (q.typ === 'Skala') {
               return {
                 ...baseQuestion,
                 skalaMin: q.skalaMin ?? 1,
                 skalaMax: q.skalaMax ?? 5,
                 skalaKommentar: q.skalaKommentar ?? false,
               };
-            } else if (q.typ === "JaNej") {
+            } else if (q.typ === 'JaNej') {
               return {
                 ...baseQuestion,
                 harKommentar: q.harKommentar ?? false,
@@ -252,8 +248,8 @@ const handleSave = () => {
             }
           }),
         } as Record<string, unknown>;
-        console.log("Updating template:", activityTemplatesData[index]);
-        success("Mall uppdaterad", "Aktivitetsmallen har uppdaterats framgångsrikt");
+        console.log('Updating template:', activityTemplatesData[index]);
+        success('Mall uppdaterad', 'Aktivitetsmallen har uppdaterats framgångsrikt');
       }
     } else {
       // Create new template
@@ -273,15 +269,15 @@ const handleSave = () => {
             typ: q.typ,
             obligatorisk: q.obligatorisk,
           };
-          
-          if (q.typ === "Skala") {
+
+          if (q.typ === 'Skala') {
             return {
               ...baseQuestion,
               skalaMin: q.skalaMin ?? 1,
               skalaMax: q.skalaMax ?? 5,
               skalaKommentar: q.skalaKommentar ?? false,
             };
-          } else if (q.typ === "JaNej") {
+          } else if (q.typ === 'JaNej') {
             return {
               ...baseQuestion,
               harKommentar: q.harKommentar ?? false,
@@ -291,24 +287,26 @@ const handleSave = () => {
           }
         }) as unknown as Record<string, unknown>[],
         skapadDatum: new Date().toISOString(),
-        skapadAv: "current-user", // TODO: Get from auth
+        skapadAv: 'current-user', // TODO: Get from auth
       };
 
       // Add to templates array (in a real app, this would be an API call)
-      (activityTemplatesData as Record<string, unknown>[]).push(template as Record<string, unknown>);
-      console.log("Saving template:", template);
-      success("Mall sparad", "Aktivitetsmallen har skapats framgångsrikt");
+      (activityTemplatesData as Record<string, unknown>[]).push(
+        template as Record<string, unknown>
+      );
+      console.log('Saving template:', template);
+      success('Mall sparad', 'Aktivitetsmallen har skapats framgångsrikt');
     }
 
-    router.push("/activity-templates");
+    router.push('/activity-templates');
   } catch (err) {
-    console.error("Error saving template:", err);
-    error("Sparning misslyckades", "Ett fel uppstod när mallen skulle sparas. Försök igen.");
+    console.error('Error saving template:', err);
+    error('Sparning misslyckades', 'Ett fel uppstod när mallen skulle sparas. Försök igen.');
   }
 };
 
 const handleCancel = () => {
-  router.push("/activity-templates");
+  router.push('/activity-templates');
 };
 
 // Add initial question
@@ -323,24 +321,19 @@ onMounted(() => {
 
 // Computed properties for dynamic content
 const pageTitle = computed(() =>
-  isEditMode.value ? "Redigera aktivitetsmall" : "Ny aktivitetsmall"
+  isEditMode.value ? 'Redigera aktivitetsmall' : 'Ny aktivitetsmall'
 );
 const pageBreadcrumbs = computed(() => {
   if (isEditMode.value) {
-    const template = activityTemplatesData.find(
-      (t) => t.id === templateId.value
-    );
-    return `Dashboard / Administration / Aktivitetsmallar / ${template?.namn ?? "Redigera"}`;
+    const template = activityTemplatesData.find(t => t.id === templateId.value);
+    return `Dashboard / Administration / Aktivitetsmallar / ${template?.namn ?? 'Redigera'}`;
   }
-  return "Dashboard / Administration / Aktivitetsmallar / Ny mall";
+  return 'Dashboard / Administration / Aktivitetsmallar / Ny mall';
 });
 </script>
 
 <template>
-  <PageLayout
-    :title="pageTitle"
-    :breadcrumbs="pageBreadcrumbs"
-  >
+  <PageLayout :title="pageTitle" :breadcrumbs="pageBreadcrumbs">
     <div class="max-w-6xl mx-auto space-y-6">
       <!-- Basic Information -->
       <Card>
@@ -354,12 +347,7 @@ const pageBreadcrumbs = computed(() => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <Label for="namn">Mallnamn *</Label>
-              <Input
-                id="namn"
-                v-model="form.namn"
-                placeholder="T.ex. Läxhjälp för barn"
-                required
-              />
+              <Input id="namn" v-model="form.namn" placeholder="T.ex. Läxhjälp för barn" required />
             </div>
 
             <div class="space-y-2">
@@ -398,11 +386,9 @@ const pageBreadcrumbs = computed(() => {
                 {{
                   Math.floor(form.standardVaraktighet / 60) > 0
                     ? `${Math.floor(form.standardVaraktighet / 60)}h `
-                    : ""
+                    : ''
                 }}{{
-                  form.standardVaraktighet % 60 > 0
-                    ? `${form.standardVaraktighet % 60}min`
-                    : ""
+                  form.standardVaraktighet % 60 > 0 ? `${form.standardVaraktighet % 60}min` : ''
                 }}
               </p>
             </div>
@@ -417,18 +403,14 @@ const pageBreadcrumbs = computed(() => {
         </CardHeader>
         <CardContent>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div
-              v-for="type in templateTypes"
-              :key="type.value"
-              class="relative"
-            >
+            <div v-for="type in templateTypes" :key="type.value" class="relative">
               <input
                 :id="type.value"
                 v-model="form.malltyp"
                 :value="type.value"
                 type="radio"
                 class="peer sr-only"
-              >
+              />
               <label
                 :for="type.value"
                 class="flex flex-col items-center justify-center p-4 border-2 border-muted rounded-lg cursor-pointer hover:bg-muted/50 peer-checked:border-primary peer-checked:bg-primary/5"
@@ -438,9 +420,9 @@ const pageBreadcrumbs = computed(() => {
                   class="h-8 w-8 mb-2 text-muted-foreground peer-checked:text-primary"
                 />
                 <span class="font-medium">{{ type.label }}</span>
-                <span class="text-xs text-muted-foreground text-center mt-1">{{
-                  type.description
-                }}</span>
+                <span class="text-xs text-muted-foreground text-center mt-1">
+                  {{ type.description }}
+                </span>
               </label>
             </div>
           </div>
@@ -468,19 +450,14 @@ const pageBreadcrumbs = computed(() => {
                 "
               />
               <div class="flex-1 min-w-0">
-                <Label
-                  :for="type.ActivityTypeID.toString()"
-                  class="font-medium"
-                >{{
-                  type.Typnamn
-                }}</Label>
+                <Label :for="type.ActivityTypeID.toString()" class="font-medium">
+                  {{ type.Typnamn }}
+                </Label>
                 <p class="text-sm text-muted-foreground">
                   {{ type.Syfte }}
                 </p>
                 <details class="mt-1">
-                  <summary class="text-xs text-blue-600 cursor-pointer">
-                    Mer info
-                  </summary>
+                  <summary class="text-xs text-blue-600 cursor-pointer">Mer info</summary>
                   <p class="text-xs text-muted-foreground mt-1">
                     {{ type.Beskrivning }}
                   </p>
@@ -490,10 +467,7 @@ const pageBreadcrumbs = computed(() => {
           </div>
 
           <!-- Selected types preview -->
-          <div
-            v-if="selectedActivityTypes.length > 0"
-            class="space-y-2"
-          >
+          <div v-if="selectedActivityTypes.length > 0" class="space-y-2">
             <Label>Valda aktivitetstyper:</Label>
             <div class="flex flex-wrap gap-2">
               <Badge
@@ -506,7 +480,8 @@ const pageBreadcrumbs = computed(() => {
             </div>
             <div class="p-3 bg-blue-50 rounded-lg">
               <p class="text-sm text-blue-800">
-                <strong>Automatiskt syfte:</strong> {{ autoPurpose }}
+                <strong>Automatiskt syfte:</strong>
+                {{ autoPurpose }}
               </p>
             </div>
           </div>
@@ -518,12 +493,7 @@ const pageBreadcrumbs = computed(() => {
         <CardHeader>
           <CardTitle class="flex items-center justify-between">
             <span>Resultatformulär</span>
-            <Button
-              variant="outline"
-              size="sm"
-              class="gap-2"
-              @click="addQuestion"
-            >
+            <Button variant="outline" size="sm" class="gap-2" @click="addQuestion">
               <Plus class="h-4 w-4" />
               Lägg till fråga
             </Button>
@@ -577,11 +547,7 @@ const pageBreadcrumbs = computed(() => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
                 <Label>Frågetext *</Label>
-                <Input
-                  v-model="question.fraga"
-                  placeholder="Skriv din fråga här..."
-                  required
-                />
+                <Input v-model="question.fraga" placeholder="Skriv din fråga här..." required />
               </div>
 
               <div class="space-y-2">
@@ -591,11 +557,7 @@ const pageBreadcrumbs = computed(() => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem
-                      v-for="type in questionTypes"
-                      :key="type.value"
-                      :value="type.value"
-                    >
+                    <SelectItem v-for="type in questionTypes" :key="type.value" :value="type.value">
                       {{ type.label }}
                     </SelectItem>
                   </SelectContent>
@@ -604,10 +566,7 @@ const pageBreadcrumbs = computed(() => {
             </div>
 
             <!-- Scale question options -->
-            <div
-              v-if="question.typ === 'Skala'"
-              class="space-y-4 p-3 bg-muted/50 rounded"
-            >
+            <div v-if="question.typ === 'Skala'" class="space-y-4 p-3 bg-muted/50 rounded">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="space-y-2">
                   <Label>Minimum (dåligt)</Label>
@@ -616,10 +575,12 @@ const pageBreadcrumbs = computed(() => {
                     type="number"
                     min="1"
                     max="10"
-                    @update:model-value="(value: string | number) => { 
-                      const numValue = value ? Number(value) : 1;
-                      question.skalaMin = numValue;
-                    }"
+                    @update:model-value="
+                      (value: string | number) => {
+                        const numValue = value ? Number(value) : 1;
+                        question.skalaMin = numValue;
+                      }
+                    "
                   />
                 </div>
                 <div class="space-y-2">
@@ -629,10 +590,12 @@ const pageBreadcrumbs = computed(() => {
                     type="number"
                     :min="(question.skalaMin || 1) + 1"
                     max="10"
-                    @update:model-value="(value: string | number) => { 
-                      const numValue = value ? Number(value) : (question.skalaMin || 1) + 1;
-                      question.skalaMax = numValue;
-                    }"
+                    @update:model-value="
+                      (value: string | number) => {
+                        const numValue = value ? Number(value) : (question.skalaMin || 1) + 1;
+                        question.skalaMax = numValue;
+                      }
+                    "
                   />
                 </div>
                 <div class="flex items-center space-x-2 pt-6">
@@ -643,10 +606,7 @@ const pageBreadcrumbs = computed(() => {
             </div>
 
             <!-- Yes/No question options -->
-            <div
-              v-if="question.typ === 'JaNej'"
-              class="space-y-4 p-3 bg-muted/50 rounded"
-            >
+            <div v-if="question.typ === 'JaNej'" class="space-y-4 p-3 bg-muted/50 rounded">
               <div class="flex items-center space-x-2">
                 <Switch v-model:checked="question.harKommentar" />
                 <Label>Inkludera kommentarsfält</Label>
@@ -664,19 +624,11 @@ const pageBreadcrumbs = computed(() => {
 
       <!-- Actions -->
       <div class="flex gap-4 justify-end">
-        <Button
-          variant="outline"
-          class="gap-2"
-          @click="handleCancel"
-        >
+        <Button variant="outline" class="gap-2" @click="handleCancel">
           <ArrowLeft class="h-4 w-4" />
           Avbryt
         </Button>
-        <Button
-          :disabled="!isFormValid"
-          class="gap-2"
-          @click="handleSave"
-        >
+        <Button :disabled="!isFormValid" class="gap-2" @click="handleSave">
           <Save class="h-4 w-4" />
           Spara mall
         </Button>

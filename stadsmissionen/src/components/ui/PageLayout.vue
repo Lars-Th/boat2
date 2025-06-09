@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import NotificationContainer from '@/components/ui/NotificationContainer.vue'
+import NotificationContainer from '@/components/ui/NotificationContainer.vue';
 
 interface Props {
-  title: string
-  breadcrumbs: string
-  description?: string
-  showStats?: boolean
+  title: string;
+  breadcrumbs: string;
+  description?: string;
+  showStats?: boolean;
   stats?: Array<{
-    value: string | number
-    label: string
-    color?: string
-    variant?: 'default' | 'secondary' | 'destructive' | 'outline'
-  }>
+    value: string | number;
+    label: string;
+    color?: string;
+    variant?: 'default' | 'secondary' | 'destructive' | 'outline';
+  }>;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 </script>
 
 <template>
@@ -31,27 +31,24 @@ defineProps<Props>()
             <p class="text-xs text-muted-foreground">
               {{ breadcrumbs }}
             </p>
-            
+
             <!-- Små badges för statistik -->
-            <div
-              v-if="showStats && stats"
-              class="flex gap-3 mt-3 flex-wrap"
-            >
-              <div
-                v-for="stat in stats"
-                :key="stat.label"
-                class="flex items-center gap-2"
-              >
+            <div v-if="showStats && stats" class="flex gap-3 mt-3 flex-wrap">
+              <div v-for="stat in stats" :key="stat.label" class="flex items-center gap-2">
                 <span class="text-xs text-muted-foreground">{{ stat.label }}:</span>
-                <span 
+                <span
                   class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
                   :class="{
-                    'bg-primary text-primary-foreground': stat.variant === 'default' || !stat.variant,
+                    'bg-primary text-primary-foreground':
+                      stat.variant === 'default' || !stat.variant,
                     'bg-secondary text-secondary-foreground': stat.variant === 'secondary',
-                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300': stat.color === 'text-green-600',
-                    'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300': stat.color === 'text-orange-600',
-                    'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300': stat.color === 'text-blue-600',
-                    'bg-muted text-muted-foreground': stat.variant === 'outline'
+                    'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300':
+                      stat.color === 'text-green-600',
+                    'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300':
+                      stat.color === 'text-orange-600',
+                    'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300':
+                      stat.color === 'text-blue-600',
+                    'bg-muted text-muted-foreground': stat.variant === 'outline',
                   }"
                 >
                   {{ stat.value }}
@@ -60,14 +57,14 @@ defineProps<Props>()
             </div>
           </div>
         </div>
-        
+
         <!-- Åtgärder och filter på samma linje -->
         <div class="flex items-center justify-between h-10">
           <!-- Åtgärdsknappar till vänster -->
           <div class="flex items-center gap-2">
             <slot name="actions" />
           </div>
-          
+
           <!-- Sök och filter till höger -->
           <div class="flex items-center gap-2">
             <slot name="filters" />
@@ -84,4 +81,4 @@ defineProps<Props>()
       <slot />
     </div>
   </div>
-</template> 
+</template>

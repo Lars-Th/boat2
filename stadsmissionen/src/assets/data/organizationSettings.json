@@ -128,9 +128,7 @@
         "id": "systemadministrator",
         "namn": "Systemadministratör",
         "beskrivning": "Full systemåtkomst inklusive organisationsinställningar",
-        "permissions": [
-          "*"
-        ]
+        "permissions": ["*"]
       }
     ],
     "resources": [
@@ -144,11 +142,6 @@
       "settings",
       "organizations"
     ],
-    "actions": [
-      "read",
-      "create",
-      "update",
-      "delete"
-    ]
+    "actions": ["read", "create", "update", "delete"]
   }
 }

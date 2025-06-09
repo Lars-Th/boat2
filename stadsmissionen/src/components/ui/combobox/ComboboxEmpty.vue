@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { ComboboxEmptyProps } from 'reka-ui'
-import type { HTMLAttributes } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
-import { ComboboxEmpty } from 'reka-ui'
-import { cn } from '@/utils/libraryHelper'
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { ComboboxEmpty, type ComboboxEmptyProps } from 'reka-ui';
+import { cn } from '@/utils/libraryHelper';
 
-const props = defineProps<ComboboxEmptyProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<ComboboxEmptyProps & { class?: HTMLAttributes['class'] }>();
 
-const delegatedProps = reactiveOmit(props, 'class')
+const delegatedProps = reactiveOmit(props, 'class');
 </script>
 
 <template>

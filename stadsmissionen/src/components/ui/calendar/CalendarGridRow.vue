@@ -1,18 +1,17 @@
 <script lang="ts" setup>
-import type { HTMLAttributes } from 'vue'
-import { computed } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
-import { CalendarGridRow, type CalendarGridRowProps, useForwardProps } from 'reka-ui'
-import { cn, cleanUIProps } from '@/utils/libraryHelper'
+import { type HTMLAttributes, computed } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { CalendarGridRow, type CalendarGridRowProps, useForwardProps } from 'reka-ui';
+import { cleanUIProps, cn } from '@/utils/libraryHelper';
 
-const props = defineProps<CalendarGridRowProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<CalendarGridRowProps & { class?: HTMLAttributes['class'] }>();
 
-const delegatedProps = reactiveOmit(props, 'class')
+const delegatedProps = reactiveOmit(props, 'class');
 
-const forwardedProps = useForwardProps(delegatedProps)
+const forwardedProps = useForwardProps(delegatedProps);
 
 // Filter out undefined values to satisfy exactOptionalPropertyTypes
-const cleanProps = computed(() => cleanUIProps(forwardedProps.value))
+const cleanProps = computed(() => cleanUIProps(forwardedProps.value));
 </script>
 
 <template>

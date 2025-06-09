@@ -1,30 +1,21 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { TableColumn } from "@/types";
-import {
-  ArrowLeft,
-  User,
-  Calendar,
-  Users,
-  Phone,
-  Mail,
-  MapPin,
-  Edit,
-} from "lucide-vue-next";
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { TableColumn } from '@/types';
+import { ArrowLeft, Calendar, Edit, Mail, MapPin, Phone, User, Users } from 'lucide-vue-next';
 
 // Import JSON data
-import participantsData from "@/assets/data/participants.json";
-import familyRelationsData from "@/assets/data/familyRelations.json";
-import attendancesData from "@/assets/data/attendances.json";
-import activitiesData from "@/assets/data/activities.json";
-import activityTypesData from "@/assets/data/activityTypes.json";
+import participantsData from '@/assets/data/participants.json';
+import familyRelationsData from '@/assets/data/familyRelations.json';
+import attendancesData from '@/assets/data/attendances.json';
+import activitiesData from '@/assets/data/activities.json';
+import activityTypesData from '@/assets/data/activityTypes.json';
 
 const route = useRoute();
 const router = useRouter();
@@ -33,7 +24,7 @@ const participantId = computed(() => parseInt(route.params['id'] as string));
 
 // Find participant
 const participant = computed(() => {
-  return participantsData.find((p) => p.ParticipantID === participantId.value);
+  return participantsData.find(p => p.ParticipantID === participantId.value);
 });
 
 // Calculate age
@@ -47,18 +38,14 @@ const calculateAge = (personnummer: string) => {
 const familyRelations = computed(() => {
   return familyRelationsData
     .filter(
-      (rel) =>
+      rel =>
         rel.ParticipantID === participantId.value ||
         rel.RelatedParticipantID === participantId.value
     )
-    .map((rel) => {
+    .map(rel => {
       const relatedId =
-        rel.ParticipantID === participantId.value
-          ? rel.RelatedParticipantID
-          : rel.ParticipantID;
-      const relatedParticipant = participantsData.find(
-        (p) => p.ParticipantID === relatedId
-      );
+        rel.ParticipantID === participantId.value ? rel.RelatedParticipantID : rel.ParticipantID;
+      const relatedParticipant = participantsData.find(p => p.ParticipantID === relatedId);
 
       return {
         ...rel,
@@ -71,29 +58,24 @@ const familyRelations = computed(() => {
 // Get participant's attendances with activity details
 const participantAttendances = computed(() => {
   return attendancesData
-    .filter((att) => att.ParticipantID === participantId.value)
-    .map((attendance) => {
-      const activity = activitiesData.find(
-        (a) => a.ActivityID === attendance.ActivityID
-      );
+    .filter(att => att.ParticipantID === participantId.value)
+    .map(attendance => {
+      const activity = activitiesData.find(a => a.ActivityID === attendance.ActivityID);
       const activityType = activityTypesData.find(
-        (t) => Number(t.ActivityTypeID) === Number(activity?.ActivityTypeID)
+        t => Number(t.ActivityTypeID) === Number(activity?.ActivityTypeID)
       );
 
       return {
         ...attendance,
         activity,
         activityType,
-        activityName: activity?.Namn ?? "Okänd aktivitet",
-        activityDate: activity?.DatumTid ?? "",
-        activityPlace: activity?.Plats ?? "",
-        typeName: activityType?.Typnamn ?? "Okänd typ",
+        activityName: activity?.Namn ?? 'Okänd aktivitet',
+        activityDate: activity?.DatumTid ?? '',
+        activityPlace: activity?.Plats ?? '',
+        typeName: activityType?.Typnamn ?? 'Okänd typ',
       };
     })
-    .sort(
-      (a, b) =>
-        new Date(b.activityDate).getTime() - new Date(a.activityDate).getTime()
-    );
+    .sort((a, b) => new Date(b.activityDate).getTime() - new Date(a.activityDate).getTime());
 });
 
 // Statistics
@@ -101,38 +83,34 @@ const stats = computed(() => {
   if (!participant.value) return [];
 
   const totalActivities = participantAttendances.value.length;
-  const presentCount = participantAttendances.value.filter(
-    (a) => a.Närvaro
-  ).length;
+  const presentCount = participantAttendances.value.filter(a => a.Närvaro).length;
   const attendanceRate =
-    totalActivities > 0
-      ? Math.round((presentCount / totalActivities) * 100)
-      : 0;
+    totalActivities > 0 ? Math.round((presentCount / totalActivities) * 100) : 0;
 
   return [
     {
-      title: "Ålder",
+      title: 'Ålder',
       value: calculateAge(participant.value.Personnummer),
       icon: User,
-      color: "blue",
+      color: 'blue',
     },
     {
-      title: "Aktiviteter",
+      title: 'Aktiviteter',
       value: totalActivities,
       icon: Calendar,
-      color: "green",
+      color: 'green',
     },
     {
-      title: "Närvarograd",
+      title: 'Närvarograd',
       value: `${attendanceRate}%`,
       icon: Calendar,
-      color: "purple",
+      color: 'purple',
     },
     {
-      title: "Familjerelationer",
+      title: 'Familjerelationer',
       value: familyRelations.value.length,
       icon: Users,
-      color: "orange",
+      color: 'orange',
     },
   ];
 });
@@ -140,76 +118,78 @@ const stats = computed(() => {
 // Table columns for activities
 const activityColumns: TableColumn[] = [
   {
-    key: "activityName",
-    label: "Aktivitet",
+    key: 'activityName',
+    label: 'Aktivitet',
     sortable: true,
   },
   {
-    key: "typeName",
-    label: "Typ",
+    key: 'typeName',
+    label: 'Typ',
     sortable: true,
   },
   {
-    key: "activityDate",
-    label: "Datum",
+    key: 'activityDate',
+    label: 'Datum',
     sortable: true,
   },
   {
-    key: "activityPlace",
-    label: "Plats",
+    key: 'activityPlace',
+    label: 'Plats',
     sortable: true,
   },
   {
-    key: "Närvaro",
-    label: "Närvaro",
+    key: 'Närvaro',
+    label: 'Närvaro',
     sortable: true,
-    type: "custom" as const,
+    type: 'custom' as const,
   },
 ];
 
 // Table columns for family relations
 const familyColumns: TableColumn[] = [
   {
-    key: "relatedName",
-    label: "Namn",
+    key: 'relatedName',
+    label: 'Namn',
     sortable: true,
   },
   {
-    key: "RelationType",
-    label: "Relation",
+    key: 'RelationType',
+    label: 'Relation',
     sortable: true,
   },
   {
-    key: "relatedAge",
-    label: "Ålder",
+    key: 'relatedAge',
+    label: 'Ålder',
     sortable: true,
   },
   {
-    key: "actions",
-    label: "Åtgärder",
+    key: 'actions',
+    label: 'Åtgärder',
     sortable: false,
-    type: "actions" as const,
+    type: 'actions' as const,
   },
 ];
 
 // Enhanced family relations for table
 const enhancedFamilyRelations = computed(() => {
-  return familyRelations.value.map((rel) => ({
+  return familyRelations.value.map(rel => ({
     ...rel,
-    relatedName: rel.relatedParticipant ? `${rel.relatedParticipant.Fornamn} ${rel.relatedParticipant.Efternamn}` : "Okänd",
+    relatedName: rel.relatedParticipant
+      ? `${rel.relatedParticipant.Fornamn} ${rel.relatedParticipant.Efternamn}`
+      : 'Okänd',
     relatedAge: rel.relatedParticipant
       ? calculateAge(rel.relatedParticipant.Personnummer)
-      : "Okänd",
+      : 'Okänd',
   }));
 });
 
 const handleBack = () => {
-  router.push("/participants");
+  router.push('/participants');
 };
 
 const handleEdit = () => {
   // TODO: Navigate to edit participant
-  console.log("Edit participant:", participant.value);
+  console.log('Edit participant:', participant.value);
 };
 
 const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown>) => {
@@ -231,18 +211,11 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
     <div class="px-6 py-4 space-y-6">
       <!-- Header Actions -->
       <div class="flex items-center justify-between">
-        <Button
-          variant="outline"
-          class="gap-2"
-          @click="handleBack"
-        >
+        <Button variant="outline" class="gap-2" @click="handleBack">
           <ArrowLeft class="h-4 w-4" />
           Tillbaka till deltagare
         </Button>
-        <Button
-          class="gap-2"
-          @click="handleEdit"
-        >
+        <Button class="gap-2" @click="handleEdit">
           <Edit class="h-4 w-4" />
           Redigera deltagare
         </Button>
@@ -275,24 +248,15 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
               </div>
             </div>
             <div class="space-y-4">
-              <div
-                v-if="participant.Telefon"
-                class="flex items-center gap-2"
-              >
+              <div v-if="participant.Telefon" class="flex items-center gap-2">
                 <Phone class="h-4 w-4 text-muted-foreground" />
                 <span>{{ participant.Telefon }}</span>
               </div>
-              <div
-                v-if="participant['E-post']"
-                class="flex items-center gap-2"
-              >
+              <div v-if="participant['E-post']" class="flex items-center gap-2">
                 <Mail class="h-4 w-4 text-muted-foreground" />
-                <span>{{ participant["E-post"] }}</span>
+                <span>{{ participant['E-post'] }}</span>
               </div>
-              <div
-                v-if="participant.Adress"
-                class="flex items-center gap-2"
-              >
+              <div v-if="participant.Adress" class="flex items-center gap-2">
                 <MapPin class="h-4 w-4 text-muted-foreground" />
                 <span>{{ participant.Adress }}</span>
               </div>
@@ -302,24 +266,16 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
       </Card>
 
       <!-- Tabs for Activities and Family Relations -->
-      <Tabs
-        default-value="activities"
-        class="w-full"
-      >
+      <Tabs default-value="activities" class="w-full">
         <TabsList class="grid w-full grid-cols-2">
           <TabsTrigger value="activities">
             Aktiviteter ({{ participantAttendances.length }})
           </TabsTrigger>
-          <TabsTrigger value="family">
-            Familjerelationer ({{ familyRelations.length }})
-          </TabsTrigger>
+          <TabsTrigger value="family">Familjerelationer ({{ familyRelations.length }})</TabsTrigger>
         </TabsList>
 
         <!-- Activities Tab -->
-        <TabsContent
-          value="activities"
-          class="space-y-4"
-        >
+        <TabsContent value="activities" class="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -341,14 +297,11 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
 
                 <template #cell-Närvaro="{ value }">
                   <Badge :variant="value ? 'default' : 'destructive'">
-                    {{ value ? "Närvarande" : "Frånvarande" }}
+                    {{ value ? 'Närvarande' : 'Frånvarande' }}
                   </Badge>
                 </template>
               </DataTable>
-              <div
-                v-else
-                class="text-center py-8 text-muted-foreground"
-              >
+              <div v-else class="text-center py-8 text-muted-foreground">
                 Inga aktiviteter registrerade än
               </div>
             </CardContent>
@@ -356,10 +309,7 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
         </TabsContent>
 
         <!-- Family Relations Tab -->
-        <TabsContent
-          value="family"
-          class="space-y-4"
-        >
+        <TabsContent value="family" class="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -374,9 +324,7 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
                 :columns="familyColumns"
               >
                 <template #cell-RelationType="{ value }">
-                  <Badge
-                    :variant="value === 'Målsman' ? 'default' : 'secondary'"
-                  >
+                  <Badge :variant="value === 'Målsman' ? 'default' : 'secondary'">
                     {{ value }}
                   </Badge>
                 </template>
@@ -387,17 +335,16 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
                     variant="outline"
                     :disabled="!row['relatedParticipant']"
                     @click="
-                      handleViewRelatedParticipant(row['relatedParticipant'] as Record<string, unknown>)
+                      handleViewRelatedParticipant(
+                        row['relatedParticipant'] as Record<string, unknown>
+                      )
                     "
                   >
                     Visa
                   </Button>
                 </template>
               </DataTable>
-              <div
-                v-else
-                class="text-center py-8 text-muted-foreground"
-              >
+              <div v-else class="text-center py-8 text-muted-foreground">
                 Inga familjerelationer registrerade
               </div>
             </CardContent>
@@ -408,23 +355,14 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
   </PageLayout>
 
   <!-- Not Found -->
-  <PageLayout
-    v-else
-    title="Deltagare hittades inte"
-    breadcrumbs="Dashboard / Deltagare / Fel"
-  >
+  <PageLayout v-else title="Deltagare hittades inte" breadcrumbs="Dashboard / Deltagare / Fel">
     <div class="px-6 py-4">
       <Card>
         <CardContent class="text-center py-8">
           <p class="text-muted-foreground mb-4">
             Deltagaren med ID {{ participantId }} kunde inte hittas.
           </p>
-          <Button
-            variant="outline"
-            @click="handleBack"
-          >
-            Tillbaka till deltagare
-          </Button>
+          <Button variant="outline" @click="handleBack">Tillbaka till deltagare</Button>
         </CardContent>
       </Card>
     </div>

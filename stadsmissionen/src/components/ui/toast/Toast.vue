@@ -1,42 +1,33 @@
 <script setup lang="ts">
 export interface Toast {
-  id: string
-  message: string
-  type?: 'success' | 'error' | 'warning' | 'info'
-  duration?: number
-  show?: boolean
+  id: string;
+  message: string;
+  type?: 'success' | 'error' | 'warning' | 'info';
+  duration?: number;
+  show?: boolean;
 }
 
 interface Props {
-  toast: Toast
+  toast: Toast;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  close: [id: string]
-}>()
+  close: [id: string];
+}>();
 
 const handleClose = () => {
-  emit('close', props.toast.id)
-}
+  emit('close', props.toast.id);
+};
 </script>
 
 <template>
-  <div
-    v-if="toast.show !== false"
-    class="toast"
-    :class="`toast-${toast.type || 'info'}`"
-  >
+  <div v-if="toast.show !== false" class="toast" :class="`toast-${toast.type || 'info'}`">
     <div class="toast-content">
       {{ toast.message }}
     </div>
-    <button
-      class="toast-close"
-      @click="handleClose"
-    >
-      ×
-    </button>
+    <button class="toast-close" @click="handleClose">×</button>
   </div>
 </template>
 
@@ -66,4 +57,4 @@ const handleClose = () => {
 .toast-close {
   @apply ml-4 text-lg font-bold cursor-pointer hover:opacity-70;
 }
-</style> 
+</style>

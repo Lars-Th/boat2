@@ -1,25 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import SearchAndFilter from "@/components/shared/SearchAndFilter.vue";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  FileText,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Users,
-  MessageSquare,
-} from "lucide-vue-next";
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import SearchAndFilter from '@/components/shared/SearchAndFilter.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Edit, Eye, FileText, MessageSquare, Plus, Trash2, Users } from 'lucide-vue-next';
 
 // Import data
-import activityTemplatesData from "@/assets/data/activityTemplates.json";
-import activityTypesData from "@/assets/data/activityTypes.json";
+import activityTemplatesData from '@/assets/data/activityTemplates.json';
+import activityTypesData from '@/assets/data/activityTypes.json';
 
 // Define proper interfaces
 interface ActivityType {
@@ -30,18 +22,18 @@ interface ActivityType {
 }
 
 const router = useRouter();
-const searchTerm = ref("");
+const searchTerm = ref('');
 
 // Get activity type details
 const getActivityTypeDetails = (typeIds: string[]) => {
-  return typeIds.map((id) => {
-    const type = activityTypesData.find((t) => t.ActivityTypeID.toString() === id);
+  return typeIds.map(id => {
+    const type = activityTypesData.find(t => t.ActivityTypeID.toString() === id);
     return (
       type ?? {
         ActivityTypeID: id,
-        Typnamn: "Okänd typ",
-        Syfte: "",
-        Beskrivning: "",
+        Typnamn: 'Okänd typ',
+        Syfte: '',
+        Beskrivning: '',
       }
     );
   });
@@ -49,10 +41,9 @@ const getActivityTypeDetails = (typeIds: string[]) => {
 
 // Enhanced templates with calculated data
 const enhancedTemplates = computed(() => {
-  return activityTemplatesData.map((template) => {
+  return activityTemplatesData.map(template => {
     const types = getActivityTypeDetails(template.aktivitetstyper);
-    const primaryPurpose =
-      types.length > 0 && types[0] ? types[0].Syfte : "Inget syfte angivet";
+    const primaryPurpose = types.length > 0 && types[0] ? types[0].Syfte : 'Inget syfte angivet';
 
     return {
       ...template,
@@ -71,114 +62,114 @@ const filteredTemplates = computed(() => {
 
   const search = searchTerm.value.toLowerCase();
   return enhancedTemplates.value.filter(
-    (template) =>
+    template =>
       template.namn.toLowerCase().includes(search) ||
       template.beskrivning.toLowerCase().includes(search) ||
       template.malltyp.toLowerCase().includes(search) ||
-      template.types.some((type) => type.Typnamn.toLowerCase().includes(search))
+      template.types.some(type => type.Typnamn.toLowerCase().includes(search))
   );
 });
 
 // Get template type icon and color
 const getTemplateTypeInfo = (malltyp: string) => {
   switch (malltyp) {
-    case "Standard":
-      return { icon: Users, color: "blue", label: "Standard" };
-    case "Samtal":
-      return { icon: MessageSquare, color: "green", label: "Samtal" };
-    case "OppetHus":
-      return { icon: FileText, color: "purple", label: "Öppet hus" };
+    case 'Standard':
+      return { icon: Users, color: 'blue', label: 'Standard' };
+    case 'Samtal':
+      return { icon: MessageSquare, color: 'green', label: 'Samtal' };
+    case 'OppetHus':
+      return { icon: FileText, color: 'purple', label: 'Öppet hus' };
     default:
-      return { icon: FileText, color: "gray", label: malltyp };
+      return { icon: FileText, color: 'gray', label: malltyp };
   }
 };
 
 // Table columns
 const columns = [
   {
-    key: "namn",
-    label: "Mallnamn",
+    key: 'namn',
+    label: 'Mallnamn',
     sortable: true,
   },
   {
-    key: "malltyp",
-    label: "Typ",
+    key: 'malltyp',
+    label: 'Typ',
     sortable: true,
-    type: "custom" as const,
+    type: 'custom' as const,
   },
   {
-    key: "types",
-    label: "Aktivitetstyper",
+    key: 'types',
+    label: 'Aktivitetstyper',
     sortable: false,
-    type: "custom" as const,
+    type: 'custom' as const,
   },
   {
-    key: "beskrivning",
-    label: "Beskrivning",
+    key: 'beskrivning',
+    label: 'Beskrivning',
     sortable: true,
-    type: "custom" as const,
+    type: 'custom' as const,
   },
   {
-    key: "actions",
-    label: "",
+    key: 'actions',
+    label: '',
     sortable: false,
-    type: "actions" as const,
+    type: 'actions' as const,
   },
 ];
 
 // Statistics
 const stats = computed(() => [
   {
-    title: "Totalt mallar",
+    title: 'Totalt mallar',
     value: activityTemplatesData.length,
     icon: FileText,
-    color: "blue",
+    color: 'blue',
   },
   {
-    title: "Standard-mallar",
-    value: activityTemplatesData.filter((t) => t.malltyp === "Standard").length,
+    title: 'Standard-mallar',
+    value: activityTemplatesData.filter(t => t.malltyp === 'Standard').length,
     icon: Users,
-    color: "green",
+    color: 'green',
   },
   {
-    title: "Samtal-mallar",
-    value: activityTemplatesData.filter((t) => t.malltyp === "Samtal").length,
+    title: 'Samtal-mallar',
+    value: activityTemplatesData.filter(t => t.malltyp === 'Samtal').length,
     icon: MessageSquare,
-    color: "purple",
+    color: 'purple',
   },
   {
-    title: "Öppet hus-mallar",
-    value: activityTemplatesData.filter((t) => t.malltyp === "OppetHus").length,
+    title: 'Öppet hus-mallar',
+    value: activityTemplatesData.filter(t => t.malltyp === 'OppetHus').length,
     icon: FileText,
-    color: "orange",
+    color: 'orange',
   },
 ]);
 
 // Filters
 const filters = [
   {
-    key: "malltyp",
-    label: "Malltyp",
+    key: 'malltyp',
+    label: 'Malltyp',
     options: [
-      { value: "Standard", label: "Standard" },
-      { value: "Samtal", label: "Samtal" },
-      { value: "OppetHus", label: "Öppet hus" },
+      { value: 'Standard', label: 'Standard' },
+      { value: 'Samtal', label: 'Samtal' },
+      { value: 'OppetHus', label: 'Öppet hus' },
     ],
   },
   {
-    key: "duration",
-    label: "Varaktighet",
+    key: 'duration',
+    label: 'Varaktighet',
     options: [
-      { value: "short", label: "Kort (< 1h)" },
-      { value: "medium", label: "Medium (1-2h)" },
-      { value: "long", label: "Lång (> 2h)" },
+      { value: 'short', label: 'Kort (< 1h)' },
+      { value: 'medium', label: 'Medium (1-2h)' },
+      { value: 'long', label: 'Lång (> 2h)' },
     ],
   },
 ];
 
 // Actions
 const handleNewTemplate = () => {
-  router.push("/activity-templates/new");
+  router.push('/activity-templates/new');
 };
 
 const handleRowClick = (template: Record<string, unknown>) => {
@@ -194,13 +185,11 @@ const handleEditTemplate = (template: Record<string, unknown>, event: Event) => 
 
 const handleDeleteTemplate = (template: Record<string, unknown>, event: Event) => {
   event.stopPropagation();
-  if (
-    confirm(`Är du säker på att du vill ta bort mallen "${template['namn']}"?`)
-  ) {
-    const index = activityTemplatesData.findIndex((t) => t.id === template['id']);
+  if (confirm(`Är du säker på att du vill ta bort mallen "${template['namn']}"?`)) {
+    const index = activityTemplatesData.findIndex(t => t.id === template['id']);
     if (index > -1) {
       activityTemplatesData.splice(index, 1);
-      console.log("Deleted template:", template['id']);
+      console.log('Deleted template:', template['id']);
     }
   }
 };
@@ -227,10 +216,7 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
         placeholder="Sök aktivitetsmallar..."
       >
         <template #actions>
-          <Button
-            class="gap-2"
-            @click="handleNewTemplate"
-          >
+          <Button class="gap-2" @click="handleNewTemplate">
             <Plus class="h-4 w-4" />
             Ny mall
           </Button>
@@ -302,7 +288,7 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
             size="sm"
             class="h-8 w-8 p-0"
             title="Visa mall"
-            @click="(event) => handleViewTemplate(row, event)"
+            @click="event => handleViewTemplate(row, event)"
           >
             <Eye class="h-4 w-4" />
           </Button>
@@ -311,7 +297,7 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
             size="sm"
             class="h-8 w-8 p-0"
             title="Redigera mall"
-            @click="(event) => handleEditTemplate(row, event)"
+            @click="event => handleEditTemplate(row, event)"
           >
             <Edit class="h-4 w-4" />
           </Button>
@@ -320,7 +306,7 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
             size="sm"
             class="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
             title="Ta bort mall"
-            @click="(event) => handleDeleteTemplate(row, event)"
+            @click="event => handleDeleteTemplate(row, event)"
           >
             <Trash2 class="h-4 w-4" />
           </Button>
@@ -340,8 +326,8 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
           </CardHeader>
           <CardContent>
             <p class="text-xs text-muted-foreground">
-              För aktiviteter med specifika deltagare som bjuds in. Kan vara
-              engångs- eller serieaktiviteter.
+              För aktiviteter med specifika deltagare som bjuds in. Kan vara engångs- eller
+              serieaktiviteter.
             </p>
           </CardContent>
         </Card>
@@ -355,8 +341,7 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
           </CardHeader>
           <CardContent>
             <p class="text-xs text-muted-foreground">
-              För individuella eller gruppsamtal med fokus på dokumentation och
-              uppföljning.
+              För individuella eller gruppsamtal med fokus på dokumentation och uppföljning.
             </p>
           </CardContent>
         </Card>
@@ -370,8 +355,7 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
           </CardHeader>
           <CardContent>
             <p class="text-xs text-muted-foreground">
-              För öppna aktiviteter utan förhandsanmälan. Anonymt besöksräkning
-              och feedback.
+              För öppna aktiviteter utan förhandsanmälan. Anonymt besöksräkning och feedback.
             </p>
           </CardContent>
         </Card>

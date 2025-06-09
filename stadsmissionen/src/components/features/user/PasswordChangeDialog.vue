@@ -1,8 +1,5 @@
 <template>
-  <Dialog
-    :open="open"
-    @update:open="$emit('update:open', $event)"
-  >
+  <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>Ändra lösenord</DialogTitle>
@@ -21,7 +18,7 @@
               :model-value="passwordForm.newPassword"
               :type="showNewPassword ? 'text' : 'password'"
               placeholder="Minst 8 tecken"
-              @update:model-value="(value) => updatePasswordForm('newPassword', value as string)"
+              @update:model-value="value => updatePasswordForm('newPassword', value as string)"
             />
             <Button
               variant="ghost"
@@ -29,14 +26,8 @@
               class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
               @click="showNewPassword = !showNewPassword"
             >
-              <Eye
-                v-if="!showNewPassword"
-                class="h-4 w-4"
-              />
-              <EyeOff
-                v-else
-                class="h-4 w-4"
-              />
+              <Eye v-if="!showNewPassword" class="h-4 w-4" />
+              <EyeOff v-else class="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -49,7 +40,7 @@
               :model-value="passwordForm.confirmPassword"
               :type="showConfirmNewPassword ? 'text' : 'password'"
               placeholder="Upprepa lösenordet"
-              @update:model-value="(value) => updatePasswordForm('confirmPassword', value as string)"
+              @update:model-value="value => updatePasswordForm('confirmPassword', value as string)"
             />
             <Button
               variant="ghost"
@@ -57,25 +48,14 @@
               class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
               @click="showConfirmNewPassword = !showConfirmNewPassword"
             >
-              <Eye
-                v-if="!showConfirmNewPassword"
-                class="h-4 w-4"
-              />
-              <EyeOff
-                v-else
-                class="h-4 w-4"
-              />
+              <Eye v-if="!showConfirmNewPassword" class="h-4 w-4" />
+              <EyeOff v-else class="h-4 w-4" />
             </Button>
           </div>
         </div>
 
         <div class="flex gap-4 justify-end pt-4">
-          <Button
-            variant="outline"
-            @click="$emit('update:open', false)"
-          >
-            Avbryt
-          </Button>
+          <Button variant="outline" @click="$emit('update:open', false)">Avbryt</Button>
           <Button
             :disabled="!passwordForm.newPassword || !passwordForm.confirmPassword"
             @click="handleSave"
@@ -89,17 +69,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Eye, EyeOff } from "lucide-vue-next";
+import { ref, watch } from 'vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Eye, EyeOff } from 'lucide-vue-next';
 
 // Types
 interface User {
@@ -124,23 +99,26 @@ const props = defineProps<Props>();
 // Emits
 const emit = defineEmits<{
   'update:open': [open: boolean];
-  'save': [userId: string, newPassword: string];
+  save: [userId: string, newPassword: string];
 }>();
 
 // Local state
 const showNewPassword = ref(false);
 const showConfirmNewPassword = ref(false);
 const passwordForm = ref<PasswordForm>({
-  newPassword: "",
-  confirmPassword: "",
+  newPassword: '',
+  confirmPassword: '',
 });
 
 // Watch for dialog open/close to reset form
-watch(() => props.open, (isOpen) => {
-  if (!isOpen) {
-    resetForm();
+watch(
+  () => props.open,
+  isOpen => {
+    if (!isOpen) {
+      resetForm();
+    }
   }
-});
+);
 
 // Methods
 const updatePasswordForm = (field: keyof PasswordForm, value: string) => {
@@ -149,8 +127,8 @@ const updatePasswordForm = (field: keyof PasswordForm, value: string) => {
 
 const resetForm = () => {
   passwordForm.value = {
-    newPassword: "",
-    confirmPassword: "",
+    newPassword: '',
+    confirmPassword: '',
   };
   showNewPassword.value = false;
   showConfirmNewPassword.value = false;
@@ -169,4 +147,4 @@ const handleSave = () => {
   emit('save', props.user.id, passwordForm.value.newPassword);
   emit('update:open', false);
 };
-</script> 
+</script>

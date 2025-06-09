@@ -1,25 +1,18 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRouter } from "vue-router";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import StandardHeader from "@/components/layout/StandardHeader.vue";
-import {
-  Users,
-  Calendar,
-  UserPlus,
-  Plus,
-  ClipboardList,
-  BarChart3,
-} from "lucide-vue-next";
-import type { BreadcrumbItem } from '@/types'
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import StandardHeader from '@/components/layout/StandardHeader.vue';
+import { BarChart3, Calendar, ClipboardList, Plus, UserPlus, Users } from 'lucide-vue-next';
+import type { BreadcrumbItem } from '@/types';
 
 // Import JSON data
-import participantsData from "@/assets/data/participants.json";
-import activitiesData from "@/assets/data/activities.json";
-import attendancesData from "@/assets/data/attendances.json";
-import activityTypesData from "@/assets/data/activityTypes.json";
+import participantsData from '@/assets/data/participants.json';
+import activitiesData from '@/assets/data/activities.json';
+import attendancesData from '@/assets/data/attendances.json';
+import activityTypesData from '@/assets/data/activityTypes.json';
 
 const router = useRouter();
 
@@ -28,7 +21,7 @@ const totalParticipants = computed(() => participantsData.length);
 const totalActivities = computed(() => activitiesData.length);
 const totalAttendances = computed(() => attendancesData.length);
 const attendanceRate = computed(() => {
-  const present = attendancesData.filter((a) => a.Närvaro).length;
+  const present = attendancesData.filter(a => a.Närvaro).length;
   return Math.round((present / attendancesData.length) * 100);
 });
 
@@ -38,105 +31,101 @@ const recentActivities = computed(() => {
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
   return activitiesData
-    .filter((a) => new Date(a.DatumTid) >= oneWeekAgo)
-    .sort(
-      (a, b) => new Date(b.DatumTid).getTime() - new Date(a.DatumTid).getTime()
-    )
+    .filter(a => new Date(a.DatumTid) >= oneWeekAgo)
+    .sort((a, b) => new Date(b.DatumTid).getTime() - new Date(a.DatumTid).getTime())
     .slice(0, 5);
 });
 
 // Age distribution
 const ageStats = computed(() => {
   const currentYear = new Date().getFullYear();
-  const ages = participantsData.map((p) => {
+  const ages = participantsData.map(p => {
     const year = parseInt(p.Personnummer.substring(0, 4));
     return currentYear - year;
   });
 
   return {
-    children: ages.filter((age) => age < 18).length,
-    adults: ages.filter((age) => age >= 18).length,
+    children: ages.filter(age => age < 18).length,
+    adults: ages.filter(age => age >= 18).length,
   };
 });
 
 // Main statistics for header
 const stats = computed(() => [
   {
-    label: "Deltagare",
+    label: 'Deltagare',
     value: totalParticipants.value,
-    color: "blue",
+    color: 'blue',
   },
   {
-    label: "Aktiviteter",
+    label: 'Aktiviteter',
     value: totalActivities.value,
-    color: "green",
+    color: 'green',
   },
   {
-    label: "Närvarograd",
+    label: 'Närvarograd',
     value: `${attendanceRate.value}%`,
-    color: "purple",
+    color: 'purple',
   },
   {
-    label: "Registreringar",
+    label: 'Registreringar',
     value: totalAttendances.value,
-    color: "orange",
+    color: 'orange',
   },
 ]);
 
 // Quick actions
 const quickActions = [
   {
-    label: "Ny deltagare",
-    action: () => router.push("/participants/new"),
+    label: 'Ny deltagare',
+    action: () => router.push('/participants/new'),
     icon: UserPlus,
-    variant: "default" as const,
+    variant: 'default' as const,
   },
   {
-    label: "Ny aktivitet",
-    action: () => router.push("/activities/new"),
+    label: 'Ny aktivitet',
+    action: () => router.push('/activities/new'),
     icon: Plus,
-    variant: "outline" as const,
+    variant: 'outline' as const,
   },
   {
-    label: "Närvaroregistrering",
-    action: () => router.push("/attendance"),
+    label: 'Närvaroregistrering',
+    action: () => router.push('/attendance'),
     icon: ClipboardList,
-    variant: "outline" as const,
+    variant: 'outline' as const,
   },
   {
-    label: "Visa rapporter",
-    action: () => router.push("/reports"),
+    label: 'Visa rapporter',
+    action: () => router.push('/reports'),
     icon: BarChart3,
-    variant: "outline" as const,
+    variant: 'outline' as const,
   },
 ];
 
 // Breadcrumbs
-const breadcrumbs: BreadcrumbItem[] = [
-  { label: "Stadsmissionen", isCurrentPage: true },
-];
+const breadcrumbs: BreadcrumbItem[] = [{ label: 'Stadsmissionen', isCurrentPage: true }];
 
 // Navigation shortcuts
 const navigationShortcuts = [
   {
-    label: "Aktiviteter",
-    route: "/activities",
-    description: "Hantera aktiviteter och scheman",
+    label: 'Aktiviteter',
+    route: '/activities',
+    description: 'Hantera aktiviteter och scheman',
   },
   {
-    label: "Deltagare",
-    route: "/participants",
-    description: "Hantera deltagare och kontakter",
+    label: 'Deltagare',
+    route: '/participants',
+    description: 'Hantera deltagare och kontakter',
   },
   {
-    label: "Närvaroregistrering",
-    route: "/attendance",
-    description: "Registrera närvaro för aktiviteter",
+    label: 'Närvaroregistrering',
+    route: '/attendance',
+    description: 'Registrera närvaro för aktiviteter',
   },
   {
-    label: "Rapporter",
-    route: "/reports",
-    description: "Visa statistik och rapporter",
+    label: 'Rapporter',
+    route: '/reports',
+    description: 'Visa statistik och rapporter',
   },
 ];
 </script>
@@ -167,10 +156,7 @@ const navigationShortcuts = [
               class="gap-2"
               @click="action.action"
             >
-              <component
-                :is="action.icon"
-                class="h-4 w-4"
-              />
+              <component :is="action.icon" class="h-4 w-4" />
               {{ action.label }}
             </Button>
           </div>
@@ -232,7 +218,7 @@ const navigationShortcuts = [
                   {{ activity.Namn }}
                 </div>
                 <div class="text-muted-foreground text-xs">
-                  {{ new Date(activity.DatumTid).toLocaleDateString("sv-SE") }}
+                  {{ new Date(activity.DatumTid).toLocaleDateString('sv-SE') }}
                   - {{ activity.Plats }}
                 </div>
               </div>
@@ -267,7 +253,7 @@ const navigationShortcuts = [
                 <Badge variant="outline">
                   {{
                     activitiesData.filter(
-                      (a) => Number(a.ActivityTypeID) === Number(type.ActivityTypeID)
+                      a => Number(a.ActivityTypeID) === Number(type.ActivityTypeID)
                     ).length
                   }}
                 </Badge>

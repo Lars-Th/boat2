@@ -1,55 +1,47 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  BarChart3,
-  TrendingUp,
-  Users,
-  Calendar,
-  Activity,
-} from "lucide-vue-next";
+import { computed } from 'vue';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Activity, BarChart3, Calendar, TrendingUp, Users } from 'lucide-vue-next';
 
 // Import JSON data
-import participantsData from "@/assets/data/participants.json";
-import activitiesData from "@/assets/data/activities.json";
-import attendancesData from "@/assets/data/attendances.json";
-import activityTypesData from "@/assets/data/activityTypes.json";
+import participantsData from '@/assets/data/participants.json';
+import activitiesData from '@/assets/data/activities.json';
+import attendancesData from '@/assets/data/attendances.json';
+import activityTypesData from '@/assets/data/activityTypes.json';
 
 // Calculate statistics
 const totalParticipants = computed(() => participantsData.length);
 const totalActivities = computed(() => activitiesData.length);
 const totalAttendances = computed(() => attendancesData.length);
 const attendanceRate = computed(() => {
-  const present = attendancesData.filter((a) => a.Närvaro).length;
+  const present = attendancesData.filter(a => a.Närvaro).length;
   return Math.round((present / attendancesData.length) * 100);
 });
 
 // Age distribution
 const ageDistribution = computed(() => {
   const currentYear = new Date().getFullYear();
-  const ages = participantsData.map((p) => {
+  const ages = participantsData.map(p => {
     const year = parseInt(p.Personnummer.substring(0, 4));
     return currentYear - year;
   });
 
   return {
-    children: ages.filter((age) => age < 18).length,
-    adults: ages.filter((age) => age >= 18).length,
+    children: ages.filter(age => age < 18).length,
+    adults: ages.filter(age => age >= 18).length,
   };
 });
 
 // Activity type statistics
 const activityTypeStats = computed(() => {
-  return activityTypesData.map((type) => {
+  return activityTypesData.map(type => {
     const typeActivities = activitiesData.filter(
-      (a) => Number(a.ActivityTypeID) === Number(type.ActivityTypeID)
+      a => Number(a.ActivityTypeID) === Number(type.ActivityTypeID)
     );
-    const typeAttendances = attendancesData.filter((att) => {
-      const activity = activitiesData.find(
-        (a) => a.ActivityID === att.ActivityID
-      );
+    const typeAttendances = attendancesData.filter(att => {
+      const activity = activitiesData.find(a => a.ActivityID === att.ActivityID);
       return Number(activity?.ActivityTypeID) === Number(type.ActivityTypeID);
     });
 
@@ -60,9 +52,7 @@ const activityTypeStats = computed(() => {
       attendanceRate:
         typeAttendances.length > 0
           ? Math.round(
-              (typeAttendances.filter((a) => a.Närvaro).length /
-                typeAttendances.length) *
-                100
+              (typeAttendances.filter(a => a.Närvaro).length / typeAttendances.length) * 100
             )
           : 0,
     };
@@ -72,20 +62,20 @@ const activityTypeStats = computed(() => {
 // Monthly activity trend (simplified)
 const monthlyTrend = computed(() => {
   const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "Maj",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Okt",
-    "Nov",
-    "Dec",
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Maj',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Dec',
   ];
-  return months.map((month) => ({
+  return months.map(month => ({
     month,
     activities: Math.floor(Math.random() * 10) + 5, // Mock data
     participants: Math.floor(Math.random() * 50) + 20, // Mock data
@@ -95,36 +85,34 @@ const monthlyTrend = computed(() => {
 // Main statistics
 const stats = computed(() => [
   {
-    title: "Totalt deltagare",
+    title: 'Totalt deltagare',
     value: totalParticipants.value,
     icon: Users,
-    color: "blue",
-    change: "+12%",
+    color: 'blue',
+    change: '+12%',
   },
   {
-    title: "Aktiviteter",
+    title: 'Aktiviteter',
     value: totalActivities.value,
     icon: Calendar,
-    color: "green",
-    change: "+8%",
+    color: 'green',
+    change: '+8%',
   },
   {
-    title: "Närvarograd",
+    title: 'Närvarograd',
     value: `${attendanceRate.value}%`,
     icon: TrendingUp,
-    color: "purple",
-    change: "+5%",
+    color: 'purple',
+    change: '+5%',
   },
   {
-    title: "Registreringar",
+    title: 'Registreringar',
     value: totalAttendances.value,
     icon: Activity,
-    color: "orange",
-    change: "+15%",
+    color: 'orange',
+    change: '+15%',
   },
 ]);
-
-
 </script>
 
 <template>
@@ -183,22 +171,18 @@ const stats = computed(() => [
               <div class="flex justify-between items-center">
                 <span>Närvarande</span>
                 <Badge variant="default">
-                  {{ attendancesData.filter((a) => a.Närvaro).length }}
+                  {{ attendancesData.filter(a => a.Närvaro).length }}
                 </Badge>
               </div>
               <div class="flex justify-between items-center">
                 <span>Frånvarande</span>
                 <Badge variant="destructive">
-                  {{ attendancesData.filter((a) => !a.Närvaro).length }}
+                  {{ attendancesData.filter(a => !a.Närvaro).length }}
                 </Badge>
               </div>
               <div class="text-center">
-                <div class="text-2xl font-bold text-green-600">
-                  {{ attendanceRate }}%
-                </div>
-                <div class="text-sm text-muted-foreground">
-                  Genomsnittlig närvaro
-                </div>
+                <div class="text-2xl font-bold text-green-600">{{ attendanceRate }}%</div>
+                <div class="text-sm text-muted-foreground">Genomsnittlig närvaro</div>
               </div>
             </div>
           </CardContent>
@@ -225,11 +209,7 @@ const stats = computed(() => [
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="stat in activityTypeStats"
-                  :key="stat.name"
-                  class="border-b"
-                >
+                <tr v-for="stat in activityTypeStats" :key="stat.name" class="border-b">
                   <td class="p-2 font-medium">
                     {{ stat.name }}
                   </td>

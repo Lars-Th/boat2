@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users } from "lucide-vue-next";
+import { computed } from 'vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Users } from 'lucide-vue-next';
 
 // Import data
-import participantsData from "@/assets/data/participants.json";
-import participantGroupsData from "@/assets/data/participantGroups.json";
+import participantsData from '@/assets/data/participants.json';
+import participantGroupsData from '@/assets/data/participantGroups.json';
 
 interface Props {
   selectedParticipants: string[];
@@ -30,8 +30,8 @@ const participantGroups = computed(() => participantGroupsData);
 
 // Get participants from selected groups
 const participantsFromGroups = computed(() => {
-  const groupParticipants = props.selectedGroups.flatMap((groupId) => {
-    const group = participantGroups.value.find((g) => g.id === groupId);
+  const groupParticipants = props.selectedGroups.flatMap(groupId => {
+    const group = participantGroups.value.find(g => g.id === groupId);
     return group ? group.deltagare : [];
   });
   return [...new Set(groupParticipants)]; // Remove duplicates
@@ -49,7 +49,7 @@ const handleParticipantChange = (participantId: string, checked: boolean) => {
   const newSelection = checked
     ? [...props.selectedParticipants, participantId]
     : props.selectedParticipants.filter(id => id !== participantId);
-  
+
   emit('update:selectedParticipants', newSelection);
 };
 
@@ -58,16 +58,14 @@ const handleGroupChange = (groupId: string, checked: boolean) => {
   const newSelection = checked
     ? [...props.selectedGroups, groupId]
     : props.selectedGroups.filter(id => id !== groupId);
-  
+
   emit('update:selectedGroups', newSelection);
 };
 
 // Get participant name
 const getParticipantName = (participantId: string | number) => {
-  const participant = participantsData.find((p) => p.ParticipantID === Number(participantId));
-  return participant
-    ? `${participant.Fornamn} ${participant.Efternamn}`
-    : "Okänd deltagare";
+  const participant = participantsData.find(p => p.ParticipantID === Number(participantId));
+  return participant ? `${participant.Fornamn} ${participant.Efternamn}` : 'Okänd deltagare';
 };
 </script>
 
@@ -80,19 +78,13 @@ const getParticipantName = (participantId: string | number) => {
       </CardTitle>
     </CardHeader>
     <CardContent>
-      <Tabs
-        default-value="groups"
-        class="w-full"
-      >
+      <Tabs default-value="groups" class="w-full">
         <TabsList class="grid w-full grid-cols-2">
           <TabsTrigger value="groups">Deltagargrupper</TabsTrigger>
           <TabsTrigger value="individual">Individuella deltagare</TabsTrigger>
         </TabsList>
 
-        <TabsContent
-          value="groups"
-          class="space-y-4"
-        >
+        <TabsContent value="groups" class="space-y-4">
           <div class="space-y-3">
             <div
               v-for="group in participantGroups"
@@ -105,20 +97,14 @@ const getParticipantName = (participantId: string | number) => {
                 @update:checked="(checked: boolean) => handleGroupChange(group.id, checked)"
               />
               <div class="flex-1">
-                <Label
-                  :for="group.id"
-                  class="font-medium cursor-pointer"
-                >
+                <Label :for="group.id" class="font-medium cursor-pointer">
                   {{ group.namn }}
                 </Label>
                 <p class="text-sm text-muted-foreground">
                   {{ group.beskrivning }}
                 </p>
                 <div class="flex items-center gap-2 mt-1">
-                  <Badge
-                    variant="outline"
-                    class="text-xs"
-                  >
+                  <Badge variant="outline" class="text-xs">
                     {{ group.deltagare.length }} deltagare
                   </Badge>
                   <Badge
@@ -135,10 +121,7 @@ const getParticipantName = (participantId: string | number) => {
           </div>
         </TabsContent>
 
-        <TabsContent
-          value="individual"
-          class="space-y-4"
-        >
+        <TabsContent value="individual" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <div
               v-for="participant in participantsData.slice(0, 12)"
@@ -148,12 +131,12 @@ const getParticipantName = (participantId: string | number) => {
               <Checkbox
                 :id="String(participant.ParticipantID)"
                 :checked="selectedParticipants.includes(String(participant.ParticipantID))"
-                @update:checked="(checked: boolean) => handleParticipantChange(String(participant.ParticipantID), checked)"
+                @update:checked="
+                  (checked: boolean) =>
+                    handleParticipantChange(String(participant.ParticipantID), checked)
+                "
               />
-              <Label
-                :for="String(participant.ParticipantID)"
-                class="text-sm cursor-pointer"
-              >
+              <Label :for="String(participant.ParticipantID)" class="text-sm cursor-pointer">
                 {{ participant.Fornamn }} {{ participant.Efternamn }}
               </Label>
             </div>
@@ -162,10 +145,7 @@ const getParticipantName = (participantId: string | number) => {
       </Tabs>
 
       <!-- Selected participants summary -->
-      <div
-        v-if="totalSelectedParticipants.length > 0"
-        class="mt-4 p-3 bg-muted/50 rounded-lg"
-      >
+      <div v-if="totalSelectedParticipants.length > 0" class="mt-4 p-3 bg-muted/50 rounded-lg">
         <div class="flex items-center gap-2 mb-2">
           <Users class="h-4 w-4" />
           <span class="font-medium">Valda deltagare ({{ totalSelectedParticipants.length }})</span>
@@ -179,15 +159,11 @@ const getParticipantName = (participantId: string | number) => {
           >
             {{ getParticipantName(participantId) }}
           </Badge>
-          <Badge
-            v-if="totalSelectedParticipants.length > 10"
-            variant="outline"
-            class="text-xs"
-          >
+          <Badge v-if="totalSelectedParticipants.length > 10" variant="outline" class="text-xs">
             +{{ totalSelectedParticipants.length - 10 }} till
           </Badge>
         </div>
       </div>
     </CardContent>
   </Card>
-</template> 
+</template>

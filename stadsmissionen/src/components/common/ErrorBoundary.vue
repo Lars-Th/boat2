@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onErrorCaptured, provide } from "vue";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, Home } from "lucide-vue-next";
-import { useRouter } from "vue-router";
+import { onErrorCaptured, provide, ref } from 'vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Home, RefreshCw } from 'lucide-vue-next';
+import { useRouter } from 'vue-router';
 
 interface Props {
   fallbackComponent?: string;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  fallbackComponent: "default",
+  fallbackComponent: 'default',
   showDetails: false,
 });
 
@@ -24,8 +24,8 @@ const errorInfo = ref<{
 }>();
 
 // Capture errors from child components
-onErrorCaptured((error) => {
-  console.error("Error captured by ErrorBoundary:", error);
+onErrorCaptured(error => {
+  console.error('Error captured by ErrorBoundary:', error);
 
   hasError.value = true;
   errorInfo.value = {
@@ -40,7 +40,7 @@ onErrorCaptured((error) => {
 
 // Provide error reporting function to child components
 const reportError = (error: Error, context?: string) => {
-  console.error("Error reported to ErrorBoundary:", error, context);
+  console.error('Error reported to ErrorBoundary:', error, context);
 
   hasError.value = true;
   errorInfo.value = {
@@ -50,7 +50,7 @@ const reportError = (error: Error, context?: string) => {
   };
 };
 
-provide("reportError", reportError);
+provide('reportError', reportError);
 
 const retry = () => {
   hasError.value = false;
@@ -60,7 +60,7 @@ const retry = () => {
 const goHome = () => {
   hasError.value = false;
   errorInfo.value = undefined;
-  router.push("/");
+  router.push('/');
 };
 
 const reloadPage = () => {
@@ -71,10 +71,7 @@ const reloadPage = () => {
 <template>
   <div>
     <!-- Error State -->
-    <div
-      v-if="hasError"
-      class="min-h-screen flex items-center justify-center p-4"
-    >
+    <div v-if="hasError" class="min-h-screen flex items-center justify-center p-4">
       <Card class="w-full max-w-md">
         <CardHeader class="text-center">
           <div
@@ -90,24 +87,19 @@ const reloadPage = () => {
           </p>
 
           <!-- Error Details (Development) -->
-          <div
-            v-if="props.showDetails && errorInfo"
-            class="space-y-2"
-          >
+          <div v-if="props.showDetails && errorInfo" class="space-y-2">
             <details class="text-xs">
-              <summary class="cursor-pointer font-medium">
-                Error Details
-              </summary>
+              <summary class="cursor-pointer font-medium">Error Details</summary>
               <div class="mt-2 p-2 bg-muted rounded text-xs font-mono">
-                <p><strong>Message:</strong> {{ errorInfo.message }}</p>
+                <p>
+                  <strong>Message:</strong>
+                  {{ errorInfo.message }}
+                </p>
                 <p>
                   <strong>Time:</strong>
                   {{ errorInfo.timestamp.toLocaleString() }}
                 </p>
-                <pre
-                  v-if="errorInfo.stack"
-                  class="mt-2 whitespace-pre-wrap"
-                >{{
+                <pre v-if="errorInfo.stack" class="mt-2 whitespace-pre-wrap">{{
                   errorInfo.stack
                 }}</pre>
               </div>
@@ -116,28 +108,15 @@ const reloadPage = () => {
 
           <!-- Action Buttons -->
           <div class="flex flex-col gap-2">
-            <Button
-              class="w-full"
-              @click="retry"
-            >
+            <Button class="w-full" @click="retry">
               <RefreshCw class="w-4 h-4 mr-2" />
               Try Again
             </Button>
-            <Button
-              variant="outline"
-              class="w-full"
-              @click="goHome"
-            >
+            <Button variant="outline" class="w-full" @click="goHome">
               <Home class="w-4 h-4 mr-2" />
               Go Home
             </Button>
-            <Button
-              variant="ghost"
-              class="w-full text-xs"
-              @click="reloadPage"
-            >
-              Reload Page
-            </Button>
+            <Button variant="ghost" class="w-full text-xs" @click="reloadPage">Reload Page</Button>
           </div>
         </CardContent>
       </Card>

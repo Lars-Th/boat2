@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
-import { ContextMenuLabel, type ContextMenuLabelProps } from 'reka-ui'
-import { cn } from '@/utils/libraryHelper'
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { ContextMenuLabel, type ContextMenuLabelProps } from 'reka-ui';
+import { cn } from '@/utils/libraryHelper';
 
-const props = defineProps<ContextMenuLabelProps & { class?: HTMLAttributes['class'], inset?: boolean }>()
+const props = defineProps<
+  ContextMenuLabelProps & { class?: HTMLAttributes['class']; inset?: boolean }
+>();
 
-const delegatedProps = reactiveOmit(props, 'class')
+const delegatedProps = reactiveOmit(props, 'class');
 </script>
 
 <template>

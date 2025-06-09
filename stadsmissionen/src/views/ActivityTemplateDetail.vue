@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
-  Edit,
-  Trash2,
-  FileText,
-  Users,
-  MessageSquare,
   Clock,
-  MapPin,
+  Edit,
+  FileText,
   HelpCircle,
-} from "lucide-vue-next";
+  MapPin,
+  MessageSquare,
+  Trash2,
+  Users,
+} from 'lucide-vue-next';
 
 // Import data
-import activityTemplatesData from "@/assets/data/activityTemplates.json";
-import activityTypesData from "@/assets/data/activityTypes.json";
+import activityTemplatesData from '@/assets/data/activityTemplates.json';
+import activityTypesData from '@/assets/data/activityTypes.json';
 
 const router = useRouter();
 const route = useRoute();
@@ -26,15 +26,15 @@ const route = useRoute();
 // Get template by ID
 const template = computed(() => {
   const id = route.params['id'] as string;
-  return activityTemplatesData.find((t) => t.id === id);
+  return activityTemplatesData.find(t => t.id === id);
 });
 
 // Get activity type details
 const activityTypes = computed(() => {
   if (!template.value) return [];
   return template.value.aktivitetstyper
-    .map((id) => {
-      return activityTypesData.find((t) => t.ActivityTypeID.toString() === id);
+    .map(id => {
+      return activityTypesData.find(t => t.ActivityTypeID.toString() === id);
     })
     .filter(Boolean);
 });
@@ -42,30 +42,29 @@ const activityTypes = computed(() => {
 // Get template type info
 const getTemplateTypeInfo = (malltyp: string) => {
   switch (malltyp) {
-    case "Standard":
+    case 'Standard':
       return {
         icon: Users,
-        color: "blue",
-        label: "Standard",
-        description: "Aktiviteter med specifika deltagare som bjuds in",
+        color: 'blue',
+        label: 'Standard',
+        description: 'Aktiviteter med specifika deltagare som bjuds in',
       };
-    case "Samtal":
+    case 'Samtal':
       return {
         icon: MessageSquare,
-        color: "green",
-        label: "Samtal",
-        description:
-          "Individuella eller gruppsamtal med fokus på dokumentation",
+        color: 'green',
+        label: 'Samtal',
+        description: 'Individuella eller gruppsamtal med fokus på dokumentation',
       };
-    case "OppetHus":
+    case 'OppetHus':
       return {
         icon: FileText,
-        color: "purple",
-        label: "Öppet hus",
-        description: "Öppna aktiviteter utan förhandsanmälan",
+        color: 'purple',
+        label: 'Öppet hus',
+        description: 'Öppna aktiviteter utan förhandsanmälan',
       };
     default:
-      return { icon: FileText, color: "gray", label: malltyp, description: "" };
+      return { icon: FileText, color: 'gray', label: malltyp, description: '' };
   }
 };
 
@@ -81,12 +80,12 @@ const formatDuration = (minutes: number) => {
 // Question type labels
 const getQuestionTypeLabel = (typ: string) => {
   switch (typ) {
-    case "Skala":
-      return "Skala-fråga";
-    case "JaNej":
-      return "Ja/Nej-fråga";
-    case "Kommentar":
-      return "Kommentar-fråga";
+    case 'Skala':
+      return 'Skala-fråga';
+    case 'JaNej':
+      return 'Ja/Nej-fråga';
+    case 'Kommentar':
+      return 'Kommentar-fråga';
     default:
       return typ;
   }
@@ -104,24 +103,18 @@ const handleEdit = () => {
 const handleDelete = () => {
   if (!template.value) return;
 
-  if (
-    confirm(
-      `Är du säker på att du vill ta bort mallen "${template.value.namn}"?`
-    )
-  ) {
-    const index = activityTemplatesData.findIndex(
-      (t) => t.id === template.value?.id
-    );
+  if (confirm(`Är du säker på att du vill ta bort mallen "${template.value.namn}"?`)) {
+    const index = activityTemplatesData.findIndex(t => t.id === template.value?.id);
     if (index > -1) {
       activityTemplatesData.splice(index, 1);
-      router.push("/activity-templates");
+      router.push('/activity-templates');
     }
   }
 };
 
 // If template not found, redirect
 if (!template.value) {
-  router.push("/activity-templates");
+  router.push('/activity-templates');
 }
 </script>
 
@@ -157,18 +150,11 @@ if (!template.value) {
         </div>
 
         <div class="flex gap-2">
-          <Button
-            class="gap-2"
-            @click="handleEdit"
-          >
+          <Button class="gap-2" @click="handleEdit">
             <Edit class="h-4 w-4" />
             Redigera
           </Button>
-          <Button
-            variant="destructive"
-            class="gap-2"
-            @click="handleDelete"
-          >
+          <Button variant="destructive" class="gap-2" @click="handleDelete">
             <Trash2 class="h-4 w-4" />
             Ta bort
           </Button>
@@ -186,9 +172,7 @@ if (!template.value) {
         <CardContent class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 class="font-medium text-sm text-muted-foreground mb-2">
-                Beskrivning
-              </h4>
+              <h4 class="font-medium text-sm text-muted-foreground mb-2">Beskrivning</h4>
               <p class="text-sm">
                 {{ template.beskrivning }}
               </p>
@@ -196,9 +180,7 @@ if (!template.value) {
 
             <div class="space-y-4">
               <div v-if="template.standardPlats">
-                <h4
-                  class="font-medium text-sm text-muted-foreground mb-2 flex items-center gap-1"
-                >
+                <h4 class="font-medium text-sm text-muted-foreground mb-2 flex items-center gap-1">
                   <MapPin class="h-4 w-4" />
                   Standardplats
                 </h4>
@@ -208,9 +190,7 @@ if (!template.value) {
               </div>
 
               <div>
-                <h4
-                  class="font-medium text-sm text-muted-foreground mb-2 flex items-center gap-1"
-                >
+                <h4 class="font-medium text-sm text-muted-foreground mb-2 flex items-center gap-1">
                   <Clock class="h-4 w-4" />
                   Standardvaraktighet
                 </h4>
@@ -222,18 +202,14 @@ if (!template.value) {
           </div>
 
           <div>
-            <h4 class="font-medium text-sm text-muted-foreground mb-2">
-              Malltyp
-            </h4>
+            <h4 class="font-medium text-sm text-muted-foreground mb-2">Malltyp</h4>
             <div class="flex items-center gap-2">
               <component
                 :is="getTemplateTypeInfo(template.malltyp).icon"
                 class="h-4 w-4"
                 :class="`text-${getTemplateTypeInfo(template.malltyp).color}-600`"
               />
-              <span class="text-sm">{{
-                getTemplateTypeInfo(template.malltyp).description
-              }}</span>
+              <span class="text-sm">{{ getTemplateTypeInfo(template.malltyp).description }}</span>
             </div>
           </div>
         </CardContent>
@@ -270,9 +246,7 @@ if (!template.value) {
         <CardHeader>
           <CardTitle class="flex items-center justify-between">
             <span>Resultatformulär</span>
-            <Badge variant="secondary">
-              {{ template.resultatformular.length }} frågor
-            </Badge>
+            <Badge variant="secondary">{{ template.resultatformular.length }} frågor</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -284,10 +258,7 @@ if (!template.value) {
             <p>Inga frågor har lagts till</p>
           </div>
 
-          <div
-            v-else
-            class="space-y-4"
-          >
+          <div v-else class="space-y-4">
             <div
               v-for="(question, index) in template.resultatformular"
               :key="question.id"
@@ -297,17 +268,10 @@ if (!template.value) {
                 <div class="flex-1">
                   <div class="flex items-center gap-2 mb-2">
                     <span class="font-medium text-sm">Fråga {{ index + 1 }}</span>
-                    <Badge
-                      variant="outline"
-                      class="text-xs"
-                    >
+                    <Badge variant="outline" class="text-xs">
                       {{ getQuestionTypeLabel(question.typ || 'Text') }}
                     </Badge>
-                    <Badge
-                      v-if="question.obligatorisk"
-                      variant="destructive"
-                      class="text-xs"
-                    >
+                    <Badge v-if="question.obligatorisk" variant="destructive" class="text-xs">
                       Obligatorisk
                     </Badge>
                   </div>
@@ -333,7 +297,7 @@ if (!template.value) {
                   </div>
                   <div>
                     <span class="font-medium">Kommentar:</span>
-                    {{ question.skalaKommentar ? "Ja" : "Nej" }}
+                    {{ question.skalaKommentar ? 'Ja' : 'Nej' }}
                   </div>
                 </div>
               </div>
@@ -343,7 +307,7 @@ if (!template.value) {
                 class="mt-3 p-3 bg-muted/50 rounded text-xs"
               >
                 <span class="font-medium">Kommentarsfält:</span>
-                {{ question.harKommentar ? "Ja" : "Nej" }}
+                {{ question.harKommentar ? 'Ja' : 'Nej' }}
               </div>
             </div>
           </div>
@@ -360,7 +324,7 @@ if (!template.value) {
             <div>
               <h4 class="font-medium text-muted-foreground mb-1">Skapad</h4>
               <p>
-                {{ new Date(template.skapadDatum).toLocaleDateString("sv-SE") }}
+                {{ new Date(template.skapadDatum).toLocaleDateString('sv-SE') }}
               </p>
             </div>
             <div>

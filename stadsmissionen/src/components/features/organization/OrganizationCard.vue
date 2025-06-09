@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Building, Phone, Trash2, Check } from 'lucide-vue-next'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Building, Check, Phone, Trash2 } from 'lucide-vue-next';
 
 interface Organization {
-  id: string
-  namn: string
-  aktiv: boolean
-  enheter: string[]
+  id: string;
+  namn: string;
+  aktiv: boolean;
+  enheter: string[];
   kontaktuppgifter: {
-    telefon?: string
-    ort?: string
-  }
+    telefon?: string;
+    ort?: string;
+  };
 }
 
 interface Props {
-  organization: Organization
-  isSelected: boolean
+  organization: Organization;
+  isSelected: boolean;
 }
 
 interface Emits {
-  select: [organizationId: string]
-  delete: [organizationId: string, event: Event]
+  select: [organizationId: string];
+  delete: [organizationId: string, event: Event];
 }
 
-defineProps<Props>()
-defineEmits<Emits>()
+defineProps<Props>();
+defineEmits<Emits>();
 </script>
 
 <template>
@@ -48,10 +48,7 @@ defineEmits<Emits>()
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <Badge
-            :variant="organization.aktiv ? 'default' : 'outline'"
-            class="text-xs"
-          >
+          <Badge :variant="organization.aktiv ? 'default' : 'outline'" class="text-xs">
             {{ organization.aktiv ? 'Aktiv' : 'Inaktiv' }}
           </Badge>
           <Button
@@ -92,31 +89,21 @@ defineEmits<Emits>()
             >
               {{ enhet }}
             </Badge>
-            <Badge
-              v-if="organization.enheter.length > 3"
-              variant="outline"
-              class="text-xs"
-            >
+            <Badge v-if="organization.enheter.length > 3" variant="outline" class="text-xs">
               +{{ organization.enheter.length - 3 }} till
             </Badge>
           </div>
-          <p
-            v-if="organization.enheter.length === 0"
-            class="text-xs text-muted-foreground"
-          >
+          <p v-if="organization.enheter.length === 0" class="text-xs text-muted-foreground">
             Inga enheter
           </p>
         </div>
 
         <!-- Selection Indicator -->
-        <div
-          v-if="isSelected"
-          class="flex items-center gap-2 text-xs text-primary font-medium"
-        >
+        <div v-if="isSelected" class="flex items-center gap-2 text-xs text-primary font-medium">
           <Check class="h-3 w-3" />
           Vald organisation
         </div>
       </div>
     </CardContent>
   </Card>
-</template> 
+</template>

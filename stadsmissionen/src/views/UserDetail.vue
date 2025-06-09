@@ -1,49 +1,49 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
-  User,
+  ArrowLeft,
   Building,
-  Shield,
-  Settings,
-  Edit,
-  Save,
-  Eye,
-  EyeOff,
   Calendar,
   Clock,
-  UserCheck,
   Crown,
-  ArrowLeft,
+  Edit,
+  Eye,
+  EyeOff,
+  Save,
+  Settings,
+  Shield,
   Trash2,
-} from "lucide-vue-next";
-import { useToast } from "@/composables/useToast";
+  User,
+  UserCheck,
+} from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
 
 // Import data
-import usersData from "@/assets/data/users.json";
-import organizationSettingsData from "@/assets/data/organizationSettings.json";
+import usersData from '@/assets/data/users.json';
+import organizationSettingsData from '@/assets/data/organizationSettings.json';
 
 const route = useRoute();
 const router = useRouter();
@@ -63,8 +63,8 @@ const showDeleteDialog = ref(false);
 
 // Password form
 const passwordForm = ref({
-  newPassword: "",
-  confirmPassword: "",
+  newPassword: '',
+  confirmPassword: '',
 });
 
 // Show password states
@@ -73,20 +73,18 @@ const showConfirmPassword = ref(false);
 
 // Current user
 const currentUser = computed(() => {
-  return users.value.find((user) => user.id === userId.value);
+  return users.value.find(user => user.id === userId.value);
 });
 
 // Enhanced current user with organization info
 const enhancedCurrentUser = computed(() => {
   if (!currentUser.value) return null;
 
-  const org = organizations.value.find(
-    (o) => o.id === currentUser.value?.organisationId
-  );
+  const org = organizations.value.find(o => o.id === currentUser.value?.organisationId);
 
   return {
     ...currentUser.value,
-    organisationNamn: org?.namn ?? "Okänd organisation",
+    organisationNamn: org?.namn ?? 'Okänd organisation',
     organisationEnheter: org?.enheter ?? [],
   };
 });
@@ -94,40 +92,40 @@ const enhancedCurrentUser = computed(() => {
 // Role definitions
 const roleDefinitions = [
   {
-    id: "handlaggare",
-    namn: "Handläggare",
-    beskrivning: "Grundläggande funktioner för en specifik enhet",
-    color: "outline",
+    id: 'handlaggare',
+    namn: 'Handläggare',
+    beskrivning: 'Grundläggande funktioner för en specifik enhet',
+    color: 'outline',
     icon: UserCheck,
     permissions: [
-      "view_participants",
-      "create_participants",
-      "edit_participants",
-      "view_activities",
-      "create_activities",
+      'view_participants',
+      'create_participants',
+      'edit_participants',
+      'view_activities',
+      'create_activities',
     ],
-    organizationScope: "single",
-    unitScope: "selected",
+    organizationScope: 'single',
+    unitScope: 'selected',
   },
   {
-    id: "administrator",
-    namn: "Administratör",
-    beskrivning: "Full åtkomst inom en stadsmission",
-    color: "default",
+    id: 'administrator',
+    namn: 'Administratör',
+    beskrivning: 'Full åtkomst inom en stadsmission',
+    color: 'default',
     icon: Shield,
-    permissions: ["all_within_organization"],
-    organizationScope: "single",
-    unitScope: "all",
+    permissions: ['all_within_organization'],
+    organizationScope: 'single',
+    unitScope: 'all',
   },
   {
-    id: "systemadministrator",
-    namn: "Systemadministratör",
-    beskrivning: "Full åtkomst till hela systemet",
-    color: "destructive",
+    id: 'systemadministrator',
+    namn: 'Systemadministratör',
+    beskrivning: 'Full åtkomst till hela systemet',
+    color: 'destructive',
     icon: Crown,
-    permissions: ["system_admin"],
-    organizationScope: "all",
-    unitScope: "all",
+    permissions: ['system_admin'],
+    organizationScope: 'all',
+    unitScope: 'all',
   },
 ];
 
@@ -135,46 +133,44 @@ const roleDefinitions = [
 const userRoles = computed(() => {
   if (!currentUser.value) return [];
   return currentUser.value.roller
-    .map((roleId) => roleDefinitions.find((r) => r.id === roleId))
+    .map(roleId => roleDefinitions.find(r => r.id === roleId))
     .filter(Boolean);
 });
 
 // Available units for selected organization
 const availableUnits = computed(() => {
   if (!enhancedCurrentUser.value) return [];
-  const org = organizations.value.find(
-    (o) => o.id === enhancedCurrentUser.value?.organisationId
-  );
+  const org = organizations.value.find(o => o.id === enhancedCurrentUser.value?.organisationId);
   return org?.enheter ?? [];
 });
 
 // Statistics
 const stats = computed(() => [
   {
-    title: "Aktiv sedan",
-    value: formatDate(currentUser.value?.skapadDatum ?? ""),
+    title: 'Aktiv sedan',
+    value: formatDate(currentUser.value?.skapadDatum ?? ''),
     icon: Calendar,
-    color: "blue",
+    color: 'blue',
   },
   {
-    title: "Senast inloggad",
+    title: 'Senast inloggad',
     value: currentUser.value?.senastInloggad
       ? formatDate(currentUser.value.senastInloggad)
-      : "Aldrig",
+      : 'Aldrig',
     icon: Clock,
-    color: "green",
+    color: 'green',
   },
   {
-    title: "Roller",
+    title: 'Roller',
     value: currentUser.value?.roller.length ?? 0,
     icon: Shield,
-    color: "purple",
+    color: 'purple',
   },
   {
-    title: "Enheter",
+    title: 'Enheter',
     value: currentUser.value?.enheter.length ?? 0,
     icon: Building,
-    color: "orange",
+    color: 'orange',
   },
 ]);
 
@@ -183,15 +179,15 @@ const saveProfile = () => {
   if (currentUser.value) {
     currentUser.value.uppdateradDatum = new Date().toISOString();
     editingProfile.value = false;
-    success("Sparat", "Användarens profil har sparats framgångsrikt");
-    console.log("Profile updated for user:", currentUser.value.id);
+    success('Sparat', 'Användarens profil har sparats framgångsrikt');
+    console.log('Profile updated for user:', currentUser.value.id);
   }
 };
 
 // Change password
 const changePassword = () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    error("Lösenordsfel", "Lösenorden matchar inte. Kontrollera att båda fälten är identiska.");
+    error('Lösenordsfel', 'Lösenorden matchar inte. Kontrollera att båda fälten är identiska.');
     return;
   }
 
@@ -199,22 +195,22 @@ const changePassword = () => {
     currentUser.value.losenord = passwordForm.value.newPassword;
     showChangePasswordDialog.value = false;
     passwordForm.value = {
-      newPassword: "",
-      confirmPassword: "",
+      newPassword: '',
+      confirmPassword: '',
     };
-    success("Lösenord ändrat", "Användarens lösenord har uppdaterats framgångsrikt");
-    console.log("Password changed for user:", currentUser.value.id);
+    success('Lösenord ändrat', 'Användarens lösenord har uppdaterats framgångsrikt');
+    console.log('Password changed for user:', currentUser.value.id);
   }
 };
 
 // Delete user
 const deleteUser = () => {
   if (currentUser.value) {
-    const index = users.value.findIndex((u) => u.id === currentUser.value?.id);
+    const index = users.value.findIndex(u => u.id === currentUser.value?.id);
     if (index > -1) {
       users.value.splice(index, 1);
-      console.log("Deleted user:", currentUser.value.id);
-      router.push("/admin/users");
+      console.log('Deleted user:', currentUser.value.id);
+      router.push('/admin/users');
     }
   }
 };
@@ -235,12 +231,12 @@ const handleRoleChange = (roleId: string, checked: boolean) => {
   }
 
   // Auto-adjust units based on role
-  const role = roleDefinitions.find((r) => r.id === roleId);
+  const role = roleDefinitions.find(r => r.id === roleId);
   if (role && checked) {
-    if (role.unitScope === "all") {
+    if (role.unitScope === 'all') {
       // Administrator gets all units
       enhancedCurrentUser.value.enheter = [...availableUnits.value];
-    } else if (role.id === "systemadministrator") {
+    } else if (role.id === 'systemadministrator') {
       // System admin gets all units from all organizations
       enhancedCurrentUser.value.enheter = [];
     }
@@ -266,83 +262,73 @@ const handleUnitChange = (unitName: string, checked: boolean) => {
 // Check if units should be shown
 const shouldShowUnits = computed(() => {
   if (!enhancedCurrentUser.value) return false;
-  return enhancedCurrentUser.value.roller.some((roleId) => {
-    const role = roleDefinitions.find((r) => r.id === roleId);
-    return role?.unitScope === "selected";
+  return enhancedCurrentUser.value.roller.some(roleId => {
+    const role = roleDefinitions.find(r => r.id === roleId);
+    return role?.unitScope === 'selected';
   });
 });
 
 // Check if organization should be shown
 const shouldShowOrganization = computed(() => {
   if (!enhancedCurrentUser.value) return true;
-  return !enhancedCurrentUser.value.roller.includes("systemadministrator");
+  return !enhancedCurrentUser.value.roller.includes('systemadministrator');
 });
 
 // Go back to user list
 const goBack = () => {
-  router.push("/admin/users");
+  router.push('/admin/users');
 };
 
 // Format date
 const formatDate = (dateString: string) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleDateString("sv-SE", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('sv-SE', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 };
 
 // Format datetime
 const formatDateTime = (dateString: string) => {
-  if (!dateString) return "-";
-  return new Date(dateString).toLocaleString("sv-SE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleString('sv-SE', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 };
 
 // Helper function to ensure valid Badge variants
-const getBadgeVariant = (color: string | undefined): "default" | "destructive" | "outline" | "secondary" => {
-  if (!color) return "default";
-  const validVariants = ["default", "destructive", "outline", "secondary"];
-  return validVariants.includes(color) ? color as "default" | "destructive" | "outline" | "secondary" : "default";
+const getBadgeVariant = (
+  color: string | undefined
+): 'default' | 'destructive' | 'outline' | 'secondary' => {
+  if (!color) return 'default';
+  const validVariants = ['default', 'destructive', 'outline', 'secondary'];
+  return validVariants.includes(color)
+    ? (color as 'default' | 'destructive' | 'outline' | 'secondary')
+    : 'default';
 };
 </script>
 
 <template>
   <PageLayout
-    :title="
-      enhancedCurrentUser
-        ? `Användare: ${enhancedCurrentUser.namn}`
-        : 'Användare'
-    "
+    :title="enhancedCurrentUser ? `Användare: ${enhancedCurrentUser.namn}` : 'Användare'"
     breadcrumbs="Dashboard / Administration / Användare / Detaljer"
     show-stats
     :stats="stats"
   >
-    <div
-      v-if="enhancedCurrentUser"
-      class="space-y-6 p-6"
-    >
+    <div v-if="enhancedCurrentUser" class="space-y-6 p-6">
       <!-- Header with back button -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            class="gap-2"
-            @click="goBack"
-          >
+          <Button variant="outline" size="sm" class="gap-2" @click="goBack">
             <ArrowLeft class="h-4 w-4" />
             Tillbaka till lista
           </Button>
-          <div
-            class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center"
-          >
+          <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <User class="h-6 w-6 text-primary" />
           </div>
           <div>
@@ -353,10 +339,8 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
               {{ enhancedCurrentUser.epost }}
             </p>
             <div class="flex items-center gap-2 mt-1">
-              <Badge
-                :variant="enhancedCurrentUser.aktiv ? 'default' : 'outline'"
-              >
-                {{ enhancedCurrentUser.aktiv ? "Aktiv" : "Inaktiv" }}
+              <Badge :variant="enhancedCurrentUser.aktiv ? 'default' : 'outline'">
+                {{ enhancedCurrentUser.aktiv ? 'Aktiv' : 'Inaktiv' }}
               </Badge>
               <Badge
                 v-for="role in userRoles"
@@ -373,10 +357,7 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
         <div class="flex gap-2">
           <Dialog v-model:open="showChangePasswordDialog">
             <DialogTrigger as-child>
-              <Button
-                variant="outline"
-                class="gap-2"
-              >
+              <Button variant="outline" class="gap-2">
                 <Shield class="h-4 w-4" />
                 Ändra lösenord
               </Button>
@@ -404,14 +385,8 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                       class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
                       @click="showNewPassword = !showNewPassword"
                     >
-                      <Eye
-                        v-if="!showNewPassword"
-                        class="h-4 w-4"
-                      />
-                      <EyeOff
-                        v-else
-                        class="h-4 w-4"
-                      />
+                      <Eye v-if="!showNewPassword" class="h-4 w-4" />
+                      <EyeOff v-else class="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -431,29 +406,18 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                       class="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
                       @click="showConfirmPassword = !showConfirmPassword"
                     >
-                      <Eye
-                        v-if="!showConfirmPassword"
-                        class="h-4 w-4"
-                      />
-                      <EyeOff
-                        v-else
-                        class="h-4 w-4"
-                      />
+                      <Eye v-if="!showConfirmPassword" class="h-4 w-4" />
+                      <EyeOff v-else class="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
                 <div class="flex gap-4 justify-end pt-4">
-                  <Button
-                    variant="outline"
-                    @click="showChangePasswordDialog = false"
-                  >
+                  <Button variant="outline" @click="showChangePasswordDialog = false">
                     Avbryt
                   </Button>
                   <Button
-                    :disabled="
-                      !passwordForm.newPassword || !passwordForm.confirmPassword
-                    "
+                    :disabled="!passwordForm.newPassword || !passwordForm.confirmPassword"
                     @click="changePassword"
                   >
                     Ändra lösenord
@@ -463,21 +427,14 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
             </DialogContent>
           </Dialog>
 
-          <Button
-            variant="outline"
-            class="gap-2"
-            @click="editingProfile = !editingProfile"
-          >
+          <Button variant="outline" class="gap-2" @click="editingProfile = !editingProfile">
             <Edit class="h-4 w-4" />
-            {{ editingProfile ? "Avbryt" : "Redigera" }}
+            {{ editingProfile ? 'Avbryt' : 'Redigera' }}
           </Button>
 
           <Dialog v-model:open="showDeleteDialog">
             <DialogTrigger as-child>
-              <Button
-                variant="destructive"
-                class="gap-2"
-              >
+              <Button variant="destructive" class="gap-2">
                 <Trash2 class="h-4 w-4" />
                 Ta bort
               </Button>
@@ -489,22 +446,13 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
               <div class="space-y-4">
                 <p class="text-sm text-muted-foreground">
                   Är du säker på att du vill ta bort användaren
-                  <strong>{{ enhancedCurrentUser.namn }}</strong>? Denna åtgärd kan inte ångras.
+                  <strong>{{ enhancedCurrentUser.namn }}</strong>
+                  ? Denna åtgärd kan inte ångras.
                 </p>
 
                 <div class="flex gap-4 justify-end pt-4">
-                  <Button
-                    variant="outline"
-                    @click="showDeleteDialog = false"
-                  >
-                    Avbryt
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    @click="deleteUser"
-                  >
-                    Ta bort användare
-                  </Button>
+                  <Button variant="outline" @click="showDeleteDialog = false">Avbryt</Button>
+                  <Button variant="destructive" @click="deleteUser">Ta bort användare</Button>
                 </div>
               </div>
             </DialogContent>
@@ -530,10 +478,7 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                 v-model="enhancedCurrentUser.namn"
                 placeholder="För- och efternamn"
               />
-              <p
-                v-else
-                class="text-sm bg-muted p-2 rounded"
-              >
+              <p v-else class="text-sm bg-muted p-2 rounded">
                 {{ enhancedCurrentUser.namn }}
               </p>
             </div>
@@ -546,28 +491,19 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                 type="email"
                 placeholder="anvandare@stadsmission.se"
               />
-              <p
-                v-else
-                class="text-sm bg-muted p-2 rounded"
-              >
+              <p v-else class="text-sm bg-muted p-2 rounded">
                 {{ enhancedCurrentUser.epost }}
               </p>
             </div>
 
             <div class="space-y-2">
               <Label>Status</Label>
-              <div
-                v-if="editingProfile"
-                class="flex items-center space-x-2"
-              >
+              <div v-if="editingProfile" class="flex items-center space-x-2">
                 <Switch v-model:checked="enhancedCurrentUser.aktiv" />
                 <Label>Aktiv användare</Label>
               </div>
-              <p
-                v-else
-                class="text-sm bg-muted p-2 rounded"
-              >
-                {{ enhancedCurrentUser.aktiv ? "Aktiv" : "Inaktiv" }}
+              <p v-else class="text-sm bg-muted p-2 rounded">
+                {{ enhancedCurrentUser.aktiv ? 'Aktiv' : 'Inaktiv' }}
               </p>
             </div>
           </CardContent>
@@ -582,69 +518,36 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
             </CardTitle>
           </CardHeader>
           <CardContent class="space-y-4">
-            <div
-              v-if="shouldShowOrganization"
-              class="space-y-2"
-            >
+            <div v-if="shouldShowOrganization" class="space-y-2">
               <Label>Stadsmission</Label>
-              <Select
-                v-if="editingProfile"
-                v-model="enhancedCurrentUser.organisationId"
-              >
+              <Select v-if="editingProfile" v-model="enhancedCurrentUser.organisationId">
                 <SelectTrigger>
                   <SelectValue placeholder="Välj stadsmission" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="org in organizations"
-                    :key="org.id"
-                    :value="org.id"
-                  >
+                  <SelectItem v-for="org in organizations" :key="org.id" :value="org.id">
                     {{ org.namn }}
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <p
-                v-else
-                class="text-sm bg-muted p-2 rounded"
-              >
+              <p v-else class="text-sm bg-muted p-2 rounded">
                 {{ enhancedCurrentUser.organisationNamn }}
               </p>
             </div>
 
-            <div
-              v-if="shouldShowUnits && availableUnits.length > 0"
-              class="space-y-2"
-            >
+            <div v-if="shouldShowUnits && availableUnits.length > 0" class="space-y-2">
               <Label>Tilldelade enheter</Label>
-              <div
-                v-if="editingProfile"
-                class="grid grid-cols-1 gap-2"
-              >
-                <div
-                  v-for="unit in availableUnits"
-                  :key="unit"
-                  class="flex items-center space-x-2"
-                >
+              <div v-if="editingProfile" class="grid grid-cols-1 gap-2">
+                <div v-for="unit in availableUnits" :key="unit" class="flex items-center space-x-2">
                   <Checkbox
                     :id="`unit-${unit}`"
                     :checked="enhancedCurrentUser.enheter.includes(unit)"
-                    @update:checked="
-                      (checked: boolean) => handleUnitChange(unit, checked)
-                    "
+                    @update:checked="(checked: boolean) => handleUnitChange(unit, checked)"
                   />
-                  <Label
-                    :for="`unit-${unit}`"
-                    class="text-sm"
-                  >{{
-                    unit
-                  }}</Label>
+                  <Label :for="`unit-${unit}`" class="text-sm">{{ unit }}</Label>
                 </div>
               </div>
-              <div
-                v-else
-                class="flex flex-wrap gap-1"
-              >
+              <div v-else class="flex flex-wrap gap-1">
                 <Badge
                   v-for="enhet in enhancedCurrentUser.enheter"
                   :key="enhet"
@@ -664,10 +567,7 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
 
             <div class="space-y-2">
               <Label>Roller</Label>
-              <div
-                v-if="editingProfile"
-                class="space-y-3"
-              >
+              <div v-if="editingProfile" class="space-y-3">
                 <div
                   v-for="role in roleDefinitions"
                   :key="role.id"
@@ -676,26 +576,13 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                   <Checkbox
                     :id="role.id"
                     :checked="enhancedCurrentUser.roller.includes(role.id)"
-                    @update:checked="
-                      (checked: boolean) => handleRoleChange(role.id, checked)
-                    "
+                    @update:checked="(checked: boolean) => handleRoleChange(role.id, checked)"
                   />
                   <div class="flex-1">
                     <div class="flex items-center gap-2">
-                      <component
-                        :is="role.icon"
-                        class="h-4 w-4"
-                      />
-                      <Label
-                        :for="role.id"
-                        class="font-medium"
-                      >{{
-                        role.namn
-                      }}</Label>
-                      <Badge
-                        :variant="(role.color as 'default' | 'destructive' | 'outline' | 'secondary')"
-                        class="text-xs"
-                      >
+                      <component :is="role.icon" class="h-4 w-4" />
+                      <Label :for="role.id" class="font-medium">{{ role.namn }}</Label>
+                      <Badge :variant="getBadgeVariant(role.color)" class="text-xs">
                         {{ role.id }}
                       </Badge>
                     </div>
@@ -705,20 +592,14 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                   </div>
                 </div>
               </div>
-              <div
-                v-else
-                class="flex flex-wrap gap-1"
-              >
+              <div v-else class="flex flex-wrap gap-1">
                 <Badge
                   v-for="role in userRoles"
                   :key="role?.id || 'unknown'"
                   :variant="getBadgeVariant(role?.color)"
                   class="text-xs"
                 >
-                  <component
-                    :is="role?.icon"
-                    class="h-3 w-3 mr-1"
-                  />
+                  <component :is="role?.icon" class="h-3 w-3 mr-1" />
                   {{ role?.namn }}
                 </Badge>
               </div>
@@ -743,15 +624,9 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
               class="p-4 border rounded-lg"
             >
               <div class="flex items-center gap-2 mb-2">
-                <component
-                  :is="role?.icon"
-                  class="h-4 w-4"
-                />
+                <component :is="role?.icon" class="h-4 w-4" />
                 <span class="font-medium">{{ role?.namn }}</span>
-                <Badge
-                  :variant="getBadgeVariant(role?.color)"
-                  class="text-xs"
-                >
+                <Badge :variant="getBadgeVariant(role?.color)" class="text-xs">
                   {{ role?.id }}
                 </Badge>
               </div>
@@ -761,13 +636,11 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
               <div class="text-xs">
                 <p>
                   <strong>Stadsmissioner:</strong>
-                  {{
-                    role?.organizationScope === "all" ? "Alla" : "En specifik"
-                  }}
+                  {{ role?.organizationScope === 'all' ? 'Alla' : 'En specifik' }}
                 </p>
                 <p>
                   <strong>Enheter:</strong>
-                  {{ role?.unitScope === "all" ? "Alla" : "Valda enheter" }}
+                  {{ role?.unitScope === 'all' ? 'Alla' : 'Valda enheter' }}
                 </p>
               </div>
             </div>
@@ -797,8 +670,7 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                 <p class="text-sm text-muted-foreground">
                   {{
                     formatDateTime(
-                      enhancedCurrentUser.uppdateradDatum ||
-                        enhancedCurrentUser.skapadDatum
+                      enhancedCurrentUser.uppdateradDatum || enhancedCurrentUser.skapadDatum
                     )
                   }}
                 </p>
@@ -811,7 +683,7 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
                   {{
                     enhancedCurrentUser.senastInloggad
                       ? formatDateTime(enhancedCurrentUser.senastInloggad)
-                      : "Aldrig"
+                      : 'Aldrig'
                   }}
                 </p>
               </div>
@@ -827,20 +699,9 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
       </Card>
 
       <!-- Save Changes -->
-      <div
-        v-if="editingProfile"
-        class="flex gap-4 justify-end pt-4 border-t"
-      >
-        <Button
-          variant="outline"
-          @click="editingProfile = false"
-        >
-          Avbryt
-        </Button>
-        <Button
-          class="gap-2"
-          @click="saveProfile"
-        >
+      <div v-if="editingProfile" class="flex gap-4 justify-end pt-4 border-t">
+        <Button variant="outline" @click="editingProfile = false">Avbryt</Button>
+        <Button class="gap-2" @click="saveProfile">
           <Save class="h-4 w-4" />
           Spara ändringar
         </Button>
@@ -848,19 +709,11 @@ const getBadgeVariant = (color: string | undefined): "default" | "destructive" |
     </div>
 
     <!-- No user found -->
-    <div
-      v-else
-      class="text-center py-12"
-    >
+    <div v-else class="text-center py-12">
       <User class="h-12 w-12 mx-auto text-muted-foreground mb-4" />
       <h3 class="text-lg font-medium mb-2">Användare hittades inte</h3>
-      <p class="text-muted-foreground">
-        Användaren med ID "{{ userId }}" kunde inte hittas
-      </p>
-      <Button
-        class="mt-4 gap-2"
-        @click="goBack"
-      >
+      <p class="text-muted-foreground">Användaren med ID "{{ userId }}" kunde inte hittas</p>
+      <Button class="mt-4 gap-2" @click="goBack">
         <ArrowLeft class="h-4 w-4" />
         Tillbaka till lista
       </Button>

@@ -1,33 +1,31 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, XCircle, Clock, QrCode } from "lucide-vue-next";
+import { computed } from 'vue';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, Clock, QrCode, XCircle } from 'lucide-vue-next';
 
 // Import JSON data
-import attendancesData from "@/assets/data/attendances.json";
-import activitiesData from "@/assets/data/activities.json";
-import participantsData from "@/assets/data/participants.json";
+import attendancesData from '@/assets/data/attendances.json';
+import activitiesData from '@/assets/data/activities.json';
+import participantsData from '@/assets/data/participants.json';
 
 // Enhanced attendance data
 const enhancedAttendances = computed(() => {
-  return attendancesData.map((attendance) => {
-    const activity = activitiesData.find(
-      (a) => a.ActivityID === attendance.ActivityID
-    );
-    const participant = participantsData.find(
-      (p) => p.ParticipantID === attendance.ParticipantID
-    );
+  return attendancesData.map(attendance => {
+    const activity = activitiesData.find(a => a.ActivityID === attendance.ActivityID);
+    const participant = participantsData.find(p => p.ParticipantID === attendance.ParticipantID);
 
     return {
       ...attendance,
-      activityName: activity?.Namn ?? "Okänd aktivitet",
-      participantName: participant ? `${participant.Fornamn} ${participant.Efternamn}` : "Okänd deltagare",
-      activityDate: activity?.DatumTid ?? "",
-      activityPlace: activity?.Plats ?? "",
+      activityName: activity?.Namn ?? 'Okänd aktivitet',
+      participantName: participant
+        ? `${participant.Fornamn} ${participant.Efternamn}`
+        : 'Okänd deltagare',
+      activityDate: activity?.DatumTid ?? '',
+      activityPlace: activity?.Plats ?? '',
     };
   });
 });
@@ -38,38 +36,36 @@ const recentAttendances = computed(() => {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
   return enhancedAttendances.value
-    .filter((a) => new Date(a.DatumTid) >= sevenDaysAgo)
-    .sort(
-      (a, b) => new Date(b.DatumTid).getTime() - new Date(a.DatumTid).getTime()
-    );
+    .filter(a => new Date(a.DatumTid) >= sevenDaysAgo)
+    .sort((a, b) => new Date(b.DatumTid).getTime() - new Date(a.DatumTid).getTime());
 });
 
 // Table columns
 const columns = [
   {
-    key: "participantName",
-    label: "Deltagare",
+    key: 'participantName',
+    label: 'Deltagare',
     sortable: true,
   },
   {
-    key: "activityName",
-    label: "Aktivitet",
+    key: 'activityName',
+    label: 'Aktivitet',
     sortable: true,
   },
   {
-    key: "DatumTid",
-    label: "Registrerad",
+    key: 'DatumTid',
+    label: 'Registrerad',
     sortable: true,
-    format: (value: string) => new Date(value).toLocaleString("sv-SE"),
+    format: (value: string) => new Date(value).toLocaleString('sv-SE'),
   },
   {
-    key: "Närvaro",
-    label: "Status",
+    key: 'Närvaro',
+    label: 'Status',
     sortable: true,
   },
   {
-    key: "Anteckningar",
-    label: "Anteckningar",
+    key: 'Anteckningar',
+    label: 'Anteckningar',
     sortable: false,
   },
 ];
@@ -77,28 +73,28 @@ const columns = [
 // Statistics
 const stats = computed(() => [
   {
-    title: "Totalt registreringar",
+    title: 'Totalt registreringar',
     value: attendancesData.length,
     icon: CheckCircle,
-    color: "blue",
+    color: 'blue',
   },
   {
-    title: "Närvarande",
-    value: attendancesData.filter((a) => a.Närvaro).length,
+    title: 'Närvarande',
+    value: attendancesData.filter(a => a.Närvaro).length,
     icon: CheckCircle,
-    color: "green",
+    color: 'green',
   },
   {
-    title: "Frånvarande",
-    value: attendancesData.filter((a) => !a.Närvaro).length,
+    title: 'Frånvarande',
+    value: attendancesData.filter(a => !a.Närvaro).length,
     icon: XCircle,
-    color: "red",
+    color: 'red',
   },
   {
-    title: "Senaste veckan",
+    title: 'Senaste veckan',
     value: recentAttendances.value.length,
     icon: Clock,
-    color: "purple",
+    color: 'purple',
   },
 ]);
 </script>
@@ -126,7 +122,7 @@ const stats = computed(() => [
             >
               <QrCode class="h-12 w-12 text-muted-foreground" />
             </div>
-            <Button class="w-full"> Starta Scanner </Button>
+            <Button class="w-full">Starta Scanner</Button>
           </div>
         </CardContent>
       </Card>
@@ -138,17 +134,11 @@ const stats = computed(() => [
         </CardHeader>
         <CardContent>
           <div class="space-y-4">
-            <Button
-              variant="outline"
-              class="w-full justify-start gap-2"
-            >
+            <Button variant="outline" class="w-full justify-start gap-2">
               <CheckCircle class="h-4 w-4 text-green-600" />
               Registrera närvaro
             </Button>
-            <Button
-              variant="outline"
-              class="w-full justify-start gap-2"
-            >
+            <Button variant="outline" class="w-full justify-start gap-2">
               <XCircle class="h-4 w-4 text-red-600" />
               Registrera frånvaro
             </Button>
@@ -185,27 +175,18 @@ const stats = computed(() => [
         <CardTitle>Senaste registreringar</CardTitle>
       </CardHeader>
       <CardContent>
-        <DataTable
-          :data="recentAttendances"
-          :columns="columns"
-        >
+        <DataTable :data="recentAttendances" :columns="columns">
           <template #cell-Närvaro="{ value }">
             <Badge :variant="value ? 'default' : 'destructive'">
-              <CheckCircle
-                v-if="value"
-                class="h-3 w-3 mr-1"
-              />
-              <XCircle
-                v-else
-                class="h-3 w-3 mr-1"
-              />
-              {{ value ? "Närvarande" : "Frånvarande" }}
+              <CheckCircle v-if="value" class="h-3 w-3 mr-1" />
+              <XCircle v-else class="h-3 w-3 mr-1" />
+              {{ value ? 'Närvarande' : 'Frånvarande' }}
             </Badge>
           </template>
 
           <template #cell-Anteckningar="{ value }">
             <span class="text-sm text-muted-foreground">
-              {{ value || "Inga anteckningar" }}
+              {{ value || 'Inga anteckningar' }}
             </span>
           </template>
         </DataTable>

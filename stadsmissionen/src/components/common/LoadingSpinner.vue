@@ -1,65 +1,62 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 interface Props {
-  size?: 'sm' | 'md' | 'lg'
-  variant?: 'primary' | 'secondary' | 'muted'
-  text?: string
-  fullScreen?: boolean
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'muted';
+  text?: string;
+  fullScreen?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 'md',
   variant: 'primary',
   text: '',
-  fullScreen: false
-})
+  fullScreen: false,
+});
 
 const sizeClasses = computed(() => {
   switch (props.size) {
     case 'sm':
-      return 'w-4 h-4'
+      return 'w-4 h-4';
     case 'lg':
-      return 'w-8 h-8'
+      return 'w-8 h-8';
     default:
-      return 'w-6 h-6'
+      return 'w-6 h-6';
   }
-})
+});
 
 const colorClasses = computed(() => {
   switch (props.variant) {
     case 'secondary':
-      return 'text-secondary'
+      return 'text-secondary';
     case 'muted':
-      return 'text-muted-foreground'
+      return 'text-muted-foreground';
     default:
-      return 'text-primary'
+      return 'text-primary';
   }
-})
+});
 </script>
 
 <template>
-  <div 
+  <div
     :class="[
       'flex items-center justify-center',
       fullScreen ? 'fixed inset-0 bg-background/80 backdrop-blur-sm z-50' : '',
-      text ? 'flex-col gap-2' : ''
+      text ? 'flex-col gap-2' : '',
     ]"
   >
-    <div 
+    <div
       :class="[
         'animate-spin rounded-full border-2 border-current border-t-transparent',
         sizeClasses,
-        colorClasses
+        colorClasses,
       ]"
       role="status"
       aria-label="Loading"
     />
-    <p
-      v-if="text"
-      class="text-sm text-muted-foreground"
-    >
+    <p v-if="text" class="text-sm text-muted-foreground">
       {{ text }}
     </p>
   </div>
-</template> 
+</template>

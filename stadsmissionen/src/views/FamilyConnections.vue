@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, UserCheck, Plus, Network } from "lucide-vue-next";
+import { computed } from 'vue';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Network, Plus, UserCheck, Users } from 'lucide-vue-next';
 
 // Import JSON data
-import familyRelationsData from "@/assets/data/familyRelations.json";
-import participantsData from "@/assets/data/participants.json";
+import familyRelationsData from '@/assets/data/familyRelations.json';
+import participantsData from '@/assets/data/participants.json';
 
 // Type definitions
 interface Participant {
@@ -41,18 +41,18 @@ const calculateAge = (personnummer: string) => {
 
 // Enhanced family relations with participant names
 const enhancedRelations = computed(() => {
-  return familyRelationsData.map((relation) => {
-    const participant = participantsData.find(
-      (p) => p.ParticipantID === relation.ParticipantID
-    );
+  return familyRelationsData.map(relation => {
+    const participant = participantsData.find(p => p.ParticipantID === relation.ParticipantID);
     const relatedParticipant = participantsData.find(
-      (p) => p.ParticipantID === relation.RelatedParticipantID
+      p => p.ParticipantID === relation.RelatedParticipantID
     );
 
     return {
       ...relation,
-      participantName: participant ? `${participant.Fornamn} ${participant.Efternamn}` : "Okänd",
-      relatedParticipantName: relatedParticipant ? `${relatedParticipant.Fornamn} ${relatedParticipant.Efternamn}` : "Okänd",
+      participantName: participant ? `${participant.Fornamn} ${participant.Efternamn}` : 'Okänd',
+      relatedParticipantName: relatedParticipant
+        ? `${relatedParticipant.Fornamn} ${relatedParticipant.Efternamn}`
+        : 'Okänd',
       participant,
       relatedParticipant,
     };
@@ -61,11 +61,11 @@ const enhancedRelations = computed(() => {
 
 // Group relations by type
 const guardianRelations = computed(() =>
-  enhancedRelations.value.filter((r) => r.RelationType === "Målsman")
+  enhancedRelations.value.filter(r => r.RelationType === 'Målsman')
 );
 
 const siblingRelations = computed(() =>
-  enhancedRelations.value.filter((r) => r.RelationType === "Syskon")
+  enhancedRelations.value.filter(r => r.RelationType === 'Syskon')
 );
 
 // Create family groups for visual representation
@@ -73,7 +73,7 @@ const familyGroups = computed((): FamilyGroup[] => {
   const groups = new Map<string | number, FamilyGroup>();
 
   // Process guardian relations to create family groups
-  guardianRelations.value.forEach((relation) => {
+  guardianRelations.value.forEach(relation => {
     const guardianId = relation.ParticipantID;
 
     if (!groups.has(guardianId)) {
@@ -91,7 +91,7 @@ const familyGroups = computed((): FamilyGroup[] => {
   });
 
   // Add sibling relations
-  siblingRelations.value.forEach((relation) => {
+  siblingRelations.value.forEach(relation => {
     const person1Id = relation.ParticipantID;
     const person2Id = relation.RelatedParticipantID;
 
@@ -106,12 +106,12 @@ const familyGroups = computed((): FamilyGroup[] => {
 
       if (person1InGroup || person2InGroup) {
         if (
-          !group.siblings.some(
-            (s: SiblingRelation) => {
-              return String(s.person1.ParticipantID) === String(person1Id) &&
-                String(s.person2.ParticipantID) === String(person2Id)
-            }
-          )
+          !group.siblings.some((s: SiblingRelation) => {
+            return (
+              String(s.person1.ParticipantID) === String(person1Id) &&
+              String(s.person2.ParticipantID) === String(person2Id)
+            );
+          })
         ) {
           group.siblings.push({
             person1: relation.participant as Participant,
@@ -129,23 +129,23 @@ const familyGroups = computed((): FamilyGroup[] => {
 // Table columns
 const columns = [
   {
-    key: "participantName",
-    label: "Person",
+    key: 'participantName',
+    label: 'Person',
     sortable: true,
   },
   {
-    key: "RelationType",
-    label: "Relation",
+    key: 'RelationType',
+    label: 'Relation',
     sortable: true,
   },
   {
-    key: "relatedParticipantName",
-    label: "Relaterad till",
+    key: 'relatedParticipantName',
+    label: 'Relaterad till',
     sortable: true,
   },
   {
-    key: "actions",
-    label: "Åtgärder",
+    key: 'actions',
+    label: 'Åtgärder',
     sortable: false,
   },
 ];
@@ -153,39 +153,39 @@ const columns = [
 // Statistics
 const stats = computed(() => [
   {
-    title: "Totalt relationer",
+    title: 'Totalt relationer',
     value: familyRelationsData.length,
     icon: Users,
-    color: "blue",
+    color: 'blue',
   },
   {
-    title: "Målsman-relationer",
+    title: 'Målsman-relationer',
     value: guardianRelations.value.length,
     icon: UserCheck,
-    color: "green",
+    color: 'green',
   },
   {
-    title: "Syskon-relationer",
+    title: 'Syskon-relationer',
     value: siblingRelations.value.length,
     icon: Users,
-    color: "purple",
+    color: 'purple',
   },
   {
-    title: "Familjegrupper",
+    title: 'Familjegrupper',
     value: familyGroups.value.length,
     icon: Network,
-    color: "orange",
+    color: 'orange',
   },
 ]);
 
 const handleAddRelation = () => {
   // TODO: Open add relation dialog
-  console.log("Add new family relation");
+  console.log('Add new family relation');
 };
 
 const handleDeleteRelation = (relation: Record<string, unknown>) => {
   // TODO: Delete relation
-  console.log("Delete relation:", relation);
+  console.log('Delete relation:', relation);
 };
 </script>
 
@@ -200,20 +200,14 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
     <div class="px-6 py-4 space-y-6">
       <!-- Actions -->
       <div class="flex justify-end">
-        <Button
-          class="gap-2"
-          @click="handleAddRelation"
-        >
+        <Button class="gap-2" @click="handleAddRelation">
           <Plus class="h-4 w-4" />
           Lägg till relation
         </Button>
       </div>
 
       <!-- Tabs for different views -->
-      <Tabs
-        default-value="visual"
-        class="w-full"
-      >
+      <Tabs default-value="visual" class="w-full">
         <TabsList class="grid w-full grid-cols-3">
           <TabsTrigger value="visual">
             <Network class="h-4 w-4 mr-2" />
@@ -230,10 +224,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
         </TabsList>
 
         <!-- Visual Relations View -->
-        <TabsContent
-          value="visual"
-          class="space-y-4"
-        >
+        <TabsContent value="visual" class="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -253,28 +244,19 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                 >
                   <!-- Guardian -->
                   <div class="text-center">
-                    <div
-                      class="bg-blue-100 dark:bg-blue-900 rounded-lg p-3 mb-2"
-                    >
-                      <div
-                        class="font-semibold text-blue-800 dark:text-blue-200"
-                      >
-                        {{ (group as FamilyGroup)['guardian']?.Namn || "Okänd målsman" }}
+                    <div class="bg-blue-100 dark:bg-blue-900 rounded-lg p-3 mb-2">
+                      <div class="font-semibold text-blue-800 dark:text-blue-200">
+                        {{ (group as FamilyGroup)['guardian']?.Namn || 'Okänd målsman' }}
                       </div>
                       <div class="text-sm text-blue-600 dark:text-blue-300">
                         {{
                           (group as FamilyGroup)['guardian']
                             ? calculateAge((group as FamilyGroup)['guardian'].Personnummer)
-                            : "?"
+                            : '?'
                         }}
                         år
                       </div>
-                      <Badge
-                        variant="default"
-                        class="mt-1"
-                      >
-                        Målsman
-                      </Badge>
+                      <Badge variant="default" class="mt-1">Målsman</Badge>
                     </div>
                   </div>
 
@@ -290,9 +272,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                       :key="child.ParticipantID"
                       class="bg-green-50 dark:bg-green-900 rounded-lg p-2 text-center"
                     >
-                      <div
-                        class="font-medium text-green-800 dark:text-green-200"
-                      >
+                      <div class="font-medium text-green-800 dark:text-green-200">
                         {{ child.Namn || `${child.Fornamn} ${child.Efternamn}` }}
                       </div>
                       <div class="text-sm text-green-600 dark:text-green-300">
@@ -316,18 +296,22 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                         class="text-xs text-center bg-purple-50 dark:bg-purple-900 rounded p-1"
                       >
                         <span class="text-purple-700 dark:text-purple-300">
-                          {{ sibling.person1.Namn || `${sibling.person1.Fornamn} ${sibling.person1.Efternamn}` }} ↔
-                          {{ sibling.person2.Namn || `${sibling.person2.Fornamn} ${sibling.person2.Efternamn}` }}
+                          {{
+                            sibling.person1.Namn ||
+                            `${sibling.person1.Fornamn} ${sibling.person1.Efternamn}`
+                          }}
+                          ↔
+                          {{
+                            sibling.person2.Namn ||
+                            `${sibling.person2.Fornamn} ${sibling.person2.Efternamn}`
+                          }}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div
-                v-else
-                class="text-center py-8 text-muted-foreground"
-              >
+              <div v-else class="text-center py-8 text-muted-foreground">
                 Inga familjegrupper hittades
               </div>
             </CardContent>
@@ -335,10 +319,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
         </TabsContent>
 
         <!-- Guardian Relations Tab -->
-        <TabsContent
-          value="guardians"
-          class="space-y-4"
-        >
+        <TabsContent value="guardians" class="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -347,10 +328,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable
-                :data="guardianRelations"
-                :columns="columns"
-              >
+              <DataTable :data="guardianRelations" :columns="columns">
                 <template #cell-RelationType="{ value }">
                   <Badge variant="default">
                     {{ value }}
@@ -358,11 +336,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                 </template>
 
                 <template #cell-actions="{ row }">
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    @click="handleDeleteRelation(row)"
-                  >
+                  <Button size="sm" variant="destructive" @click="handleDeleteRelation(row)">
                     Ta bort
                   </Button>
                 </template>
@@ -372,10 +346,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
         </TabsContent>
 
         <!-- Sibling Relations Tab -->
-        <TabsContent
-          value="siblings"
-          class="space-y-4"
-        >
+        <TabsContent value="siblings" class="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
@@ -384,10 +355,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable
-                :data="siblingRelations"
-                :columns="columns"
-              >
+              <DataTable :data="siblingRelations" :columns="columns">
                 <template #cell-RelationType="{ value }">
                   <Badge variant="secondary">
                     {{ value }}
@@ -395,11 +363,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                 </template>
 
                 <template #cell-actions="{ row }">
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    @click="handleDeleteRelation(row)"
-                  >
+                  <Button size="sm" variant="destructive" @click="handleDeleteRelation(row)">
                     Ta bort
                   </Button>
                 </template>

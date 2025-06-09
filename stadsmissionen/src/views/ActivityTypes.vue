@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import SearchAndFilter from "@/components/shared/SearchAndFilter.vue";
-import type { TableColumn } from "@/types";
+import { computed, ref } from 'vue';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import SearchAndFilter from '@/components/shared/SearchAndFilter.vue';
+import type { TableColumn } from '@/types';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tag, Plus, Edit, Trash2, Save } from "lucide-vue-next";
+} from '@/components/ui/dialog';
+import { Edit, Plus, Save, Tag, Trash2 } from 'lucide-vue-next';
 
 // Import JSON data
-import activityTypesData from "@/assets/data/activityTypes.json";
-import activitiesData from "@/assets/data/activities.json";
+import activityTypesData from '@/assets/data/activityTypes.json';
+import activitiesData from '@/assets/data/activities.json';
 
 // Define interfaces
 interface ActivityType {
@@ -37,11 +37,13 @@ interface EnhancedActivityType extends ActivityType {
 }
 
 // Reactive data
-const activityTypes = ref<ActivityType[]>(activityTypesData.map(item => ({
-  ...item,
-  ActivityTypeID: Number(item.ActivityTypeID)
-})) as ActivityType[]);
-const searchTerm = ref("");
+const activityTypes = ref<ActivityType[]>(
+  activityTypesData.map(item => ({
+    ...item,
+    ActivityTypeID: Number(item.ActivityTypeID),
+  })) as ActivityType[]
+);
+const searchTerm = ref('');
 const showNewTypeDialog = ref(false);
 const showEditTypeDialog = ref(false);
 const showDeleteDialog = ref(false);
@@ -49,23 +51,23 @@ const typeToDelete = ref<ActivityType | null>(null);
 
 // Form data
 const newType = ref({
-  Typnamn: "",
-  Syfte: "",
-  Beskrivning: "",
+  Typnamn: '',
+  Syfte: '',
+  Beskrivning: '',
 });
 
 const editingType = ref<ActivityType>({
   ActivityTypeID: 0,
-  Typnamn: "",
-  Syfte: "",
-  Beskrivning: "",
+  Typnamn: '',
+  Syfte: '',
+  Beskrivning: '',
 });
 
 // Enhanced activity types with usage statistics
 const enhancedActivityTypes = computed((): EnhancedActivityType[] => {
-  return activityTypes.value.map((type) => {
+  return activityTypes.value.map(type => {
     const usageCount = activitiesData.filter(
-      (a) => Number(a.ActivityTypeID) === Number(type.ActivityTypeID)
+      a => Number(a.ActivityTypeID) === Number(type.ActivityTypeID)
     ).length;
     return {
       ...type,
@@ -81,7 +83,7 @@ const filteredActivityTypes = computed(() => {
 
   const search = searchTerm.value.toLowerCase();
   return enhancedActivityTypes.value.filter(
-    (type) =>
+    type =>
       type.Typnamn.toLowerCase().includes(search) ||
       type.Syfte?.toLowerCase().includes(search) ||
       type.Beskrivning?.toLowerCase().includes(search)
@@ -91,61 +93,61 @@ const filteredActivityTypes = computed(() => {
 // Table columns
 const columns: TableColumn<Record<string, unknown>>[] = [
   {
-    key: "Typnamn",
-    label: "Typnamn",
+    key: 'Typnamn',
+    label: 'Typnamn',
     sortable: true,
   },
   {
-    key: "Syfte",
-    label: "Syfte",
+    key: 'Syfte',
+    label: 'Syfte',
     sortable: true,
-    type: "custom",
+    type: 'custom',
   },
   {
-    key: "usageCount",
-    label: "Antal aktiviteter",
+    key: 'usageCount',
+    label: 'Antal aktiviteter',
     sortable: true,
-    type: "custom",
+    type: 'custom',
   },
   {
-    key: "status",
-    label: "Status",
+    key: 'status',
+    label: 'Status',
     sortable: false,
-    type: "custom",
+    type: 'custom',
   },
   {
-    key: "actions",
-    label: "",
+    key: 'actions',
+    label: '',
     sortable: false,
-    type: "actions",
+    type: 'actions',
   },
 ];
 
 // Statistics
 const stats = computed(() => [
   {
-    title: "Totalt aktivitetstyper",
+    title: 'Totalt aktivitetstyper',
     value: activityTypes.value.length,
     icon: Tag,
-    color: "blue",
+    color: 'blue',
   },
   {
-    title: "Aktiva typer",
-    value: enhancedActivityTypes.value.filter((t) => t.isActive).length,
+    title: 'Aktiva typer',
+    value: enhancedActivityTypes.value.filter(t => t.isActive).length,
     icon: Tag,
-    color: "green",
+    color: 'green',
   },
   {
-    title: "Oanvända typer",
-    value: enhancedActivityTypes.value.filter((t) => !t.isActive).length,
+    title: 'Oanvända typer',
+    value: enhancedActivityTypes.value.filter(t => !t.isActive).length,
     icon: Tag,
-    color: "orange",
+    color: 'orange',
   },
   {
-    title: "Mest använda",
-    value: Math.max(...enhancedActivityTypes.value.map((t) => t.usageCount), 0),
+    title: 'Mest använda',
+    value: Math.max(...enhancedActivityTypes.value.map(t => t.usageCount), 0),
     icon: Tag,
-    color: "purple",
+    color: 'purple',
   },
 ]);
 
@@ -168,15 +170,15 @@ const createActivityType = () => {
   activityTypes.value.push(newActivityType);
   showNewTypeDialog.value = false;
   resetNewTypeForm();
-  console.log("Created new activity type:", newActivityType);
+  console.log('Created new activity type:', newActivityType);
 };
 
 // Reset new type form
 const resetNewTypeForm = () => {
   newType.value = {
-    Typnamn: "",
-    Syfte: "",
-    Beskrivning: "",
+    Typnamn: '',
+    Syfte: '',
+    Beskrivning: '',
   };
 };
 
@@ -190,19 +192,19 @@ const handleEditActivityType = (type: Record<string, unknown>, event: Event) => 
 // Save edited activity type
 const saveEditedActivityType = () => {
   const index = activityTypes.value.findIndex(
-    (t) => t.ActivityTypeID === editingType.value.ActivityTypeID
+    t => t.ActivityTypeID === editingType.value.ActivityTypeID
   );
   if (index > -1) {
     activityTypes.value[index] = { ...editingType.value };
     showEditTypeDialog.value = false;
-    console.log("Updated activity type:", editingType.value);
+    console.log('Updated activity type:', editingType.value);
   }
 };
 
 // Delete activity type
 const handleDeleteActivityType = (type: Record<string, unknown>, event: Event) => {
   event.stopPropagation();
-  
+
   const usageCount = Number(type['usageCount']) || 0;
   if (usageCount > 0) {
     console.warn(
@@ -219,11 +221,11 @@ const handleDeleteActivityType = (type: Record<string, unknown>, event: Event) =
 const confirmDelete = () => {
   if (typeToDelete.value) {
     const index = activityTypes.value.findIndex(
-      (t) => t.ActivityTypeID === typeToDelete.value!.ActivityTypeID
+      t => t.ActivityTypeID === typeToDelete.value?.ActivityTypeID
     );
     if (index > -1) {
       activityTypes.value.splice(index, 1);
-      console.log("Deleted activity type:", typeToDelete.value.ActivityTypeID);
+      console.log('Deleted activity type:', typeToDelete.value.ActivityTypeID);
     }
   }
   showDeleteDialog.value = false;
@@ -246,17 +248,11 @@ const handleNewActivityType = () => {
   >
     <!-- Search and Actions -->
     <div class="px-6 py-4">
-      <SearchAndFilter
-        v-model:search="searchTerm"
-        placeholder="Sök aktivitetstyper..."
-      >
+      <SearchAndFilter v-model:search="searchTerm" placeholder="Sök aktivitetstyper...">
         <template #actions>
           <Dialog v-model:open="showNewTypeDialog">
             <DialogTrigger as-child>
-              <Button
-                class="gap-2"
-                @click="handleNewActivityType"
-              >
+              <Button class="gap-2" @click="handleNewActivityType">
                 <Plus class="h-4 w-4" />
                 Ny aktivitetstyp
               </Button>
@@ -310,8 +306,8 @@ const handleNewActivityType = () => {
                   <Button
                     :disabled="
                       !newType.Typnamn.trim() ||
-                        !newType.Syfte.trim() ||
-                        !newType.Beskrivning.trim()
+                      !newType.Syfte.trim() ||
+                      !newType.Beskrivning.trim()
                     "
                     class="gap-2"
                     @click="createActivityType"
@@ -336,25 +332,19 @@ const handleNewActivityType = () => {
     >
       <template #cell-Syfte="{ value }">
         <span class="text-xs text-muted-foreground line-clamp-2">
-          {{ value || "Inget syfte angivet" }}
+          {{ value || 'Inget syfte angivet' }}
         </span>
       </template>
 
       <template #cell-usageCount="{ value }">
-        <Badge
-          :variant="(value as number) > 0 ? 'default' : 'secondary'"
-          class="text-xs"
-        >
+        <Badge :variant="(value as number) > 0 ? 'default' : 'secondary'" class="text-xs">
           {{ value }} aktiviteter
         </Badge>
       </template>
 
       <template #cell-status="{ row }">
-        <Badge
-          :variant="row['isActive'] ? 'default' : 'secondary'"
-          class="text-xs"
-        >
-          {{ row['isActive'] ? "Aktiv" : "Oanvänd" }}
+        <Badge :variant="row['isActive'] ? 'default' : 'secondary'" class="text-xs">
+          {{ row['isActive'] ? 'Aktiv' : 'Oanvänd' }}
         </Badge>
       </template>
 
@@ -365,7 +355,7 @@ const handleNewActivityType = () => {
             variant="ghost"
             title="Redigera aktivitetstyp"
             class="h-8 w-8 p-0"
-            @click="(event) => handleEditActivityType(row, event)"
+            @click="event => handleEditActivityType(row, event)"
           >
             <Edit class="h-3 w-3" />
           </Button>
@@ -375,7 +365,7 @@ const handleNewActivityType = () => {
             :disabled="Number(row['usageCount']) > 0"
             title="Ta bort aktivitetstyp"
             class="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-            @click="(event) => handleDeleteActivityType(row, event)"
+            @click="event => handleDeleteActivityType(row, event)"
           >
             <Trash2 class="h-3 w-3" />
           </Button>
@@ -422,17 +412,12 @@ const handleNewActivityType = () => {
           </div>
 
           <div class="flex gap-4 justify-end pt-4 border-t">
-            <Button
-              variant="outline"
-              @click="showEditTypeDialog = false"
-            >
-              Avbryt
-            </Button>
+            <Button variant="outline" @click="showEditTypeDialog = false">Avbryt</Button>
             <Button
               :disabled="
                 !editingType.Typnamn.trim() ||
-                  !editingType.Syfte.trim() ||
-                  !editingType.Beskrivning.trim()
+                !editingType.Syfte.trim() ||
+                !editingType.Beskrivning.trim()
               "
               class="gap-2"
               @click="saveEditedActivityType"
@@ -454,23 +439,13 @@ const handleNewActivityType = () => {
         <div class="space-y-4">
           <p class="text-sm text-muted-foreground">
             Är du säker på att du vill ta bort aktivitetstypen
-            <strong>"{{ typeToDelete?.Typnamn || '' }}"</strong>? Denna åtgärd kan
-            inte ångras.
+            <strong>"{{ typeToDelete?.Typnamn || '' }}"</strong>
+            ? Denna åtgärd kan inte ångras.
           </p>
 
           <div class="flex gap-4 justify-end pt-4">
-            <Button
-              variant="outline"
-              @click="showDeleteDialog = false"
-            >
-              Avbryt
-            </Button>
-            <Button
-              variant="destructive"
-              @click="confirmDelete"
-            >
-              Ta bort aktivitetstyp
-            </Button>
+            <Button variant="outline" @click="showDeleteDialog = false">Avbryt</Button>
+            <Button variant="destructive" @click="confirmDelete">Ta bort aktivitetstyp</Button>
           </div>
         </div>
       </DialogContent>

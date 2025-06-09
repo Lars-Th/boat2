@@ -13,7 +13,7 @@
     "uppdateradDatum": "2025-01-10T14:20:00Z"
   },
   {
-    "id": "user-2", 
+    "id": "user-2",
     "namn": "Erik Enhetschef",
     "epost": "erik.enhetschef@ostergotlandsstadsmission.se",
     "losenord": "erik123",
@@ -44,7 +44,7 @@
     "epost": "johan.handlaggare@ostergotlandsstadsmission.se",
     "losenord": "johan123",
     "roller": ["handlaggare"],
-    "organisationId": "org-1", 
+    "organisationId": "org-1",
     "enheter": ["Ekonomisk rådgivning"],
     "aktiv": true,
     "senastInloggad": "2025-01-14T16:15:00Z",
@@ -77,4 +77,4 @@
     "skapadDatum": "2024-07-01T00:00:00Z",
     "uppdateradDatum": "2024-12-15T10:00:00Z"
   }
-] 
+]

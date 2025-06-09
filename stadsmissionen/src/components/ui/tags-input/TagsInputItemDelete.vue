@@ -1,27 +1,26 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
-import { X } from 'lucide-vue-next'
-import { TagsInputItemDelete, type TagsInputItemDeleteProps, useForwardProps } from 'reka-ui'
-import { computed } from 'vue'
-import { cn } from '@/utils/libraryHelper'
+import { type HTMLAttributes, computed } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { X } from 'lucide-vue-next';
+import { TagsInputItemDelete, type TagsInputItemDeleteProps, useForwardProps } from 'reka-ui';
+import { cn } from '@/utils/libraryHelper';
 
-const props = defineProps<TagsInputItemDeleteProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<TagsInputItemDeleteProps & { class?: HTMLAttributes['class'] }>();
 
-const delegatedProps = reactiveOmit(props, 'class')
+const delegatedProps = reactiveOmit(props, 'class');
 
-const forwardedProps = useForwardProps(delegatedProps)
+const forwardedProps = useForwardProps(delegatedProps);
 
 // Filter undefined values for exactOptionalPropertyTypes compatibility
 const cleanedForwardedProps = computed(() => {
-  const cleaned: Record<string, unknown> = {}
+  const cleaned: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(forwardedProps)) {
     if (value !== undefined && value !== null) {
-      cleaned[key] = value
+      cleaned[key] = value;
     }
   }
-  return cleaned
-})
+  return cleaned;
+});
 </script>
 
 <template>

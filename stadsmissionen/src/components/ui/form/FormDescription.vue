@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import type { HTMLAttributes } from 'vue'
-import { cn } from '@/utils/libraryHelper'
-import { useFormField } from '@/components/ui/form/useFormField'
+import type { HTMLAttributes } from 'vue';
+import { cn } from '@/utils/libraryHelper';
+import { useFormField } from '@/components/ui/form/useFormField';
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
-}>()
+  class?: HTMLAttributes['class'];
+}>();
 
-const { formDescriptionId } = useFormField()
+const { formDescriptionId } = useFormField();
 </script>
 
 <template>

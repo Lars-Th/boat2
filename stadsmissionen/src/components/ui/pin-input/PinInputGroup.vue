@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
-import { Primitive, type PrimitiveProps, useForwardProps } from 'reka-ui'
-import { cn } from '@/utils/libraryHelper'
+import type { HTMLAttributes } from 'vue';
+import { reactiveOmit } from '@vueuse/core';
+import { Primitive, type PrimitiveProps, useForwardProps } from 'reka-ui';
+import { cn } from '@/utils/libraryHelper';
 
-const props = defineProps<PrimitiveProps & { class?: HTMLAttributes['class'] }>()
-const delegatedProps = reactiveOmit(props, 'class')
-const forwardedProps = useForwardProps(delegatedProps)
+const props = defineProps<PrimitiveProps & { class?: HTMLAttributes['class'] }>();
+const delegatedProps = reactiveOmit(props, 'class');
+const forwardedProps = useForwardProps(delegatedProps);
 </script>
 
 <template>

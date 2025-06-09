@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { computed } from 'vue';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { FileText, Clock, MapPin } from "lucide-vue-next";
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Clock, FileText, MapPin } from 'lucide-vue-next';
 
 // Import data
-import activityTemplatesData from "@/assets/data/activityTemplates.json";
+import activityTemplatesData from '@/assets/data/activityTemplates.json';
 
 interface Props {
   selectedTemplateId: string;
@@ -29,37 +29,37 @@ const emit = defineEmits<Emits>();
 // Get selected template
 const selectedTemplate = computed(() => {
   if (!props.selectedTemplateId) return null;
-  return activityTemplatesData.find((t) => t.id === props.selectedTemplateId);
+  return activityTemplatesData.find(t => t.id === props.selectedTemplateId);
 });
 
 // Get template type info
 const getTemplateTypeInfo = (malltyp: string) => {
   switch (malltyp) {
-    case "Standard":
+    case 'Standard':
       return {
-        label: "Standard",
-        description: "Aktivitet med specifika deltagare som bjuds in",
+        label: 'Standard',
+        description: 'Aktivitet med specifika deltagare som bjuds in',
         allowsParticipants: true,
         allowsSeries: true,
       };
-    case "Samtal":
+    case 'Samtal':
       return {
-        label: "Samtal",
-        description: "Individuellt eller gruppsamtal med dokumentation",
+        label: 'Samtal',
+        description: 'Individuellt eller gruppsamtal med dokumentation',
         allowsParticipants: true,
         allowsSeries: false,
       };
-    case "OppetHus":
+    case 'OppetHus':
       return {
-        label: "Öppet hus",
-        description: "Öppen aktivitet utan förhandsanmälan",
+        label: 'Öppet hus',
+        description: 'Öppen aktivitet utan förhandsanmälan',
         allowsParticipants: false,
         allowsSeries: true,
       };
     default:
       return {
         label: malltyp,
-        description: "",
+        description: '',
         allowsParticipants: true,
         allowsSeries: true,
       };
@@ -84,9 +84,9 @@ const handleTemplateChange = (templateId: string | null) => {
     <CardContent class="space-y-4">
       <div class="space-y-2">
         <Label for="template">Aktivitetsmall *</Label>
-        <Select 
-          :model-value="selectedTemplateId" 
-          @update:model-value="(value) => handleTemplateChange(value as string)"
+        <Select
+          :model-value="selectedTemplateId"
+          @update:model-value="value => handleTemplateChange(value as string)"
         >
           <SelectTrigger>
             <SelectValue placeholder="Välj en aktivitetsmall..." />
@@ -118,10 +118,7 @@ const handleTemplateChange = (templateId: string | null) => {
       </div>
 
       <!-- Template info -->
-      <div
-        v-if="selectedTemplate"
-        class="p-4 bg-muted/50 rounded-lg"
-      >
+      <div v-if="selectedTemplate" class="p-4 bg-muted/50 rounded-lg">
         <div class="flex items-start gap-3">
           <div class="flex-1">
             <h4 class="font-medium">
@@ -130,18 +127,13 @@ const handleTemplateChange = (templateId: string | null) => {
             <p class="text-sm text-muted-foreground mt-1">
               {{ selectedTemplate.beskrivning }}
             </p>
-            <div
-              class="flex items-center gap-4 mt-2 text-xs text-muted-foreground"
-            >
+            <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
               <span class="flex items-center gap-1">
                 <Clock class="h-3 w-3" />
                 {{ Math.floor(selectedTemplate.standardVaraktighet / 60) }}h
                 {{ selectedTemplate.standardVaraktighet % 60 }}min
               </span>
-              <span
-                v-if="selectedTemplate.standardPlats"
-                class="flex items-center gap-1"
-              >
+              <span v-if="selectedTemplate.standardPlats" class="flex items-center gap-1">
                 <MapPin class="h-3 w-3" />
                 {{ selectedTemplate.standardPlats }}
               </span>
@@ -166,4 +158,4 @@ const handleTemplateChange = (templateId: string | null) => {
       </div>
     </CardContent>
   </Card>
-</template> 
+</template>

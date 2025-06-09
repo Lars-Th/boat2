@@ -1,36 +1,29 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router'
-import { mainNavigationItems, bottomNavigationItems } from '@/router/router'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger,
+import { useRoute, useRouter } from 'vue-router';
+import { bottomNavigationItems, mainNavigationItems } from '@/router/router';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu'
-import { ref, onMounted } from 'vue'
-import { 
-  Palette,
-  User,
-  LogOut,
-  Settings,
-  ChevronDown,
-  ChevronRight
-} from 'lucide-vue-next'
-import stadsmissionenLogo from '@/assets/images/stadsmissionen-logo.png'
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { onMounted, ref } from 'vue';
+import { ChevronDown, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-vue-next';
+import stadsmissionenLogo from '@/assets/images/stadsmissionen-logo.png';
 
 // Props
 interface Props {
-  logoSrc?: string
-  logoAlt?: string
+  logoSrc?: string;
+  logoAlt?: string;
   currentUser?: {
-    name: string
-    email: string
-    role: string
-  }
+    name: string;
+    email: string;
+    role: string;
+  };
 }
 
 // const props = withDefaults(defineProps<Props>(), {
@@ -48,15 +41,15 @@ withDefaults(defineProps<Props>(), {
   currentUser: () => ({
     name: 'Lars Thomas',
     email: 'lars.thomas@example.com',
-    role: 'Administrator'
-  })
-})
+    role: 'Administrator',
+  }),
+});
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 // State for expanded menu items
-const expandedMenuItems = ref<Set<string>>(new Set())
+const expandedMenuItems = ref<Set<string>>(new Set());
 
 const themes = [
   { name: 'Stadsmissionen', value: 'stadsmissionen', class: 'theme_stadsmissionen' },
@@ -66,57 +59,64 @@ const themes = [
   { name: 'Purple', value: 'purple', class: 'theme_purple' },
   { name: 'Amber', value: 'amber', class: 'theme_amber' },
   { name: 'Sky', value: 'sky', class: 'theme_sky' },
-  { name: 'Pink', value: 'pink', class: 'theme_pink' }
-]
+  { name: 'Pink', value: 'pink', class: 'theme_pink' },
+];
 
-const currentTheme = ref('stadsmissionen')
+const currentTheme = ref('stadsmissionen');
 
 const navigateTo = (path: string) => {
-  router.push(path)
-}
+  router.push(path);
+};
 
 const isActiveRoute = (path: string) => {
-  return route.path === path
-}
+  return route.path === path;
+};
 
 const toggleMenuExpansion = (itemName: string) => {
   if (expandedMenuItems.value.has(itemName)) {
-    expandedMenuItems.value.delete(itemName)
+    expandedMenuItems.value.delete(itemName);
   } else {
-    expandedMenuItems.value.add(itemName)
+    expandedMenuItems.value.add(itemName);
   }
-}
+};
 
 const isMenuExpanded = (itemName: string) => {
-  return expandedMenuItems.value.has(itemName)
-}
+  return expandedMenuItems.value.has(itemName);
+};
 
 // Check if any child route of a dropdown menu is active
 const hasActiveChild = (item: Record<string, unknown>) => {
-  if (!item['dropdown']) return false
-  
-  const dropdown = item['dropdown'] as Array<{ children: Array<{ path: string }> }>
-  return dropdown.some((section) => 
-    section.children.some((child) => isActiveRoute(child.path))
-  )
-}
+  if (!item['dropdown']) return false;
 
-const setTheme = (theme: typeof themes[0] | undefined) => {
-  if (!theme) return
-  
-  currentTheme.value = theme.value
-  
+  const dropdown = item['dropdown'] as Array<{ children: Array<{ path: string }> }>;
+  return dropdown.some(section => section.children.some(child => isActiveRoute(child.path)));
+};
+
+const setTheme = (theme: (typeof themes)[0] | undefined) => {
+  if (!theme) return;
+
+  currentTheme.value = theme.value;
+
   // Remove all theme classes
-  document.documentElement.classList.remove('dark', 'theme_stadsmissionen', 'theme_default', 'theme_fuchsia', 'theme_purple', 'theme_amber', 'theme_sky', 'theme_pink')
-  
+  document.documentElement.classList.remove(
+    'dark',
+    'theme_stadsmissionen',
+    'theme_default',
+    'theme_fuchsia',
+    'theme_purple',
+    'theme_amber',
+    'theme_sky',
+    'theme_pink'
+  );
+
   // Add the new theme class
   if (theme.class) {
-    document.documentElement.classList.add(theme.class)
+    document.documentElement.classList.add(theme.class);
   }
-  
+
   // Store theme preference
-  localStorage.setItem('theme', theme.value)
-}
+  localStorage.setItem('theme', theme.value);
+};
 
 // const getCurrentThemeName = computed(() => {
 //   return themes.find(theme => theme.value === currentTheme.value)?.name || 'Default'
@@ -124,40 +124,37 @@ const setTheme = (theme: typeof themes[0] | undefined) => {
 
 // Load saved theme on mount
 onMounted(() => {
-  const savedTheme = localStorage.getItem('theme') ?? 'stadsmissionen'
-  const theme = themes.find(t => t.value === savedTheme)
+  const savedTheme = localStorage.getItem('theme') ?? 'stadsmissionen';
+  const theme = themes.find(t => t.value === savedTheme);
   if (theme) {
-    setTheme(theme)
+    setTheme(theme);
   }
-})
+});
 
 // Emits for parent component
 const emit = defineEmits<{
-  userAction: [action: 'profile' | 'settings' | 'logout']
-}>()
+  userAction: [action: 'profile' | 'settings' | 'logout'];
+}>();
 
 const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
-  emit('userAction', action)
-}
+  emit('userAction', action);
+};
 </script>
 
 <template>
   <aside class="w-64 bg-card border-r border-border flex flex-col">
     <!-- Sidebar Header -->
     <div class="p-4">
-      <img 
-        :src="logoSrc ?? stadsmissionenLogo" 
-        :alt="logoAlt ?? 'Östergötlands Stadsmission'" 
+      <img
+        :src="logoSrc ?? stadsmissionenLogo"
+        :alt="logoAlt ?? 'Östergötlands Stadsmission'"
         class="w-full h-auto max-h-24 object-contain"
-      >
+      />
     </div>
-    
+
     <!-- Main Navigation Section -->
     <nav class="flex-1 p-4 space-y-1">
-      <template
-        v-for="item in mainNavigationItems"
-        :key="item.path"
-      >
+      <template v-for="item in mainNavigationItems" :key="item.path">
         <!-- Regular navigation item without dropdown -->
         <Button
           v-if="!item.dropdown"
@@ -165,61 +162,43 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
           class="w-full justify-start gap-3 h-10"
           @click="navigateTo(item.path)"
         >
-          <component
-            :is="item.icon"
-            class="h-4 w-4"
-          />
+          <component :is="item.icon" class="h-4 w-4" />
           {{ item.name }}
         </Button>
 
         <!-- Expandable navigation item -->
-        <div
-          v-else
-          class="space-y-1"
-        >
+        <div v-else class="space-y-1">
           <!-- Main section header - clickable to expand/collapse -->
           <Button
             variant="ghost"
             class="w-full justify-start gap-3 h-10"
-            :class="{ 
+            :class="{
               'bg-accent/50 hover:bg-accent/70': hasActiveChild(item),
-              'text-foreground': hasActiveChild(item)
+              'text-foreground': hasActiveChild(item),
             }"
             @click="toggleMenuExpansion(item.name)"
           >
+            <component :is="item.icon" class="h-4 w-4" />
+            <span class="flex-1 text-left">{{ item.name }}</span>
             <component
-              :is="item.icon"
+              :is="isMenuExpanded(item.name) ? ChevronDown : ChevronRight"
               class="h-4 w-4"
             />
-            <span class="flex-1 text-left">{{ item.name }}</span>
-            <component 
-              :is="isMenuExpanded(item.name) ? ChevronDown : ChevronRight" 
-              class="h-4 w-4" 
-            />
           </Button>
-          
+
           <!-- Submenu items - only show when expanded -->
           <div
             v-if="isMenuExpanded(item.name)"
             class="space-y-1 ml-5 pl-3 border-l border-primary/30"
           >
-            <template
-              v-for="section in item.dropdown"
-              :key="section.name"
-            >
-              <template
-                v-for="child in section.children"
-                :key="child.path"
-              >
+            <template v-for="section in item.dropdown" :key="section.name">
+              <template v-for="child in section.children" :key="child.path">
                 <Button
                   :variant="isActiveRoute(child.path) ? 'default' : 'ghost'"
                   class="w-full justify-start gap-3 h-8 pl-6 text-sm"
                   @click="navigateTo(child.path)"
                 >
-                  <component
-                    :is="child.icon"
-                    class="h-3 w-3"
-                  />
+                  <component :is="child.icon" class="h-3 w-3" />
                   {{ child.name }}
                 </Button>
               </template>
@@ -228,16 +207,13 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
         </div>
       </template>
     </nav>
-    
+
     <!-- Bottom Navigation Section -->
     <div class="p-4 space-y-1">
       <Separator class="mb-3" />
-      
+
       <!-- Bottom Navigation Items -->
-      <template
-        v-for="item in bottomNavigationItems"
-        :key="item.path"
-      >
+      <template v-for="item in bottomNavigationItems" :key="item.path">
         <!-- Regular navigation item without dropdown -->
         <Button
           v-if="!item.dropdown"
@@ -245,61 +221,43 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
           class="w-full justify-start gap-3 h-10"
           @click="navigateTo(item.path)"
         >
-          <component
-            :is="item.icon"
-            class="h-4 w-4"
-          />
+          <component :is="item.icon" class="h-4 w-4" />
           {{ item.name }}
         </Button>
 
         <!-- Expandable navigation item -->
-        <div
-          v-else
-          class="space-y-1"
-        >
+        <div v-else class="space-y-1">
           <!-- Main section header - clickable to expand/collapse -->
           <Button
             variant="ghost"
             class="w-full justify-start gap-3 h-10"
-            :class="{ 
+            :class="{
               'bg-accent/50 hover:bg-accent/70': hasActiveChild(item),
-              'text-foreground': hasActiveChild(item)
+              'text-foreground': hasActiveChild(item),
             }"
             @click="toggleMenuExpansion(item.name)"
           >
+            <component :is="item.icon" class="h-4 w-4" />
+            <span class="flex-1 text-left">{{ item.name }}</span>
             <component
-              :is="item.icon"
+              :is="isMenuExpanded(item.name) ? ChevronDown : ChevronRight"
               class="h-4 w-4"
             />
-            <span class="flex-1 text-left">{{ item.name }}</span>
-            <component 
-              :is="isMenuExpanded(item.name) ? ChevronDown : ChevronRight" 
-              class="h-4 w-4" 
-            />
           </Button>
-          
+
           <!-- Submenu items - only show when expanded -->
           <div
             v-if="isMenuExpanded(item.name)"
             class="space-y-1 ml-5 pl-3 border-l border-primary/30"
           >
-            <template
-              v-for="section in item.dropdown"
-              :key="section.name"
-            >
-              <template
-                v-for="child in section.children"
-                :key="child.path"
-              >
+            <template v-for="section in item.dropdown" :key="section.name">
+              <template v-for="child in section.children" :key="child.path">
                 <Button
                   :variant="isActiveRoute(child.path) ? 'default' : 'ghost'"
                   class="w-full justify-start gap-3 h-8 pl-6 text-sm"
                   @click="navigateTo(child.path)"
                 >
-                  <component
-                    :is="child.icon"
-                    class="h-3 w-3"
-                  />
+                  <component :is="child.icon" class="h-3 w-3" />
                   {{ child.name }}
                 </Button>
               </template>
@@ -307,22 +265,16 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
           </div>
         </div>
       </template>
-      
+
       <!-- Theme Switcher -->
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <Button
-            variant="ghost"
-            class="w-full justify-start gap-3 h-10"
-          >
+          <Button variant="ghost" class="w-full justify-start gap-3 h-10">
             <Palette class="h-4 w-4" />
             <span class="flex-1 text-left">Themes</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          class="w-48"
-        >
+        <DropdownMenuContent align="start" class="w-48">
           <DropdownMenuLabel>Välj tema</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -332,7 +284,7 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
             @click="setTheme(theme)"
           >
             <span class="flex items-center">
-              <span 
+              <span
                 class="w-3 h-3 rounded-full mr-2 border"
                 :class="{
                   'border-gray-600': theme.value === 'stadsmissionen',
@@ -342,22 +294,19 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
                   'bg-purple-500 border-purple-600': theme.value === 'purple',
                   'bg-amber-500 border-amber-600': theme.value === 'amber',
                   'bg-sky-500 border-sky-600': theme.value === 'sky',
-                  'bg-pink-500 border-pink-600': theme.value === 'pink'
+                  'bg-pink-500 border-pink-600': theme.value === 'pink',
                 }"
                 :style="theme.value === 'stadsmissionen' ? { backgroundColor: '#0071ba' } : {}"
               />
               {{ theme.name }}
-              <span
-                v-if="currentTheme === theme.value"
-                class="ml-auto"
-              >✓</span>
+              <span v-if="currentTheme === theme.value" class="ml-auto">✓</span>
             </span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
     <Separator />
-    
+
     <!-- User Info -->
     <div class="p-4">
       <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
@@ -376,31 +325,18 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="h-8 w-8 p-0"
-            >
+            <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
               <LogOut class="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            class="w-48"
-          >
+          <DropdownMenuContent align="end" class="w-48">
             <DropdownMenuLabel>{{ currentUser?.email ?? 'No Email' }}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              class="cursor-pointer"
-              @click="handleUserAction('profile')"
-            >
+            <DropdownMenuItem class="cursor-pointer" @click="handleUserAction('profile')">
               <User class="mr-2 h-4 w-4" />
               Profil
             </DropdownMenuItem>
-            <DropdownMenuItem
-              class="cursor-pointer"
-              @click="handleUserAction('settings')"
-            >
+            <DropdownMenuItem class="cursor-pointer" @click="handleUserAction('settings')">
               <Settings class="mr-2 h-4 w-4" />
               Inställningar
             </DropdownMenuItem>

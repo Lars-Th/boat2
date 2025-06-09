@@ -1,50 +1,50 @@
 // Vue-specific imports for types
-import type { Component, VNode, Ref } from 'vue'
+import type { Component, Ref, VNode } from 'vue';
 
 // Core entity types
 export interface Customer {
-  id: number
-  name: string
-  email?: string
-  phone?: string
-  address?: string
-  city?: string
-  postalCode?: string
-  country?: string
-  createdAt: string
-  updatedAt: string
+  id: number;
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  postalCode?: string;
+  country?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Contact {
-  id: number
-  customerId: number
-  firstName: string
-  lastName: string
-  email?: string
-  phone?: string
-  position?: string
-  department?: string
-  isPrimary: boolean
-  createdAt: string
-  updatedAt: string
+  id: number;
+  customerId: number;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  phone?: string;
+  position?: string;
+  department?: string;
+  isPrimary: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface WorkOrder {
-  id: number
-  customerId: number
-  contactId?: number
-  title: string
-  description?: string
-  status: WorkOrderStatus
-  priority: WorkOrderPriority
-  assignedTo?: number
-  estimatedHours?: number
-  actualHours?: number
-  startDate?: string
-  dueDate?: string
-  completedDate?: string
-  createdAt: string
-  updatedAt: string
+  id: number;
+  customerId: number;
+  contactId?: number;
+  title: string;
+  description?: string;
+  status: WorkOrderStatus;
+  priority: WorkOrderPriority;
+  assignedTo?: number;
+  estimatedHours?: number;
+  actualHours?: number;
+  startDate?: string;
+  dueDate?: string;
+  completedDate?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Enums
@@ -54,14 +54,14 @@ export enum WorkOrderStatus {
   IN_PROGRESS = 'in_progress',
   ON_HOLD = 'on_hold',
   COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum WorkOrderPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 // User and Authentication types
@@ -83,95 +83,95 @@ export enum UserRole {
   ADMIN = 'admin',
   MANAGER = 'manager',
   USER = 'user',
-  VIEWER = 'viewer'
+  VIEWER = 'viewer',
 }
 
 // API Response types
 export interface ApiResponse<T = unknown> {
-  data: T
-  message?: string
-  success: boolean
-  errors?: string[]
+  data: T;
+  message?: string;
+  success: boolean;
+  errors?: string[];
 }
 
 export interface ApiError {
-  message: string
-  code?: string | number
-  details?: Record<string, unknown>
+  message: string;
+  code?: string | number;
+  details?: Record<string, unknown>;
 }
 
 // UI Component types
 export interface BreadcrumbItem {
-  label: string
-  href?: string
-  to?: string | { name: string; params?: Record<string, unknown> }
-  icon?: string | Component
-  isCurrentPage?: boolean
+  label: string;
+  href?: string;
+  to?: string | { name: string; params?: Record<string, unknown> };
+  icon?: string | Component;
+  isCurrentPage?: boolean;
 }
 
 export interface TableColumn<T = Record<string, unknown>> {
-  key: keyof T | string
-  label: string
-  sortable?: boolean
-  width?: string
-  align?: 'left' | 'center' | 'right'
-  type?: 'text' | 'badge' | 'actions' | 'custom'
-  render?: (value: unknown, row: T) => string | VNode
-  badgeVariant?: (value: unknown) => string
+  key: keyof T | string;
+  label: string;
+  sortable?: boolean;
+  width?: string;
+  align?: 'left' | 'center' | 'right';
+  type?: 'text' | 'badge' | 'actions' | 'custom';
+  render?: (value: unknown, row: T) => string | VNode;
+  badgeVariant?: (value: unknown) => string;
 }
 
 export interface PaginationInfo {
-  currentPage: number
-  totalPages: number
-  totalItems: number
-  itemsPerPage: number
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
 }
 
 // Form types
 export interface FormField<T = unknown> {
-  name: string
-  label: string
-  type: 'text' | 'email' | 'password' | 'number' | 'select' | 'textarea' | 'checkbox' | 'radio'
-  value: T
-  placeholder?: string
-  required?: boolean
-  disabled?: boolean
-  options?: Array<{ label: string; value: unknown }>
-  validation?: ValidationRule
+  name: string;
+  label: string;
+  type: 'text' | 'email' | 'password' | 'number' | 'select' | 'textarea' | 'checkbox' | 'radio';
+  value: T;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  options?: Array<{ label: string; value: unknown }>;
+  validation?: ValidationRule;
 }
 
 // Navigation types
 export interface NavigationItem {
-  label: string
-  path?: string
-  icon?: string | Component
-  children?: NavigationItem[]
-  badge?: string | number
-  external?: boolean
+  label: string;
+  path?: string;
+  icon?: string | Component;
+  children?: NavigationItem[];
+  badge?: string | number;
+  external?: boolean;
 }
 
 // Filter and Search types
 export interface FilterOption {
-  key?: string
-  label: string
-  type?: 'text' | 'select' | 'date' | 'number' | 'boolean'
-  value?: string | number | boolean | Date // For backward compatibility
-  options?: Array<{ value: string | number | boolean; label: string }>
+  key?: string;
+  label: string;
+  type?: 'text' | 'select' | 'date' | 'number' | 'boolean';
+  value?: string | number | boolean | Date; // For backward compatibility
+  options?: Array<{ value: string | number | boolean; label: string }>;
 }
 
 // Simple filter option for basic dropdowns
 export interface SimpleFilterOption {
-  value: string | number
-  label: string
+  value: string | number;
+  label: string;
 }
 
 export interface SearchFilters {
-  [key: string]: string | number | boolean | Date | null | undefined
+  [key: string]: string | number | boolean | Date | null | undefined;
 }
 
 export interface SortOption {
-  field: string
-  direction: 'asc' | 'desc'
+  field: string;
+  direction: 'asc' | 'desc';
 }
 
 // Toast/Notification types
@@ -282,7 +282,7 @@ export interface Participant {
   Personnummer: string;
   Kon: string;
   Telefon: string;
-  "E-post": string;
+  'E-post': string;
   Adress: string;
   Postnummer: string;
   Ort: string;
@@ -336,7 +336,21 @@ export interface ActivityTemplate {
   namn: string;
   beskrivning: string;
   malltyp: string;
-  types: ActivityType[];
+  aktivitetstyper: string[];
+  standardVaraktighet: number;
+  standardPlats: string;
+  resultatformular: Array<{
+    id: string;
+    fraga: string;
+    typ: string;
+    obligatorisk: boolean;
+    skalaMin?: number;
+    skalaMax?: number;
+    skalaKommentar?: boolean;
+    harKommentar?: boolean;
+  }>;
+  skapadDatum: string;
+  skapadAv: string;
 }
 
 export interface ParticipantGroup {
@@ -346,7 +360,7 @@ export interface ParticipantGroup {
   enheter: string[];
   deltagare: string[];
   isAutomatic: boolean;
-  automatiskregel?: string;
+  automatiskregel?: string | null;
 }
 
 export interface PermissionGroup {
@@ -404,66 +418,82 @@ export interface RouteParams {
 
 // Validation types
 export interface ValidationRule {
-  required?: boolean
-  minLength?: number
-  maxLength?: number
-  min?: number
-  max?: number
-  pattern?: RegExp
-  email?: boolean
-  numeric?: boolean
-  custom?: (value: unknown) => boolean | string
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  pattern?: RegExp;
+  email?: boolean;
+  numeric?: boolean;
+  custom?: (value: unknown) => boolean | string;
 }
 
 export interface ValidationResult {
-  isValid: boolean
-  message?: string
-  errors?: string[]
+  isValid: boolean;
+  message?: string;
+  errors?: string[];
 }
 
 export interface ValidationSchema {
   [fieldName: string]: {
-    rules: string[]
-    displayName: string
-  }
+    rules: string[];
+    displayName: string;
+  };
 }
 
 export interface UseValidationReturn {
-  validate: (value: unknown, rules: ValidationRule) => ValidationResult
-  validateForm: (data: Record<string, unknown>, schema: Record<string, ValidationRule>) => Record<string, ValidationResult>
-  isFormValid: (results: Record<string, ValidationResult>) => boolean
-  validateField: (fieldName: string, value: unknown, rules: string[], displayName?: string) => boolean
-  validateAll: (data: Record<string, unknown>, schema: Record<string, { rules: string[]; displayName?: string }>) => boolean
-  validateWithSchema: (data: Record<string, unknown>, schema: ValidationSchema) => boolean
-  validateNestedField: (data: Record<string, unknown>, fieldPath: string, rules: string[], displayName?: string) => boolean
-  touchField: (fieldName: string) => void
-  hasError: (fieldName: string) => boolean
-  getError: (fieldName: string) => string | null
-  isRequired: (fieldName: string, schema: Record<string, { rules?: string[] }>) => boolean
-  clearErrors: () => void
-  clearFieldError: (fieldName: string) => void
-  errors: Ref<Record<string, string | null>>
-  touchedFields: Ref<Record<string, boolean>>
+  validate: (value: unknown, rules: ValidationRule) => ValidationResult;
+  validateForm: (
+    data: Record<string, unknown>,
+    schema: Record<string, ValidationRule>
+  ) => Record<string, ValidationResult>;
+  isFormValid: (results: Record<string, ValidationResult>) => boolean;
+  validateField: (
+    fieldName: string,
+    value: unknown,
+    rules: string[],
+    displayName?: string
+  ) => boolean;
+  validateAll: (
+    data: Record<string, unknown>,
+    schema: Record<string, { rules: string[]; displayName?: string }>
+  ) => boolean;
+  validateWithSchema: (data: Record<string, unknown>, schema: ValidationSchema) => boolean;
+  validateNestedField: (
+    data: Record<string, unknown>,
+    fieldPath: string,
+    rules: string[],
+    displayName?: string
+  ) => boolean;
+  touchField: (fieldName: string) => void;
+  hasError: (fieldName: string) => boolean;
+  getError: (fieldName: string) => string | null;
+  isRequired: (fieldName: string, schema: Record<string, { rules?: string[] }>) => boolean;
+  clearErrors: () => void;
+  clearFieldError: (fieldName: string) => void;
+  errors: Ref<Record<string, string | null>>;
+  touchedFields: Ref<Record<string, boolean>>;
 }
 
 // Utility types
-export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
-export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>
+export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 // Generic data item for cards and tables
 export interface DataItem {
-  id: string | number
-  [key: string]: unknown
+  id: string | number;
+  [key: string]: unknown;
 }
 
 // Component prop types
 export interface BaseComponentProps {
-  class?: string
-  id?: string
+  class?: string;
+  id?: string;
 }
 
 export interface LoadingState {
-  isLoading: boolean
-  error?: string | null
-  data?: unknown
-} 
+  isLoading: boolean;
+  error?: string | null;
+  data?: unknown;
+}

@@ -1,56 +1,62 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent } from '@/components/ui/card'
-import { Search, Filter, X } from 'lucide-vue-next'
-import type { FilterOption } from '@/types'
+import { ref } from 'vue';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
+import { Filter, Search, X } from 'lucide-vue-next';
+import type { FilterOption } from '@/types';
 
 interface FilterConfig {
-  key: string
-  label: string
-  options: FilterOption[]
+  key: string;
+  label: string;
+  options: FilterOption[];
 }
 
 interface Props {
-  search?: string
-  placeholder?: string
-  filters?: FilterConfig[]
+  search?: string;
+  placeholder?: string;
+  filters?: FilterConfig[];
 }
 
 interface Emits {
-  (e: 'update:search', value: string | number): void
+  (e: 'update:search', value: string | number): void;
 }
 
-const { search = '', placeholder = 'Sök...', filters = [] } = defineProps<Props>()
+const { search = '', placeholder = 'Sök...', filters = [] } = defineProps<Props>();
 
-const emit = defineEmits<Emits>()
+const emit = defineEmits<Emits>();
 
-const showFilters = ref(false)
-const activeFilters = ref<Record<string, string>>({})
+const showFilters = ref(false);
+const activeFilters = ref<Record<string, string>>({});
 
 const updateSearch = (value: string | number) => {
-  emit('update:search', value)
-}
+  emit('update:search', value);
+};
 
 const toggleFilters = () => {
-  showFilters.value = !showFilters.value
-}
+  showFilters.value = !showFilters.value;
+};
 
 const clearFilters = () => {
-  activeFilters.value = {}
-}
+  activeFilters.value = {};
+};
 
 const hasActiveFilters = () => {
-  return Object.keys(activeFilters.value).length > 0
-}
+  return Object.keys(activeFilters.value).length > 0;
+};
 
 const updateFilter = (filterKey: string, value: string | number | null) => {
   if (value !== null) {
-    activeFilters.value[filterKey] = String(value)
+    activeFilters.value[filterKey] = String(value);
   }
-}
+};
 </script>
 
 <template>
@@ -59,7 +65,9 @@ const updateFilter = (filterKey: string, value: string | number | null) => {
     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
       <!-- Search Input -->
       <div class="relative flex-1 max-w-md">
-        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search
+          class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+        />
         <Input
           :model-value="search"
           :placeholder="placeholder"
@@ -94,22 +102,17 @@ const updateFilter = (filterKey: string, value: string | number | null) => {
     </div>
 
     <!-- Filters Panel -->
-    <Card
-      v-if="showFilters && filters.length > 0"
-      class="border-dashed"
-    >
+    <Card v-if="showFilters && filters.length > 0" class="border-dashed">
       <CardContent class="pt-4">
         <div class="flex flex-wrap gap-4 items-end">
           <!-- Filter Selects -->
-          <div
-            v-for="filter in filters"
-            :key="filter.key"
-            class="min-w-[200px]"
-          >
+          <div v-for="filter in filters" :key="filter.key" class="min-w-[200px]">
             <label class="text-sm font-medium mb-2 block">{{ filter.label }}</label>
-            <Select 
-              :model-value="activeFilters[filter.key] ?? ''" 
-              @update:model-value="(value) => updateFilter(filter.key, value as string | number | null)"
+            <Select
+              :model-value="activeFilters[filter.key] ?? ''"
+              @update:model-value="
+                value => updateFilter(filter.key, value as string | number | null)
+              "
             >
               <SelectTrigger>
                 <SelectValue :placeholder="`Välj ${filter.label.toLowerCase()}`" />
@@ -141,4 +144,4 @@ const updateFilter = (filterKey: string, value: string | number | null) => {
       </CardContent>
     </Card>
   </div>
-</template> 
+</template>

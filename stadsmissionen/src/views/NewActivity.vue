@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { useRouter } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Save, ArrowLeft } from "lucide-vue-next";
-import { useToast } from "@/composables/useToast";
-import { useAuth } from "@/composables/useAuth";
+} from '@/components/ui/select';
+import { ArrowLeft, Save } from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
+import { useAuth } from '@/composables/useAuth';
 
 // Import decomposed components
-import ActivityTemplateSelector from "@/components/features/activity/ActivityTemplateSelector.vue";
-import ActivityDetailsForm from "@/components/features/activity/ActivityDetailsForm.vue";
-import ActivitySeriesSettings from "@/components/features/activity/ActivitySeriesSettings.vue";
-import ActivityParticipantSelector from "@/components/features/activity/ActivityParticipantSelector.vue";
+import ActivityTemplateSelector from '@/components/features/activity/ActivityTemplateSelector.vue';
+import ActivityDetailsForm from '@/components/features/activity/ActivityDetailsForm.vue';
+import ActivitySeriesSettings from '@/components/features/activity/ActivitySeriesSettings.vue';
+import ActivityParticipantSelector from '@/components/features/activity/ActivityParticipantSelector.vue';
 
 // Import data
-import activityTemplatesData from "@/assets/data/activityTemplates.json";
+import activityTemplatesData from '@/assets/data/activityTemplates.json';
 
 const router = useRouter();
 const { success, warning } = useToast();
@@ -34,24 +34,24 @@ const { getCurrentUserId } = useAuth();
 // Form data
 const form = ref({
   // Template selection
-  templateId: "",
+  templateId: '',
 
   // Basic info (auto-populated from template)
-  namn: "",
-  beskrivning: "",
-  plats: "",
+  namn: '',
+  beskrivning: '',
+  plats: '',
 
   // Scheduling
-  startDatum: "",
-  startTid: "",
+  startDatum: '',
+  startTid: '',
   varaktighet: 60, // minutes
 
   // Series settings
   arSerie: false,
   serieInställningar: {
-    veckodag: "",
+    veckodag: '',
     antalVeckor: 1,
-    slutDatum: "",
+    slutDatum: '',
   },
 
   // Participants
@@ -60,53 +60,53 @@ const form = ref({
   maxDeltagare: null as number | null,
 
   // Additional settings
-  enhet: "",
-  anteckningar: "",
+  enhet: '',
+  anteckningar: '',
 });
 
 // Available units
 const enheter = [
-  "Barn och unga",
-  "Familjecentral",
-  "Ekonomisk rådgivning",
-  "Boendestöd",
-  "Arbetsträning",
+  'Barn och unga',
+  'Familjecentral',
+  'Ekonomisk rådgivning',
+  'Boendestöd',
+  'Arbetsträning',
 ];
 
 // Get selected template
 const selectedTemplate = computed(() => {
   if (!form.value.templateId) return null;
-  return activityTemplatesData.find((t) => t.id === form.value.templateId);
+  return activityTemplatesData.find(t => t.id === form.value.templateId);
 });
 
 // Get template type info
 const getTemplateTypeInfo = (malltyp: string) => {
   switch (malltyp) {
-    case "Standard":
+    case 'Standard':
       return {
-        label: "Standard",
-        description: "Aktivitet med specifika deltagare som bjuds in",
+        label: 'Standard',
+        description: 'Aktivitet med specifika deltagare som bjuds in',
         allowsParticipants: true,
         allowsSeries: true,
       };
-    case "Samtal":
+    case 'Samtal':
       return {
-        label: "Samtal",
-        description: "Individuellt eller gruppsamtal med dokumentation",
+        label: 'Samtal',
+        description: 'Individuellt eller gruppsamtal med dokumentation',
         allowsParticipants: true,
         allowsSeries: false,
       };
-    case "OppetHus":
+    case 'OppetHus':
       return {
-        label: "Öppet hus",
-        description: "Öppen aktivitet utan förhandsanmälan",
+        label: 'Öppet hus',
+        description: 'Öppen aktivitet utan förhandsanmälan',
         allowsParticipants: false,
         allowsSeries: true,
       };
     default:
       return {
         label: malltyp,
-        description: "",
+        description: '',
         allowsParticipants: true,
         allowsSeries: true,
       };
@@ -122,12 +122,12 @@ const templateTypeInfo = computed(() => {
 // Watch template selection and auto-populate fields
 watch(
   () => form.value.templateId,
-  (newTemplateId) => {
+  newTemplateId => {
     if (newTemplateId && selectedTemplate.value) {
       const template = selectedTemplate.value;
       form.value.namn = template.namn;
       form.value.beskrivning = template.beskrivning;
-      form.value.plats = template.standardPlats || "";
+      form.value.plats = template.standardPlats || '';
       form.value.varaktighet = template.standardVaraktighet;
 
       // Reset series if template doesn't support it
@@ -146,15 +146,15 @@ watch(
 
 // Validation
 const isFormValid = computed(() => {
-  const hasTemplate = form.value.templateId !== "";
-  const hasName = form.value.namn.trim() !== "";
-  const hasDate = form.value.startDatum !== "";
-  const hasTime = form.value.startTid !== "";
+  const hasTemplate = form.value.templateId !== '';
+  const hasName = form.value.namn.trim() !== '';
+  const hasDate = form.value.startDatum !== '';
+  const hasTime = form.value.startTid !== '';
 
   // Series validation
   const seriesValid =
     !form.value.arSerie ||
-    (form.value.serieInställningar.veckodag !== "" &&
+    (form.value.serieInställningar.veckodag !== '' &&
       form.value.serieInställningar.antalVeckor > 1);
 
   return hasTemplate && hasName && hasDate && hasTime && seriesValid;
@@ -188,7 +188,7 @@ const handleGroupsUpdate = (groups: string[]) => {
 // Save activity
 const handleSave = () => {
   if (!isFormValid.value) {
-    warning("Validering misslyckades", "Vänligen fyll i alla obligatoriska fält");
+    warning('Validering misslyckades', 'Vänligen fyll i alla obligatoriska fält');
     return;
   }
 
@@ -207,7 +207,7 @@ const handleSave = () => {
         namn: `${form.value.namn} - Vecka ${i + 1}`,
         beskrivning: form.value.beskrivning,
         plats: form.value.plats,
-        datum: activityDate.toISOString().split("T")[0],
+        datum: activityDate.toISOString().split('T')[0],
         tid: form.value.startTid,
         varaktighet: form.value.varaktighet,
         maxDeltagare: form.value.maxDeltagare,
@@ -222,8 +222,8 @@ const handleSave = () => {
       activities.push(activity);
     }
 
-    console.log("Creating activity series:", activities);
-    success("Serie skapad", `Skapade ${activities.length} aktiviteter i serien framgångsrikt`);
+    console.log('Creating activity series:', activities);
+    success('Serie skapad', `Skapade ${activities.length} aktiviteter i serien framgångsrikt`);
   } else {
     // Create single activity
     const activity = {
@@ -244,23 +244,20 @@ const handleSave = () => {
       skapadAv: getCurrentUserId(),
     };
 
-    console.log("Creating single activity:", activity);
-    success("Aktivitet skapad", "Din nya aktivitet har skapats framgångsrikt");
+    console.log('Creating single activity:', activity);
+    success('Aktivitet skapad', 'Din nya aktivitet har skapats framgångsrikt');
   }
 
-  router.push("/activities");
+  router.push('/activities');
 };
 
 const handleCancel = () => {
-  router.push("/activities");
+  router.push('/activities');
 };
 </script>
 
 <template>
-  <PageLayout
-    title="Ny aktivitet"
-    breadcrumbs="Dashboard / Aktiviteter / Ny aktivitet"
-  >
+  <PageLayout title="Ny aktivitet" breadcrumbs="Dashboard / Aktiviteter / Ny aktivitet">
     <div class="max-w-4xl mx-auto space-y-6">
       <!-- Template Selection Component -->
       <ActivityTemplateSelector
@@ -320,21 +317,14 @@ const handleCancel = () => {
                   <SelectValue placeholder="Välj enhet" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="enhet in enheter"
-                    :key="enhet"
-                    :value="enhet"
-                  >
+                  <SelectItem v-for="enhet in enheter" :key="enhet" :value="enhet">
                     {{ enhet }}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div
-              v-if="templateTypeInfo?.allowsParticipants"
-              class="space-y-2"
-            >
+            <div v-if="templateTypeInfo?.allowsParticipants" class="space-y-2">
               <Label for="maxDeltagare">Max antal deltagare</Label>
               <Input
                 id="maxDeltagare"
@@ -342,10 +332,12 @@ const handleCancel = () => {
                 min="1"
                 placeholder="Ingen begränsning"
                 :value="form.maxDeltagare?.toString() || ''"
-                @input="(event: Event) => {
-                  const target = event.target as HTMLInputElement;
-                  form.maxDeltagare = target.value ? Number(target.value) : null;
-                }"
+                @input="
+                  (event: Event) => {
+                    const target = event.target as HTMLInputElement;
+                    form.maxDeltagare = target.value ? Number(target.value) : null;
+                  }
+                "
               />
             </div>
           </div>
@@ -364,24 +356,16 @@ const handleCancel = () => {
 
       <!-- Action Buttons -->
       <div class="flex gap-4 justify-end">
-        <Button
-          variant="outline"
-          class="gap-2"
-          @click="handleCancel"
-        >
+        <Button variant="outline" class="gap-2" @click="handleCancel">
           <ArrowLeft class="h-4 w-4" />
           Avbryt
         </Button>
-        <Button
-          :disabled="!isFormValid"
-          class="gap-2"
-          @click="handleSave"
-        >
+        <Button :disabled="!isFormValid" class="gap-2" @click="handleSave">
           <Save class="h-4 w-4" />
           {{
             form.arSerie
               ? `Skapa ${form.serieInställningar.antalVeckor} aktiviteter`
-              : "Skapa aktivitet"
+              : 'Skapa aktivitet'
           }}
         </Button>
       </div>

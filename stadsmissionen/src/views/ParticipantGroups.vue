@@ -1,57 +1,57 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
-import PageLayout from "@/components/layout/PageLayout.vue";
-import DataTable from "@/components/shared/DataTable.vue";
-import SearchAndFilter from "@/components/shared/SearchAndFilter.vue";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import PageLayout from '@/components/layout/PageLayout.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import SearchAndFilter from '@/components/shared/SearchAndFilter.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-import { Users, Plus, Edit, Trash2, Eye, UserPlus, Zap } from "lucide-vue-next";
-import type { TableColumn } from "@/types";
-import { useToast } from "@/composables/useToast";
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Edit, Eye, Plus, Trash2, UserPlus, Users, Zap } from 'lucide-vue-next';
+import type { TableColumn } from '@/types';
+import { useToast } from '@/composables/useToast';
 
 // Import data
-import participantGroupsData from "@/assets/data/participantGroups.json";
-import participantsData from "@/assets/data/participants.json";
+import participantGroupsData from '@/assets/data/participantGroups.json';
+import participantsData from '@/assets/data/participants.json';
 
 const router = useRouter();
 const { success, warning } = useToast();
-const searchTerm = ref("");
+const searchTerm = ref('');
 const showNewGroupDialog = ref(false);
 
 // New group form
 const newGroupForm = ref({
-  namn: "",
-  beskrivning: "",
+  namn: '',
+  beskrivning: '',
   enheter: [] as string[],
   deltagare: [] as string[],
-  automatiskregel: "",
+  automatiskregel: '',
   isAutomatic: false,
 });
 
 // Available units
 const enheter = [
-  "Barn och unga",
-  "Familjecentral",
-  "Ekonomisk rådgivning",
-  "Boendestöd",
-  "Arbetsträning",
-  "Språkstöd",
-  "Fritidsgård",
+  'Barn och unga',
+  'Familjecentral',
+  'Ekonomisk rådgivning',
+  'Boendestöd',
+  'Arbetsträning',
+  'Språkstöd',
+  'Fritidsgård',
 ];
 
 // Define interface directly in component to avoid import issues
@@ -67,12 +67,10 @@ interface ParticipantGroup {
 
 // Enhanced groups with calculated data
 const enhancedGroups = computed(() => {
-  return participantGroupsData.map((group) => {
-    const participantNames = group.deltagare.map((id) => {
-      const participant = participantsData.find((p) => String(p.ParticipantID) === String(id));
-      return participant
-        ? `${participant.Fornamn} ${participant.Efternamn}`
-        : "Okänd deltagare";
+  return participantGroupsData.map(group => {
+    const participantNames = group.deltagare.map(id => {
+      const participant = participantsData.find(p => String(p.ParticipantID) === String(id));
+      return participant ? `${participant.Fornamn} ${participant.Efternamn}` : 'Okänd deltagare';
     });
 
     return {
@@ -80,7 +78,7 @@ const enhancedGroups = computed(() => {
       participantNames,
       participantCount: group.deltagare.length,
       isAutomatic: !!group.automatiskregel,
-      enheterText: group.enheter.join(", "),
+      enheterText: group.enheter.join(', '),
     };
   });
 });
@@ -91,95 +89,94 @@ const filteredGroups = computed(() => {
 
   const search = searchTerm.value.toLowerCase();
   return enhancedGroups.value.filter(
-    (group) =>
+    group =>
       group.namn.toLowerCase().includes(search) ||
       group.beskrivning.toLowerCase().includes(search) ||
-      group.enheter.some((enhet) => enhet.toLowerCase().includes(search)) ||
-      group.participantNames.some((name) => name.toLowerCase().includes(search))
+      group.enheter.some(enhet => enhet.toLowerCase().includes(search)) ||
+      group.participantNames.some(name => name.toLowerCase().includes(search))
   );
 });
 
 // Table columns
 const columns: TableColumn[] = [
   {
-    key: "namn",
-    label: "Gruppnamn",
+    key: 'namn',
+    label: 'Gruppnamn',
     sortable: true,
   },
   {
-    key: "beskrivning",
-    label: "Beskrivning",
+    key: 'beskrivning',
+    label: 'Beskrivning',
     sortable: false,
-    type: "custom" as const,
+    type: 'custom' as const,
   },
   {
-    key: "enheter",
-    label: "Enheter",
+    key: 'enheter',
+    label: 'Enheter',
     sortable: false,
-    type: "custom" as const,
+    type: 'custom' as const,
   },
   {
-    key: "participantCount",
-    label: "Deltagare",
+    key: 'participantCount',
+    label: 'Deltagare',
     sortable: true,
   },
   {
-    key: "isAutomatic",
-    label: "Typ",
+    key: 'isAutomatic',
+    label: 'Typ',
     sortable: true,
-    type: "custom" as const,
+    type: 'custom' as const,
   },
   {
-    key: "actions",
-    label: "",
+    key: 'actions',
+    label: '',
     sortable: false,
-    type: "actions" as const,
+    type: 'actions' as const,
   },
 ];
 
 // Statistics
 const stats = computed(() => [
   {
-    title: "Totalt grupper",
+    title: 'Totalt grupper',
     value: participantGroupsData.length,
     icon: Users,
-    color: "blue",
+    color: 'blue',
   },
   {
-    title: "Manuella grupper",
-    value: participantGroupsData.filter((g) => !g.automatiskregel).length,
+    title: 'Manuella grupper',
+    value: participantGroupsData.filter(g => !g.automatiskregel).length,
     icon: UserPlus,
-    color: "green",
+    color: 'green',
   },
   {
-    title: "Automatiska grupper",
-    value: participantGroupsData.filter((g) => g.automatiskregel).length,
+    title: 'Automatiska grupper',
+    value: participantGroupsData.filter(g => g.automatiskregel).length,
     icon: Zap,
-    color: "purple",
+    color: 'purple',
   },
   {
-    title: "Totalt deltagare",
-    value: [...new Set(participantGroupsData.flatMap((g) => g.deltagare))]
-      .length,
+    title: 'Totalt deltagare',
+    value: [...new Set(participantGroupsData.flatMap(g => g.deltagare))].length,
     icon: Users,
-    color: "orange",
+    color: 'orange',
   },
 ]);
 
 // Filters
 const filters = [
   {
-    key: "typ",
-    label: "Typ",
+    key: 'typ',
+    label: 'Typ',
     options: [
-      { value: "manual", label: "Manuella" },
-      { value: "automatic", label: "Automatiska" },
+      { value: 'manual', label: 'Manuella' },
+      { value: 'automatic', label: 'Automatiska' },
     ],
   },
   {
-    key: "enhet",
-    label: "Enhet",
-    options: enheter.map((enhet) => ({ value: enhet, label: enhet })),
+    key: 'enhet',
+    label: 'Enhet',
+    options: enheter.map(enhet => ({ value: enhet, label: enhet })),
   },
 ];
 
@@ -209,20 +206,18 @@ const handleParticipantChange = (participantId: string, checked: boolean) => {
 
 // Get participant name
 const getParticipantName = (participantId: string) => {
-  const participant = participantsData.find((p) => String(p.ParticipantID) === participantId);
-  return participant
-    ? `${participant.Fornamn} ${participant.Efternamn}`
-    : "Okänd deltagare";
+  const participant = participantsData.find(p => String(p.ParticipantID) === participantId);
+  return participant ? `${participant.Fornamn} ${participant.Efternamn}` : 'Okänd deltagare';
 };
 
 // Reset form
 const resetForm = () => {
   newGroupForm.value = {
-    namn: "",
-    beskrivning: "",
+    namn: '',
+    beskrivning: '',
     enheter: [],
     deltagare: [],
-    automatiskregel: "",
+    automatiskregel: '',
     isAutomatic: false,
   };
 };
@@ -230,7 +225,7 @@ const resetForm = () => {
 // Create new group
 const createGroup = () => {
   if (!isFormValid.value) {
-    warning("Validering misslyckades", "Vänligen fyll i alla obligatoriska fält");
+    warning('Validering misslyckades', 'Vänligen fyll i alla obligatoriska fält');
     return;
   }
 
@@ -241,12 +236,12 @@ const createGroup = () => {
     enheter: newGroupForm.value.enheter,
     deltagare: newGroupForm.value.deltagare,
     skapadDatum: new Date().toISOString(),
-    skapadAv: "current-user", // TODO: Get from auth
+    skapadAv: 'current-user', // TODO: Get from auth
     aktiv: true,
   };
 
-  console.log("Saving new group:", newGroup);
-  success("Grupp skapad", "Deltagargruppen har skapats framgångsrikt");
+  console.log('Saving new group:', newGroup);
+  success('Grupp skapad', 'Deltagargruppen har skapats framgångsrikt');
   showNewGroupDialog.value = false;
   resetForm();
 };
@@ -272,22 +267,21 @@ function handleEditGroup(item: Record<string, unknown>, event: Event) {
 function handleDeleteGroup(item: Record<string, unknown>, event: Event) {
   event.stopPropagation();
   const group = item as unknown as ParticipantGroup;
-  
+
   if (confirm(`Är du säker på att du vill ta bort gruppen "${group.namn}"?`)) {
-    console.log("Deleting group:", group.id);
-    success("Behörighetsgrupp borttagen", "Behörighetsgruppen har tagits bort framgångsrikt");
+    console.log('Deleting group:', group.id);
+    success('Behörighetsgrupp borttagen', 'Behörighetsgruppen har tagits bort framgångsrikt');
   }
 }
 
 // Validation
 const isFormValid = computed(() => {
   return (
-    newGroupForm.value.namn.trim() !== "" &&
-    newGroupForm.value.beskrivning.trim() !== "" &&
+    newGroupForm.value.namn.trim() !== '' &&
+    newGroupForm.value.beskrivning.trim() !== '' &&
     newGroupForm.value.enheter.length > 0 &&
     (!newGroupForm.value.isAutomatic ||
-      (newGroupForm.value.isAutomatic &&
-        newGroupForm.value.automatiskregel.trim() !== ""))
+      (newGroupForm.value.isAutomatic && newGroupForm.value.automatiskregel.trim() !== ''))
   );
 });
 </script>
@@ -351,22 +345,13 @@ const isFormValid = computed(() => {
                 <div class="space-y-2">
                   <Label>Enheter *</Label>
                   <div class="grid grid-cols-2 gap-2">
-                    <div
-                      v-for="enhet in enheter"
-                      :key="enhet"
-                      class="flex items-center space-x-2"
-                    >
+                    <div v-for="enhet in enheter" :key="enhet" class="flex items-center space-x-2">
                       <Checkbox
                         :id="enhet"
                         :checked="newGroupForm.enheter.includes(enhet)"
-                        @update:checked="
-                          (checked: boolean) => handleUnitChange(enhet, checked)
-                        "
+                        @update:checked="(checked: boolean) => handleUnitChange(enhet, checked)"
                       />
-                      <Label
-                        :for="enhet"
-                        class="text-sm cursor-pointer"
-                      >
+                      <Label :for="enhet" class="text-sm cursor-pointer">
                         {{ enhet }}
                       </Label>
                     </div>
@@ -376,23 +361,14 @@ const isFormValid = computed(() => {
                 <!-- Automatic Group Toggle -->
                 <div class="space-y-4">
                   <div class="flex items-center space-x-2">
-                    <Switch
-                      id="isAutomatic"
-                      v-model:checked="newGroupForm.isAutomatic"
-                    />
-                    <Label
-                      for="isAutomatic"
-                      class="flex items-center gap-2"
-                    >
+                    <Switch id="isAutomatic" v-model:checked="newGroupForm.isAutomatic" />
+                    <Label for="isAutomatic" class="flex items-center gap-2">
                       <Zap class="h-4 w-4" />
                       Automatisk grupp (baserad på regler)
                     </Label>
                   </div>
 
-                  <div
-                    v-if="newGroupForm.isAutomatic"
-                    class="space-y-2"
-                  >
+                  <div v-if="newGroupForm.isAutomatic" class="space-y-2">
                     <Label for="automatiskregel">Automatisk regel *</Label>
                     <Textarea
                       id="automatiskregel"
@@ -401,18 +377,14 @@ const isFormValid = computed(() => {
                       rows="2"
                     />
                     <p class="text-xs text-muted-foreground">
-                      Ange kriterier för automatisk gruppmedlemskap. Gruppen
-                      uppdateras automatiskt när deltagare uppfyller
-                      kriterierna.
+                      Ange kriterier för automatisk gruppmedlemskap. Gruppen uppdateras automatiskt
+                      när deltagare uppfyller kriterierna.
                     </p>
                   </div>
                 </div>
 
                 <!-- Manual Participants (only if not automatic) -->
-                <div
-                  v-if="!newGroupForm.isAutomatic"
-                  class="space-y-2"
-                >
+                <div v-if="!newGroupForm.isAutomatic" class="space-y-2">
                   <Label>Deltagare</Label>
                   <div class="max-h-48 overflow-y-auto border rounded-lg p-3">
                     <div class="grid grid-cols-1 gap-2">
@@ -452,22 +424,16 @@ const isFormValid = computed(() => {
                   </div>
 
                   <!-- Selected participants summary -->
-                  <div
-                    v-if="newGroupForm.deltagare.length > 0"
-                    class="p-3 bg-muted/50 rounded-lg"
-                  >
+                  <div v-if="newGroupForm.deltagare.length > 0" class="p-3 bg-muted/50 rounded-lg">
                     <div class="flex items-center gap-2 mb-2">
                       <Users class="h-4 w-4" />
-                      <span class="font-medium">Valda deltagare ({{
-                        newGroupForm.deltagare.length
-                      }})</span>
+                      <span class="font-medium">
+                        Valda deltagare ({{ newGroupForm.deltagare.length }})
+                      </span>
                     </div>
                     <div class="flex flex-wrap gap-1">
                       <Badge
-                        v-for="participantId in newGroupForm.deltagare.slice(
-                          0,
-                          8
-                        )"
+                        v-for="participantId in newGroupForm.deltagare.slice(0, 8)"
                         :key="participantId"
                         variant="secondary"
                         class="text-xs"
@@ -496,11 +462,7 @@ const isFormValid = computed(() => {
                   >
                     Avbryt
                   </Button>
-                  <Button
-                    :disabled="!isFormValid"
-                    class="gap-2"
-                    @click="createGroup"
-                  >
+                  <Button :disabled="!isFormValid" class="gap-2" @click="createGroup">
                     <Plus class="h-4 w-4" />
                     Skapa grupp
                   </Button>
@@ -522,10 +484,7 @@ const isFormValid = computed(() => {
       <!-- Custom column renderers -->
       <template #beskrivning="{ row }">
         <div class="max-w-xs">
-          <p
-            class="text-sm truncate"
-            :title="row.beskrivning"
-          >
+          <p class="text-sm truncate" :title="row.beskrivning">
             {{ row.beskrivning }}
           </p>
         </div>
@@ -541,11 +500,7 @@ const isFormValid = computed(() => {
           >
             {{ enhet }}
           </Badge>
-          <Badge
-            v-if="row.enheter.length > 2"
-            variant="outline"
-            class="text-xs"
-          >
+          <Badge v-if="row.enheter.length > 2" variant="outline" class="text-xs">
             +{{ row.enheter.length - 2 }}
           </Badge>
         </div>
@@ -558,11 +513,8 @@ const isFormValid = computed(() => {
             class="h-4 w-4"
             :class="row.isAutomatic ? 'text-purple-600' : 'text-green-600'"
           />
-          <Badge
-            :variant="row.isAutomatic ? 'default' : 'secondary'"
-            class="text-xs"
-          >
-            {{ row.isAutomatic ? "Automatisk" : "Manuell" }}
+          <Badge :variant="row.isAutomatic ? 'default' : 'secondary'" class="text-xs">
+            {{ row.isAutomatic ? 'Automatisk' : 'Manuell' }}
           </Badge>
         </div>
       </template>
@@ -612,8 +564,8 @@ const isFormValid = computed(() => {
           </CardHeader>
           <CardContent>
             <p class="text-xs text-muted-foreground">
-              Grupper där deltagare läggs till manuellt. Perfekt för specifika
-              aktiviteter eller projektgrupper.
+              Grupper där deltagare läggs till manuellt. Perfekt för specifika aktiviteter eller
+              projektgrupper.
             </p>
           </CardContent>
         </Card>
@@ -627,8 +579,8 @@ const isFormValid = computed(() => {
           </CardHeader>
           <CardContent>
             <p class="text-xs text-muted-foreground">
-              Grupper som uppdateras automatiskt baserat på regler som ålder,
-              enhet eller andra kriterier.
+              Grupper som uppdateras automatiskt baserat på regler som ålder, enhet eller andra
+              kriterier.
             </p>
           </CardContent>
         </Card>
