@@ -1,0 +1,152 @@
+[
+  {
+    "id": "completion-1",
+    "aktivitetId": "activity-1",
+    "genomfordDatum": "2025-01-15T17:00:00Z",
+    "antalInbjudna": 8,
+    "antalNarvarande": 6,
+    "frånvarande": ["participant-3", "participant-7"],
+    "resultat": [
+      {
+        "deltagarId": "participant-1",
+        "svar": [
+          {
+            "fragaId": "q1",
+            "svar": 4,
+            "kommentar": "Mycket engagerad och förstod materialet bra"
+          },
+          {
+            "fragaId": "q2", 
+            "svar": true,
+            "kommentar": "Deltog aktivt i diskussionerna"
+          },
+          {
+            "fragaId": "q3",
+            "svar": "Behöver extra stöd med matematik nästa gång"
+          }
+        ]
+      },
+      {
+        "deltagarId": "participant-2",
+        "svar": [
+          {
+            "fragaId": "q1",
+            "svar": 3,
+            "kommentar": "Förstod det mesta men behöver repetition"
+          },
+          {
+            "fragaId": "q2",
+            "svar": true,
+            "kommentar": ""
+          },
+          {
+            "fragaId": "q3", 
+            "svar": "Bra framsteg, fortsätt så här"
+          }
+        ]
+      }
+    ],
+    "uppföljningsbehov": [
+      {
+        "deltagarId": "participant-3",
+        "anledning": "Frånvarande utan förvarning",
+        "åtgärd": "Kontakta föräldrar",
+        "prioritet": "hög"
+      }
+    ],
+    "personalAnteckningar": "Bra aktivitet överlag. Deltagarna var engagerade och lärde sig mycket.",
+    "genomfordAv": "teacher1",
+    "skapadDatum": "2025-01-15T18:30:00Z"
+  },
+  {
+    "id": "completion-2", 
+    "aktivitetId": "activity-2",
+    "genomfordDatum": "2025-01-12T14:00:00Z",
+    "antalInbjudna": 1,
+    "antalNarvarande": 1,
+    "frånvarande": [],
+    "resultat": [
+      {
+        "deltagarId": "participant-5",
+        "svar": [
+          {
+            "fragaId": "q1",
+            "svar": 5,
+            "kommentar": "Mycket bra framsteg, klienten känner sig mer hopefull"
+          },
+          {
+            "fragaId": "q2",
+            "svar": true,
+            "kommentar": "Behöver uppföljning inom 2 veckor"
+          },
+          {
+            "fragaId": "q3",
+            "svar": "Diskuterade copingstrategier och sätta upp kortsiktiga mål. Klienten verkar motiverad att fortsätta arbeta på sina utmaningar."
+          }
+        ]
+      }
+    ],
+    "uppföljningsbehov": [
+      {
+        "deltagarId": "participant-5",
+        "anledning": "Planerad uppföljning",
+        "åtgärd": "Boka nytt samtal inom 2 veckor",
+        "prioritet": "medium"
+      }
+    ],
+    "personalAnteckningar": "Mycket positivt samtal. Klienten visar tecken på förbättring och är öppen för fortsatt stöd.",
+    "genomfordAv": "counselor1",
+    "skapadDatum": "2025-01-12T15:15:00Z"
+  },
+  {
+    "id": "completion-3",
+    "aktivitetId": "activity-3", 
+    "genomfordDatum": "2025-01-10T10:00:00Z",
+    "antalInbjudna": 0,
+    "antalNarvarande": 25,
+    "frånvarande": [],
+    "anonymaBesökare": {
+      "totalBesökare": 25,
+      "demografi": {
+        "åldersgrupper": {
+          "0-5": 8,
+          "6-12": 10,
+          "13-17": 4,
+          "18-64": 3,
+          "65+": 0
+        },
+        "kön": {
+          "män": 12,
+          "kvinnor": 11,
+          "annat": 1,
+          "vill_ej_uppge": 1
+        }
+      }
+    },
+    "resultat": [
+      {
+        "deltagarId": "anonym-feedback-1",
+        "svar": [
+          {
+            "fragaId": "q1",
+            "svar": 4,
+            "kommentar": ""
+          },
+          {
+            "fragaId": "q2",
+            "svar": true,
+            "kommentar": ""
+          },
+          {
+            "fragaId": "q3",
+            "svar": "Mer aktiviteter för tonåringar skulle vara bra"
+          }
+        ]
+      }
+    ],
+    "uppföljningsbehov": [],
+    "personalAnteckningar": "Mycket välbesökt familjedag. Bra stämning och många positiva kommentarer från besökarna.",
+    "genomfordAv": "eventcoordinator",
+    "skapadDatum": "2025-01-10T16:45:00Z"
+  }
+] 

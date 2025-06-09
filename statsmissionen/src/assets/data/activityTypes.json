@@ -1,0 +1,74 @@
+[
+  {
+    "ActivityTypeID": 1,
+    "Typnamn": "Social gemenskap",
+    "Syfte": "Främja social samhörighet och minska isolering",
+    "Beskrivning": "Aktiviteter som syftar till att skapa meningsfulla sociala kontakter och stärka känslan av gemenskap. Inkluderar gruppaktiviteter, sociala träffar och gemensamma måltider."
+  },
+  {
+    "ActivityTypeID": 2,
+    "Typnamn": "ADL-träning",
+    "Syfte": "Utveckla färdigheter för dagligt liv och självständighet",
+    "Beskrivning": "Aktiviteter för dagliga livsförmågor (Activities of Daily Living) som matlagning, städning, ekonomihantering och personlig hygien för ökad självständighet."
+  },
+  {
+    "ActivityTypeID": 3,
+    "Typnamn": "Bygga yrkesmässiga nätverk",
+    "Syfte": "Stärka professionella kontakter och karriärmöjligheter",
+    "Beskrivning": "Nätverksträffar, mentorskap och aktiviteter som hjälper deltagare att bygga professionella relationer och utveckla karriären."
+  },
+  {
+    "ActivityTypeID": 4,
+    "Typnamn": "Språkstöd och integration",
+    "Syfte": "Förbättra språkfärdigheter och främja integration",
+    "Beskrivning": "Svenska för invandrare, konversationsgrupper, språkcaféer och kulturell orientering för bättre integration i samhället."
+  },
+  {
+    "ActivityTypeID": 5,
+    "Typnamn": "Barn och familj",
+    "Syfte": "Stödja barn och familjer i olika livssituationer",
+    "Beskrivning": "Familjeaktiviteter, föräldrastöd, barngrupper och läxhjälp som stärker familjebanden och barns utveckling."
+  },
+  {
+    "ActivityTypeID": 6,
+    "Typnamn": "Ekonomisk rådgivning",
+    "Syfte": "Förbättra ekonomisk stabilitet och kunskap",
+    "Beskrivning": "Budgetrådgivning, skuldsanering, ekonomisk planering och utbildning för att skapa ekonomisk trygghet."
+  },
+  {
+    "ActivityTypeID": 7,
+    "Typnamn": "Hälsa och välbefinnande",
+    "Syfte": "Främja fysisk och mental hälsa",
+    "Beskrivning": "Motionsgrupper, mindfulness, stresshantering, hälsoutbildning och aktiviteter som främjar välmående."
+  },
+  {
+    "ActivityTypeID": 8,
+    "Typnamn": "Utbildning och kompetensutveckling",
+    "Syfte": "Utveckla kunskaper och färdigheter för framtiden",
+    "Beskrivning": "Kurser, workshops, digital kompetens, yrkesutbildning och andra utbildningsinsatser för personlig utveckling."
+  },
+  {
+    "ActivityTypeID": 9,
+    "Typnamn": "Kreativitet och kultur",
+    "Syfte": "Utveckla kreativa uttryck och kulturell förståelse",
+    "Beskrivning": "Konst, musik, teater, hantverk och kulturella aktiviteter som främjar kreativitet och självuttryck."
+  },
+  {
+    "ActivityTypeID": 10,
+    "Typnamn": "Individuellt stöd",
+    "Syfte": "Ge personligt anpassat stöd och vägledning",
+    "Beskrivning": "Enskilda samtal, coaching, mentorskap och personlig utveckling anpassad efter individuella behov och mål."
+  },
+  {
+    "ActivityTypeID": 11,
+    "Typnamn": "Bostadsstöd",
+    "Syfte": "Hjälpa med bostadsfrågor och boendestöd",
+    "Beskrivning": "Stöd med bostadssökning, hyresförhandling, boendestöd och praktiska frågor kring hemmet."
+  },
+  {
+    "ActivityTypeID": 12,
+    "Typnamn": "Myndighetsärenden",
+    "Syfte": "Assistera med kontakter med myndigheter",
+    "Beskrivning": "Hjälp med Försäkringskassan, Arbetsförmedlingen, Migrationsverket och andra myndigheter samt tolkning av dokument."
+  }
+]

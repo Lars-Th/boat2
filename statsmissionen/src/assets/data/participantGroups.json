@@ -1,0 +1,68 @@
+[
+  {
+    "id": "group-1",
+    "namn": "Läxläsning tisdagar",
+    "beskrivning": "Barn som kommer på läxhjälp tisdagar",
+    "deltagare": ["participant-1", "participant-2", "participant-3", "participant-4"],
+    "enheter": ["Barn och unga"],
+    "automatiskregel": null,
+    "skapadDatum": "2025-01-15T10:00:00Z",
+    "skapadAv": "admin",
+    "aktiv": true
+  },
+  {
+    "id": "group-2", 
+    "namn": "Språkcafé-gruppen",
+    "beskrivning": "Regelbundna deltagare i språkcafé",
+    "deltagare": ["participant-5", "participant-6", "participant-7", "participant-8", "participant-9"],
+    "enheter": ["Språkstöd"],
+    "automatiskregel": null,
+    "skapadDatum": "2025-01-10T14:30:00Z",
+    "skapadAv": "languageteacher",
+    "aktiv": true
+  },
+  {
+    "id": "group-3",
+    "namn": "Föräldrastöd-gruppen", 
+    "beskrivning": "Föräldrar som deltar i stödgrupper",
+    "deltagare": ["participant-10", "participant-11", "participant-12"],
+    "enheter": ["Familjecentral"],
+    "automatiskregel": null,
+    "skapadDatum": "2025-01-08T13:15:00Z",
+    "skapadAv": "familycounselor",
+    "aktiv": true
+  },
+  {
+    "id": "group-4",
+    "namn": "Ungdomsgrupp 13-16 år",
+    "beskrivning": "Automatisk grupp för ungdomar mellan 13-16 år",
+    "deltagare": ["participant-13", "participant-14", "participant-15"],
+    "enheter": ["Barn och unga", "Fritidsgård"],
+    "automatiskregel": "Ålder mellan 13-16 år OCH enhet innehåller 'Barn och unga'",
+    "skapadDatum": "2025-01-12T11:00:00Z",
+    "skapadAv": "youthcoordinator",
+    "aktiv": true
+  },
+  {
+    "id": "group-5",
+    "namn": "Kreativa aktiviteter",
+    "beskrivning": "Deltagare som är intresserade av konst och hantverk",
+    "deltagare": ["participant-16", "participant-17", "participant-18", "participant-19"],
+    "enheter": ["Barn och unga", "Familjecentral"],
+    "automatiskregel": null,
+    "skapadDatum": "2025-01-05T09:00:00Z",
+    "skapadAv": "artteacher",
+    "aktiv": true
+  },
+  {
+    "id": "group-6",
+    "namn": "Ekonomisk rådgivning - Återkommande",
+    "beskrivning": "Klienter som har regelbundna möten för ekonomisk rådgivning",
+    "deltagare": ["participant-20", "participant-21"],
+    "enheter": ["Ekonomisk rådgivning"],
+    "automatiskregel": null,
+    "skapadDatum": "2025-01-03T16:45:00Z",
+    "skapadAv": "financialadvisor",
+    "aktiv": true
+  }
+] 

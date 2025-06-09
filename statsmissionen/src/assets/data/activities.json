@@ -1,0 +1,98 @@
+[
+  {
+    "ActivityID": 1,
+    "Namn": "Öppen fritidsgård måndag",
+    "Beskrivning": "Öppen verksamhet för alla ungdomar",
+    "Plats": "Fritidsgården lokaler",
+    "DatumTid": "2024-01-15T15:00:00",
+    "ActivityTypeID": 1
+  },
+  {
+    "ActivityID": 2,
+    "Namn": "Läxhjälp tisdag",
+    "Beskrivning": "Hjälp med matematik och svenska",
+    "Plats": "Studierummet",
+    "DatumTid": "2024-01-16T16:00:00",
+    "ActivityTypeID": 2
+  },
+  {
+    "ActivityID": 3,
+    "Namn": "Matlagning onsdag",
+    "Beskrivning": "Lagar pasta och sås tillsammans",
+    "Plats": "Köket",
+    "DatumTid": "2024-01-17T17:00:00",
+    "ActivityTypeID": 3
+  },
+  {
+    "ActivityID": 4,
+    "Namn": "Fotboll torsdag",
+    "Beskrivning": "Fotbollsträning på konstgräs",
+    "Plats": "Idrottsplanen",
+    "DatumTid": "2024-01-18T18:00:00",
+    "ActivityTypeID": 4
+  },
+  {
+    "ActivityID": 5,
+    "Namn": "Gitarrlektioner fredag",
+    "Beskrivning": "Nybörjarlektioner i gitarr",
+    "Plats": "Musikrummet",
+    "DatumTid": "2024-01-19T16:30:00",
+    "ActivityTypeID": 5
+  },
+  {
+    "ActivityID": 6,
+    "Namn": "Måleri lördag",
+    "Beskrivning": "Akvarellmålning för alla åldrar",
+    "Plats": "Konstrummet",
+    "DatumTid": "2024-01-20T10:00:00",
+    "ActivityTypeID": 6
+  },
+  {
+    "ActivityID": 7,
+    "Namn": "Utflykt till museum",
+    "Beskrivning": "Besök på Tekniska museet",
+    "Plats": "Tekniska museet",
+    "DatumTid": "2024-01-21T11:00:00",
+    "ActivityTypeID": 7
+  },
+  {
+    "ActivityID": 8,
+    "Namn": "Språkcafé svenska",
+    "Beskrivning": "Träna svenska i avslappnad miljö",
+    "Plats": "Caféet",
+    "DatumTid": "2024-01-22T14:00:00",
+    "ActivityTypeID": 8
+  },
+  {
+    "ActivityID": 9,
+    "Namn": "Workshop om miljö",
+    "Beskrivning": "Föreläsning om återvinning och miljötänk",
+    "Plats": "Föreläsningssalen",
+    "DatumTid": "2024-01-23T13:00:00",
+    "ActivityTypeID": 9
+  },
+  {
+    "ActivityID": 10,
+    "Namn": "Mentorsmöte",
+    "Beskrivning": "Individuellt stöd och vägledning",
+    "Plats": "Mötesrum 1",
+    "DatumTid": "2024-01-24T15:00:00",
+    "ActivityTypeID": 10
+  },
+  {
+    "ActivityID": 11,
+    "Namn": "Öppen fritidsgård tisdag",
+    "Beskrivning": "Öppen verksamhet för alla ungdomar",
+    "Plats": "Fritidsgården lokaler",
+    "DatumTid": "2024-01-23T15:00:00",
+    "ActivityTypeID": 1
+  },
+  {
+    "ActivityID": 12,
+    "Namn": "Basketträning",
+    "Beskrivning": "Basketträning för nybörjare",
+    "Plats": "Sporthallen",
+    "DatumTid": "2024-01-25T17:00:00",
+    "ActivityTypeID": 4
+  }
+] 

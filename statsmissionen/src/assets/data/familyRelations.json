@@ -1,0 +1,56 @@
+[
+  {
+    "RelationID": 1,
+    "ParticipantID": 1,
+    "RelatedParticipantID": 2,
+    "RelationType": "Målsman"
+  },
+  {
+    "RelationID": 2,
+    "ParticipantID": 3,
+    "RelatedParticipantID": 4,
+    "RelationType": "Målsman"
+  },
+  {
+    "RelationID": 3,
+    "ParticipantID": 5,
+    "RelatedParticipantID": 6,
+    "RelationType": "Målsman"
+  },
+  {
+    "RelationID": 4,
+    "ParticipantID": 7,
+    "RelatedParticipantID": 8,
+    "RelationType": "Målsman"
+  },
+  {
+    "RelationID": 5,
+    "ParticipantID": 9,
+    "RelatedParticipantID": 10,
+    "RelationType": "Målsman"
+  },
+  {
+    "RelationID": 6,
+    "ParticipantID": 11,
+    "RelatedParticipantID": 12,
+    "RelationType": "Målsman"
+  },
+  {
+    "RelationID": 7,
+    "ParticipantID": 2,
+    "RelatedParticipantID": 4,
+    "RelationType": "Syskon"
+  },
+  {
+    "RelationID": 8,
+    "ParticipantID": 6,
+    "RelatedParticipantID": 8,
+    "RelationType": "Syskon"
+  },
+  {
+    "RelationID": 9,
+    "ParticipantID": 10,
+    "RelatedParticipantID": 12,
+    "RelationType": "Syskon"
+  }
+] 

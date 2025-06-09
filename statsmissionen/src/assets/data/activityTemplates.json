@@ -1,0 +1,377 @@
+[
+  {
+    "id": "template-1",
+    "namn": "Läxhjälp för barn",
+    "beskrivning": "Strukturerad läxhjälp för barn i grundskoleåldern med fokus på matematik och svenska",
+    "malltyp": "Standard",
+    "aktivitetstyper": ["aktivitetstyp-5", "aktivitetstyp-8"],
+    "standardVaraktighet": 90,
+    "standardPlats": "Studierum A",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Hur väl förstod deltagaren dagens material?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 4,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Deltog barnet aktivt i aktiviteten?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q3",
+        "fraga": "Behöver barnet extra stöd nästa gång?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q4",
+        "fraga": "Övriga observationer och anteckningar",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-15T10:00:00Z",
+    "skapadAv": "admin"
+  },
+  {
+    "id": "template-2",
+    "namn": "Individuellt stödsamtal",
+    "beskrivning": "Enskilt samtal för personligt stöd och vägledning med fokus på målsättning",
+    "malltyp": "Samtal",
+    "aktivitetstyper": ["aktivitetstyp-10"],
+    "standardVaraktighet": 60,
+    "standardPlats": "Samtalsrum 1",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Uppnåddes målen för samtalet?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Behövs uppföljning inom 2 veckor?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q3",
+        "fraga": "Sammanfattning av samtalet och nästa steg",
+        "typ": "Kommentar",
+        "obligatorisk": true
+      }
+    ],
+    "skapadDatum": "2025-01-10T14:30:00Z",
+    "skapadAv": "counselor1"
+  },
+  {
+    "id": "template-3",
+    "namn": "Öppet hus - Familjedag",
+    "beskrivning": "Öppen aktivitet för familjer utan förhandsanmälan med aktiviteter för alla åldrar",
+    "malltyp": "OppetHus",
+    "aktivitetstyper": ["aktivitetstyp-5", "aktivitetstyp-1"],
+    "standardVaraktighet": 180,
+    "standardPlats": "Stora salen",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Hur upplevde du dagens aktivitet?",
+        "typ": "Skala",
+        "obligatorisk": false,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": false
+      },
+      {
+        "id": "q2",
+        "fraga": "Skulle du rekommendera detta till andra familjer?",
+        "typ": "JaNej",
+        "obligatorisk": false,
+        "harKommentar": false
+      },
+      {
+        "id": "q3",
+        "fraga": "Vad kan vi förbättra till nästa gång?",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-05T09:00:00Z",
+    "skapadAv": "eventcoordinator"
+  },
+  {
+    "id": "template-4",
+    "namn": "Språkcafé - Svenska för invandrare",
+    "beskrivning": "Informell språkträning i gruppformat med fokus på vardagssvenska",
+    "malltyp": "Standard",
+    "aktivitetstyper": ["aktivitetstyp-4", "aktivitetstyp-1"],
+    "standardVaraktighet": 120,
+    "standardPlats": "Caféet",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Känner du att du utvecklade dina språkfärdigheter idag?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 4,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Var atmosfären välkomnande och trygg?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": false
+      },
+      {
+        "id": "q3",
+        "fraga": "Vilka ämnen vill du prata om nästa gång?",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-12T11:00:00Z",
+    "skapadAv": "languageteacher"
+  },
+  {
+    "id": "template-5",
+    "namn": "Gruppsamtal för föräldrar",
+    "beskrivning": "Stödjande gruppsamtal för föräldrar i utmanande situationer",
+    "malltyp": "Samtal",
+    "aktivitetstyper": ["aktivitetstyp-5", "aktivitetstyp-10"],
+    "standardVaraktighet": 90,
+    "standardPlats": "Grupprum B",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Fick du användbar information eller stöd idag?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Känner du dig mer förberedd att hantera utmaningar?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q3",
+        "fraga": "Ämnen du vill diskutera nästa gång",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-08T13:15:00Z",
+    "skapadAv": "familycounselor"
+  },
+  {
+    "id": "template-6",
+    "namn": "Ekonomisk rådgivning - Grundkurs",
+    "beskrivning": "Grundläggande ekonomisk rådgivning och budgetplanering för privatpersoner",
+    "malltyp": "Standard",
+    "aktivitetstyper": ["aktivitetstyp-6", "aktivitetstyp-8"],
+    "standardVaraktighet": 75,
+    "standardPlats": "Konferensrum 1",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Hur väl förstod du dagens ekonomiska koncept?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Känner du dig mer säker på att hantera din ekonomi?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": false
+      },
+      {
+        "id": "q3",
+        "fraga": "Behöver du individuell uppföljning?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q4",
+        "fraga": "Vilka ekonomiska områden vill du lära dig mer om?",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-20T09:00:00Z",
+    "skapadAv": "economicadvisor"
+  },
+  {
+    "id": "template-7",
+    "namn": "Motionsgrupp - Yoga och mindfulness",
+    "beskrivning": "Lugn yoga och mindfulness för stresshantering och välbefinnande",
+    "malltyp": "Standard",
+    "aktivitetstyper": ["aktivitetstyp-7"],
+    "standardVaraktighet": 60,
+    "standardPlats": "Yogastudion",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Hur känner du dig efter dagens session?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Var övningarna lagom utmanande?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q3",
+        "fraga": "Övriga kommentarer eller önskemål",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-18T14:00:00Z",
+    "skapadAv": "yogainstructor"
+  },
+  {
+    "id": "template-8",
+    "namn": "Digital kompetens för seniorer",
+    "beskrivning": "Grundläggande datorkunskap och internetanvändning för äldre",
+    "malltyp": "Standard",
+    "aktivitetstyper": ["aktivitetstyp-8"],
+    "standardVaraktighet": 90,
+    "standardPlats": "Datorsal",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Hur väl förstod du dagens digitala moment?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 4,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Känner du dig mer säker med tekniken nu?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 4,
+        "skalaKommentar": false
+      },
+      {
+        "id": "q3",
+        "fraga": "Behöver du extra hjälp med något specifikt?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q4",
+        "fraga": "Vad vill du lära dig härnäst?",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-22T10:30:00Z",
+    "skapadAv": "itinstructor"
+  },
+  {
+    "id": "template-9",
+    "namn": "Kreativ verkstad - Måleri",
+    "beskrivning": "Kreativ måleriverkstad för självuttryck och avkoppling",
+    "malltyp": "Standard",
+    "aktivitetstyper": ["aktivitetstyp-9", "aktivitetstyp-7"],
+    "standardVaraktighet": 120,
+    "standardPlats": "Konstsalen",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Hur inspirerad känner du dig efter dagens session?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Fick du uttrycka dig kreativt som du ville?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q3",
+        "fraga": "Vilka tekniker eller material vill du prova nästa gång?",
+        "typ": "Kommentar",
+        "obligatorisk": false
+      }
+    ],
+    "skapadDatum": "2025-01-25T13:00:00Z",
+    "skapadAv": "artinstructor"
+  },
+  {
+    "id": "template-10",
+    "namn": "Bostadsstöd - Individuell rådgivning",
+    "beskrivning": "Personlig rådgivning kring bostadsfrågor och hyresrätter",
+    "malltyp": "Samtal",
+    "aktivitetstyper": ["aktivitetstyp-11", "aktivitetstyp-10"],
+    "standardVaraktighet": 45,
+    "standardPlats": "Rådgivningsrum",
+    "resultatformular": [
+      {
+        "id": "q1",
+        "fraga": "Fick du svar på dina bostadsfrågor?",
+        "typ": "Skala",
+        "obligatorisk": true,
+        "skalaMin": 1,
+        "skalaMax": 5,
+        "skalaKommentar": true
+      },
+      {
+        "id": "q2",
+        "fraga": "Behöver du hjälp med praktiska åtgärder?",
+        "typ": "JaNej",
+        "obligatorisk": true,
+        "harKommentar": true
+      },
+      {
+        "id": "q3",
+        "fraga": "Planerade åtgärder och uppföljning",
+        "typ": "Kommentar",
+        "obligatorisk": true
+      }
+    ],
+    "skapadDatum": "2025-01-28T11:15:00Z",
+    "skapadAv": "housingadvisor"
+  }
+] 
