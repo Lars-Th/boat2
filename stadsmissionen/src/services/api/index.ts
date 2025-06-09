@@ -1,11 +1,12 @@
 import { MockApiService } from './mock'
 import { RealApiService } from './real'
+import type { IApiService } from './base'
 
 // Environment-based API service selection
 const USE_MOCK_API = import.meta.env['VITE_USE_MOCK_API'] === 'true' || import.meta.env.DEV
 
 // Create the appropriate API service instance
-export const apiService = USE_MOCK_API ? new MockApiService() : new RealApiService()
+export const apiService: IApiService = USE_MOCK_API ? new MockApiService() : new RealApiService()
 
 // Export types for convenience
 export type { ApiResponse, ApiError, PaginatedResponse } from '@/types/api'
@@ -58,6 +59,7 @@ export const api = {
   participants: {
     getAll: () => apiService.getParticipants(),
     getById: (id: string) => apiService.getParticipant(id),
+    getByActivityId: (activityId: string) => apiService.getParticipantsByActivityId(activityId),
   },
 
   // Participant Groups
@@ -68,6 +70,9 @@ export const api = {
   // Attendances
   attendances: {
     getAll: () => apiService.getAttendances(),
+    getByActivityId: (activityId: string) => apiService.getAttendancesByActivityId(activityId),
+    create: (attendance: Parameters<typeof apiService.createAttendance>[0]) => 
+      apiService.createAttendance(attendance),
   },
 
   // Activity Templates

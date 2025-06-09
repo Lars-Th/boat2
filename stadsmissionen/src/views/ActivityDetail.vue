@@ -32,51 +32,127 @@ import {
   ArrowLeft,
 } from "lucide-vue-next";
 
-// Import data
-import activitiesData from "@/assets/data/activities.json";
-import activityTypesData from "@/assets/data/activityTypes.json";
-import participantsData from "@/assets/data/participants.json";
-import attendancesData from "@/assets/data/attendances.json";
-import type { ActivityType } from "@/types";
+// Use API service and composables
+import { useApiItem, useApiList } from "@/composables/useApi";
+import api from "@/services/api";
+import type { ActivityType, Activity } from "@/types";
+
+// Define interfaces locally to ensure proper typing
+interface Attendance {
+  AttendanceID: number;
+  ActivityID: number;
+  ParticipantID: number;
+  DatumTid: string;
+  Närvaro: boolean;
+  Anteckningar?: string;
+}
+
+interface ParticipantData {
+  ParticipantID: number;
+  Fornamn: string;
+  Efternamn: string;
+  Personnummer: string;
+  Kon: string;
+  Telefon: string;
+  "E-post": string;
+  Adress: string;
+  Postnummer: string;
+  Ort: string;
+  Kartkoordinater: {
+    lat: number;
+    lng: number;
+  };
+  Enheter: string[];
+  Kommentar1: string;
+  Kommentar2: string;
+  Kommentar3: string;
+}
 
 const route = useRoute();
 const router = useRouter();
 
 // Get activity ID from route
-const activityId = computed(() => parseInt(route.params['id'] as string));
+const activityId = computed(() => route.params['id'] as string);
 
-// Find the specific activity
-const activity = computed(() => {
-  return activitiesData.find((a) => a.ActivityID === activityId.value);
+// Fetch data using API service
+const {
+  data: activity,
+  loading: activityLoading,
+  error: activityError,
+} = useApiItem<Activity>(() => api.activities.getById(activityId.value), {
+  cacheKey: `activity-${activityId.value}`,
+});
+
+const {
+  data: activityTypes,
+  loading: activityTypesLoading,
+  error: activityTypesError,
+} = useApiList<ActivityType>(() => api.activityTypes.getAll(), {
+  cacheKey: 'activityTypes',
+});
+
+// Helper functions to properly type the API calls
+const getAttendancesByActivityId = (activityId: string) => {
+  return (api.attendances as unknown as { getByActivityId: (id: string) => Promise<{ data: Attendance[]; success: boolean; message?: string }> }).getByActivityId(activityId);
+};
+
+const getParticipantsByActivityId = (activityId: string) => {
+  return (api.participants as unknown as { getByActivityId: (id: string) => Promise<{ data: ParticipantData[]; success: boolean; message?: string }> }).getByActivityId(activityId);
+};
+
+const {
+  data: attendances,
+  loading: attendancesLoading,
+  error: attendancesError,
+} = useApiList<Attendance>(() => getAttendancesByActivityId(activityId.value), {
+  cacheKey: `attendances-${activityId.value}`,
+});
+
+const {
+  data: activityParticipants,
+  loading: participantsLoading,
+  error: participantsError,
+} = useApiList<ParticipantData>(() => getParticipantsByActivityId(activityId.value), {
+  cacheKey: `participants-${activityId.value}`,
 });
 
 // Get activity type
 const activityType = computed(() => {
-  if (!activity.value) return null;
-  return (activityTypesData as unknown as ActivityType[]).find(
+  if (!activity.value || !activityTypes.value) return null;
+  return activityTypes.value.find(
     (at) => at.ActivityTypeID === activity.value?.ActivityTypeID
   );
 });
 
-// Get attendances for this activity
-const attendances = computed(() => {
-  return attendancesData.filter((a) => a.ActivityID === activityId.value);
-});
+// Loading states
+const isLoading = computed(() =>
+  activityLoading.value ||
+  activityTypesLoading.value ||
+  attendancesLoading.value ||
+  participantsLoading.value
+);
 
-// Get participants for this activity
-const activityParticipants = computed(() => {
-  const attendanceParticipantIds = attendances.value.map(
-    (a) => a.ParticipantID
-  );
-  return participantsData.filter((p) =>
-    attendanceParticipantIds.includes(p.ParticipantID)
-  );
-});
+// Error states
+const hasError = computed(() =>
+  activityError.value !== null ||
+  activityTypesError.value !== null ||
+  attendancesError.value !== null ||
+  participantsError.value !== null
+);
 
 // Statistics
 const stats = computed(() => {
+  if (!attendances.value) {
+    return [
+      { title: "Totala registreringar", value: 0, color: "blue" },
+      { title: "Närvarande", value: 0, color: "green" },
+      { title: "Frånvarande", value: 0, color: "red" },
+      { title: "Närvarograd", value: "0%", color: "purple" },
+    ];
+  }
+
   const totalAttendances = attendances.value.length;
-  const presentCount = attendances.value.filter((a) => a.Närvaro).length;
+  const presentCount = attendances.value.filter((a: Attendance) => a.Närvaro).length;
   const absentCount = totalAttendances - presentCount;
   const attendanceRate =
     totalAttendances > 0
@@ -122,8 +198,8 @@ const initEditForm = () => {
   if (activity.value) {
     editForm.value = {
       Namn: activity.value.Namn,
-      Beskrivning: activity.value.Beskrivning,
-      Plats: activity.value.Plats,
+      Beskrivning: activity.value.Beskrivning ?? "",
+      Plats: activity.value.Plats ?? "",
       DatumTid: activity.value.DatumTid,
       ActivityTypeID: activity.value.ActivityTypeID,
     };
@@ -159,16 +235,18 @@ const attendanceColumns = [
 
 // Attendance table data
 const attendanceTableData = computed(() => {
-  return attendances.value.map((attendance) => {
-    const participant = participantsData.find(
-      (p) => p.ParticipantID === attendance.ParticipantID
+  if (!attendances.value || !activityParticipants.value) return [];
+
+  return attendances.value.map((attendance: Attendance) => {
+    const participant = activityParticipants.value?.find(
+      (p: ParticipantData) => p.ParticipantID === attendance.ParticipantID
     );
     return {
       id: attendance.AttendanceID,
       participant: participant ? `${participant.Fornamn} ${participant.Efternamn}` : "Okänd deltagare",
       attendance: attendance.Närvaro,
       datetime: attendance.DatumTid,
-      notes: attendance.Anteckningar || "-",
+      notes: attendance.Anteckningar ?? "-",
     };
   });
 });
@@ -211,8 +289,36 @@ const breadcrumbs = computed(() => {
     show-stats
     :stats="stats"
   >
+    <!-- Loading State -->
     <div
-      v-if="!activity"
+      v-if="isLoading"
+      class="flex items-center justify-center py-12"
+    >
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar aktivitet...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div
+      v-else-if="hasError"
+      class="flex items-center justify-center py-12"
+    >
+      <div class="text-center">
+        <p class="text-destructive mb-2">Ett fel uppstod vid laddning av aktivitet</p>
+        <Button
+          variant="outline"
+          @click="() => { /* Add refresh logic */ }"
+        >
+          Försök igen
+        </Button>
+      </div>
+    </div>
+
+    <!-- Activity not found -->
+    <div
+      v-else-if="!activity"
       class="flex items-center justify-center h-64"
     >
       <div class="text-center">
@@ -354,7 +460,7 @@ const breadcrumbs = computed(() => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
-                      v-for="type in activityTypesData"
+                      v-for="type in activityTypes"
                       :key="type.ActivityTypeID"
                       :value="type.ActivityTypeID.toString()"
                     >
@@ -473,13 +579,13 @@ const breadcrumbs = computed(() => {
           <Card>
             <CardHeader>
               <CardTitle>
-                Deltagare ({{ activityParticipants.length }})
+                Deltagare ({{ activityParticipants?.length || 0 }})
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div
-                  v-for="participant in activityParticipants"
+                  v-for="participant in (activityParticipants as ParticipantData[]) ?? []"
                   :key="participant.ParticipantID"
                   class="p-4 border rounded-lg"
                 >
@@ -496,8 +602,8 @@ const breadcrumbs = computed(() => {
                   <!-- Attendance status for this participant -->
                   <div class="mt-2">
                     <Badge
-                      v-for="attendance in attendances.filter(
-                        (a) => a.ParticipantID === participant.ParticipantID
+                      v-for="attendance in ((attendances as Attendance[]) ?? []).filter(
+                        (a: Attendance) => a.ParticipantID === participant.ParticipantID
                       )"
                       :key="attendance.AttendanceID"
                       :variant="attendance.Närvaro ? 'default' : 'destructive'"
@@ -533,9 +639,7 @@ const breadcrumbs = computed(() => {
                       {{ stat.value }}
                     </p>
                   </div>
-                  <div
-                    class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center"
-                  >
+                  <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <BarChart3 class="h-4 w-4 text-primary" />
                   </div>
                 </div>
@@ -557,23 +661,23 @@ const breadcrumbs = computed(() => {
                       <div class="flex justify-between">
                         <span class="text-sm">Totala registreringar:</span>
                         <span class="font-medium">{{
-                          attendances.length
+                          attendances?.length || 0
                         }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm">Unika deltagare:</span>
                         <span class="font-medium">{{
-                          activityParticipants.length
+                          activityParticipants?.length || 0
                         }}</span>
                       </div>
                       <div class="flex justify-between">
                         <span class="text-sm">Genomsnittlig närvaro per deltagare:</span>
                         <span class="font-medium">
                           {{
-                            activityParticipants.length > 0
+                            (activityParticipants?.length || 0) > 0
                               ? (
-                                attendances.length /
-                                activityParticipants.length
+                                (attendances?.length || 0) /
+                                (activityParticipants?.length || 1)
                               ).toFixed(1)
                               : 0
                           }}

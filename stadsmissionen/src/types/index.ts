@@ -279,8 +279,21 @@ export interface Participant {
   ParticipantID: number;
   Fornamn: string;
   Efternamn: string;
+  Personnummer: string;
   Kon: string;
+  Telefon: string;
+  "E-post": string;
+  Adress: string;
+  Postnummer: string;
+  Ort: string;
+  Kartkoordinater: {
+    lat: number;
+    lng: number;
+  };
   Enheter: string[];
+  Kommentar1: string;
+  Kommentar2: string;
+  Kommentar3: string;
   fullName?: string;
   hasGuardian?: boolean;
   hasSiblings?: boolean;
@@ -298,6 +311,15 @@ export interface Activity {
   ActivityTypeID: number;
   typeName?: string;
   typeDescription?: string;
+}
+
+export interface Attendance {
+  AttendanceID: number;
+  ActivityID: number;
+  ParticipantID: number;
+  DatumTid: string;
+  Närvaro: boolean;
+  Anteckningar?: string;
 }
 
 export interface ActivityType {

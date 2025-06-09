@@ -1,15 +1,6 @@
 import { BaseApiService } from './base'
 import type { ApiResponse } from '@/types/api'
-import type { Activity, ActivityType, Organization, User, Participant, ParticipantGroup, ActivityTemplate } from '@/types'
-
-interface Attendance {
-  AttendanceID: number
-  ActivityID: number
-  ParticipantID: number
-  DatumTid: string
-  Närvaro: boolean
-  Anteckningar?: string
-}
+import type { Activity, ActivityType, Organization, User, Participant, ParticipantGroup, ActivityTemplate, Attendance } from '@/types'
 
 export class RealApiService extends BaseApiService {
   constructor() {
@@ -111,6 +102,14 @@ export class RealApiService extends BaseApiService {
   // Attendances
   async getAttendances(): Promise<ApiResponse<Attendance[]>> {
     return this.get<Attendance[]>('/attendances')
+  }
+
+  async getAttendancesByActivityId(activityId: string): Promise<ApiResponse<Attendance[]>> {
+    return this.get<Attendance[]>(`/activities/${activityId}/attendances`)
+  }
+
+  async getParticipantsByActivityId(activityId: string): Promise<ApiResponse<Participant[]>> {
+    return this.get<Participant[]>(`/activities/${activityId}/participants`)
   }
 
   async createAttendance(attendance: Partial<Attendance>): Promise<ApiResponse<Attendance>> {

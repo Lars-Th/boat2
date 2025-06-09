@@ -1,5 +1,5 @@
 import type { ApiResponse } from '@/types/api'
-import type { Activity, ActivityType } from '@/types'
+import type { Activity, ActivityType, Attendance, Participant } from '@/types'
 
 // Import JSON data
 import activitiesData from '@/assets/data/activities.json'
@@ -217,6 +217,28 @@ export class MockApiService {
   // Attendances
   async getAttendances(): Promise<ApiResponse<typeof attendancesData>> {
     return this.mockRequest(attendancesData)
+  }
+
+  async getAttendancesByActivityId(activityId: string): Promise<ApiResponse<Attendance[]>> {
+    const activityAttendances = attendancesData.filter(a => a.ActivityID.toString() === activityId)
+    return this.mockRequest(activityAttendances as Attendance[])
+  }
+
+  async createAttendance(attendance: Partial<Attendance>): Promise<ApiResponse<Attendance>> {
+    const newAttendance = {
+      ...attendance,
+      AttendanceID: Math.max(...attendancesData.map(a => a.AttendanceID)) + 1,
+      DatumTid: attendance.DatumTid ?? new Date().toISOString(),
+    } as Attendance
+    
+    return this.mockRequest(newAttendance)
+  }
+
+  async getParticipantsByActivityId(activityId: string): Promise<ApiResponse<Participant[]>> {
+    const activityAttendances = attendancesData.filter(a => a.ActivityID.toString() === activityId)
+    const participantIds = activityAttendances.map(a => a.ParticipantID)
+    const activityParticipants = participantsData.filter(p => participantIds.includes(p.ParticipantID))
+    return this.mockRequest(activityParticipants as Participant[])
   }
 
   // Activity Templates
