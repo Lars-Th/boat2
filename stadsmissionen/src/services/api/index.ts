@@ -1,6 +1,6 @@
-import { MockApiService } from './mock';
-import { RealApiService } from './real';
-import type { IApiService } from './base';
+import { MockApiService } from '@/services/api/mock';
+import { RealApiService } from '@/services/api/real';
+import type { IApiService } from '@/services/api/base';
 
 // Environment-based API service selection
 const USE_MOCK_API = import.meta.env['VITE_USE_MOCK_API'] === 'true' || import.meta.env.DEV;
@@ -12,9 +12,9 @@ export const apiService: IApiService = USE_MOCK_API ? new MockApiService() : new
 export type { ApiResponse, ApiError, PaginatedResponse } from '@/types/api';
 
 // Export individual services for direct access if needed
-export { MockApiService } from './mock';
-export { RealApiService } from './real';
-export { BaseApiService } from './base';
+export { MockApiService } from '@/services/api/mock';
+export { RealApiService } from '@/services/api/real';
+export { BaseApiService } from '@/services/api/base';
 
 // Smart API module interface - provides a clean, consistent API
 export const api = {

@@ -1,4 +1,4 @@
-import { BaseApiService } from './base';
+import { BaseApiService } from '@/services/api/base';
 import type { ApiResponse } from '@/types/api';
 import type {
   Activity,

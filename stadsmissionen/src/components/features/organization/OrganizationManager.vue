@@ -32,8 +32,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Building } from 'lucide-vue-next';
-import OrganizationCard from './OrganizationCard.vue';
-import NewOrganizationForm from './NewOrganizationForm.vue';
+import OrganizationCard from '@/components/features/organization/OrganizationCard.vue';
+import NewOrganizationForm from '@/components/features/organization/NewOrganizationForm.vue';
 
 interface Organization {
   id: string;
