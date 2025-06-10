@@ -34,7 +34,7 @@ import {
 
 // Use API service and composables
 import { useApiItem, useApiList } from '@/composables/useApi';
-import api from '@/services/api';
+import api from '@/api';
 import type { Activity, ActivityType } from '@/types';
 
 // Define interfaces locally to ensure proper typing

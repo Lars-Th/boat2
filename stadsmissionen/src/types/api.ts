@@ -1,28 +1,12 @@
-export interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  message?: string;
-  error?: ApiError;
-}
-
-export interface ApiError {
-  message: string;
-  code: string;
-  details?: unknown;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
-export interface ApiRequestOptions {
-  signal?: AbortSignal;
-  timeout?: number;
-  retries?: number;
-}
+// Re-export from the new clean architecture
+export type {
+  ApiResponse,
+  ApiError,
+  PaginatedResponse,
+  ApiRequestOptions,
+  ApiConfig,
+  RequestParams,
+  QueryParams,
+  FilterParams,
+  PaginationParams,
+} from '@/api/client/types';

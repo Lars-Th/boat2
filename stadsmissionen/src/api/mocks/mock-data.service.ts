@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/types/api';
+import type { ApiResponse } from '../client/types';
 import type { Activity, ActivityType, Attendance, Participant } from '@/types';
 
 // Import JSON data
@@ -11,7 +11,7 @@ import participantGroupsData from '@/assets/data/participantGroups.json';
 import attendancesData from '@/assets/data/attendances.json';
 import activityTemplatesData from '@/assets/data/activityTemplates.json';
 
-export class MockApiService {
+export class MockDataService {
   private delay = 300; // Simulate network delay
 
   private async simulateNetworkDelay(): Promise<void> {

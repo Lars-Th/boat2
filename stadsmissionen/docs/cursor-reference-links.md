@@ -8,10 +8,12 @@ Good to have as cursor references:
 
 [https://pinia.vuejs.org/api/]
 
-[https://lucide.dev/guide/packages/lucide-vue]
+[https://lucide.dev/guide/]
 
 [https://router.vuejs.org/api/]
 
 [https://router.vuejs.org/guide/]
 
 [https://www.w3.org/TR/WCAG22/]
+
+[https://www.typescriptlang.org/docs/]

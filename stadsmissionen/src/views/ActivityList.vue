@@ -2,7 +2,7 @@
 import PageLayout from '@/components/layout/PageLayout.vue';
 import DataTable from '@/components/shared/DataTable.vue';
 import { useApiList } from '@/composables/useApi';
-import api from '@/services/api';
+import api from '@/api';
 import type { ActivityType } from '@/types';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
@@ -92,6 +92,7 @@ const stats = computed(() => {
     return [
       { title: 'Totalt aktiviteter', value: 0, icon: Calendar, color: 'blue' },
       { title: 'Denna vecka', value: 0, icon: Calendar, color: 'green' },
+
       { title: 'Unika platser', value: 0, icon: MapPin, color: 'purple' },
       { title: 'Aktivitetstyper', value: 0, icon: Users, color: 'orange' },
     ];

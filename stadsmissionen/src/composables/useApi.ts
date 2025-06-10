@@ -1,5 +1,5 @@
 import { type Ref, computed, ref, shallowRef } from 'vue';
-import type { ApiError, ApiResponse } from '@/types/api';
+import type { ApiError, ApiResponse } from '@/api/client/types';
 
 export interface UseApiOptions {
   immediate?: boolean;
