@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import PageLayout from '@/components/layout/PageLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Building, Edit, MessageSquare, Save, Users } from 'lucide-vue-next';
+import { AlertCircle, Building, Edit, Loader2, MessageSquare, Save, Users } from 'lucide-vue-next';
+import type { Organization, User } from '@/types';
 
 // Import components
 import OrganizationManager from '@/components/features/organization/OrganizationManager.vue';
@@ -16,11 +17,39 @@ import UnitManager from '@/components/features/organization/UnitManager.vue';
 // Import composables
 import { useOrganizationManagement } from '@/composables/useOrganizationManagement';
 
-// Import data
-import organizationSettingsData from '@/assets/data/organizationSettings.json';
-import usersData from '@/assets/data/users.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
 
-// Initialize composable
+// Fetch data using API services
+const {
+  data: organizationsData,
+  loading: organizationsLoading,
+  error: organizationsError,
+  refresh: refreshOrganizations,
+} = useApiList<Organization>(() => api.organizations.getAll(), {
+  cacheKey: 'organizations',
+});
+
+const {
+  data: usersData,
+  loading: usersLoading,
+  error: usersError,
+  refresh: refreshUsers,
+} = useApiList<User>(() => api.users.getAll(), {
+  cacheKey: 'users',
+});
+
+// Loading and error states
+const isLoading = computed(() => organizationsLoading.value || usersLoading.value);
+const hasError = computed(() => organizationsError.value !== null || usersError.value !== null);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await Promise.all([refreshOrganizations(), refreshUsers()]);
+};
+
+// Initialize composable with API data
 const {
   organizations,
   users,
@@ -32,14 +61,26 @@ const {
   addUnit,
   removeUnit,
   updateOrganizationInfo,
-} = useOrganizationManagement(organizationSettingsData.organizations, usersData);
+} = useOrganizationManagement(
+  (organizationsData.value ?? []) as unknown as Parameters<typeof useOrganizationManagement>[0],
+  (usersData.value ?? []) as unknown as Parameters<typeof useOrganizationManagement>[1]
+);
 
-// Set initial selected organization
-selectedOrgId.value = organizationSettingsData.currentOrganization;
+// Set initial selected organization (use first organization as current)
+selectedOrgId.value = organizationsData.value?.[0]?.id ?? '';
 
 // Local state for editing
 const editingOrgInfo = ref(false);
-const permissions = ref(organizationSettingsData.permissions);
+
+// Mock permissions data (since API endpoint doesn't exist)
+const permissions = ref<{ roles: Role[] }>({
+  roles: [
+    { id: 'systemadministrator', namn: 'Systemadministratör' },
+    { id: 'administrator', namn: 'Administratör' },
+    { id: 'enhetsansvarig', namn: 'Enhetsansvarig' },
+    { id: 'handlaggare', namn: 'Handläggare' },
+  ],
+});
 
 // Save organization info
 const saveOrganizationInfo = () => {
@@ -52,9 +93,15 @@ const saveOrganizationInfo = () => {
   }
 };
 
+// Define role interface
+interface Role {
+  id: string;
+  namn: string;
+}
+
 // Get role display name
 const getRoleDisplayName = (roleId: string) => {
-  const role = permissions.value.roles.find(r => r.id === roleId);
+  const role = permissions.value.roles.find((r: Role) => r.id === roleId);
   return role?.namn ?? roleId;
 };
 
@@ -82,10 +129,49 @@ const getRoleColor = (roleId: string) => {
     show-stats
     :stats="stats"
   >
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center space-y-4">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+        <p class="text-muted-foreground">Laddar systeminställningar...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center space-y-4">
+        <AlertCircle class="h-8 w-8 mx-auto text-destructive" />
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Kunde inte ladda systeminställningar</h3>
+          <p class="text-muted-foreground mb-4">
+            Ett fel uppstod när systeminställningarna skulle hämtas.
+          </p>
+          <Button class="gap-2" @click="handleRefresh">
+            <Loader2 class="h-4 w-4" />
+            Försök igen
+          </Button>
+        </div>
+      </div>
+    </div>
+
     <!-- Main content -->
-    <div class="space-y-8 p-6">
+    <div v-else class="space-y-8 p-6">
+      <!-- Empty State -->
+      <div v-if="!organizationsData?.length" class="text-center py-12">
+        <Building class="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <h3 class="font-semibold text-lg mb-2">Inga organisationer hittades</h3>
+        <p class="text-muted-foreground mb-4">
+          Det finns inga organisationer att hantera för tillfället.
+        </p>
+        <Button variant="outline" class="gap-2" @click="handleRefresh">
+          <Loader2 class="h-4 w-4" />
+          Uppdatera
+        </Button>
+      </div>
+
       <!-- Organization Manager Section -->
       <OrganizationManager
+        v-else
         :organizations="organizations"
         :selected-org-id="selectedOrgId"
         :users="users"

@@ -12,8 +12,9 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Clock, FileText, MapPin } from 'lucide-vue-next';
 
-// Import data
-import activityTemplatesData from '@/assets/data/activityTemplates.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
 
 interface Props {
   selectedTemplateId: string;
@@ -26,10 +27,23 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+// Fetch data using API service
+const {
+  data: activityTemplates,
+  loading: templatesLoading,
+  error: templatesError,
+} = useApiList(() => api.activityTemplates.getAll(), {
+  cacheKey: 'activityTemplates',
+});
+
+// Loading and error states
+const isLoading = computed(() => templatesLoading.value);
+const hasError = computed(() => templatesError.value !== null);
+
 // Get selected template
 const selectedTemplate = computed(() => {
-  if (!props.selectedTemplateId) return null;
-  return activityTemplatesData.find(t => t.id === props.selectedTemplateId);
+  if (!props.selectedTemplateId || !activityTemplates.value) return null;
+  return activityTemplates.value.find(t => t.id === props.selectedTemplateId);
 });
 
 // Get template type info
@@ -82,78 +96,104 @@ const handleTemplateChange = (templateId: string | null) => {
       </CardTitle>
     </CardHeader>
     <CardContent class="space-y-4">
-      <div class="space-y-2">
-        <Label for="template">Aktivitetsmall *</Label>
-        <Select
-          :model-value="selectedTemplateId"
-          @update:model-value="value => handleTemplateChange(value as string)"
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Välj en aktivitetsmall..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem
-              v-for="template in activityTemplatesData"
-              :key="template.id"
-              :value="template.id"
-            >
-              <div class="flex items-center gap-2">
-                <Badge
-                  :variant="
-                    template.malltyp === 'Standard'
-                      ? 'default'
-                      : template.malltyp === 'Samtal'
-                        ? 'secondary'
-                        : 'outline'
-                  "
-                  class="text-xs"
-                >
-                  {{ getTemplateTypeInfo(template.malltyp).label }}
-                </Badge>
-                <span>{{ template.namn }}</span>
-              </div>
-            </SelectItem>
-          </SelectContent>
-        </Select>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex items-center justify-center py-8">
+        <div class="text-center">
+          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2" />
+          <p class="text-sm text-muted-foreground">Laddar aktivitetsmallar...</p>
+        </div>
       </div>
 
-      <!-- Template info -->
-      <div v-if="selectedTemplate" class="p-4 bg-muted/50 rounded-lg">
-        <div class="flex items-start gap-3">
-          <div class="flex-1">
-            <h4 class="font-medium">
-              {{ selectedTemplate.namn }}
-            </h4>
-            <p class="text-sm text-muted-foreground mt-1">
-              {{ selectedTemplate.beskrivning }}
-            </p>
-            <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-              <span class="flex items-center gap-1">
-                <Clock class="h-3 w-3" />
-                {{ Math.floor(selectedTemplate.standardVaraktighet / 60) }}h
-                {{ selectedTemplate.standardVaraktighet % 60 }}min
-              </span>
-              <span v-if="selectedTemplate.standardPlats" class="flex items-center gap-1">
-                <MapPin class="h-3 w-3" />
-                {{ selectedTemplate.standardPlats }}
-              </span>
-              <span class="flex items-center gap-1">
-                <FileText class="h-3 w-3" />
-                {{ selectedTemplate.resultatformular.length }} frågor
-              </span>
-            </div>
-          </div>
-          <Badge
-            :variant="
-              selectedTemplate.malltyp === 'Standard'
-                ? 'default'
-                : selectedTemplate.malltyp === 'Samtal'
-                  ? 'secondary'
-                  : 'outline'
-            "
+      <!-- Error State -->
+      <div v-else-if="hasError" class="flex items-center justify-center py-8">
+        <div class="text-center">
+          <p class="text-sm text-destructive">Ett fel uppstod vid laddning av aktivitetsmallar</p>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div v-else>
+        <div class="space-y-2">
+          <Label for="template">Aktivitetsmall *</Label>
+          <Select
+            :model-value="selectedTemplateId"
+            @update:model-value="value => handleTemplateChange(value as string)"
           >
-            {{ getTemplateTypeInfo(selectedTemplate.malltyp).label }}
-          </Badge>
+            <SelectTrigger>
+              <SelectValue placeholder="Välj en aktivitetsmall..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-if="!activityTemplates || activityTemplates.length === 0"
+                value=""
+                disabled
+              >
+                Inga aktivitetsmallar tillgängliga
+              </SelectItem>
+              <SelectItem
+                v-for="template in activityTemplates"
+                v-else
+                :key="template.id"
+                :value="template.id"
+              >
+                <div class="flex items-center gap-2">
+                  <Badge
+                    :variant="
+                      template.malltyp === 'Standard'
+                        ? 'default'
+                        : template.malltyp === 'Samtal'
+                          ? 'secondary'
+                          : 'outline'
+                    "
+                    class="text-xs"
+                  >
+                    {{ getTemplateTypeInfo(template.malltyp).label }}
+                  </Badge>
+                  <span>{{ template.namn }}</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <!-- Template info -->
+        <div v-if="selectedTemplate" class="p-4 bg-muted/50 rounded-lg">
+          <div class="flex items-start gap-3">
+            <div class="flex-1">
+              <h4 class="font-medium">
+                {{ selectedTemplate.namn }}
+              </h4>
+              <p class="text-sm text-muted-foreground mt-1">
+                {{ selectedTemplate.beskrivning }}
+              </p>
+              <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                <span class="flex items-center gap-1">
+                  <Clock class="h-3 w-3" />
+                  {{ Math.floor(selectedTemplate.standardVaraktighet / 60) }}h
+                  {{ selectedTemplate.standardVaraktighet % 60 }}min
+                </span>
+                <span v-if="selectedTemplate.standardPlats" class="flex items-center gap-1">
+                  <MapPin class="h-3 w-3" />
+                  {{ selectedTemplate.standardPlats }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <FileText class="h-3 w-3" />
+                  {{ selectedTemplate.resultatformular.length }} frågor
+                </span>
+              </div>
+            </div>
+            <Badge
+              :variant="
+                selectedTemplate.malltyp === 'Standard'
+                  ? 'default'
+                  : selectedTemplate.malltyp === 'Samtal'
+                    ? 'secondary'
+                    : 'outline'
+              "
+            >
+              {{ getTemplateTypeInfo(selectedTemplate.malltyp).label }}
+            </Badge>
+          </div>
         </div>
       </div>
     </CardContent>

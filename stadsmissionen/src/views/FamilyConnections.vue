@@ -6,21 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Network, Plus, UserCheck, Users } from 'lucide-vue-next';
+import { AlertCircle, Loader2, Network, Plus, UserCheck, Users } from 'lucide-vue-next';
 
-// Import JSON data
-import familyRelationsData from '@/assets/data/familyRelations.json';
-import participantsData from '@/assets/data/participants.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
+import type { Participant } from '@/types';
 
-// Type definitions
-interface Participant {
+// Type definition for FamilyRelation (component-specific)
+interface FamilyRelation {
   ParticipantID: string | number;
-  Fornamn: string;
-  Efternamn: string;
-  Namn?: string;
-  Personnummer: string;
+  RelatedParticipantID: string | number;
+  RelationType: string;
 }
 
+// Type definitions for component-specific interfaces
 interface SiblingRelation {
   person1: Participant;
   person2: Participant;
@@ -32,6 +32,30 @@ interface FamilyGroup {
   siblings: SiblingRelation[];
 }
 
+// Fetch data using API service
+const {
+  data: participants,
+  loading: participantsLoading,
+  error: participantsError,
+  refresh: refreshParticipants,
+} = useApiList<Participant>(() => api.participants.getAll(), {
+  cacheKey: 'participants',
+});
+
+// Mock family relations data (TODO: Replace with actual API when available)
+const familyRelations = computed<FamilyRelation[]>(() => [
+  // Mock data - replace with actual API call when family relations endpoint is available
+]);
+
+// Loading and error states
+const isLoading = computed(() => participantsLoading.value);
+const hasError = computed(() => participantsError.value !== null);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await refreshParticipants();
+};
+
 // Calculate age from personnummer
 const calculateAge = (personnummer: string) => {
   const year = parseInt(personnummer.substring(0, 4));
@@ -41,9 +65,11 @@ const calculateAge = (personnummer: string) => {
 
 // Enhanced family relations with participant names
 const enhancedRelations = computed(() => {
-  return familyRelationsData.map(relation => {
-    const participant = participantsData.find(p => p.ParticipantID === relation.ParticipantID);
-    const relatedParticipant = participantsData.find(
+  if (!familyRelations.value || !participants.value) return [];
+
+  return familyRelations.value.map(relation => {
+    const participant = participants.value?.find(p => p.ParticipantID === relation.ParticipantID);
+    const relatedParticipant = participants.value?.find(
       p => p.ParticipantID === relation.RelatedParticipantID
     );
 
@@ -70,6 +96,8 @@ const siblingRelations = computed(() =>
 
 // Create family groups for visual representation
 const familyGroups = computed((): FamilyGroup[] => {
+  if (!enhancedRelations.value.length) return [];
+
   const groups = new Map<string | number, FamilyGroup>();
 
   // Process guardian relations to create family groups
@@ -86,7 +114,7 @@ const familyGroups = computed((): FamilyGroup[] => {
 
     const group = groups.get(guardianId);
     if (group && relation.relatedParticipant) {
-      group.children.push(relation.relatedParticipant as Participant);
+      group.children.push(relation.relatedParticipant);
     }
   });
 
@@ -151,32 +179,43 @@ const columns = [
 ];
 
 // Statistics
-const stats = computed(() => [
-  {
-    title: 'Totalt relationer',
-    value: familyRelationsData.length,
-    icon: Users,
-    color: 'blue',
-  },
-  {
-    title: 'Målsman-relationer',
-    value: guardianRelations.value.length,
-    icon: UserCheck,
-    color: 'green',
-  },
-  {
-    title: 'Syskon-relationer',
-    value: siblingRelations.value.length,
-    icon: Users,
-    color: 'purple',
-  },
-  {
-    title: 'Familjegrupper',
-    value: familyGroups.value.length,
-    icon: Network,
-    color: 'orange',
-  },
-]);
+const stats = computed(() => {
+  if (!familyRelations.value) {
+    return [
+      { title: 'Totalt relationer', value: 0, icon: Users, color: 'blue' },
+      { title: 'Målsman-relationer', value: 0, icon: UserCheck, color: 'green' },
+      { title: 'Syskon-relationer', value: 0, icon: Users, color: 'purple' },
+      { title: 'Familjegrupper', value: 0, icon: Network, color: 'orange' },
+    ];
+  }
+
+  return [
+    {
+      title: 'Totalt relationer',
+      value: familyRelations.value.length,
+      icon: Users,
+      color: 'blue',
+    },
+    {
+      title: 'Målsman-relationer',
+      value: guardianRelations.value.length,
+      icon: UserCheck,
+      color: 'green',
+    },
+    {
+      title: 'Syskon-relationer',
+      value: siblingRelations.value.length,
+      icon: Users,
+      color: 'purple',
+    },
+    {
+      title: 'Familjegrupper',
+      value: familyGroups.value.length,
+      icon: Network,
+      color: 'orange',
+    },
+  ];
+});
 
 const handleAddRelation = () => {
   // TODO: Open add relation dialog
@@ -196,8 +235,25 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
     show-stats
     :stats="stats"
   >
-    <!-- Content with padding -->
-    <div class="px-6 py-4 space-y-6">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar familjekopplingar...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av familjekopplingar</p>
+        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="px-6 py-4 space-y-6">
       <!-- Actions -->
       <div class="flex justify-end">
         <Button class="gap-2" @click="handleAddRelation">
@@ -206,8 +262,21 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
         </Button>
       </div>
 
+      <!-- Empty State -->
+      <div v-if="enhancedRelations.length === 0" class="text-center py-12">
+        <Network class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+        <h3 class="text-lg font-semibold mb-2">Inga familjekopplingar</h3>
+        <p class="text-muted-foreground mb-4">
+          Börja med att lägga till relationer mellan deltagare
+        </p>
+        <Button class="gap-2" @click="handleAddRelation">
+          <Plus class="h-4 w-4" />
+          Lägg till första relationen
+        </Button>
+      </div>
+
       <!-- Tabs for different views -->
-      <Tabs default-value="visual" class="w-full">
+      <Tabs v-else default-value="visual" class="w-full">
         <TabsList class="grid w-full grid-cols-3">
           <TabsTrigger value="visual">
             <Network class="h-4 w-4 mr-2" />
@@ -246,7 +315,10 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                   <div class="text-center">
                     <div class="bg-blue-100 dark:bg-blue-900 rounded-lg p-3 mb-2">
                       <div class="font-semibold text-blue-800 dark:text-blue-200">
-                        {{ (group as FamilyGroup)['guardian']?.Namn || 'Okänd målsman' }}
+                        {{
+                          `${(group as FamilyGroup)['guardian']?.Fornamn} ${(group as FamilyGroup)['guardian']?.Efternamn}` ||
+                          'Okänd målsman'
+                        }}
                       </div>
                       <div class="text-sm text-blue-600 dark:text-blue-300">
                         {{
@@ -273,7 +345,7 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                       class="bg-green-50 dark:bg-green-900 rounded-lg p-2 text-center"
                     >
                       <div class="font-medium text-green-800 dark:text-green-200">
-                        {{ child.Namn || `${child.Fornamn} ${child.Efternamn}` }}
+                        {{ `${child.Fornamn} ${child.Efternamn}` }}
                       </div>
                       <div class="text-sm text-green-600 dark:text-green-300">
                         {{ calculateAge(child.Personnummer) }} år
@@ -296,15 +368,9 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
                         class="text-xs text-center bg-purple-50 dark:bg-purple-900 rounded p-1"
                       >
                         <span class="text-purple-700 dark:text-purple-300">
-                          {{
-                            sibling.person1.Namn ||
-                            `${sibling.person1.Fornamn} ${sibling.person1.Efternamn}`
-                          }}
+                          {{ `${sibling.person1.Fornamn} ${sibling.person1.Efternamn}` }}
                           ↔
-                          {{
-                            sibling.person2.Namn ||
-                            `${sibling.person2.Fornamn} ${sibling.person2.Efternamn}`
-                          }}
+                          {{ `${sibling.person2.Fornamn} ${sibling.person2.Efternamn}` }}
                         </span>
                       </div>
                     </div>
@@ -328,7 +394,11 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable :data="guardianRelations" :columns="columns">
+              <div v-if="guardianRelations.length === 0" class="text-center py-8">
+                <UserCheck class="h-8 w-8 text-muted-foreground mx-auto mb-4" />
+                <p class="text-muted-foreground">Inga målsman-relationer registrerade</p>
+              </div>
+              <DataTable v-else :data="guardianRelations" :columns="columns">
                 <template #cell-RelationType="{ value }">
                   <Badge variant="default">
                     {{ value }}
@@ -355,7 +425,11 @@ const handleDeleteRelation = (relation: Record<string, unknown>) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable :data="siblingRelations" :columns="columns">
+              <div v-if="siblingRelations.length === 0" class="text-center py-8">
+                <Users class="h-8 w-8 text-muted-foreground mx-auto mb-4" />
+                <p class="text-muted-foreground">Inga syskon-relationer registrerade</p>
+              </div>
+              <DataTable v-else :data="siblingRelations" :columns="columns">
                 <template #cell-RelationType="{ value }">
                   <Badge variant="secondary">
                     {{ value }}

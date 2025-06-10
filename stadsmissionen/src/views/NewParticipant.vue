@@ -15,25 +15,50 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, MapPin, Save, User } from 'lucide-vue-next';
+import { AlertCircle, ArrowLeft, Loader2, MapPin, Save, User } from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 
-// Import organization settings
-import organizationSettings from '@/assets/data/organizationSettings.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
 
 const router = useRouter();
 const { success, warning } = useToast();
 
-// Get current organization
-const currentOrg = organizationSettings.organizations.find(
-  org => org.id === organizationSettings.currentOrganization
-);
-const enheter = currentOrg?.enheter ?? [];
-const kommentarLabels = currentOrg?.kommentarLabels ?? {
-  kommentar1: 'Kommentar 1',
-  kommentar2: 'Kommentar 2',
-  kommentar3: 'Kommentar 3',
+// Fetch organizations using API service
+const {
+  data: organizations,
+  loading: organizationsLoading,
+  error: organizationsError,
+  refresh: refreshOrganizations,
+} = useApiList(() => api.organizations.getAll(), {
+  cacheKey: 'organizations',
+});
+
+// Loading and error states
+const isLoading = computed(() => organizationsLoading.value);
+const hasError = computed(() => organizationsError.value !== null);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await refreshOrganizations();
 };
+
+// Get current organization data (using first organization as default)
+const currentOrg = computed(() => {
+  if (!organizations.value || organizations.value.length === 0) return null;
+  return organizations.value[0]; // Use first organization as current
+});
+
+const enheter = computed(() => currentOrg.value?.enheter ?? []);
+const kommentarLabels = computed(
+  () =>
+    currentOrg.value?.kommentarLabels ?? {
+      kommentar1: 'Kommentar 1',
+      kommentar2: 'Kommentar 2',
+      kommentar3: 'Kommentar 3',
+    }
+);
 
 // Form data with new structure
 const form = ref({
@@ -124,7 +149,27 @@ const validatePersonnummer = (value: string) => {
 
 <template>
   <PageLayout title="Ny deltagare" breadcrumbs="Dashboard / Deltagare / Ny deltagare">
-    <div class="max-w-4xl mx-auto">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar organisationsinställningar...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
+        <p class="text-destructive mb-4">
+          Ett fel uppstod vid laddning av organisationsinställningar
+        </p>
+        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="max-w-4xl mx-auto">
       <Card>
         <CardHeader>
           <CardTitle class="flex items-center gap-2">
@@ -234,7 +279,10 @@ const validatePersonnummer = (value: string) => {
           <!-- Enheter -->
           <div class="space-y-4">
             <h3 class="text-lg font-medium">Enheter *</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div v-if="enheter.length === 0" class="text-center py-4">
+              <p class="text-muted-foreground">Inga enheter tillgängliga</p>
+            </div>
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <div v-for="enhet in enheter" :key="enhet" class="flex items-center space-x-2">
                 <Checkbox
                   :id="enhet"

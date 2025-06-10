@@ -18,9 +18,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import {
+  AlertCircle,
   ArrowLeft,
   FileText,
   HelpCircle,
+  Loader2,
   MessageSquare,
   Plus,
   Save,
@@ -29,13 +31,42 @@ import {
 } from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 
-// Import data
-import activityTypesData from '@/assets/data/activityTypes.json';
-import activityTemplatesData from '@/assets/data/activityTemplates.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
+import type { ActivityTemplate, ActivityType } from '@/types';
 
 const router = useRouter();
 const route = useRoute();
 const { success, error, warning } = useToast();
+
+// Fetch data using API service
+const {
+  data: activityTypes,
+  loading: typesLoading,
+  error: typesError,
+  refresh: refreshTypes,
+} = useApiList<ActivityType>(() => api.activityTypes.getAll(), {
+  cacheKey: 'activityTypes',
+});
+
+const {
+  data: activityTemplates,
+  loading: templatesLoading,
+  error: templatesError,
+  refresh: refreshTemplates,
+} = useApiList<ActivityTemplate>(() => api.activityTemplates.getAll(), {
+  cacheKey: 'activityTemplates',
+});
+
+// Loading and error states
+const isLoading = computed(() => typesLoading.value || templatesLoading.value);
+const hasError = computed(() => typesError.value !== null || templatesError.value !== null);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await Promise.all([refreshTypes(), refreshTemplates()]);
+};
 
 // Check if we're in edit mode
 const isEditMode = computed(() => route.name === 'edit-activity-template');
@@ -107,9 +138,10 @@ const questionTypes = [
 
 // Get selected activity types details
 const selectedActivityTypes = computed(() => {
+  if (!activityTypes.value) return [];
   return form.value.aktivitetstyper
     .map(id => {
-      return activityTypesData.find(type => type.ActivityTypeID.toString() === id);
+      return activityTypes.value?.find(type => type.ActivityTypeID.toString() === id);
     })
     .filter((type): type is NonNullable<typeof type> => Boolean(type));
 });
@@ -185,8 +217,8 @@ const moveQuestion = (index: number, direction: 'up' | 'down') => {
 
 // Load existing template if in edit mode
 const loadTemplate = () => {
-  if (isEditMode.value && templateId.value) {
-    const existingTemplate = activityTemplatesData.find(t => t.id === templateId.value);
+  if (isEditMode.value && templateId.value && activityTemplates.value) {
+    const existingTemplate = activityTemplates.value.find(t => t.id === templateId.value);
     if (existingTemplate) {
       form.value = {
         namn: existingTemplate.namn,
@@ -209,12 +241,12 @@ const handleSave = () => {
   }
 
   try {
-    if (isEditMode.value && templateId.value) {
+    if (isEditMode.value && templateId.value && activityTemplates.value) {
       // Update existing template
-      const index = activityTemplatesData.findIndex(t => t.id === templateId.value);
+      const index = activityTemplates.value.findIndex(t => t.id === templateId.value);
       if (index > -1) {
-        const existingTemplate = activityTemplatesData[index];
-        (activityTemplatesData as Record<string, unknown>[])[index] = {
+        const existingTemplate = activityTemplates.value[index];
+        (activityTemplates.value as unknown as Record<string, unknown>[])[index] = {
           ...existingTemplate,
           namn: form.value.namn,
           beskrivning: form.value.beskrivning,
@@ -248,7 +280,7 @@ const handleSave = () => {
             }
           }),
         } as Record<string, unknown>;
-        console.log('Updating template:', activityTemplatesData[index]);
+        console.log('Updating template:', activityTemplates.value[index]);
         success('Mall uppdaterad', 'Aktivitetsmallen har uppdaterats framgångsrikt');
       }
     } else {
@@ -291,9 +323,11 @@ const handleSave = () => {
       };
 
       // Add to templates array (in a real app, this would be an API call)
-      (activityTemplatesData as Record<string, unknown>[]).push(
-        template as Record<string, unknown>
-      );
+      if (activityTemplates.value) {
+        (activityTemplates.value as unknown as Record<string, unknown>[]).push(
+          template as Record<string, unknown>
+        );
+      }
       console.log('Saving template:', template);
       success('Mall sparad', 'Aktivitetsmallen har skapats framgångsrikt');
     }
@@ -324,8 +358,8 @@ const pageTitle = computed(() =>
   isEditMode.value ? 'Redigera aktivitetsmall' : 'Ny aktivitetsmall'
 );
 const pageBreadcrumbs = computed(() => {
-  if (isEditMode.value) {
-    const template = activityTemplatesData.find(t => t.id === templateId.value);
+  if (isEditMode.value && activityTemplates.value) {
+    const template = activityTemplates.value.find(t => t.id === templateId.value);
     return `Dashboard / Administration / Aktivitetsmallar / ${template?.namn ?? 'Redigera'}`;
   }
   return 'Dashboard / Administration / Aktivitetsmallar / Ny mall';
@@ -334,7 +368,25 @@ const pageBreadcrumbs = computed(() => {
 
 <template>
   <PageLayout :title="pageTitle" :breadcrumbs="pageBreadcrumbs">
-    <div class="max-w-6xl mx-auto space-y-6">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar aktivitetsdata...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av aktivitetsdata</p>
+        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="max-w-6xl mx-auto space-y-6">
       <!-- Basic Information -->
       <Card>
         <CardHeader>
@@ -435,9 +487,12 @@ const pageBreadcrumbs = computed(() => {
           <CardTitle>Aktivitetstyper *</CardTitle>
         </CardHeader>
         <CardContent class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-if="!activityTypes || activityTypes.length === 0" class="text-center py-8">
+            <p class="text-muted-foreground">Inga aktivitetstyper tillgängliga</p>
+          </div>
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
-              v-for="type in activityTypesData"
+              v-for="type in activityTypes"
               :key="type.ActivityTypeID"
               class="flex items-start space-x-3 p-3 border rounded-lg"
             >

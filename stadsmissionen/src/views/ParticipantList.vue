@@ -6,24 +6,75 @@ import DataTable from '@/components/shared/DataTable.vue';
 import SearchAndFilter from '@/components/shared/SearchAndFilter.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, UserPlus, Users } from 'lucide-vue-next';
-import type { TableColumn } from '@/types';
+import { AlertCircle, Edit, Loader2, Trash2, UserPlus, Users } from 'lucide-vue-next';
+import type { Organization, Participant, TableColumn } from '@/types';
 import { useToast } from '@/composables/useToast';
 
-// Import JSON data
-import participantsData from '@/assets/data/participants.json';
-import familyRelationsData from '@/assets/data/familyRelations.json';
-import organizationSettings from '@/assets/data/organizationSettings.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
 
 const router = useRouter();
 const { success } = useToast();
 const searchTerm = ref('');
 
-// Get current organization
-const currentOrg = organizationSettings.organizations.find(
-  org => org.id === organizationSettings.currentOrganization
+// Fetch data using API services
+const {
+  data: participants,
+  loading: participantsLoading,
+  error: participantsError,
+  refresh: refreshParticipants,
+} = useApiList<Participant>(() => api.participants.getAll(), {
+  cacheKey: 'participants',
+});
+
+const {
+  data: organizations,
+  loading: organizationsLoading,
+  error: organizationsError,
+  refresh: refreshOrganizations,
+} = useApiList<Organization>(() => api.organizations.getAll(), {
+  cacheKey: 'organizations',
+});
+
+// Mock family relations data (since API endpoint doesn't exist)
+interface FamilyRelation {
+  ParticipantID: number;
+  RelatedParticipantID: number;
+  RelationType: string;
+}
+
+// Enhanced participant interface
+interface EnhancedParticipant extends Participant {
+  fullName: string;
+  age: string | number;
+  familyRelations: FamilyRelation[];
+  hasGuardian: boolean;
+  hasSiblings: boolean;
+  guardianNames: string[];
+  siblingNames: string[];
+  totalRelations: number;
+}
+
+const familyRelationsData = computed((): FamilyRelation[] => {
+  // TODO: Replace with actual API call when endpoint is available
+  return []; // Empty array for now
+});
+
+// Loading and error states
+const isLoading = computed(() => participantsLoading.value || organizationsLoading.value);
+const hasError = computed(
+  () => participantsError.value !== null || organizationsError.value !== null
 );
-const enheter = currentOrg?.enheter ?? [];
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await Promise.all([refreshParticipants(), refreshOrganizations()]);
+};
+
+// Get current organization (use first organization as current)
+const currentOrg = computed(() => organizations.value?.[0]);
+const enheter = computed(() => currentOrg.value?.enheter ?? []);
 
 // Calculate age from personnummer or return unknown
 const calculateAge = (personnummer: string) => {
@@ -35,23 +86,25 @@ const calculateAge = (personnummer: string) => {
 
 // Get family relations for a participant
 const getFamilyRelations = (participantId: number) => {
-  return familyRelationsData.filter(
+  return familyRelationsData.value.filter(
     rel => rel.ParticipantID === participantId || rel.RelatedParticipantID === participantId
   );
 };
 
 // Get related participant names
 const getRelatedParticipantNames = (participantId: number, relationType: string) => {
-  const relations = familyRelationsData.filter(
-    rel =>
+  const relations = familyRelationsData.value.filter(
+    (rel: FamilyRelation) =>
       (rel.ParticipantID === participantId || rel.RelatedParticipantID === participantId) &&
       rel.RelationType === relationType
   );
 
-  return relations.map(rel => {
+  return relations.map((rel: FamilyRelation) => {
     const relatedId =
       rel.ParticipantID === participantId ? rel.RelatedParticipantID : rel.ParticipantID;
-    const relatedParticipant = participantsData.find(p => p.ParticipantID === relatedId);
+    const relatedParticipant = participants.value?.find(
+      (p: Participant) => p.ParticipantID === relatedId
+    );
     return relatedParticipant
       ? `${relatedParticipant.Fornamn} ${relatedParticipant.Efternamn}`
       : 'Okänd';
@@ -60,7 +113,9 @@ const getRelatedParticipantNames = (participantId: number, relationType: string)
 
 // Enhanced participants with calculated data
 const enhancedParticipants = computed(() => {
-  return participantsData.map(participant => {
+  if (!participants.value) return [];
+
+  return participants.value.map((participant: Participant) => {
     const familyRelations = getFamilyRelations(participant.ParticipantID);
     const guardianNames = getRelatedParticipantNames(participant.ParticipantID, 'Målsman');
     const siblingNames = getRelatedParticipantNames(participant.ParticipantID, 'Syskon');
@@ -70,8 +125,8 @@ const enhancedParticipants = computed(() => {
       fullName: `${participant.Fornamn} ${participant.Efternamn}`,
       age: calculateAge(participant.Personnummer),
       familyRelations,
-      hasGuardian: familyRelations.some(rel => rel.RelationType === 'Målsman'),
-      hasSiblings: familyRelations.some(rel => rel.RelationType === 'Syskon'),
+      hasGuardian: familyRelations.some((rel: FamilyRelation) => rel.RelationType === 'Målsman'),
+      hasSiblings: familyRelations.some((rel: FamilyRelation) => rel.RelationType === 'Syskon'),
       guardianNames,
       siblingNames,
       totalRelations: familyRelations.length,
@@ -150,25 +205,28 @@ const columns: TableColumn[] = [
 const stats = computed(() => [
   {
     title: 'Totalt deltagare',
-    value: participantsData.length,
+    value: participants.value?.length ?? 0,
     icon: Users,
     color: 'blue',
   },
   {
     title: 'Barn (under 18)',
-    value: enhancedParticipants.value.filter(p => typeof p.age === 'number' && p.age < 18).length,
+    value: enhancedParticipants.value.filter(
+      (p: EnhancedParticipant) => typeof p.age === 'number' && p.age < 18
+    ).length,
     icon: Users,
     color: 'green',
   },
   {
     title: 'Med familjerelationer',
-    value: enhancedParticipants.value.filter(p => p.totalRelations > 0).length,
+    value: enhancedParticipants.value.filter((p: EnhancedParticipant) => p.totalRelations > 0)
+      .length,
     icon: Users,
     color: 'purple',
   },
   {
     title: 'Totala enheter',
-    value: enheter.length,
+    value: enheter.value.length,
     icon: Users,
     color: 'orange',
   },
@@ -197,7 +255,7 @@ const filters = [
   {
     key: 'enheter',
     label: 'Enhet',
-    options: enheter.map(enhet => ({
+    options: enheter.value.map((enhet: string) => ({
       value: enhet,
       label: enhet,
     })),
@@ -217,21 +275,6 @@ const filters = [
 const handleNewParticipant = () => {
   router.push('/participants/new');
 };
-
-// Define interface directly in component to avoid import issues
-interface Participant {
-  ParticipantID: number;
-  Fornamn: string;
-  Efternamn: string;
-  Kon: string;
-  Enheter: string[];
-  fullName?: string;
-  hasGuardian?: boolean;
-  hasSiblings?: boolean;
-  guardianNames?: string[];
-  siblingNames?: string[];
-  totalRelations?: number;
-}
 
 // Update function signatures to use proper types with casting
 const handleRowClick = (item: Record<string, unknown>) => {
@@ -260,99 +303,119 @@ const handleFamilyConnections = () => {
 
 <template>
   <PageLayout title="Deltagare" breadcrumbs="Dashboard / Deltagare" show-stats :stats="stats">
-    <!-- SearchAndFilter with padding -->
-    <div class="px-6 py-4">
-      <SearchAndFilter
-        v-model:search="searchTerm"
-        :filters="filters"
-        placeholder="Sök deltagare..."
-      >
-        <template #actions>
-          <Button variant="outline" class="gap-2" @click="handleFamilyConnections">
-            <Users class="h-4 w-4" />
-            Familjekopplingar
-          </Button>
-          <Button class="gap-2" @click="handleNewParticipant">
-            <UserPlus class="h-4 w-4" />
-            Ny deltagare
-          </Button>
-        </template>
-      </SearchAndFilter>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="flex items-center gap-3">
+        <Loader2 class="h-6 w-6 animate-spin" />
+        <span class="text-lg">Laddar deltagare...</span>
+      </div>
     </div>
 
-    <!-- DataTable full width -->
-    <DataTable
-      :data="filteredParticipants"
-      :columns="columns"
-      class="cursor-pointer"
-      @row-click="handleRowClick"
-    >
-      <!-- Custom column renderers -->
-      <template #enheter="{ row }">
-        <div class="flex flex-wrap gap-1">
-          <Badge v-for="enhet in row.Enheter" :key="enhet" variant="secondary" class="text-xs">
-            {{ enhet }}
-          </Badge>
-        </div>
-      </template>
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex flex-col items-center justify-center py-12">
+      <div class="flex items-center gap-3 mb-4">
+        <AlertCircle class="h-6 w-6 text-red-500" />
+        <span class="text-lg text-red-600">Kunde inte ladda deltagare</span>
+      </div>
+      <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+    </div>
 
-      <template #kon="{ row }">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">{{ getGenderIcon(row.Kon) }}</span>
-          <span class="text-sm">{{ row.Kon }}</span>
-        </div>
-      </template>
+    <!-- Content -->
+    <template v-else>
+      <!-- SearchAndFilter with padding -->
+      <div class="px-6 py-4">
+        <SearchAndFilter
+          v-model:search="searchTerm"
+          :filters="filters"
+          placeholder="Sök deltagare..."
+        >
+          <template #actions>
+            <Button variant="outline" class="gap-2" @click="handleFamilyConnections">
+              <Users class="h-4 w-4" />
+              Familjekopplingar
+            </Button>
+            <Button class="gap-2" @click="handleNewParticipant">
+              <UserPlus class="h-4 w-4" />
+              Ny deltagare
+            </Button>
+          </template>
+        </SearchAndFilter>
+      </div>
 
-      <template #relations="{ row }">
-        <div class="flex gap-1">
-          <Badge
-            v-if="row.hasGuardian"
-            variant="outline"
-            class="text-xs"
-            :title="`Målsman: ${row.guardianNames.join(', ')}`"
-          >
-            👨‍👩‍👧‍👦 {{ row.guardianNames.length }}
-          </Badge>
-          <Badge
-            v-if="row.hasSiblings"
-            variant="outline"
-            class="text-xs"
-            :title="`Syskon: ${row.siblingNames.join(', ')}`"
-          >
-            👫 {{ row.siblingNames.length }}
-          </Badge>
-          <Badge
-            v-if="row.totalRelations > 0 && !row.hasGuardian && !row.hasSiblings"
-            variant="outline"
-            class="text-xs"
-          >
-            👥 {{ row.totalRelations }}
-          </Badge>
-        </div>
-      </template>
+      <!-- DataTable full width -->
+      <DataTable
+        :data="filteredParticipants"
+        :columns="columns"
+        class="cursor-pointer"
+        @row-click="handleRowClick"
+      >
+        <!-- Custom column renderers -->
+        <template #enheter="{ row }">
+          <div class="flex flex-wrap gap-1">
+            <Badge v-for="enhet in row.Enheter" :key="enhet" variant="secondary" class="text-xs">
+              {{ enhet }}
+            </Badge>
+          </div>
+        </template>
 
-      <template #actions="{ row }">
-        <div class="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            class="h-8 w-8 p-0"
-            title="Redigera deltagare"
-            @click="() => handleEditParticipant(row)"
-          >
-            <Edit class="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            class="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-            title="Ta bort deltagare"
-            @click="() => handleDeleteParticipant(row)"
-          >
-            <Trash2 class="h-4 w-4" />
-          </Button>
-        </div>
-      </template>
-    </DataTable>
+        <template #kon="{ row }">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">{{ getGenderIcon(row.Kon) }}</span>
+            <span class="text-sm">{{ row.Kon }}</span>
+          </div>
+        </template>
+
+        <template #relations="{ row }">
+          <div class="flex gap-1">
+            <Badge
+              v-if="row.hasGuardian"
+              variant="outline"
+              class="text-xs"
+              :title="`Målsman: ${row.guardianNames.join(', ')}`"
+            >
+              👨‍👩‍👧‍👦 {{ row.guardianNames.length }}
+            </Badge>
+            <Badge
+              v-if="row.hasSiblings"
+              variant="outline"
+              class="text-xs"
+              :title="`Syskon: ${row.siblingNames.join(', ')}`"
+            >
+              👫 {{ row.siblingNames.length }}
+            </Badge>
+            <Badge
+              v-if="row.totalRelations > 0 && !row.hasGuardian && !row.hasSiblings"
+              variant="outline"
+              class="text-xs"
+            >
+              👥 {{ row.totalRelations }}
+            </Badge>
+          </div>
+        </template>
+
+        <template #actions="{ row }">
+          <div class="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              class="h-8 w-8 p-0"
+              title="Redigera deltagare"
+              @click="() => handleEditParticipant(row)"
+            >
+              <Edit class="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              class="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+              title="Ta bort deltagare"
+              @click="() => handleDeleteParticipant(row)"
+            >
+              <Trash2 class="h-4 w-4" />
+            </Button>
+          </div>
+        </template>
+      </DataTable>
+    </template>
   </PageLayout>
 </template>

@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  AlertCircle,
   Building,
   Calendar,
   Clock,
@@ -22,6 +23,7 @@ import {
   Edit,
   Eye,
   EyeOff,
+  Loader2,
   Save,
   Settings,
   Shield,
@@ -30,15 +32,74 @@ import {
 } from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 
-// Import data
-import usersData from '@/assets/data/users.json';
-import organizationSettingsData from '@/assets/data/organizationSettings.json';
+// TODO: Use API service and composables when endpoints are available
+// import { useApiList } from '@/composables/useApi';
+// import api from '@/api';
+
+// Type definitions for component-specific interfaces
+interface UserData {
+  id: string;
+  namn: string;
+  epost: string;
+  losenord: string;
+  aktiv: boolean;
+  roller: string[];
+  enheter: string[];
+  organisationId: string;
+  skapadDatum: string;
+  uppdateradDatum?: string;
+  senastInloggad?: string;
+}
+
+interface OrganizationData {
+  id: string;
+  namn: string;
+  enheter: string[];
+}
+
+// interface OrganizationSettings {
+//   organizations: OrganizationData[];
+// }
+
+// TODO: Fetch data using API service when endpoints are available
+// For now using mock data structure that matches the expected API response
+
+// Loading and error states (mock implementation)
+const isLoading = computed(() => false); // Set to true when actual API calls are implemented
+const hasError = computed(() => false); // Set to true when actual API calls are implemented
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  // TODO: Implement actual API refresh when endpoints are available
+  console.log('Refresh profile data');
+};
+
+// Mock data for now (TODO: Replace with actual API when available)
+const mockUsers = computed<UserData[]>(() => [
+  {
+    id: 'user-1',
+    namn: 'Anna Andersson',
+    epost: 'anna.andersson@stadsmission.se',
+    losenord: 'hashedPassword123',
+    aktiv: true,
+    roller: ['administrator'],
+    enheter: ['Boende', 'Dagverksamhet'],
+    organisationId: 'org-1',
+    skapadDatum: '2023-01-15T10:00:00Z',
+    uppdateradDatum: '2024-01-10T14:30:00Z',
+    senastInloggad: '2024-01-15T09:15:00Z',
+  },
+]);
+
+const mockOrganizations = computed<OrganizationData[]>(() => [
+  {
+    id: 'org-1',
+    namn: 'Stockholms Stadsmission',
+    enheter: ['Boende', 'Dagverksamhet', 'Utbildning', 'Arbetsträning'],
+  },
+]);
 
 // Reactive data
-const users = ref(usersData);
-const organizations = ref(organizationSettingsData.organizations);
-
-// Simulate current logged in user (in real app this would come from auth store)
 const currentUserId = ref('user-1'); // Anna Andersson
 const editingProfile = ref(false);
 const showChangePasswordDialog = ref(false);
@@ -57,14 +118,16 @@ const showConfirmPassword = ref(false);
 
 // Current user
 const currentUser = computed(() => {
-  return users.value.find(user => user.id === currentUserId.value);
+  // Use mock data for now (TODO: Replace with actual API data when available)
+  return mockUsers.value.find(user => user.id === currentUserId.value);
 });
 
 // Enhanced current user with organization info
 const enhancedCurrentUser = computed(() => {
   if (!currentUser.value) return null;
 
-  const org = organizations.value.find(o => o.id === currentUser.value?.organisationId);
+  // Use mock data for now (TODO: Replace with actual API data when available)
+  const org = mockOrganizations.value.find(o => o.id === currentUser.value?.organisationId);
 
   return {
     ...currentUser.value,
@@ -107,34 +170,45 @@ const userRoles = computed(() => {
 });
 
 // Statistics
-const stats = computed(() => [
-  {
-    title: 'Aktiv sedan',
-    value: formatDate(currentUser.value?.skapadDatum ?? ''),
-    icon: Calendar,
-    color: 'blue',
-  },
-  {
-    title: 'Senast inloggad',
-    value: currentUser.value?.senastInloggad
-      ? formatDate(currentUser.value.senastInloggad)
-      : 'Aldrig',
-    icon: Clock,
-    color: 'green',
-  },
-  {
-    title: 'Roller',
-    value: currentUser.value?.roller.length ?? 0,
-    icon: Shield,
-    color: 'purple',
-  },
-  {
-    title: 'Enheter',
-    value: currentUser.value?.enheter.length ?? 0,
-    icon: Building,
-    color: 'orange',
-  },
-]);
+const stats = computed(() => {
+  if (!currentUser.value) {
+    return [
+      { title: 'Aktiv sedan', value: '-', icon: Calendar, color: 'blue' },
+      { title: 'Senast inloggad', value: '-', icon: Clock, color: 'green' },
+      { title: 'Roller', value: 0, icon: Shield, color: 'purple' },
+      { title: 'Enheter', value: 0, icon: Building, color: 'orange' },
+    ];
+  }
+
+  return [
+    {
+      title: 'Aktiv sedan',
+      value: formatDate(currentUser.value.skapadDatum),
+      icon: Calendar,
+      color: 'blue',
+    },
+    {
+      title: 'Senast inloggad',
+      value: currentUser.value.senastInloggad
+        ? formatDate(currentUser.value.senastInloggad)
+        : 'Aldrig',
+      icon: Clock,
+      color: 'green',
+    },
+    {
+      title: 'Roller',
+      value: currentUser.value.roller.length,
+      icon: Shield,
+      color: 'purple',
+    },
+    {
+      title: 'Enheter',
+      value: currentUser.value.enheter.length,
+      icon: Building,
+      color: 'orange',
+    },
+  ];
+});
 
 const { success, error } = useToast();
 
@@ -143,6 +217,7 @@ const saveProfile = () => {
   if (currentUser.value) {
     currentUser.value.uppdateradDatum = new Date().toISOString();
     editingProfile.value = false;
+    success('Profil uppdaterad', 'Din profil har sparats framgångsrikt');
     console.log('Profile updated');
   }
 };
@@ -197,7 +272,25 @@ const formatDateTime = (dateString: string) => {
     show-stats
     :stats="stats"
   >
-    <div v-if="enhancedCurrentUser" class="space-y-6 p-6">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar profilinformation...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av profilinformation</p>
+        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else-if="enhancedCurrentUser" class="space-y-6 p-6">
       <!-- Profile Header -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -436,7 +529,11 @@ const formatDateTime = (dateString: string) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-if="userRoles.length === 0" class="text-center py-8">
+            <Shield class="h-8 w-8 text-muted-foreground mx-auto mb-4" />
+            <p class="text-muted-foreground">Inga roller tilldelade</p>
+          </div>
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div v-for="role in userRoles" :key="role.id" class="p-4 border rounded-lg">
               <div class="flex items-center gap-2 mb-2">
                 <component :is="role.icon" class="h-4 w-4" />

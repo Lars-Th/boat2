@@ -7,24 +7,109 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { TableColumn } from '@/types';
-import { ArrowLeft, Calendar, Edit, Mail, MapPin, Phone, User, Users } from 'lucide-vue-next';
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calendar,
+  Edit,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+  User,
+  Users,
+} from 'lucide-vue-next';
 
-// Import JSON data
-import participantsData from '@/assets/data/participants.json';
-import familyRelationsData from '@/assets/data/familyRelations.json';
-import attendancesData from '@/assets/data/attendances.json';
-import activitiesData from '@/assets/data/activities.json';
-import activityTypesData from '@/assets/data/activityTypes.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
+import type { Activity, ActivityType, Attendance, Participant, TableColumn } from '@/types';
 
 const route = useRoute();
 const router = useRouter();
 
 const participantId = computed(() => parseInt(route.params['id'] as string));
 
+// Fetch data using API services
+const {
+  data: participants,
+  loading: participantsLoading,
+  error: participantsError,
+  refresh: refreshParticipants,
+} = useApiList<Participant>(() => api.participants.getAll(), {
+  cacheKey: 'participants',
+});
+
+const {
+  data: activities,
+  loading: activitiesLoading,
+  error: activitiesError,
+  refresh: refreshActivities,
+} = useApiList<Activity>(() => api.activities.getAll(), {
+  cacheKey: 'activities',
+});
+
+const {
+  data: activityTypes,
+  loading: typesLoading,
+  error: typesError,
+  refresh: refreshTypes,
+} = useApiList<ActivityType>(() => api.activityTypes.getAll(), {
+  cacheKey: 'activityTypes',
+});
+
+const {
+  data: attendances,
+  loading: attendancesLoading,
+  error: attendancesError,
+  refresh: refreshAttendances,
+} = useApiList<Attendance>(() => api.attendances.getAll(), {
+  cacheKey: 'attendances',
+});
+
+// Mock family relations data (since API endpoint doesn't exist)
+interface FamilyRelation {
+  ParticipantID: number;
+  RelatedParticipantID: number;
+  RelationType: string;
+}
+
+const familyRelationsData = computed((): FamilyRelation[] => {
+  // TODO: Replace with actual API call when endpoint is available
+  return []; // Empty array for now
+});
+
+// Loading and error states
+const isLoading = computed(
+  () =>
+    participantsLoading.value ||
+    activitiesLoading.value ||
+    typesLoading.value ||
+    attendancesLoading.value
+);
+
+const hasError = computed(
+  () =>
+    participantsError.value !== null ||
+    activitiesError.value !== null ||
+    typesError.value !== null ||
+    attendancesError.value !== null
+);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await Promise.all([
+    refreshParticipants(),
+    refreshActivities(),
+    refreshTypes(),
+    refreshAttendances(),
+  ]);
+};
+
 // Find participant
 const participant = computed(() => {
-  return participantsData.find(p => p.ParticipantID === participantId.value);
+  if (!participants.value) return null;
+  return participants.value.find(p => p.ParticipantID === participantId.value);
 });
 
 // Calculate age
@@ -36,7 +121,7 @@ const calculateAge = (personnummer: string) => {
 
 // Get family relations
 const familyRelations = computed(() => {
-  return familyRelationsData
+  return familyRelationsData.value
     .filter(
       rel =>
         rel.ParticipantID === participantId.value ||
@@ -45,7 +130,7 @@ const familyRelations = computed(() => {
     .map(rel => {
       const relatedId =
         rel.ParticipantID === participantId.value ? rel.RelatedParticipantID : rel.ParticipantID;
-      const relatedParticipant = participantsData.find(p => p.ParticipantID === relatedId);
+      const relatedParticipant = participants.value?.find(p => p.ParticipantID === relatedId);
 
       return {
         ...rel,
@@ -57,11 +142,13 @@ const familyRelations = computed(() => {
 
 // Get participant's attendances with activity details
 const participantAttendances = computed(() => {
-  return attendancesData
+  if (!attendances.value || !activities.value || !activityTypes.value) return [];
+
+  return attendances.value
     .filter(att => att.ParticipantID === participantId.value)
     .map(attendance => {
-      const activity = activitiesData.find(a => a.ActivityID === attendance.ActivityID);
-      const activityType = activityTypesData.find(
+      const activity = activities.value?.find(a => a.ActivityID === attendance.ActivityID);
+      const activityType = activityTypes.value?.find(
         t => Number(t.ActivityTypeID) === Number(activity?.ActivityTypeID)
       );
 
@@ -200,8 +287,38 @@ const handleViewRelatedParticipant = (relatedParticipant: Record<string, unknown
 </script>
 
 <template>
+  <!-- Loading State -->
   <PageLayout
-    v-if="participant"
+    v-if="isLoading"
+    title="Laddar deltagare..."
+    breadcrumbs="Dashboard / Deltagare / Laddar..."
+  >
+    <div class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar deltagarinformation...</p>
+      </div>
+    </div>
+  </PageLayout>
+
+  <!-- Error State -->
+  <PageLayout
+    v-else-if="hasError"
+    title="Fel vid laddning"
+    breadcrumbs="Dashboard / Deltagare / Fel"
+  >
+    <div class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av deltagarinformation</p>
+        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+      </div>
+    </div>
+  </PageLayout>
+
+  <!-- Main Content -->
+  <PageLayout
+    v-else-if="participant"
     :title="`${participant.Fornamn} ${participant.Efternamn}`"
     :breadcrumbs="`Dashboard / Deltagare / ${participant.Fornamn} ${participant.Efternamn}`"
     show-stats

@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Save } from 'lucide-vue-next';
+import { AlertCircle, ArrowLeft, Loader2, Save } from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 import { useAuth } from '@/composables/useAuth';
 
@@ -24,12 +24,33 @@ import ActivityDetailsForm from '@/components/features/activity/ActivityDetailsF
 import ActivitySeriesSettings from '@/components/features/activity/ActivitySeriesSettings.vue';
 import ActivityParticipantSelector from '@/components/features/activity/ActivityParticipantSelector.vue';
 
-// Import data
-import activityTemplatesData from '@/assets/data/activityTemplates.json';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
+import type { ActivityTemplate } from '@/types';
 
 const router = useRouter();
 const { success, warning } = useToast();
 const { getCurrentUserId } = useAuth();
+
+// Fetch data using API service
+const {
+  data: activityTemplates,
+  loading: templatesLoading,
+  error: templatesError,
+  refresh: refreshTemplates,
+} = useApiList<ActivityTemplate>(() => api.activityTemplates.getAll(), {
+  cacheKey: 'activityTemplates',
+});
+
+// Loading and error states
+const isLoading = computed(() => templatesLoading.value);
+const hasError = computed(() => templatesError.value !== null);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await refreshTemplates();
+};
 
 // Form data
 const form = ref({
@@ -75,8 +96,8 @@ const enheter = [
 
 // Get selected template
 const selectedTemplate = computed(() => {
-  if (!form.value.templateId) return null;
-  return activityTemplatesData.find(t => t.id === form.value.templateId);
+  if (!form.value.templateId || !activityTemplates.value) return null;
+  return activityTemplates.value.find(t => t.id === form.value.templateId);
 });
 
 // Get template type info
@@ -258,7 +279,25 @@ const handleCancel = () => {
 
 <template>
   <PageLayout title="Ny aktivitet" breadcrumbs="Dashboard / Aktiviteter / Ny aktivitet">
-    <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar aktivitetsmallar...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av aktivitetsmallar</p>
+        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div v-else class="max-w-4xl mx-auto space-y-6">
       <!-- Template Selection Component -->
       <ActivityTemplateSelector
         :selected-template-id="form.templateId"

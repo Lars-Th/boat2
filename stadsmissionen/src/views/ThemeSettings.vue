@@ -10,10 +10,50 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { Check, Download, Eye, Palette, RotateCcw, Save } from 'lucide-vue-next';
+import {
+  AlertCircle,
+  Check,
+  Download,
+  Eye,
+  Loader2,
+  Palette,
+  RotateCcw,
+  Save,
+} from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 
-// Standard themes
+// Use API service and composables (prepared for future theme API integration)
+import { useApiList } from '@/composables/useApi';
+import _api from '@/api';
+
+// Define theme type for API integration
+interface Theme {
+  id: string;
+  name: string;
+  colors: Record<string, string>;
+}
+
+// Fetch themes using API services (mock implementation for now)
+// TODO: Replace with actual theme API when available
+const {
+  data: _themesData, // Currently unused - will be used when theme API is implemented
+  loading: themesLoading,
+  error: themesError,
+  refresh: refreshThemes,
+} = useApiList<Theme>(() => Promise.resolve({ data: [], success: true }), {
+  cacheKey: 'themes',
+});
+
+// Loading and error states
+const isLoading = computed(() => themesLoading.value);
+const hasError = computed(() => themesError.value !== null);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await refreshThemes();
+};
+
+// Standard themes (could be loaded from API in the future)
 const standardThemes = ref([
   {
     id: 'stadsmission-blue',
@@ -233,8 +273,15 @@ const resetToDefault = () => {
 
 const { success, error } = useToast();
 
-const saveTheme = () => {
+const saveTheme = async () => {
   try {
+    // TODO: Replace with actual API call when theme API is implemented
+    // await _api.themes.save({
+    //   id: currentTheme.value,
+    //   colors: activeColors.value,
+    // });
+
+    // For now, save to localStorage
     localStorage.setItem(
       'stadsmission-theme',
       JSON.stringify({
@@ -320,7 +367,32 @@ loadSavedTheme();
     title="Temahantering"
     breadcrumbs="Dashboard / Administration / Inställningar / Teman"
   >
-    <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center space-y-4">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+        <p class="text-muted-foreground">Laddar temainställningar...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center space-y-4">
+        <AlertCircle class="h-8 w-8 mx-auto text-destructive" />
+        <div>
+          <h3 class="font-semibold text-lg mb-2">Kunde inte ladda temainställningar</h3>
+          <p class="text-muted-foreground mb-4">
+            Ett fel uppstod när temainställningarna skulle hämtas.
+          </p>
+          <Button class="gap-2" @click="handleRefresh">
+            <Loader2 class="h-4 w-4" />
+            Försök igen
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="max-w-7xl mx-auto space-y-6">
       <!-- Header Actions -->
       <div class="flex justify-between items-center px-6">
         <div>

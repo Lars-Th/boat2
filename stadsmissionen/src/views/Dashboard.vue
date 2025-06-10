@@ -5,32 +5,104 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
-import { BarChart3, Calendar, ClipboardList, Plus, UserPlus, Users } from 'lucide-vue-next';
-import type { BreadcrumbItem } from '@/types';
-
-// Import JSON data
-import participantsData from '@/assets/data/participants.json';
-import activitiesData from '@/assets/data/activities.json';
-import attendancesData from '@/assets/data/attendances.json';
-import activityTypesData from '@/assets/data/activityTypes.json';
+import {
+  AlertCircle,
+  BarChart3,
+  Calendar,
+  ClipboardList,
+  Loader2,
+  Plus,
+  UserPlus,
+  Users,
+} from 'lucide-vue-next';
+// Use API service and composables
+import { useApiList } from '@/composables/useApi';
+import api from '@/api';
+import type { Activity, ActivityType, Attendance, BreadcrumbItem, Participant } from '@/types';
 
 const router = useRouter();
 
-// Calculate statistics from JSON data
-const totalParticipants = computed(() => participantsData.length);
-const totalActivities = computed(() => activitiesData.length);
-const totalAttendances = computed(() => attendancesData.length);
+// Fetch data using API service
+const {
+  data: participants,
+  loading: participantsLoading,
+  error: participantsError,
+  refresh: refreshParticipants,
+} = useApiList<Participant>(() => api.participants.getAll(), {
+  cacheKey: 'participants',
+});
+
+const {
+  data: activities,
+  loading: activitiesLoading,
+  error: activitiesError,
+  refresh: refreshActivities,
+} = useApiList<Activity>(() => api.activities.getAll(), {
+  cacheKey: 'activities',
+});
+
+const {
+  data: attendances,
+  loading: attendancesLoading,
+  error: attendancesError,
+  refresh: refreshAttendances,
+} = useApiList<Attendance>(() => api.attendances.getAll(), {
+  cacheKey: 'attendances',
+});
+
+const {
+  data: activityTypes,
+  loading: activityTypesLoading,
+  error: activityTypesError,
+  refresh: refreshActivityTypes,
+} = useApiList<ActivityType>(() => api.activityTypes.getAll(), {
+  cacheKey: 'activityTypes',
+});
+
+// Loading and error states
+const isLoading = computed(
+  () =>
+    participantsLoading.value ||
+    activitiesLoading.value ||
+    attendancesLoading.value ||
+    activityTypesLoading.value
+);
+const hasError = computed(
+  () =>
+    participantsError.value !== null ||
+    activitiesError.value !== null ||
+    attendancesError.value !== null ||
+    activityTypesError.value !== null
+);
+
+// Refresh function for error recovery
+const handleRefresh = async () => {
+  await Promise.all([
+    refreshParticipants(),
+    refreshActivities(),
+    refreshAttendances(),
+    refreshActivityTypes(),
+  ]);
+};
+
+// Calculate statistics from API data
+const totalParticipants = computed(() => participants.value?.length ?? 0);
+const totalActivities = computed(() => activities.value?.length ?? 0);
+const totalAttendances = computed(() => attendances.value?.length ?? 0);
 const attendanceRate = computed(() => {
-  const present = attendancesData.filter(a => a.Närvaro).length;
-  return Math.round((present / attendancesData.length) * 100);
+  if (!attendances.value || attendances.value.length === 0) return 0;
+  const present = attendances.value.filter(a => a.Närvaro).length;
+  return Math.round((present / attendances.value.length) * 100);
 });
 
 // Recent activities (this week)
 const recentActivities = computed(() => {
+  if (!activities.value) return [];
+
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-  return activitiesData
+  return activities.value
     .filter(a => new Date(a.DatumTid) >= oneWeekAgo)
     .sort((a, b) => new Date(b.DatumTid).getTime() - new Date(a.DatumTid).getTime())
     .slice(0, 5);
@@ -38,8 +110,12 @@ const recentActivities = computed(() => {
 
 // Age distribution
 const ageStats = computed(() => {
+  if (!participants.value) {
+    return { children: 0, adults: 0 };
+  }
+
   const currentYear = new Date().getFullYear();
-  const ages = participantsData.map(p => {
+  const ages = participants.value.map(p => {
     const year = parseInt(p.Personnummer.substring(0, 4));
     return currentYear - year;
   });
@@ -128,6 +204,18 @@ const navigationShortcuts = [
     description: 'Visa statistik och rapporter',
   },
 ];
+
+// Activity types with usage count
+const activityTypesWithCount = computed(() => {
+  if (!activityTypes.value || !activities.value) return [];
+
+  return activityTypes.value.slice(0, 5).map(type => ({
+    ...type,
+    count:
+      activities.value?.filter(a => Number(a.ActivityTypeID) === Number(type.ActivityTypeID))
+        .length ?? 0,
+  }));
+});
 </script>
 
 <template>
@@ -140,8 +228,25 @@ const navigationShortcuts = [
       :stats="stats"
     />
 
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar dashboard-data...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av dashboard-data</p>
+        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+      </div>
+    </div>
+
     <!-- Main content -->
-    <div class="p-4 space-y-6">
+    <div v-else class="p-4 space-y-6">
       <!-- Quick Actions -->
       <Card>
         <CardHeader>
@@ -174,7 +279,10 @@ const navigationShortcuts = [
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div class="space-y-3">
+            <div v-if="totalParticipants === 0" class="text-center py-4">
+              <p class="text-muted-foreground">Inga deltagare registrerade</p>
+            </div>
+            <div v-else class="space-y-3">
               <div class="flex justify-between items-center">
                 <span class="text-sm">Barn (under 18)</span>
                 <Badge variant="default">
@@ -208,7 +316,10 @@ const navigationShortcuts = [
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div class="space-y-2">
+            <div v-if="recentActivities.length === 0" class="text-center py-4">
+              <p class="text-muted-foreground">Inga kommande aktiviteter</p>
+            </div>
+            <div v-else class="space-y-2">
               <div
                 v-for="activity in recentActivities"
                 :key="activity.ActivityID"
@@ -222,15 +333,15 @@ const navigationShortcuts = [
                   - {{ activity.Plats }}
                 </div>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                class="w-full mt-2"
-                @click="router.push('/activities')"
-              >
-                Visa alla aktiviteter
-              </Button>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              class="w-full mt-2"
+              @click="router.push('/activities')"
+            >
+              Visa alla aktiviteter
+            </Button>
           </CardContent>
         </Card>
 
@@ -243,30 +354,29 @@ const navigationShortcuts = [
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div class="space-y-2">
+            <div v-if="activityTypesWithCount.length === 0" class="text-center py-4">
+              <p class="text-muted-foreground">Inga aktivitetstyper registrerade</p>
+            </div>
+            <div v-else class="space-y-2">
               <div
-                v-for="type in activityTypesData.slice(0, 5)"
+                v-for="type in activityTypesWithCount"
                 :key="type.ActivityTypeID"
                 class="flex justify-between items-center text-sm"
               >
                 <span>{{ type.Typnamn }}</span>
                 <Badge variant="outline">
-                  {{
-                    activitiesData.filter(
-                      a => Number(a.ActivityTypeID) === Number(type.ActivityTypeID)
-                    ).length
-                  }}
+                  {{ type.count }}
                 </Badge>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                class="w-full mt-2"
-                @click="router.push('/activity-types')"
-              >
-                Hantera aktivitetstyper
-              </Button>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              class="w-full mt-2"
+              @click="router.push('/activity-types')"
+            >
+              Hantera aktivitetstyper
+            </Button>
           </CardContent>
         </Card>
       </div>

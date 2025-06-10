@@ -16,28 +16,49 @@ import {
   Users,
 } from 'lucide-vue-next';
 
-// Import data
-import activityTemplatesData from '@/assets/data/activityTemplates.json';
-import activityTypesData from '@/assets/data/activityTypes.json';
+// Use API service and composables
+import { useApiItem, useApiList } from '@/composables/useApi';
+import api from '@/api';
+import type { ActivityType } from '@/types';
 
 const router = useRouter();
 const route = useRoute();
 
-// Get template by ID
-const template = computed(() => {
-  const id = route.params['id'] as string;
-  return activityTemplatesData.find(t => t.id === id);
+// Get template ID from route
+const templateId = computed(() => route.params['id'] as string);
+
+// Fetch data using API service
+const {
+  data: template,
+  loading: templateLoading,
+  error: templateError,
+} = useApiItem(() => api.activityTemplates.getById(templateId.value), {
+  cacheKey: `activity-template-${templateId.value}`,
 });
 
-// Get activity type details
-const activityTypes = computed(() => {
-  if (!template.value) return [];
+const {
+  data: activityTypes,
+  loading: activityTypesLoading,
+  error: activityTypesError,
+} = useApiList<ActivityType>(() => api.activityTypes.getAll(), {
+  cacheKey: 'activityTypes',
+});
+
+// Get activity type details for the template
+const templateActivityTypes = computed(() => {
+  if (!template.value || !activityTypes.value) return [];
   return template.value.aktivitetstyper
     .map(id => {
-      return activityTypesData.find(t => t.ActivityTypeID.toString() === id);
+      return activityTypes.value?.find(t => t.ActivityTypeID.toString() === id);
     })
     .filter(Boolean);
 });
+
+// Loading states
+const isLoading = computed(() => templateLoading.value || activityTypesLoading.value);
+
+// Error states
+const hasError = computed(() => templateError.value !== null || activityTypesError.value !== null);
 
 // Get template type info
 const getTemplateTypeInfo = (malltyp: string) => {
@@ -92,10 +113,6 @@ const getQuestionTypeLabel = (typ: string) => {
 };
 
 // Actions
-// const handleBack = () => {
-//   router.push('/activity-templates')
-// }
-
 const handleEdit = () => {
   router.push(`/activity-templates/${template.value?.id}/edit`);
 };
@@ -104,23 +121,46 @@ const handleDelete = () => {
   if (!template.value) return;
 
   if (confirm(`Är du säker på att du vill ta bort mallen "${template.value.namn}"?`)) {
-    const index = activityTemplatesData.findIndex(t => t.id === template.value?.id);
-    if (index > -1) {
-      activityTemplatesData.splice(index, 1);
-      router.push('/activity-templates');
-    }
+    // TODO: Implement actual delete API call
+    // For now, just navigate back
+    router.push('/activity-templates');
   }
 };
 
-// If template not found, redirect
-if (!template.value) {
+// Handle not found case
+const handleNotFound = () => {
   router.push('/activity-templates');
-}
+};
 </script>
 
 <template>
+  <!-- Loading State -->
+  <div v-if="isLoading" class="flex items-center justify-center py-12">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+      <p class="text-muted-foreground">Laddar aktivitetsmall...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div v-else-if="hasError" class="flex items-center justify-center py-12">
+    <div class="text-center">
+      <p class="text-destructive mb-2">Ett fel uppstod vid laddning av aktivitetsmallen</p>
+      <Button variant="outline" @click="handleNotFound">Tillbaka till aktivitetsmallar</Button>
+    </div>
+  </div>
+
+  <!-- Not Found State -->
+  <div v-else-if="!template" class="flex items-center justify-center py-12">
+    <div class="text-center">
+      <p class="text-muted-foreground mb-2">Aktivitetsmallen kunde inte hittas</p>
+      <Button variant="outline" @click="handleNotFound">Tillbaka till aktivitetsmallar</Button>
+    </div>
+  </div>
+
+  <!-- Template Content -->
   <PageLayout
-    v-if="template"
+    v-else
     :title="template.namn"
     :breadcrumbs="`Dashboard / Administration / Aktivitetsmallar / ${template.namn}`"
     show-back-button
@@ -221,9 +261,15 @@ if (!template.value) {
           <CardTitle>Aktivitetstyper</CardTitle>
         </CardHeader>
         <CardContent>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div
+            v-if="templateActivityTypes.length === 0"
+            class="text-center py-8 text-muted-foreground"
+          >
+            <p>Inga aktivitetstyper tilldelade</p>
+          </div>
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div
-              v-for="type in activityTypes"
+              v-for="type in templateActivityTypes"
               :key="type?.ActivityTypeID?.toString() ?? 'unknown'"
               class="p-4 border rounded-lg"
             >
