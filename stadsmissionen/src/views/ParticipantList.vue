@@ -14,6 +14,9 @@ import { useToast } from '@/composables/useToast';
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
 
+// Import family relations data
+import familyRelationsJsonData from '@/assets/data/familyRelations.json';
+
 const router = useRouter();
 const { success } = useToast();
 const searchTerm = ref('');
@@ -58,7 +61,7 @@ interface EnhancedParticipant extends Participant {
 
 const familyRelationsData = computed((): FamilyRelation[] => {
   // TODO: Replace with actual API call when endpoint is available
-  return []; // Empty array for now
+  return familyRelationsJsonData; // Use imported JSON data instead of empty array
 });
 
 // Loading and error states

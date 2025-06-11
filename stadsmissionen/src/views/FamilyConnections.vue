@@ -13,6 +13,9 @@ import { useApiList } from '@/composables/useApi';
 import api from '@/api';
 import type { Participant } from '@/types';
 
+// Import family relations data
+import familyRelationsData from '@/assets/data/familyRelations.json';
+
 // Type definition for FamilyRelation (component-specific)
 interface FamilyRelation {
   ParticipantID: string | number;
@@ -43,9 +46,7 @@ const {
 });
 
 // Mock family relations data (TODO: Replace with actual API when available)
-const familyRelations = computed<FamilyRelation[]>(() => [
-  // Mock data - replace with actual API call when family relations endpoint is available
-]);
+const familyRelations = computed<FamilyRelation[]>(() => familyRelationsData);
 
 // Loading and error states
 const isLoading = computed(() => participantsLoading.value);

@@ -25,6 +25,9 @@ import { useApiList } from '@/composables/useApi';
 import api from '@/api';
 import type { Activity, ActivityType, Attendance, Participant, TableColumn } from '@/types';
 
+// Import family relations data
+import familyRelationsJsonData from '@/assets/data/familyRelations.json';
+
 const route = useRoute();
 const router = useRouter();
 
@@ -76,7 +79,7 @@ interface FamilyRelation {
 
 const familyRelationsData = computed((): FamilyRelation[] => {
   // TODO: Replace with actual API call when endpoint is available
-  return []; // Empty array for now
+  return familyRelationsJsonData; // Use imported JSON data instead of empty array
 });
 
 // Loading and error states
