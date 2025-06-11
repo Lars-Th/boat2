@@ -302,6 +302,13 @@ export interface Participant {
   totalRelations?: number;
 }
 
+export interface FamilyRelation {
+  RelationID: number;
+  ParticipantID: number;
+  RelatedParticipantID: number;
+  RelationType: string;
+}
+
 export interface Activity {
   ActivityID: number;
   Namn: string;

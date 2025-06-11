@@ -1,6 +1,6 @@
 import { ApiConfiguration } from '@/api/config';
 import { MockDataService } from '@/api/mocks';
-import type { Activity, Attendance, Participant } from '@/types';
+import type { Activity, Attendance, FamilyRelation, Participant } from '@/types';
 import type { RequestParams } from '@/api/client/types';
 
 // Export all types and client functionality
@@ -227,6 +227,29 @@ export const api = {
       USE_MOCK_API
         ? (apiService as MockDataService).getActivityTemplate(id)
         : Promise.reject(new Error('Activity templates not implemented in real API yet')),
+  },
+
+  // Family Relations
+  familyRelations: {
+    getAll: (params?: RequestParams) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getFamilyRelations()
+        : Promise.reject(new Error('Family relations not implemented in real API yet')),
+
+    getByParticipantId: (participantId: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getFamilyRelationsByParticipantId(participantId)
+        : Promise.reject(new Error('Family relations not implemented in real API yet')),
+
+    create: (data: Partial<FamilyRelation>) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).createFamilyRelation(data)
+        : Promise.reject(new Error('Family relations not implemented in real API yet')),
+
+    delete: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).deleteFamilyRelation(id)
+        : Promise.reject(new Error('Family relations not implemented in real API yet')),
   },
 };
 

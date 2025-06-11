@@ -10,6 +10,7 @@ import participantsData from '@/assets/data/participants.json';
 import participantGroupsData from '@/assets/data/participantGroups.json';
 import attendancesData from '@/assets/data/attendances.json';
 import activityTemplatesData from '@/assets/data/activityTemplates.json';
+import familyRelationsData from '@/assets/data/familyRelations.json';
 
 export class MockDataService {
   private delay = 300; // Simulate network delay
@@ -265,5 +266,48 @@ export class MockDataService {
   ): Promise<ApiResponse<(typeof activityTemplatesData)[0] | null>> {
     const template = activityTemplatesData.find(t => t.id === id);
     return this.mockRequest(template ?? null);
+  }
+
+  // Family Relations
+  async getFamilyRelations(): Promise<ApiResponse<typeof familyRelationsData>> {
+    return this.mockRequest(familyRelationsData);
+  }
+
+  async getFamilyRelationsByParticipantId(
+    participantId: string
+  ): Promise<ApiResponse<typeof familyRelationsData>> {
+    const participantRelations = familyRelationsData.filter(
+      rel =>
+        rel.ParticipantID.toString() === participantId ||
+        rel.RelatedParticipantID.toString() === participantId
+    );
+    return this.mockRequest(participantRelations);
+  }
+
+  async createFamilyRelation(
+    relation: Partial<(typeof familyRelationsData)[0]>
+  ): Promise<ApiResponse<(typeof familyRelationsData)[0]>> {
+    const newRelation = {
+      ...relation,
+      RelationID: Math.max(...familyRelationsData.map(r => r.RelationID)) + 1,
+    } as (typeof familyRelationsData)[0];
+
+    return this.mockRequest(newRelation);
+  }
+
+  async deleteFamilyRelation(id: string): Promise<ApiResponse<boolean>> {
+    const exists = familyRelationsData.some(r => r.RelationID.toString() === id);
+    if (!exists) {
+      return {
+        data: false,
+        success: false,
+        error: {
+          message: 'Family relation not found',
+          code: 'NOT_FOUND',
+        },
+      };
+    }
+
+    return this.mockRequest(true);
   }
 }

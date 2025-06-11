@@ -61,6 +61,7 @@ interface EnhancedParticipant extends Participant {
 
 const familyRelationsData = computed((): FamilyRelation[] => {
   // TODO: Replace with actual API call when endpoint is available
+  // When API is ready, use: return api.familyRelations.getAll()
   return familyRelationsJsonData; // Use imported JSON data instead of empty array
 });
 

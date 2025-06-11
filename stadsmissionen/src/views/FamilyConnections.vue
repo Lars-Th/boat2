@@ -13,8 +13,8 @@ import { useApiList } from '@/composables/useApi';
 import api from '@/api';
 import type { Participant } from '@/types';
 
-// Import family relations data
-import familyRelationsData from '@/assets/data/familyRelations.json';
+// Import family relations data (temporary until API is fully implemented)
+import familyRelationsJsonData from '@/assets/data/familyRelations.json';
 
 // Type definition for FamilyRelation (component-specific)
 interface FamilyRelation {
@@ -45,8 +45,8 @@ const {
   cacheKey: 'participants',
 });
 
-// Mock family relations data (TODO: Replace with actual API when available)
-const familyRelations = computed<FamilyRelation[]>(() => familyRelationsData);
+// Use JSON data for now (TODO: Replace with API call when familyRelations endpoint is ready)
+const familyRelations = computed<FamilyRelation[]>(() => familyRelationsJsonData);
 
 // Loading and error states
 const isLoading = computed(() => participantsLoading.value);
@@ -55,6 +55,7 @@ const hasError = computed(() => participantsError.value !== null);
 // Refresh function for error recovery
 const handleRefresh = async () => {
   await refreshParticipants();
+  // TODO: Add refreshFamilyRelations() when API is implemented
 };
 
 // Calculate age from personnummer
