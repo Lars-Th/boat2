@@ -1,8 +1,8 @@
 import { computed, ref } from 'vue';
-import type { Notification, UseNotificationsReturn } from '@/types';
+import type { BaseToastOptions, Toast, UseNotificationsReturn } from '@/types';
 
 // Global state for notifications
-const notifications = ref<Notification[]>([]);
+const notifications = ref<Toast[]>([]);
 let notificationId = 0;
 
 const generateId = (): string => {
@@ -13,25 +13,29 @@ const unreadCount = computed(() => {
   return notifications.value.filter(n => !n.read).length;
 });
 
-const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>): void => {
-  const newNotification: Notification = {
-    ...notification,
+const addNotification = (options: BaseToastOptions): string => {
+  const newNotification: Toast = {
+    ...options,
     id: generateId(),
     timestamp: Date.now(),
     read: false,
-    actions: notification.actions ?? [],
-    message: notification.message,
+    actions: options.actions ?? [],
+    variant: options.variant ?? 'default',
+    type: options.type ?? 'info',
+    duration: options.duration ?? (options.type === 'error' ? 8000 : 5000),
+    persistent: options.persistent ?? false,
   };
 
   notifications.value.push(newNotification);
 
-  // Auto remove after duration (except for confirm type)
-  if (newNotification.type !== 'confirm') {
-    const duration = newNotification.type === 'error' ? 8000 : 5000;
+  // Auto remove after duration (except for confirm type and persistent notifications)
+  if (newNotification.type !== 'confirm' && !newNotification.persistent) {
     setTimeout(() => {
       removeNotification(newNotification.id);
-    }, duration);
+    }, newNotification.duration);
   }
+
+  return newNotification.id;
 };
 
 const removeNotification = (id: string): void => {
@@ -64,4 +68,4 @@ export const useNotifications = (): UseNotificationsReturn => {
 };
 
 // Export types for convenience
-export type { Notification, UseNotificationsReturn } from '@/types';
+export type { Toast, BaseToastOptions, UseNotificationsReturn } from '@/types';

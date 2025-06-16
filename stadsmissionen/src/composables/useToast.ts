@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import type { Toast, ToastOptions, UseToastReturn } from '@/types';
+import type { BaseToastOptions, Toast, UseToastReturn } from '@/types';
 
 const toasts = ref<Toast[]>([]);
 let toastId = 0;
@@ -9,12 +9,11 @@ export function useToast(): UseToastReturn {
     return `toast-${++toastId}-${Date.now()}`;
   };
 
-  const addToast = (options: ToastOptions): string => {
+  const addToast = (options: BaseToastOptions): string => {
     const toast: Toast = {
       id: generateId(),
       title: options.title,
-      message: options.message,
-      description: options.description ?? options.message ?? '',
+      description: options.description ?? '',
       variant: options.variant ?? 'default',
       type: options.type ?? 'info',
       timestamp: Date.now(),
@@ -28,7 +27,7 @@ export function useToast(): UseToastReturn {
     toasts.value.push(toast);
 
     // Auto remove toast after duration
-    if (toast.duration && toast.duration > 0) {
+    if (toast.duration && toast.duration > 0 && !toast.persistent) {
       setTimeout(() => {
         removeToast(toast.id);
       }, toast.duration);
@@ -50,53 +49,53 @@ export function useToast(): UseToastReturn {
 
   const success = (
     title: string,
-    message?: string,
-    options: Omit<ToastOptions, 'type' | 'title' | 'message'> = {}
+    description?: string,
+    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'success',
       title,
-      ...(message && { message }),
+      ...(description && { description }),
     });
   };
 
   const error = (
     title: string,
-    message?: string,
-    options: Omit<ToastOptions, 'type' | 'title' | 'message'> = {}
+    description?: string,
+    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'error',
       title,
-      ...(message && { message }),
+      ...(description && { description }),
     });
   };
 
   const warning = (
     title: string,
-    message?: string,
-    options: Omit<ToastOptions, 'type' | 'title' | 'message'> = {}
+    description?: string,
+    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'warning',
       title,
-      ...(message && { message }),
+      ...(description && { description }),
     });
   };
 
   const info = (
     title: string,
-    message?: string,
-    options: Omit<ToastOptions, 'type' | 'title' | 'message'> = {}
+    description?: string,
+    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'info',
       title,
-      ...(message && { message }),
+      ...(description && { description }),
     });
   };
 
@@ -113,4 +112,4 @@ export function useToast(): UseToastReturn {
 }
 
 // Export types for backward compatibility
-export type { Toast, ToastOptions, ToastAction, UseToastReturn } from '@/types';
+export type { Toast, BaseToastOptions, ToastAction, UseToastReturn } from '@/types';

@@ -56,17 +56,17 @@ export type PaginationParams = {
   pageSize: number;
 };
 
-// Service Interfaces
-export interface BaseCrudService<T, TCreate = Partial<T>, TUpdate = Partial<T>> {
-  getAll(params?: RequestParams): Promise<ApiResponse<T[]>>;
-  getById(id: string): Promise<ApiResponse<T | null>>;
-  create?(data: TCreate): Promise<ApiResponse<T>>;
-  update?(id: string, data: TUpdate): Promise<ApiResponse<T>>;
-  delete?(id: string): Promise<ApiResponse<boolean>>;
-}
+export type ApiResponseType<T, P extends boolean = false> = P extends true
+  ? ApiResponse<PaginatedResponse<T>>
+  : ApiResponse<T>;
 
-export interface PaginatedCrudService<T, TCreate = Partial<T>, TUpdate = Partial<T>> {
-  getAll(params?: RequestParams): Promise<ApiResponse<PaginatedResponse<T>>>;
+export interface CrudService<
+  T,
+  TCreate = Partial<T>,
+  TUpdate = Partial<T>,
+  P extends boolean = false,
+> {
+  getAll(params?: RequestParams): Promise<ApiResponseType<T, P>>;
   getById(id: string): Promise<ApiResponse<T | null>>;
   create?(data: TCreate): Promise<ApiResponse<T>>;
   update?(id: string, data: TUpdate): Promise<ApiResponse<T>>;

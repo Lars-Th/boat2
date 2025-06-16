@@ -156,78 +156,51 @@ export interface ToastAction {
   style?: 'primary' | 'secondary' | 'destructive';
 }
 
-export interface ToastOptions {
-  type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
-  message?: string;
+export type ToastVariant = 'default' | 'destructive' | 'success' | 'warning' | 'info' | 'confirm';
+export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'confirm';
+
+export interface BaseToastOptions {
+  type?: ToastType;
   title?: string;
   description?: string;
-  variant?: 'default' | 'destructive';
+  variant?: ToastVariant;
   timeout?: number;
   duration?: number;
   persistent?: boolean;
   actions?: ToastAction[];
 }
 
-export interface Toast extends ToastOptions {
+export interface Toast extends BaseToastOptions {
   id: string;
   timestamp: number;
   read: boolean;
 }
 
-// Base interface for notification options
-export interface BaseNotificationOptions {
-  title: string;
-  description?: string;
-  variant?: 'default' | 'destructive' | 'success' | 'warning';
-  type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
-  duration?: number;
-  persistent?: boolean;
-  actions?: ToastAction[];
-}
-
-// Notification extends base options with confirmation
-export interface NotificationOptions extends BaseNotificationOptions {
-  confirm?: boolean;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmVariant?: 'default' | 'destructive' | 'outline' | 'secondary';
-  confirmText?: string;
-  cancelText?: string;
-}
-
-export interface Notification extends Toast {
-  confirm?: boolean;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmVariant?: 'default' | 'destructive' | 'outline' | 'secondary';
-  confirmText?: string;
-  cancelText?: string;
-}
-
-export interface NotificationAction {
-  label: string;
-  action: () => void;
-  style?: 'primary' | 'secondary' | 'destructive';
-}
-
 export interface UseToastReturn {
   toasts: Ref<Toast[]>;
-  addToast: (options: ToastOptions) => string;
+  addToast: (options: BaseToastOptions) => string;
   removeToast: (id: string) => void;
   clearToasts: () => void;
-  success: (title: string, description?: string) => void;
-  error: (title: string, description?: string) => void;
-  warning: (title: string, description?: string) => void;
-  info: (title: string, description?: string) => void;
-}
-
-export interface UseNotificationsReturn {
-  notifications: Ref<Notification[]>;
-  unreadCount: Ref<number>;
-  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
-  removeNotification: (id: string) => void;
-  markAsRead: (id: string) => void;
-  clearAll: () => void;
+  success: (
+    title: string,
+    description?: string,
+    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
+  error: (
+    title: string,
+    description?: string,
+    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
+  warning: (
+    title: string,
+    description?: string,
+    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
+  info: (
+    title: string,
+    description?: string,
+    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
 }
 
 // Statistics interface
@@ -485,19 +458,23 @@ export interface LoadingState {
 }
 
 // New filter type hierarchy
-export interface BaseFilterOption {
+export interface FilterOption {
   key?: string;
   label: string;
   value?: string | number | boolean | Date;
-}
-
-export interface FilterOption extends BaseFilterOption {
   options?: Array<{ value: string | number | boolean; label: string }>;
-}
-
-export interface SimpleFilterOption extends BaseFilterOption {
-  value: string | number;
+  isSimple?: boolean;
 }
 
 // Re-export types from api client
 export type { ApiError, ApiResponse };
+
+// Remove NotificationOptions and Notification interfaces as they're now consolidated with Toast
+export interface UseNotificationsReturn {
+  notifications: Ref<Toast[]>;
+  unreadCount: Ref<number>;
+  addNotification: (options: BaseToastOptions) => string;
+  removeNotification: (id: string) => void;
+  markAsRead: (id: string) => void;
+  clearAll: () => void;
+}
