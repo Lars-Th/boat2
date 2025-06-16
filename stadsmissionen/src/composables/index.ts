@@ -11,11 +11,10 @@ export {
 
 // Export types
 export type {
+  BaseToastOptions,
   Toast,
-  ToastOptions,
   ToastAction,
   UseToastReturn,
-  Notification,
   UseNotificationsReturn,
   ValidationRule,
   ValidationResult,

@@ -1,18 +1,31 @@
+import type {
+  ApiConfig,
+  ApiError,
+  ApiRequestOptions,
+  ApiResponse,
+  CrudService,
+  FilterParams,
+  HttpMethod,
+  PaginatedResponse,
+  PaginationParams,
+  QueryParams,
+  RequestParams,
+} from '@/api/client/types';
+
 // Export HTTP client
 export { HttpClient } from '@/api/client/http-client';
 
-// Export all types and interfaces
+// Export types
 export type {
+  CrudService,
   ApiResponse,
+  PaginatedResponse,
+  RequestParams,
   ApiError,
   ApiConfig,
   ApiRequestOptions,
-  PaginatedResponse,
   HttpMethod,
   QueryParams,
-  RequestParams,
   FilterParams,
   PaginationParams,
-  BaseCrudService,
-  PaginatedCrudService,
-} from '@/api/client/types';
+};

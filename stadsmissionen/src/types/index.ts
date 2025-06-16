@@ -173,7 +173,12 @@ export interface BaseToastOptions {
 export interface Toast extends BaseToastOptions {
   id: string;
   timestamp: number;
-  read: boolean;
+  read?: boolean;
+  confirmVariant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
 }
 
 export interface UseToastReturn {
