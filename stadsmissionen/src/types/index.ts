@@ -1,6 +1,9 @@
 // Vue-specific imports for types
 import type { Component, Ref, VNode } from 'vue';
 
+// Import API types from the API client
+import type { ApiError, ApiResponse } from '../api/client/types';
+
 // Core entity types
 export interface Customer {
   id: number;
@@ -86,20 +89,6 @@ export enum UserRole {
   VIEWER = 'viewer',
 }
 
-// API Response types
-export interface ApiResponse<T = unknown> {
-  data: T;
-  message?: string;
-  success: boolean;
-  errors?: string[];
-}
-
-export interface ApiError {
-  message: string;
-  code?: string | number;
-  details?: Record<string, unknown>;
-}
-
 // UI Component types
 export interface BreadcrumbItem {
   label: string;
@@ -151,20 +140,6 @@ export interface NavigationItem {
 }
 
 // Filter and Search types
-export interface FilterOption {
-  key?: string;
-  label: string;
-  type?: 'text' | 'select' | 'date' | 'number' | 'boolean';
-  value?: string | number | boolean | Date; // For backward compatibility
-  options?: Array<{ value: string | number | boolean; label: string }>;
-}
-
-// Simple filter option for basic dropdowns
-export interface SimpleFilterOption {
-  value: string | number;
-  label: string;
-}
-
 export interface SearchFilters {
   [key: string]: string | number | boolean | Date | null | undefined;
 }
@@ -175,35 +150,49 @@ export interface SortOption {
 }
 
 // Toast/Notification types
-export interface Toast {
-  id: string;
-  title: string;
-  description?: string;
-  message?: string;
-  variant?: 'default' | 'destructive' | 'success' | 'warning';
-  type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
-  timestamp: number;
-  read: boolean;
-  duration?: number;
-  persistent?: boolean;
-  actions?: ToastAction[];
-}
-
-export interface ToastOptions {
-  title: string;
-  message?: string;
-  description?: string;
-  type?: 'success' | 'error' | 'warning' | 'info';
-  variant?: 'default' | 'destructive' | 'success' | 'warning';
-  duration?: number;
-  persistent?: boolean;
-  actions?: ToastAction[];
-}
-
 export interface ToastAction {
   label: string;
   action: () => void;
   style?: 'primary' | 'secondary' | 'destructive';
+}
+
+export interface ToastOptions {
+  type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
+  message?: string;
+  title?: string;
+  description?: string;
+  variant?: 'default' | 'destructive';
+  timeout?: number;
+  duration?: number;
+  persistent?: boolean;
+  actions?: ToastAction[];
+}
+
+export interface Toast extends ToastOptions {
+  id: string;
+  timestamp: number;
+  read: boolean;
+}
+
+// Base interface for notification options
+export interface BaseNotificationOptions {
+  title: string;
+  description?: string;
+  variant?: 'default' | 'destructive' | 'success' | 'warning';
+  type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
+  duration?: number;
+  persistent?: boolean;
+  actions?: ToastAction[];
+}
+
+// Notification extends base options with confirmation
+export interface NotificationOptions extends BaseNotificationOptions {
+  confirm?: boolean;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+  confirmVariant?: 'default' | 'destructive' | 'outline' | 'secondary';
+  confirmText?: string;
+  cancelText?: string;
 }
 
 export interface Notification extends Toast {
@@ -213,16 +202,6 @@ export interface Notification extends Toast {
   confirmVariant?: 'default' | 'destructive' | 'outline' | 'secondary';
   confirmText?: string;
   cancelText?: string;
-}
-
-export interface NotificationOptions {
-  title: string;
-  message?: string;
-  description?: string;
-  type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
-  duration?: number;
-  persistent?: boolean;
-  actions?: NotificationAction[];
 }
 
 export interface NotificationAction {
@@ -504,3 +483,21 @@ export interface LoadingState {
   error?: string | null;
   data?: unknown;
 }
+
+// New filter type hierarchy
+export interface BaseFilterOption {
+  key?: string;
+  label: string;
+  value?: string | number | boolean | Date;
+}
+
+export interface FilterOption extends BaseFilterOption {
+  options?: Array<{ value: string | number | boolean; label: string }>;
+}
+
+export interface SimpleFilterOption extends BaseFilterOption {
+  value: string | number;
+}
+
+// Re-export types from api client
+export type { ApiError, ApiResponse };

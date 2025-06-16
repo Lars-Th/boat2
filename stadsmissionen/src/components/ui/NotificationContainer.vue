@@ -90,6 +90,23 @@ const getStyles = (type: string = 'info') => {
         </Button>
       </div>
 
+      <!-- Actions for other types -->
+      <div
+        v-else-if="notification.actions && notification.actions.length > 0"
+        class="flex gap-2 ml-4"
+      >
+        <Button
+          v-for="action in notification.actions"
+          :key="action.label"
+          size="sm"
+          variant="outline"
+          class="text-xs h-7"
+          @click="action.action"
+        >
+          {{ action.label }}
+        </Button>
+      </div>
+
       <!-- Stäng-knapp för andra typer -->
       <Button
         v-else-if="!notification.persistent || notification.type !== 'warning'"

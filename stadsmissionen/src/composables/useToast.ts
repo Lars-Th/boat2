@@ -13,6 +13,7 @@ export function useToast(): UseToastReturn {
     const toast: Toast = {
       id: generateId(),
       title: options.title,
+      message: options.message,
       description: options.description ?? options.message ?? '',
       variant: options.variant ?? 'default',
       type: options.type ?? 'info',
@@ -21,6 +22,7 @@ export function useToast(): UseToastReturn {
       duration: options.duration ?? 5000,
       persistent: options.persistent ?? false,
       actions: options.actions ?? [],
+      timeout: options.timeout,
     };
 
     toasts.value.push(toast);

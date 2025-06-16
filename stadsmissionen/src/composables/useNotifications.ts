@@ -19,6 +19,8 @@ const addNotification = (notification: Omit<Notification, 'id' | 'timestamp' | '
     id: generateId(),
     timestamp: Date.now(),
     read: false,
+    actions: notification.actions ?? [],
+    message: notification.message,
   };
 
   notifications.value.push(newNotification);

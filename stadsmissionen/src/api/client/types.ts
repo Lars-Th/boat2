@@ -1,15 +1,15 @@
-// Core API Response Types
-export interface ApiResponse<T> {
+// Core API Types
+export interface ApiResponse<T = unknown> {
   data: T;
   success: boolean;
-  message?: string;
   error?: ApiError;
+  message?: string;
 }
 
 export interface ApiError {
-  message: string;
   code: string;
-  details?: unknown;
+  message: string;
+  details?: Record<string, unknown> | null;
 }
 
 export interface PaginatedResponse<T> {
@@ -17,8 +17,7 @@ export interface PaginatedResponse<T> {
   total: number;
   page: number;
   pageSize: number;
-  hasNext: boolean;
-  hasPrevious: boolean;
+  totalPages: number;
 }
 
 // HTTP Client Configuration

@@ -109,7 +109,7 @@ export class HttpClient {
     const apiError: ApiError = {
       message: lastError?.message ?? 'Request failed',
       code: this.getErrorCode(lastError),
-      details: lastError,
+      details: this.convertErrorToDetails(lastError),
     };
 
     return {
@@ -162,6 +162,15 @@ export class HttpClient {
 
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private convertErrorToDetails(error: Error | null): Record<string, unknown> | null {
+    if (!error) return null;
+    return {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    };
   }
 
   // Public HTTP methods

@@ -1,6 +1,32 @@
 import { type Ref, computed, ref } from 'vue';
 import type { FamilyRelation, Participant } from '@/types';
 
+// Define relation types as a union
+export type RelationType = 'Målsman' | 'Syskon';
+
+// Define interfaces for family member and group types
+interface FamilyMember {
+  relation: FamilyRelation;
+  participant: Participant | undefined;
+  relationType: RelationType;
+  isGuardian: boolean;
+  isSibling: boolean;
+}
+
+interface SiblingRelation {
+  person1: Participant;
+  person2: Participant;
+}
+
+interface FamilyGroup {
+  guardian: Participant;
+  children: Participant[];
+  siblings: SiblingRelation[];
+}
+
+// Type for the groups map
+type FamilyGroupsMap = Map<number, FamilyGroup>;
+
 /**
  * Composable for managing family relations data
  *
@@ -34,9 +60,23 @@ export function useFamilyRelations() {
     familyRelationsError.value = null;
 
     try {
-      // Import JSON data dynamically
+      // Import JSON data dynamically with proper typing
       const { default: jsonData } = await import('@/assets/data/familyRelations.json');
-      familyRelations.value = jsonData as FamilyRelation[];
+      // Validate that the imported data matches our expected type
+      if (
+        Array.isArray(jsonData) &&
+        jsonData.every(
+          item =>
+            'RelationID' in item &&
+            'ParticipantID' in item &&
+            'RelatedParticipantID' in item &&
+            'RelationType' in item
+        )
+      ) {
+        familyRelations.value = jsonData as FamilyRelation[];
+      } else {
+        throw new Error('Invalid family relations data format');
+      }
     } catch (error) {
       familyRelationsError.value =
         error instanceof Error ? error : new Error('Failed to load family relations');
@@ -97,7 +137,7 @@ export function useFamilyRelations() {
   // Helper function to create family groups for visualization
   const createFamilyGroups = (participants: Ref<Participant[]>) => {
     return computed(() => {
-      const groups = new Map();
+      const groups: FamilyGroupsMap = new Map();
 
       // Process guardian relations to create family groups
       guardianRelations.value.forEach(relation => {
@@ -106,11 +146,13 @@ export function useFamilyRelations() {
 
         if (!groups.has(guardianId)) {
           const guardian = participants.value.find(p => p.ParticipantID === guardianId);
-          groups.set(guardianId, {
-            guardian,
-            children: [],
-            siblings: [],
-          });
+          if (guardian) {
+            groups.set(guardianId, {
+              guardian,
+              children: [],
+              siblings: [],
+            });
+          }
         }
 
         const group = groups.get(guardianId);
@@ -127,12 +169,8 @@ export function useFamilyRelations() {
 
         // Find which family group these siblings belong to
         for (const [, group] of groups.entries()) {
-          const person1InGroup = group.children.some(
-            (child: Participant) => child.ParticipantID === person1Id
-          );
-          const person2InGroup = group.children.some(
-            (child: Participant) => child.ParticipantID === person2Id
-          );
+          const person1InGroup = group.children.some(child => child.ParticipantID === person1Id);
+          const person2InGroup = group.children.some(child => child.ParticipantID === person2Id);
 
           if (person1InGroup || person2InGroup) {
             const person1 = participants.value.find(p => p.ParticipantID === person1Id);
@@ -146,7 +184,9 @@ export function useFamilyRelations() {
         }
       });
 
-      return Array.from(groups.values()).filter(group => group.guardian);
+      return Array.from(groups.values()).filter(
+        (group): group is FamilyGroup => group.guardian !== undefined
+      );
     });
   };
 
@@ -219,7 +259,7 @@ export function useFamilyRelations() {
   };
 }
 
-// Type definitions for the composable return
+// Update the return type interface
 export interface UseFamilyRelationsReturn {
   familyRelations: Ref<FamilyRelation[]>;
   guardianRelations: Ref<FamilyRelation[]>;
@@ -232,8 +272,11 @@ export interface UseFamilyRelationsReturn {
   ) => Promise<{ success: boolean; message: string }>;
   deleteFamilyRelation: (relationId: string) => Promise<{ success: boolean; message: string }>;
   getParticipantRelations: (participantId: number) => Ref<FamilyRelation[]>;
-  getFamilyMembers: (participantId: number, participants: Ref<Participant[]>) => Ref<any[]>;
-  createFamilyGroups: (participants: Ref<Participant[]>) => Ref<any[]>;
+  getFamilyMembers: (
+    participantId: number,
+    participants: Ref<Participant[]>
+  ) => Ref<FamilyMember[]>;
+  createFamilyGroups: (participants: Ref<Participant[]>) => Ref<FamilyGroup[]>;
   familyRelationsStats: Ref<{
     totalRelations: number;
     guardianRelations: number;

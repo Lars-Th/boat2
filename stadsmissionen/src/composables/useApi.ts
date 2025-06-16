@@ -24,6 +24,21 @@ export interface UseApiReturn<T> {
 const cache = new Map<string, { data: unknown; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+function convertErrorToDetails(error: unknown): Record<string, unknown> | null {
+  if (!error) return null;
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    };
+  }
+  if (typeof error === 'object' && error !== null) {
+    return error as Record<string, unknown>;
+  }
+  return { message: String(error) };
+}
+
 export function useApi<T>(
   apiCall: () => Promise<ApiResponse<T>>,
   options: UseApiOptions = {}
@@ -98,7 +113,7 @@ export function useApi<T>(
       const apiError: ApiError = {
         message: err instanceof Error ? err.message : 'Network error occurred',
         code: 'NETWORK_ERROR',
-        details: err,
+        details: convertErrorToDetails(err),
       };
       error.value = apiError;
       onError?.(apiError);
@@ -194,7 +209,7 @@ export function useApiMutation<TData, TVariables = unknown>(
       const apiError: ApiError = {
         message: err instanceof Error ? err.message : 'Network error occurred',
         code: 'NETWORK_ERROR',
-        details: err,
+        details: convertErrorToDetails(err),
       };
       error.value = apiError;
       options.onError?.(apiError);
