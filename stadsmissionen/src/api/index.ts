@@ -231,7 +231,7 @@ export const api = {
 
   // Family Relations
   familyRelations: {
-    getAll: (params?: RequestParams) =>
+    getAll: (_params?: RequestParams) =>
       USE_MOCK_API
         ? (apiService as MockDataService).getFamilyRelations()
         : Promise.reject(new Error('Family relations not implemented in real API yet')),

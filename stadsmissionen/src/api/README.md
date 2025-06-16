@@ -1,6 +1,7 @@
 # API Layer Documentation
 
-This directory contains the complete API layer for the application, organized following clean architecture principles and TypeScript best practices.
+This directory contains the complete API layer for the application, organized
+following clean architecture principles and TypeScript best practices.
 
 ## 📁 Directory Structure
 
@@ -55,10 +56,11 @@ import { useApiList, useApiItem } from '@/composables/useApi';
 import api from '@/api';
 
 // In a Vue component
-const { data: activities, loading, error } = useApiList(
-  () => api.activities.getAll(),
-  { cacheKey: 'activities' }
-);
+const {
+  data: activities,
+  loading,
+  error,
+} = useApiList(() => api.activities.getAll(), { cacheKey: 'activities' });
 
 const { data: activity } = useApiItem(
   () => api.activities.getById(activityId.value),
@@ -84,6 +86,7 @@ if (apiService instanceof ApiConfiguration) {
 ### HTTP Client (`client/`)
 
 - **`http-client.ts`**: Robust HTTP client with:
+
   - Automatic retry with exponential backoff
   - Request timeout handling
   - Structured error responses
@@ -99,6 +102,7 @@ if (apiService instanceof ApiConfiguration) {
 ### Services (`services/`)
 
 - **`base.service.ts`**: Abstract base class providing:
+
   - Common CRUD operations (getAll, getById, create, update, delete)
   - Helper methods for custom endpoints
   - Consistent error handling
@@ -128,7 +132,8 @@ if (apiService instanceof ApiConfiguration) {
 
 ## 🔧 Environment Configuration
 
-The API layer automatically switches between mock and real implementations based on environment variables:
+The API layer automatically switches between mock and real implementations based
+on environment variables:
 
 ```env
 # Use mock API in development
@@ -240,7 +245,8 @@ Error codes include:
 
 ## 🔄 Migration from Old Structure
 
-The new API maintains backward compatibility with the old structure. Existing imports will continue to work:
+The new API maintains backward compatibility with the old structure. Existing
+imports will continue to work:
 
 ```typescript
 // Old import (still works)
@@ -252,8 +258,12 @@ import api from '@/api';
 
 ## 📚 Best Practices
 
-1. **Use the composables**: Leverage `useApi`, `useApiList`, and `useApiMutation` for reactive data
-2. **Handle errors gracefully**: Always check the `success` field and handle errors appropriately
-3. **Use TypeScript**: Take advantage of full type safety throughout the API layer
+1. **Use the composables**: Leverage `useApi`, `useApiList`, and
+   `useApiMutation` for reactive data
+2. **Handle errors gracefully**: Always check the `success` field and handle
+   errors appropriately
+3. **Use TypeScript**: Take advantage of full type safety throughout the API
+   layer
 4. **Cache wisely**: Use appropriate cache keys for frequently accessed data
-5. **Environment awareness**: Use mock API for development, real API for production
+5. **Environment awareness**: Use mock API for development, real API for
+   production

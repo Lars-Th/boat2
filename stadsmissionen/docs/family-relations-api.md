@@ -1,10 +1,13 @@
 # Family Relations API Implementation Guide
 
-This document provides a comprehensive guide for implementing the Family Relations API in the Stadsmissionen application.
+This document provides a comprehensive guide for implementing the Family
+Relations API in the Stadsmissionen application.
 
 ## Overview
 
-The Family Relations API manages relationships between participants, such as guardian-child relationships and sibling connections. This is essential for tracking family structures and dependencies within the organization.
+The Family Relations API manages relationships between participants, such as
+guardian-child relationships and sibling connections. This is essential for
+tracking family structures and dependencies within the organization.
 
 ## Current Status
 
@@ -29,17 +32,20 @@ export interface FamilyRelation {
 
 ### Relation Types
 
-- **"Målsman"**: Guardian-child relationship (ParticipantID is guardian, RelatedParticipantID is child)
+- **"Målsman"**: Guardian-child relationship (ParticipantID is guardian,
+  RelatedParticipantID is child)
 - **"Syskon"**: Sibling relationship (bidirectional)
 
 ## Required API Endpoints
 
 ### 1. Get All Family Relations
+
 ```http
 GET /api/family-relations
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -56,11 +62,13 @@ GET /api/family-relations
 ```
 
 ### 2. Get Family Relations by Participant
+
 ```http
 GET /api/family-relations/participant/{participantId}
 ```
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -77,6 +85,7 @@ GET /api/family-relations/participant/{participantId}
 ```
 
 ### 3. Create Family Relation
+
 ```http
 POST /api/family-relations
 Content-Type: application/json
@@ -89,6 +98,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -103,6 +113,7 @@ Content-Type: application/json
 ```
 
 ### 4. Update Family Relation
+
 ```http
 PUT /api/family-relations/{relationId}
 Content-Type: application/json
@@ -113,11 +124,13 @@ Content-Type: application/json
 ```
 
 ### 5. Delete Family Relation
+
 ```http
 DELETE /api/family-relations/{relationId}
 ```
 
 **Response:**
+
 ```json
 {
   "data": true,
@@ -127,6 +140,7 @@ DELETE /api/family-relations/{relationId}
 ```
 
 ### 6. Get Relations by Type
+
 ```http
 GET /api/family-relations/type/{relationType}
 ```
@@ -167,11 +181,12 @@ CREATE INDEX idx_relation_type ON family_relations(RelationType);
 
 ### Step 1: Update API Configuration
 
-The API endpoints are already configured in `src/api/index.ts`. When the backend is ready, update the `USE_MOCK_API` environment variable:
+The API endpoints are already configured in `src/api/index.ts`. When the backend
+is ready, update the `USE_MOCK_API` environment variable:
 
 ```typescript
 // In .env file
-VITE_USE_MOCK_API=false
+VITE_USE_MOCK_API = false;
 ```
 
 ### Step 2: Use the Composable
@@ -180,19 +195,19 @@ Replace the current JSON import approach with the composable:
 
 ```vue
 <script setup lang="ts">
-import { useFamilyRelations } from '@/composables/useFamilyRelations';
+  import { useFamilyRelations } from '@/composables/useFamilyRelations';
 
-const {
-  familyRelations,
-  guardianRelations,
-  siblingRelations,
-  familyRelationsLoading,
-  familyRelationsError,
-  refreshFamilyRelations,
-  createFamilyRelation,
-  deleteFamilyRelation,
-  familyRelationsStats,
-} = useFamilyRelations();
+  const {
+    familyRelations,
+    guardianRelations,
+    siblingRelations,
+    familyRelationsLoading,
+    familyRelationsError,
+    refreshFamilyRelations,
+    createFamilyRelation,
+    deleteFamilyRelation,
+    familyRelationsStats,
+  } = useFamilyRelations();
 </script>
 ```
 
@@ -208,7 +223,8 @@ The following components are ready for API integration:
 
 ### Common Error Scenarios
 
-1. **Circular Dependencies**: Prevent A being guardian of B while B is guardian of A
+1. **Circular Dependencies**: Prevent A being guardian of B while B is guardian
+   of A
 2. **Self-Relations**: Prevent participants from being related to themselves
 3. **Duplicate Relations**: Prevent duplicate relation entries
 4. **Invalid Participants**: Ensure both participants exist
@@ -222,13 +238,19 @@ const handleCreateRelation = async (relation: Partial<FamilyRelation>) => {
     const result = await createFamilyRelation(relation);
     if (result.success) {
       // Show success message
-      toast.success('Familjerelation skapad', 'Relationen har lagts till framgångsrikt');
+      toast.success(
+        'Familjerelation skapad',
+        'Relationen har lagts till framgångsrikt'
+      );
     } else {
       // Show error message
       toast.error('Fel vid skapande', result.message);
     }
   } catch (error) {
-    toast.error('Oväntat fel', 'Ett oväntat fel uppstod vid skapandet av relationen');
+    toast.error(
+      'Oväntat fel',
+      'Ett oväntat fel uppstod vid skapandet av relationen'
+    );
   }
 };
 ```
@@ -236,11 +258,13 @@ const handleCreateRelation = async (relation: Partial<FamilyRelation>) => {
 ## Business Logic Considerations
 
 ### Guardian Relations
+
 - One participant can be guardian to multiple children
 - One child should typically have only one guardian (business rule)
 - Guardian must be an adult (age validation)
 
 ### Sibling Relations
+
 - Sibling relations are bidirectional
 - If A is sibling to B, then B is automatically sibling to A
 - Siblings should have the same guardian (consistency check)
@@ -290,7 +314,8 @@ curl -X GET http://localhost:3000/api/family-relations/participant/1
 
 ### Frontend Testing
 
-The components include comprehensive error handling and loading states. Test scenarios:
+The components include comprehensive error handling and loading states. Test
+scenarios:
 
 1. **Loading State**: Verify loading indicators appear during API calls
 2. **Error State**: Test error handling when API calls fail
@@ -300,6 +325,7 @@ The components include comprehensive error handling and loading states. Test sce
 ## Migration from JSON to API
 
 ### Current Implementation
+
 ```typescript
 // Current approach (temporary)
 import familyRelationsJsonData from '@/assets/data/familyRelations.json';
@@ -307,6 +333,7 @@ const familyRelations = computed(() => familyRelationsJsonData);
 ```
 
 ### API Implementation
+
 ```typescript
 // Future approach (when API is ready)
 const {
@@ -321,21 +348,24 @@ const {
 
 ## Performance Considerations
 
-1. **Caching**: Use the `cacheKey` option in `useApiList` for client-side caching
+1. **Caching**: Use the `cacheKey` option in `useApiList` for client-side
+   caching
 2. **Pagination**: Consider pagination for large datasets
 3. **Lazy Loading**: Load relations only when needed
 4. **Debouncing**: Debounce search and filter operations
 
 ## Security Considerations
 
-1. **Authorization**: Ensure users can only access relations they're authorized to see
+1. **Authorization**: Ensure users can only access relations they're authorized
+   to see
 2. **Data Validation**: Validate all inputs on both client and server
 3. **Audit Trail**: Log all relation changes for compliance
 4. **Privacy**: Consider GDPR implications for family data
 
 ## Next Steps
 
-1. **Backend Implementation**: Implement the API endpoints according to this specification
+1. **Backend Implementation**: Implement the API endpoints according to this
+   specification
 2. **Database Setup**: Create the family_relations table with proper constraints
 3. **Testing**: Thoroughly test all endpoints and edge cases
 4. **Frontend Migration**: Switch from JSON data to API calls
@@ -345,9 +375,11 @@ const {
 
 For questions about the family relations implementation, refer to:
 
-- `src/api/services/family-relations.service.ts` - Service implementation example
+- `src/api/services/family-relations.service.ts` - Service implementation
+  example
 - `src/composables/useFamilyRelations.ts` - Vue composable for data management
 - `src/views/FamilyConnections.vue` - Main UI component
 - This documentation file for API specifications
 
-The frontend is fully prepared for API integration and will work seamlessly once the backend endpoints are implemented according to this specification.
+The frontend is fully prepared for API integration and will work seamlessly once
+the backend endpoints are implemented according to this specification.

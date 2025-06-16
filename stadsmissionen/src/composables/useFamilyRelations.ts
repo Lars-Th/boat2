@@ -1,6 +1,4 @@
 import { type Ref, computed, ref } from 'vue';
-import { useApiList } from '@/composables/useApi';
-import api from '@/api';
 import type { FamilyRelation, Participant } from '@/types';
 
 /**
