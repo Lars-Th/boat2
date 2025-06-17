@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import PageLayout from '@/components/layout/PageLayout.vue';
 import DataTable from '@/components/shared/DataTable.vue';
@@ -26,10 +26,9 @@ import {
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Crown, Edit, Eye, EyeOff, Plus, Shield, Trash2, UserCheck, Users } from 'lucide-vue-next';
-
-// Import data
-import usersData from '@/assets/data/users.json';
-import organizationSettingsData from '@/assets/data/organizationSettings.json';
+import { useUserManagement } from '@/composables/useUserManagement';
+import { useOrganizationManagement } from '@/composables/useOrganizationManagement';
+import { useToast } from '@/composables/useToast';
 
 // Type definitions
 interface User {
@@ -41,9 +40,9 @@ interface User {
   organisationId: string;
   enheter: string[];
   aktiv: boolean;
-  senastInloggad: string | null;
+  senastInloggad?: string;
   skapadDatum: string;
-  uppdateradDatum: string;
+  uppdateradDatum?: string;
 }
 
 interface RoleDefinition {
@@ -74,10 +73,21 @@ interface PasswordForm {
 }
 
 const router = useRouter();
+const { success: showSuccessToast, error: showErrorToast } = useToast();
+
+// Use the user management composable
+const {
+  users,
+  loadUsers,
+  createUser: apiCreateUser,
+  deleteUser: apiDeleteUser,
+  changePassword: apiChangePassword,
+} = useUserManagement();
+
+// Use the organization management composable
+const { organizations, loadOrganizationSettings } = useOrganizationManagement();
 
 // Reactive data
-const users = ref<User[]>(usersData as User[]);
-const organizations = ref(organizationSettingsData.organizations);
 const searchQuery = ref('');
 const showNewUserDialog = ref(false);
 
@@ -148,6 +158,11 @@ const roleDefinitions: RoleDefinition[] = [
     unitScope: 'all', // all units everywhere
   },
 ];
+
+// Load data on component mount
+onMounted(async () => {
+  await Promise.all([loadUsers(), loadOrganizationSettings()]);
+});
 
 // Enhanced users with organization and role info
 const enhancedUsers = computed(() => {
@@ -260,14 +275,13 @@ const columns = [
 ];
 
 // Create new user
-const createUser = () => {
+const createUser = async () => {
   if (newUser.value.losenord !== newUser.value.confirmLosenord) {
-    console.warn('Lösenorden matchar inte!');
+    showErrorToast('Lösenorden matchar inte!');
     return;
   }
 
-  const userToCreate: User = {
-    id: `user-${Date.now()}`,
+  const userToCreate: Partial<User> = {
     namn: newUser.value.namn,
     epost: newUser.value.epost,
     losenord: newUser.value.losenord, // In real app, this would be hashed
@@ -275,15 +289,17 @@ const createUser = () => {
     roller: [...newUser.value.roller],
     enheter: [...newUser.value.enheter],
     aktiv: newUser.value.aktiv,
-    skapadDatum: new Date().toISOString(),
-    senastInloggad: null,
-    uppdateradDatum: new Date().toISOString(),
   };
 
-  users.value.push(userToCreate);
-  showNewUserDialog.value = false;
-  resetNewUserForm();
-  console.log('Created new user:', userToCreate);
+  const response = await apiCreateUser(userToCreate);
+
+  if (response.success) {
+    showSuccessToast('Användare skapad framgångsrikt!');
+    showNewUserDialog.value = false;
+    resetNewUserForm();
+  } else {
+    showErrorToast(response.error?.message ?? 'Kunde inte skapa användare');
+  }
 };
 
 // Reset new user form
@@ -312,13 +328,15 @@ const navigateToUser = (user: Record<string, unknown>) => {
 };
 
 // Delete user
-const deleteUser = (user: Record<string, unknown>, event: Event) => {
+const deleteUser = async (user: Record<string, unknown>, event: Event) => {
   event.stopPropagation();
   if (window.confirm(`Är du säker på att du vill ta bort användaren "${user['namn']}"?`)) {
-    const index = users.value.findIndex(u => u.id === user['id']);
-    if (index > -1) {
-      users.value.splice(index, 1);
-      console.log('Deleted user:', user['id']);
+    const response = await apiDeleteUser(user['id'] as string);
+
+    if (response.success) {
+      showSuccessToast('Användare borttagen framgångsrikt!');
+    } else {
+      showErrorToast(response.error?.message ?? 'Kunde inte ta bort användare');
     }
   }
 };
@@ -332,18 +350,28 @@ const changePassword = (user: Record<string, unknown>, event: Event) => {
 };
 
 // Save new password
-const saveNewPassword = () => {
+const saveNewPassword = async () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    console.warn('Lösenorden matchar inte!');
+    showErrorToast('Lösenorden matchar inte!');
     return;
   }
 
-  const user = users.value.find(u => u.id === selectedUserForPassword.value?.id);
-  if (user) {
-    user.losenord = passwordForm.value.newPassword; // In real app, this would be hashed
+  if (!selectedUserForPassword.value) {
+    showErrorToast('Ingen användare vald');
+    return;
+  }
+
+  const response = await apiChangePassword(
+    selectedUserForPassword.value.id,
+    passwordForm.value.newPassword
+  );
+
+  if (response.success) {
+    showSuccessToast('Lösenord uppdaterat framgångsrikt!');
     showPasswordDialog.value = false;
     selectedUserForPassword.value = null;
-    console.log('Password updated for user:', user.id);
+  } else {
+    showErrorToast(response.error?.message ?? 'Kunde inte uppdatera lösenord');
   }
 };
 
@@ -386,18 +414,6 @@ const handleUnitChange = (unitName: string, checked: boolean) => {
     }
   }
 };
-
-// Get role color
-// const getRoleColor = (roleId) => {
-//   const role = roleDefinitions.find(r => r.id === roleId)
-//   return role?.color || 'outline'
-// }
-
-// Get role display name
-// const getRoleDisplayName = (roleId) => {
-//   const role = roleDefinitions.find(r => r.id === roleId)
-//   return role?.namn || roleId
-// }
 
 // Check if units should be shown
 const shouldShowUnits = computed(() => {
