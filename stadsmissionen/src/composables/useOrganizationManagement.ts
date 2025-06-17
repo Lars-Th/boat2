@@ -56,6 +56,12 @@ interface OrganizationFormData {
   };
 }
 
+interface Stat {
+  title: string;
+  value: number;
+  color: 'blue' | 'green' | 'purple' | 'orange';
+}
+
 export function useOrganizationManagement(
   initialOrganizations: Organization[] = [],
   initialUsers: User[] = []
@@ -66,14 +72,14 @@ export function useOrganizationManagement(
 
   // Computed properties
   const selectedOrganization = computed(() => {
-    return organizations.value.find(org => org.id === selectedOrgId.value);
+    return organizations.value.find((org: Organization) => org.id === selectedOrgId.value);
   });
 
   const organizationUsers = computed(() => {
-    return users.value.filter(user => user.organisationId === selectedOrgId.value);
+    return users.value.filter((user: User) => user.organisationId === selectedOrgId.value);
   });
 
-  const stats = computed(() => [
+  const stats = computed<Stat[]>(() => [
     {
       title: 'Totalt organisationer',
       value: organizations.value.length,
@@ -81,7 +87,7 @@ export function useOrganizationManagement(
     },
     {
       title: 'Aktiva användare',
-      value: organizationUsers.value.filter(u => u.aktiv).length,
+      value: organizationUsers.value.filter((u: User) => u.aktiv).length,
       color: 'green',
     },
     {
@@ -91,13 +97,13 @@ export function useOrganizationManagement(
     },
     {
       title: 'Roller',
-      value: new Set(organizationUsers.value.flatMap(u => u.roller)).size,
+      value: new Set(organizationUsers.value.flatMap((u: User) => u.roller)).size,
       color: 'orange',
     },
   ]);
 
   // Actions
-  const selectOrganization = (orgId: string) => {
+  const selectOrganization = (orgId: string): void => {
     selectedOrgId.value = orgId;
     console.log('Selected organization:', orgId);
   };
@@ -123,7 +129,7 @@ export function useOrganizationManagement(
   };
 
   const deleteOrganization = (orgId: string): boolean => {
-    const org = organizations.value.find(o => o.id === orgId);
+    const org = organizations.value.find((o: Organization) => o.id === orgId);
     if (!org) return false;
 
     // Prevent deleting the last organization
@@ -135,7 +141,7 @@ export function useOrganizationManagement(
     }
 
     // Check if there are users in this organization
-    const orgUsers = users.value.filter(user => user.organisationId === orgId);
+    const orgUsers = users.value.filter((user: User) => user.organisationId === orgId);
 
     let confirmMessage = `Är du säker på att du vill ta bort "${org.namn}"?`;
     if (orgUsers.length > 0) {
@@ -144,13 +150,13 @@ export function useOrganizationManagement(
 
     if (confirm(confirmMessage)) {
       // Remove organization
-      const orgIndex = organizations.value.findIndex(o => o.id === orgId);
+      const orgIndex = organizations.value.findIndex((o: Organization) => o.id === orgId);
       if (orgIndex > -1) {
         organizations.value.splice(orgIndex, 1);
       }
 
       // Remove users from this organization
-      users.value = users.value.filter(user => user.organisationId !== orgId);
+      users.value = users.value.filter((user: User) => user.organisationId !== orgId);
 
       // If this was the selected organization, select another one or none
       if (selectedOrgId.value === orgId) {
@@ -165,7 +171,7 @@ export function useOrganizationManagement(
     return false;
   };
 
-  const addUnit = (unitName: string) => {
+  const addUnit = (unitName: string): void => {
     if (selectedOrganization.value && unitName.trim()) {
       if (!selectedOrganization.value.enheter.includes(unitName.trim())) {
         selectedOrganization.value.enheter.push(unitName.trim());
@@ -175,7 +181,7 @@ export function useOrganizationManagement(
     }
   };
 
-  const removeUnit = (unitName: string) => {
+  const removeUnit = (unitName: string): void => {
     if (selectedOrganization.value) {
       const index = selectedOrganization.value.enheter.indexOf(unitName);
       if (index > -1) {
@@ -186,7 +192,7 @@ export function useOrganizationManagement(
     }
   };
 
-  const updateOrganizationInfo = (updates: Partial<Organization>) => {
+  const updateOrganizationInfo = (updates: Partial<Organization>): void => {
     if (selectedOrganization.value) {
       Object.assign(selectedOrganization.value, updates);
       selectedOrganization.value.uppdateradDatum = new Date().toISOString();
