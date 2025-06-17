@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import PageLayout from '@/components/layout/PageLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
+import PageLayout from '../components/layout/PageLayout.vue';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Badge } from '../components/ui/badge';
+import { Switch } from '../components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+} from '../components/ui/select';
+import { Checkbox } from '../components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '../components/ui/dialog';
 import {
   ArrowLeft,
   Building,
@@ -39,19 +39,32 @@ import {
   User,
   UserCheck,
 } from 'lucide-vue-next';
-import { useToast } from '@/composables/useToast';
-
-// Import data
-import usersData from '@/assets/data/users.json';
-import organizationSettingsData from '@/assets/data/organizationSettings.json';
+import { useToast } from '../composables/useToast';
+import { useUserManagement } from '../composables/useUserManagement';
+import { useOrganizationManagement } from '../composables/useOrganizationManagement';
 
 const route = useRoute();
 const router = useRouter();
 const { success, error } = useToast();
 
-// Reactive data
-const users = ref(usersData);
-const organizations = ref(organizationSettingsData.organizations);
+// Use the user management composable
+const {
+  currentUser,
+  loading: userLoading,
+  loadUser,
+  updateUser,
+  deleteUser: deleteUserFromApi,
+  changePassword: changePasswordFromApi,
+  updateRoles,
+  updateUnits,
+} = useUserManagement();
+
+// Use the organization management composable
+const {
+  organizations,
+  loading: orgLoading,
+  loadOrganizationSettings,
+} = useOrganizationManagement();
 
 // Get user ID from route
 const userId = computed(() => route.params['id'] as string);
@@ -70,11 +83,6 @@ const passwordForm = ref({
 // Show password states
 const showNewPassword = ref(false);
 const showConfirmPassword = ref(false);
-
-// Current user
-const currentUser = computed(() => {
-  return users.value.find(user => user.id === userId.value);
-});
 
 // Enhanced current user with organization info
 const enhancedCurrentUser = computed(() => {
@@ -174,88 +182,141 @@ const stats = computed(() => [
   },
 ]);
 
+// Combined loading state
+const loading = computed(() => userLoading.value || orgLoading.value);
+
+// Load data on component mount
+onMounted(async () => {
+  // Load organization settings first
+  await loadOrganizationSettings();
+
+  // Then load user data
+  if (userId.value) {
+    await loadUser(userId.value);
+  }
+});
+
 // Save profile changes
-const saveProfile = () => {
-  if (currentUser.value) {
-    currentUser.value.uppdateradDatum = new Date().toISOString();
-    editingProfile.value = false;
-    success('Sparat', 'Användarens profil har sparats framgångsrikt');
-    console.log('Profile updated for user:', currentUser.value.id);
+const saveProfile = async () => {
+  if (!currentUser.value) return;
+
+  try {
+    const response = await updateUser(currentUser.value.id, {
+      namn: currentUser.value.namn,
+      epost: currentUser.value.epost,
+      aktiv: currentUser.value.aktiv,
+      organisationId: currentUser.value.organisationId,
+      roller: currentUser.value.roller,
+      enheter: currentUser.value.enheter,
+      uppdateradDatum: new Date().toISOString(),
+    });
+
+    if (response.success) {
+      editingProfile.value = false;
+      success('Sparat', 'Användarens profil har sparats framgångsrikt');
+    } else {
+      error('Fel', response.error?.message ?? 'Kunde inte spara användarens profil');
+    }
+  } catch (_err) {
+    error('Fel', 'Ett oväntat fel uppstod när profilen skulle sparas');
   }
 };
 
 // Change password
-const changePassword = () => {
+const changePassword = async () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
     error('Lösenordsfel', 'Lösenorden matchar inte. Kontrollera att båda fälten är identiska.');
     return;
   }
 
-  if (currentUser.value) {
-    currentUser.value.losenord = passwordForm.value.newPassword;
-    showChangePasswordDialog.value = false;
-    passwordForm.value = {
-      newPassword: '',
-      confirmPassword: '',
-    };
-    success('Lösenord ändrat', 'Användarens lösenord har uppdaterats framgångsrikt');
-    console.log('Password changed for user:', currentUser.value.id);
+  if (!currentUser.value) return;
+
+  try {
+    const response = await changePasswordFromApi(
+      currentUser.value.id,
+      passwordForm.value.newPassword
+    );
+
+    if (response.success) {
+      showChangePasswordDialog.value = false;
+      passwordForm.value = {
+        newPassword: '',
+        confirmPassword: '',
+      };
+      success('Lösenord ändrat', 'Användarens lösenord har uppdaterats framgångsrikt');
+    } else {
+      error('Fel', response.error?.message ?? 'Kunde inte ändra lösenord');
+    }
+  } catch (_err) {
+    error('Fel', 'Ett oväntat fel uppstod när lösenordet skulle ändras');
   }
 };
 
 // Delete user
-const deleteUser = () => {
-  if (currentUser.value) {
-    const index = users.value.findIndex(u => u.id === currentUser.value?.id);
-    if (index > -1) {
-      users.value.splice(index, 1);
-      console.log('Deleted user:', currentUser.value.id);
+const deleteUser = async () => {
+  if (!currentUser.value) return;
+
+  try {
+    const response = await deleteUserFromApi(currentUser.value.id);
+
+    if (response.success) {
       router.push('/admin/users');
+      success('Användare borttagen', 'Användaren har tagits bort framgångsrikt');
+    } else {
+      error('Fel', response.error?.message ?? 'Kunde inte ta bort användaren');
     }
+  } catch (_err) {
+    error('Fel', 'Ett oväntat fel uppstod när användaren skulle tas bort');
   }
 };
 
 // Handle role change
-const handleRoleChange = (roleId: string, checked: boolean) => {
-  if (!enhancedCurrentUser.value) return;
+const handleRoleChange = async (roleId: string, checked: boolean) => {
+  if (!currentUser.value) return;
 
-  if (checked) {
-    if (!enhancedCurrentUser.value.roller.includes(roleId)) {
-      enhancedCurrentUser.value.roller.push(roleId);
-    }
-  } else {
-    const index = enhancedCurrentUser.value.roller.indexOf(roleId);
-    if (index > -1) {
-      enhancedCurrentUser.value.roller.splice(index, 1);
-    }
-  }
+  const newRoles = checked
+    ? [...currentUser.value.roller, roleId]
+    : currentUser.value.roller.filter(role => role !== roleId);
 
-  // Auto-adjust units based on role
-  const role = roleDefinitions.find(r => r.id === roleId);
-  if (role && checked) {
-    if (role.unitScope === 'all') {
-      // Administrator gets all units
-      enhancedCurrentUser.value.enheter = [...availableUnits.value];
-    } else if (role.id === 'systemadministrator') {
-      // System admin gets all units from all organizations
-      enhancedCurrentUser.value.enheter = [];
+  try {
+    const response = await updateRoles(currentUser.value.id, newRoles);
+
+    if (response.success) {
+      // Auto-adjust units based on role
+      const role = roleDefinitions.find(r => r.id === roleId);
+      if (role && checked) {
+        if (role.unitScope === 'all') {
+          // Administrator gets all units
+          await updateUnits(currentUser.value.id, [...availableUnits.value]);
+        } else if (role.id === 'systemadministrator') {
+          // System admin gets all units from all organizations
+          await updateUnits(currentUser.value.id, []);
+        }
+      }
+    } else {
+      error('Fel', response.error?.message ?? 'Kunde inte uppdatera användarens roller');
     }
+  } catch (_err) {
+    error('Fel', 'Ett oväntat fel uppstod när rollerna skulle uppdateras');
   }
 };
 
 // Handle unit change
-const handleUnitChange = (unitName: string, checked: boolean) => {
-  if (!enhancedCurrentUser.value) return;
+const handleUnitChange = async (unitName: string, checked: boolean) => {
+  if (!currentUser.value) return;
 
-  if (checked) {
-    if (!enhancedCurrentUser.value.enheter.includes(unitName)) {
-      enhancedCurrentUser.value.enheter.push(unitName);
+  const newUnits = checked
+    ? [...currentUser.value.enheter, unitName]
+    : currentUser.value.enheter.filter(unit => unit !== unitName);
+
+  try {
+    const response = await updateUnits(currentUser.value.id, newUnits);
+
+    if (!response.success) {
+      error('Fel', response.error?.message ?? 'Kunde inte uppdatera användarens enheter');
     }
-  } else {
-    const index = enhancedCurrentUser.value.enheter.indexOf(unitName);
-    if (index > -1) {
-      enhancedCurrentUser.value.enheter.splice(index, 1);
-    }
+  } catch (_err) {
+    error('Fel', 'Ett oväntat fel uppstod när enheterna skulle uppdateras');
   }
 };
 
@@ -320,7 +381,16 @@ const getBadgeVariant = (
     show-stats
     :stats="stats"
   >
-    <div v-if="enhancedCurrentUser" class="space-y-6 p-6">
+    <!-- Loading state -->
+    <div v-if="loading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+        <p class="text-muted-foreground">Laddar användardata...</p>
+      </div>
+    </div>
+
+    <!-- User content -->
+    <div v-else-if="enhancedCurrentUser" class="space-y-6 p-6">
       <!-- Header with back button -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -417,10 +487,12 @@ const getBadgeVariant = (
                     Avbryt
                   </Button>
                   <Button
-                    :disabled="!passwordForm.newPassword || !passwordForm.confirmPassword"
+                    :disabled="
+                      !passwordForm.newPassword || !passwordForm.confirmPassword || loading
+                    "
                     @click="changePassword"
                   >
-                    Ändra lösenord
+                    {{ loading ? 'Sparar...' : 'Ändra lösenord' }}
                   </Button>
                 </div>
               </div>
@@ -452,7 +524,9 @@ const getBadgeVariant = (
 
                 <div class="flex gap-4 justify-end pt-4">
                   <Button variant="outline" @click="showDeleteDialog = false">Avbryt</Button>
-                  <Button variant="destructive" @click="deleteUser">Ta bort användare</Button>
+                  <Button variant="destructive" :disabled="loading" @click="deleteUser">
+                    {{ loading ? 'Tar bort...' : 'Ta bort användare' }}
+                  </Button>
                 </div>
               </div>
             </DialogContent>
@@ -701,9 +775,9 @@ const getBadgeVariant = (
       <!-- Save Changes -->
       <div v-if="editingProfile" class="flex gap-4 justify-end pt-4 border-t">
         <Button variant="outline" @click="editingProfile = false">Avbryt</Button>
-        <Button class="gap-2" @click="saveProfile">
+        <Button class="gap-2" :disabled="loading" @click="saveProfile">
           <Save class="h-4 w-4" />
-          Spara ändringar
+          {{ loading ? 'Sparar...' : 'Spara ändringar' }}
         </Button>
       </div>
     </div>

@@ -1,222 +1,336 @@
 import { computed, ref } from 'vue';
+import { organizationService } from '@/api/services/organization.service';
+import type { Organization } from '@/types';
+import type { ApiResponse } from '@/api/client/types';
 
-interface Organization {
-  id: string;
-  namn: string;
-  logotyp: string;
-  aktiv: boolean;
-  enheter: string[];
-  kommentarLabels: {
-    kommentar1: string;
-    kommentar2: string;
-    kommentar3: string;
-  };
-  kontaktuppgifter: {
-    adress: string;
-    postnummer: string;
-    ort: string;
-    telefon: string;
-    epost: string;
-    webbplats: string;
-  };
-  skapadDatum: string;
-  uppdateradDatum: string;
-}
-
-interface User {
-  id: string;
-  namn: string;
-  epost: string;
-  losenord: string;
-  roller: string[];
-  enheter: string[];
-  organisationId: string;
-  aktiv: boolean;
-  skapadDatum: string;
-  uppdateradDatum?: string;
-  senastInloggad?: string;
-}
-
-interface OrganizationFormData {
-  namn: string;
-  logotyp: string;
-  enheter: string[];
-  kommentarLabels: {
-    kommentar1: string;
-    kommentar2: string;
-    kommentar3: string;
-  };
-  kontaktuppgifter: {
-    adress: string;
-    postnummer: string;
-    ort: string;
-    telefon: string;
-    epost: string;
-    webbplats: string;
-  };
-}
-
-interface Stat {
-  title: string;
-  value: number;
-  color: 'blue' | 'green' | 'purple' | 'orange';
-}
-
-export function useOrganizationManagement(
-  initialOrganizations: Organization[] = [],
-  initialUsers: User[] = []
-) {
-  const organizations = ref<Organization[]>(initialOrganizations);
-  const users = ref<User[]>(initialUsers);
-  const selectedOrgId = ref<string>(initialOrganizations[0]?.id ?? '');
+export function useOrganizationManagement() {
+  // Reactive state
+  const organizations = ref<Organization[]>([]);
+  const currentOrganization = ref<Organization | null>(null);
+  const organizationSettings = ref<{
+    organizations: Organization[];
+    currentOrganization: string;
+    systemSettings: {
+      defaultLanguage: string;
+      dateFormat: string;
+      timeFormat: string;
+      currency: string;
+      timezone: string;
+    };
+    permissions: {
+      roles: Array<{
+        id: string;
+        namn: string;
+        beskrivning: string;
+        permissions: string[];
+      }>;
+      resources: string[];
+      actions: string[];
+    };
+  } | null>(null);
+  const loading = ref(false);
+  const error = ref<string | null>(null);
 
   // Computed properties
-  const selectedOrganization = computed(() => {
-    return organizations.value.find((org: Organization) => org.id === selectedOrgId.value);
-  });
+  const hasOrganizations = computed(() => organizations.value.length > 0);
+  const activeOrganizations = computed(() => organizations.value.filter(org => org.aktiv));
+  const inactiveOrganizations = computed(() => organizations.value.filter(org => !org.aktiv));
 
-  const organizationUsers = computed(() => {
-    return users.value.filter((user: User) => user.organisationId === selectedOrgId.value);
-  });
+  /**
+   * Load all organizations
+   */
+  const loadOrganizations = async (): Promise<void> => {
+    loading.value = true;
+    error.value = null;
 
-  const stats = computed<Stat[]>(() => [
-    {
-      title: 'Totalt organisationer',
-      value: organizations.value.length,
-      color: 'blue',
-    },
-    {
-      title: 'Aktiva användare',
-      value: organizationUsers.value.filter((u: User) => u.aktiv).length,
-      color: 'green',
-    },
-    {
-      title: 'Enheter',
-      value: selectedOrganization.value?.enheter.length ?? 0,
-      color: 'purple',
-    },
-    {
-      title: 'Roller',
-      value: new Set(organizationUsers.value.flatMap((u: User) => u.roller)).size,
-      color: 'orange',
-    },
-  ]);
+    try {
+      const response: ApiResponse<Organization[]> = await organizationService.getAll();
 
-  // Actions
-  const selectOrganization = (orgId: string): void => {
-    selectedOrgId.value = orgId;
-    console.log('Selected organization:', orgId);
+      if (response.success) {
+        organizations.value = response.data;
+      } else {
+        error.value = response.error?.message ?? 'Failed to load organizations';
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      loading.value = false;
+    }
   };
 
-  const createOrganization = (formData: OrganizationFormData) => {
-    const newOrg: Organization = {
-      id: `org-${Date.now()}`,
-      namn: formData.namn,
-      logotyp: formData.logotyp || '/src/assets/images/default-logo.png',
-      aktiv: true,
-      enheter: [...formData.enheter],
-      kommentarLabels: { ...formData.kommentarLabels },
-      kontaktuppgifter: { ...formData.kontaktuppgifter },
-      skapadDatum: new Date().toISOString(),
-      uppdateradDatum: new Date().toISOString(),
-    };
+  /**
+   * Load a specific organization by ID
+   */
+  const loadOrganization = async (id: string): Promise<void> => {
+    loading.value = true;
+    error.value = null;
 
-    organizations.value.push(newOrg);
-    selectedOrgId.value = newOrg.id;
-    console.log('Created new organization:', newOrg);
+    try {
+      const response: ApiResponse<Organization | null> = await organizationService.getById(id);
 
-    return newOrg;
+      if (response.success) {
+        currentOrganization.value = response.data;
+      } else {
+        error.value = response.error?.message ?? 'Failed to load organization';
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      loading.value = false;
+    }
   };
 
-  const deleteOrganization = (orgId: string): boolean => {
-    const org = organizations.value.find((o: Organization) => o.id === orgId);
-    if (!org) return false;
+  /**
+   * Load organization settings
+   */
+  const loadOrganizationSettings = async (): Promise<void> => {
+    loading.value = true;
+    error.value = null;
 
-    // Prevent deleting the last organization
-    if (organizations.value.length === 1) {
-      alert(
-        'Du kan inte ta bort den sista organisationen. Det måste finnas minst en organisation i systemet.'
+    try {
+      const response = await organizationService.getSettings();
+
+      if (response.success) {
+        organizationSettings.value = response.data;
+        organizations.value = response.data.organizations;
+      } else {
+        error.value = response.error?.message ?? 'Failed to load organization settings';
+      }
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An unexpected error occurred';
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * Create a new organization
+   */
+  const createOrganization = async (
+    organizationData: Partial<Organization>
+  ): Promise<ApiResponse<Organization>> => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response: ApiResponse<Organization> =
+        await organizationService.create(organizationData);
+
+      if (response.success) {
+        // Add the new organization to the list
+        organizations.value.push(response.data);
+      } else {
+        error.value = response.error?.message ?? 'Failed to create organization';
+      }
+
+      return response;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      error.value = errorMessage;
+      return {
+        data: null as unknown as Organization,
+        success: false,
+        error: {
+          message: errorMessage,
+          code: 'CREATE_ERROR',
+        },
+      };
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  /**
+   * Update an existing organization
+   */
+  const updateOrganization = async (
+    id: string,
+    organizationData: Partial<Organization>
+  ): Promise<ApiResponse<Organization>> => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response: ApiResponse<Organization> = await organizationService.update(
+        id,
+        organizationData
       );
-      return false;
-    }
 
-    // Check if there are users in this organization
-    const orgUsers = users.value.filter((user: User) => user.organisationId === orgId);
+      if (response.success) {
+        // Update the organization in the list
+        const index = organizations.value.findIndex(org => org.id === id);
+        if (index !== -1) {
+          organizations.value[index] = response.data;
+        }
 
-    let confirmMessage = `Är du säker på att du vill ta bort "${org.namn}"?`;
-    if (orgUsers.length > 0) {
-      confirmMessage += `\n\nVarning: Det finns ${orgUsers.length} användare kopplade till denna organisation. De kommer också att tas bort.`;
-    }
-
-    if (confirm(confirmMessage)) {
-      // Remove organization
-      const orgIndex = organizations.value.findIndex((o: Organization) => o.id === orgId);
-      if (orgIndex > -1) {
-        organizations.value.splice(orgIndex, 1);
+        // Update current organization if it's the same organization
+        if (currentOrganization.value?.id === id) {
+          currentOrganization.value = response.data;
+        }
+      } else {
+        error.value = response.error?.message ?? 'Failed to update organization';
       }
 
-      // Remove users from this organization
-      users.value = users.value.filter((user: User) => user.organisationId !== orgId);
-
-      // If this was the selected organization, select another one or none
-      if (selectedOrgId.value === orgId) {
-        selectedOrgId.value =
-          organizations.value.length > 0 ? (organizations.value[0]?.id ?? '') : '';
-      }
-
-      console.log('Deleted organization:', orgId);
-      return true;
-    }
-
-    return false;
-  };
-
-  const addUnit = (unitName: string): void => {
-    if (selectedOrganization.value && unitName.trim()) {
-      if (!selectedOrganization.value.enheter.includes(unitName.trim())) {
-        selectedOrganization.value.enheter.push(unitName.trim());
-        selectedOrganization.value.uppdateradDatum = new Date().toISOString();
-        console.log('Added unit:', unitName);
-      }
+      return response;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      error.value = errorMessage;
+      return {
+        data: null as unknown as Organization,
+        success: false,
+        error: {
+          message: errorMessage,
+          code: 'UPDATE_ERROR',
+        },
+      };
+    } finally {
+      loading.value = false;
     }
   };
 
-  const removeUnit = (unitName: string): void => {
-    if (selectedOrganization.value) {
-      const index = selectedOrganization.value.enheter.indexOf(unitName);
-      if (index > -1) {
-        selectedOrganization.value.enheter.splice(index, 1);
-        selectedOrganization.value.uppdateradDatum = new Date().toISOString();
-        console.log('Removed unit:', unitName);
+  /**
+   * Delete an organization
+   */
+  const deleteOrganization = async (id: string): Promise<ApiResponse<boolean>> => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response: ApiResponse<boolean> = await organizationService.delete(id);
+
+      if (response.success) {
+        // Remove the organization from the list
+        const index = organizations.value.findIndex(org => org.id === id);
+        if (index !== -1) {
+          organizations.value.splice(index, 1);
+        }
+
+        // Clear current organization if it's the same organization
+        if (currentOrganization.value?.id === id) {
+          currentOrganization.value = null;
+        }
+      } else {
+        error.value = response.error?.message ?? 'Failed to delete organization';
       }
+
+      return response;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      error.value = errorMessage;
+      return {
+        data: false,
+        success: false,
+        error: {
+          message: errorMessage,
+          code: 'DELETE_ERROR',
+        },
+      };
+    } finally {
+      loading.value = false;
     }
   };
 
-  const updateOrganizationInfo = (updates: Partial<Organization>): void => {
-    if (selectedOrganization.value) {
-      Object.assign(selectedOrganization.value, updates);
-      selectedOrganization.value.uppdateradDatum = new Date().toISOString();
-      console.log('Updated organization info');
+  /**
+   * Update organization settings
+   */
+  const updateSettings = async (settings: {
+    currentOrganization?: string;
+    systemSettings?: {
+      defaultLanguage?: string;
+      dateFormat?: string;
+      timeFormat?: string;
+      currency?: string;
+      timezone?: string;
+    };
+  }): Promise<ApiResponse<boolean>> => {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const response: ApiResponse<boolean> = await organizationService.updateSettings(settings);
+
+      if (response.success) {
+        // Update the settings in the local state
+        if (organizationSettings.value) {
+          if (settings.currentOrganization) {
+            organizationSettings.value.currentOrganization = settings.currentOrganization;
+          }
+          if (settings.systemSettings) {
+            organizationSettings.value.systemSettings = {
+              ...organizationSettings.value.systemSettings,
+              ...settings.systemSettings,
+            };
+          }
+        }
+      } else {
+        error.value = response.error?.message ?? 'Failed to update organization settings';
+      }
+
+      return response;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+      error.value = errorMessage;
+      return {
+        data: false,
+        success: false,
+        error: {
+          message: errorMessage,
+          code: 'UPDATE_ERROR',
+        },
+      };
+    } finally {
+      loading.value = false;
     }
+  };
+
+  /**
+   * Get organization by ID from the loaded list
+   */
+  const getOrganizationById = (id: string): Organization | undefined => {
+    return organizations.value.find(org => org.id === id);
+  };
+
+  /**
+   * Clear error state
+   */
+  const clearError = (): void => {
+    error.value = null;
+  };
+
+  /**
+   * Reset state
+   */
+  const reset = (): void => {
+    organizations.value = [];
+    currentOrganization.value = null;
+    organizationSettings.value = null;
+    loading.value = false;
+    error.value = null;
   };
 
   return {
     // State
     organizations,
-    users,
-    selectedOrgId,
+    currentOrganization,
+    organizationSettings,
+    loading,
+    error,
 
     // Computed
-    selectedOrganization,
-    organizationUsers,
-    stats,
+    hasOrganizations,
+    activeOrganizations,
+    inactiveOrganizations,
 
-    // Actions
-    selectOrganization,
+    // Methods
+    loadOrganizations,
+    loadOrganization,
+    loadOrganizationSettings,
     createOrganization,
+    updateOrganization,
     deleteOrganization,
-    addUnit,
-    removeUnit,
-    updateOrganizationInfo,
+    updateSettings,
+    getOrganizationById,
+    clearError,
+    reset,
   };
 }

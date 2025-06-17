@@ -34,29 +34,7 @@ import { ref } from 'vue';
 import { Building } from 'lucide-vue-next';
 import OrganizationCard from '@/components/features/organization/OrganizationCard.vue';
 import NewOrganizationForm from '@/components/features/organization/NewOrganizationForm.vue';
-
-interface Organization {
-  id: string;
-  namn: string;
-  logotyp: string;
-  aktiv: boolean;
-  enheter: string[];
-  kommentarLabels: {
-    kommentar1: string;
-    kommentar2: string;
-    kommentar3: string;
-  };
-  kontaktuppgifter: {
-    adress: string;
-    postnummer: string;
-    ort: string;
-    telefon: string;
-    epost: string;
-    webbplats: string;
-  };
-  skapadDatum: string;
-  uppdateradDatum: string;
-}
+import type { Organization, User } from '@/types';
 
 interface OrganizationFormData {
   namn: string;
@@ -75,20 +53,6 @@ interface OrganizationFormData {
     epost: string;
     webbplats: string;
   };
-}
-
-interface User {
-  id: string;
-  namn: string;
-  epost: string;
-  losenord: string;
-  roller: string[];
-  enheter: string[];
-  organisationId: string;
-  aktiv: boolean;
-  skapadDatum: string;
-  uppdateradDatum?: string;
-  senastInloggad?: string;
 }
 
 interface Props {

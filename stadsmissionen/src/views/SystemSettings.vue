@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import PageLayout from '@/components/layout/PageLayout.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertCircle, Building, Edit, Loader2, MessageSquare, Save, Users } from 'lucide-vue-next';
+import {
+  AlertCircle,
+  Building,
+  CheckCircle,
+  Edit,
+  Loader2,
+  MessageSquare,
+  Save,
+  UserCheck,
+  Users,
+} from 'lucide-vue-next';
 import type { Organization, User } from '@/types';
 
 // Import components
@@ -20,6 +31,9 @@ import { useOrganizationManagement } from '@/composables/useOrganizationManageme
 // Use API service and composables
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
+
+// Router
+const router = useRouter();
 
 // Fetch data using API services
 const {
@@ -49,25 +63,100 @@ const handleRefresh = async () => {
   await Promise.all([refreshOrganizations(), refreshUsers()]);
 };
 
-// Initialize composable with API data
-const {
-  organizations,
-  users,
-  selectedOrgId,
-  selectedOrganization,
-  organizationUsers,
-  stats,
-  selectOrganization,
-  addUnit,
-  removeUnit,
-  updateOrganizationInfo,
-} = useOrganizationManagement(
-  (organizationsData.value ?? []) as unknown as Parameters<typeof useOrganizationManagement>[0],
-  (usersData.value ?? []) as unknown as Parameters<typeof useOrganizationManagement>[1]
+// Initialize organization API composable
+const { organizations, loadOrganizations, updateOrganization } = useOrganizationManagement();
+
+// Local state for selected organization
+const selectedOrgId = ref<string>('');
+const selectedOrganization = computed(
+  () => organizations.value.find((org: Organization) => org.id === selectedOrgId.value) ?? null
 );
 
-// Set initial selected organization (use first organization as current)
-selectedOrgId.value = organizationsData.value?.[0]?.id ?? '';
+// Computed properties for the template
+const users = computed(() => usersData.value ?? []);
+const organizationUsers = computed(() => {
+  if (!selectedOrganization.value) return [];
+  return (
+    usersData.value?.filter(
+      (user: User) => user.organisationId === selectedOrganization.value?.id
+    ) ?? []
+  );
+});
+
+const stats = computed(() => [
+  {
+    title: 'Totalt organisationer',
+    value: organizations.value.length,
+    icon: Building,
+    color: 'blue',
+  },
+  {
+    title: 'Aktiva organisationer',
+    value: organizations.value.filter((org: Organization) => org.aktiv).length,
+    icon: CheckCircle,
+    color: 'green',
+  },
+  {
+    title: 'Totalt användare',
+    value: usersData.value?.length ?? 0,
+    icon: Users,
+    color: 'purple',
+  },
+  {
+    title: 'Aktiva användare',
+    value: usersData.value?.filter((user: User) => user.aktiv).length ?? 0,
+    icon: UserCheck,
+    color: 'orange',
+  },
+]);
+
+// Functions for organization management
+const selectOrganization = (orgId: string) => {
+  selectedOrgId.value = orgId;
+};
+
+const addUnit = (unitName: string) => {
+  if (selectedOrganization.value) {
+    const updatedOrg = {
+      ...selectedOrganization.value,
+      enheter: [...selectedOrganization.value.enheter, unitName],
+    };
+    updateOrganization(selectedOrganization.value.id, updatedOrg);
+  }
+};
+
+const removeUnit = (unitName: string) => {
+  if (selectedOrganization.value) {
+    const updatedOrg = {
+      ...selectedOrganization.value,
+      enheter: selectedOrganization.value.enheter.filter((unit: string) => unit !== unitName),
+    };
+    updateOrganization(selectedOrganization.value.id, updatedOrg);
+  }
+};
+
+const updateOrganizationInfo = (updates: Partial<Organization>) => {
+  if (selectedOrganization.value) {
+    const updatedOrg = {
+      ...selectedOrganization.value,
+      ...updates,
+    };
+    updateOrganization(selectedOrganization.value.id, updatedOrg);
+  }
+};
+
+// Load data on component mount
+const loadData = async () => {
+  await Promise.all([loadOrganizations(), refreshOrganizations(), refreshUsers()]);
+
+  // Set initial selected organization
+  if (organizations.value.length > 0 && organizations.value[0]) {
+    selectedOrgId.value = organizations.value[0].id;
+  }
+};
+
+// Load data when component mounts
+loadData();
 
 // Local state for editing
 const editingOrgInfo = ref(false);
@@ -396,7 +485,7 @@ const getRoleColor = (roleId: string) => {
                       <Users class="h-5 w-5" />
                       Användare för {{ selectedOrganization.namn }}
                     </CardTitle>
-                    <Button class="gap-2" @click="$router.push('/admin/users')">
+                    <Button class="gap-2" @click="router.push('/admin/users')">
                       <Users class="h-4 w-4" />
                       Hantera användare
                     </Button>
@@ -478,7 +567,7 @@ const getRoleColor = (roleId: string) => {
                           Inga användare finns för denna organisation
                         </div>
                         <div v-else-if="organizationUsers.length > 5" class="text-center pt-2">
-                          <Button variant="outline" size="sm" @click="$router.push('/admin/users')">
+                          <Button variant="outline" size="sm" @click="router.push('/admin/users')">
                             Visa alla {{ organizationUsers.length }} användare
                           </Button>
                         </div>
@@ -497,7 +586,7 @@ const getRoleColor = (roleId: string) => {
                             För att skapa nya användare, hantera lösenord, tilldela roller och
                             behörigheter, använd den dedikerade användarhanteringen.
                           </p>
-                          <Button size="sm" class="gap-2" @click="$router.push('/admin/users')">
+                          <Button size="sm" class="gap-2" @click="router.push('/admin/users')">
                             <Users class="h-4 w-4" />
                             Gå till användarhantering
                           </Button>

@@ -165,6 +165,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Eye, EyeOff, type UserCheck } from 'lucide-vue-next';
+import type { Organization } from '@/types';
 
 // Types
 interface NewUser {
@@ -189,16 +190,10 @@ interface RoleDefinition {
   unitScope: string;
 }
 
-interface Organization {
-  id: string;
-  namn: string;
-  enheter: string[];
-}
-
 // Props
 interface Props {
   user: NewUser;
-  organizations: Organization[];
+  organizations: Pick<Organization, 'id' | 'namn' | 'enheter'>[];
   roleDefinitions: RoleDefinition[];
 }
 

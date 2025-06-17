@@ -3,17 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Building, Check, Phone, Trash2 } from 'lucide-vue-next';
-
-interface Organization {
-  id: string;
-  namn: string;
-  aktiv: boolean;
-  enheter: string[];
-  kontaktuppgifter: {
-    telefon?: string;
-    ort?: string;
-  };
-}
+import type { Organization } from '@/types';
 
 interface Props {
   organization: Organization;
