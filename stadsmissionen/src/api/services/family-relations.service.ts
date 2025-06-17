@@ -25,7 +25,7 @@ export class FamilyRelationsService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as FamilyRelation[];
 
       return {
         data,
@@ -55,7 +55,7 @@ export class FamilyRelationsService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as FamilyRelation[];
 
       return {
         data,
@@ -92,7 +92,7 @@ export class FamilyRelationsService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as FamilyRelation;
 
       return {
         data,
@@ -131,7 +131,7 @@ export class FamilyRelationsService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as FamilyRelation;
 
       return {
         data,
@@ -191,7 +191,7 @@ export class FamilyRelationsService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as FamilyRelation[];
 
       return {
         data,
