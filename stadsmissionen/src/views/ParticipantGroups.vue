@@ -12,35 +12,18 @@ import DataTable from '@/components/shared/DataTable.vue';
 import PaginationControls from '@/components/shared/PaginationControls.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import {
-  AlertCircle,
-  Edit,
-  Eye,
-  Loader2,
-  Plus,
-  Trash2,
-  UserPlus,
-  Users,
-  Zap,
-} from 'lucide-vue-next';
+import { Edit, Plus, Trash2 } from 'lucide-vue-next';
 
 import type { Participant, ParticipantGroup } from '@/types';
 
 const router = useRouter();
-const { success, warning, error } = useToast();
+const { success, error } = useToast();
 
 // Filter state
 const typeFilter = ref('all');
@@ -323,15 +306,34 @@ const handleNewGroup = () => {
   showNewGroupDialog.value = true;
 };
 
-const handleRowClick = (group: any) => {
-  router.push(`/participant-groups/${group.id}`);
+const handleRowClick = (
+  group: ParticipantGroup & {
+    participantCount: number;
+    activityCount: number;
+    isAutomatic: boolean;
+  }
+) => {
+  router.push('/placeholder');
 };
 
-const handleEditGroup = (group: any) => {
+const handleEditGroup = (
+  group: ParticipantGroup & {
+    participantCount: number;
+    activityCount: number;
+    isAutomatic: boolean;
+  }
+) => {
   router.push(`/participant-groups/${group.id}/edit`);
 };
 
-const handleDeleteGroup = async (group: any, event: Event) => {
+const handleDeleteGroup = async (
+  group: ParticipantGroup & {
+    participantCount: number;
+    activityCount: number;
+    isAutomatic: boolean;
+  },
+  event: Event
+) => {
   event.stopPropagation();
 
   const confirmed = confirm(`Är du säker på att du vill ta bort gruppen "${group.namn}"?`);
@@ -342,7 +344,7 @@ const handleDeleteGroup = async (group: any, event: Event) => {
       console.log('Deleting group:', group.id);
       success('Grupp borttagen', 'Gruppen har tagits bort framgångsrikt');
       await refreshGroups();
-    } catch (err) {
+    } catch (_err) {
       error('Fel vid borttagning', 'Ett oväntat fel inträffade. Försök igen.');
     }
   }
@@ -385,7 +387,7 @@ const handleCancelNewGroup = () => {
       title="Deltagargrupper"
       description="Hantera grupper av deltagare för aktiviteter och rapporter"
       :breadcrumbs="breadcrumbs"
-      :show-stats="true"
+      show-stats
       :stats="stats"
     />
 

@@ -80,11 +80,12 @@ export enum WorkOrderPriority {
 
 // User and Authentication types
 export interface User {
-  id: number;
+  id: string | number;
   name: string;
   email: string;
   password: string;
   permissionID: number;
+  aktiv: boolean;
 }
 
 export interface UserExtended {
@@ -124,6 +125,7 @@ export interface TableColumn<T = Record<string, unknown>> {
   width?: string;
   align?: 'left' | 'center' | 'right';
   type?: 'text' | 'badge' | 'actions' | 'custom';
+  class?: string;
   render?: (value: unknown, row: T) => string | VNode;
   format?: (value: unknown) => string;
   badgeVariant?: (value: unknown) => string;
@@ -284,6 +286,7 @@ export interface Notification extends Toast {
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
+  confirmVariant?: 'default' | 'destructive' | 'secondary' | 'outline';
 }
 
 export interface NotificationOptions {
@@ -378,6 +381,7 @@ export interface Activity {
   ActivityTypeID: number;
   typeName?: string;
   typeDescription?: string;
+  [key: string]: unknown;
 }
 
 export interface Attendance {

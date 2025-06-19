@@ -8,21 +8,7 @@ import type { Contact, Customer } from '@/types';
 import type { ContactWithRelations } from '@/types/relationships';
 
 // Components
-import StandardHeader from '@/components/layout/StandardHeader.vue';
 import DetailPage from '@/components/shared/DetailPage.vue';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-import { ArrowLeft, FileText, Save, Trash2 } from 'lucide-vue-next';
 
 const route = useRoute();
 const router = useRouter();
@@ -113,15 +99,14 @@ const customerOptions = computed(() => {
   }));
 });
 
-// Get selected customer name
-const getSelectedCustomerName = (customerId: string | number | null) => {
-  if (!customerId) return '';
-  const customer = customerOptions.value.find(opt => opt.value === customerId.toString());
-  return customer ? (customer.label ?? '') : '';
-};
-
-// Field definitions for DetailPage (excluding CustomerID which will be custom)
+// Field definitions for DetailPage
 const mainFields = computed(() => [
+  {
+    key: 'CustomerID',
+    label: 'Företag',
+    type: 'select' as const,
+    options: customerOptions.value,
+  },
   { key: 'FirstName', label: 'Förnamn', type: 'text' as const },
   { key: 'LastName', label: 'Efternamn', type: 'text' as const },
   { key: 'Title', label: 'Titel', type: 'text' as const },
@@ -156,17 +141,14 @@ const stats = computed(() => {
     {
       label: 'Arbetsordrar',
       value: workOrders.length,
-      color: 'text-blue-600',
     },
     {
       label: 'Aktiva ordrar',
       value: workOrders.filter((wo: any) => wo.Status === 'in_progress').length,
-      color: 'text-green-600',
     },
     {
       label: 'Slutförda ordrar',
       value: workOrders.filter((wo: any) => wo.Status === 'completed').length,
-      color: 'text-orange-600',
     },
     {
       label: 'Kundföretag',
@@ -277,130 +259,54 @@ const handleDiscardChanges = () => {
   }
   hasUnsavedChanges.value = false;
 };
+
+// Loading and error states
+const isLoading = computed(() => contactLoading.value || customersLoading.value);
+const hasError = computed(() => contactError.value !== null || customersError.value !== null);
 </script>
 
 <template>
   <div>
-    <!-- Header -->
-    <StandardHeader
-      :title="pageTitle"
-      :breadcrumbs="breadcrumbs"
-      :stats="stats"
-      :show-stats="!isNew && !!contact"
-    >
-      <template #actions>
-        <Button v-if="!isNew" variant="destructive" size="sm" class="gap-2" @click="handleDelete">
-          <Trash2 class="h-4 w-4" />
-          Ta bort
-        </Button>
-        <Button size="sm" class="gap-2" @click="handleSave">
-          <Save class="h-4 w-4" />
-          {{ isNew ? 'Skapa' : 'Spara' }}
-        </Button>
-      </template>
-    </StandardHeader>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <div
+          class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4"
+        ></div>
+        <p class="text-muted-foreground">Laddar kontaktuppgifter...</p>
+      </div>
+    </div>
 
-    <!-- Detail Form -->
-    <DetailPage
-      :data="form"
-      :main-fields="mainFields"
-      :sidebar-fields="sidebarFields"
-      :has-unsaved-changes="hasUnsavedChanges"
-      @field-change="handleFieldChange"
-      @save="handleSave"
-      @back="handleBack"
-      @discard-changes="handleDiscardChanges"
-    >
-      <template #main-content="{ data, readonly }">
-        <!-- Default form fields -->
-        <div class="bg-white rounded-lg border p-4">
-          <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
-            <FileText class="h-4 w-4" />
-            Grundläggande information
-          </h3>
+    <!-- Error State -->
+    <div v-else-if="hasError && !isNew" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <div class="h-8 w-8 text-destructive mx-auto mb-4">⚠️</div>
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av kontaktuppgifter</p>
+        <button
+          class="px-4 py-2 bg-primary text-primary-foreground rounded"
+          @click="refreshContact"
+        >
+          Försök igen
+        </button>
+      </div>
+    </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <!-- Custom Customer Selection Field -->
-            <div class="space-y-1">
-              <Label class="text-[10px] font-medium text-gray-500">Företag</Label>
-              <Select
-                :model-value="data.CustomerID?.toString() || ''"
-                :disabled="readonly"
-                @update:model-value="value => handleFieldChange('CustomerID', value)"
-              >
-                <SelectTrigger class="h-8 text-xs">
-                  <SelectValue placeholder="Välj företag..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem
-                    v-for="option in customerOptions"
-                    :key="option.value"
-                    :value="option.value"
-                    class="text-xs"
-                  >
-                    {{ option.label }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <!-- Regular form fields -->
-            <div v-for="field in mainFields" :key="field.key" class="space-y-1">
-              <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
-              <Input
-                v-if="field.type === 'text'"
-                :model-value="data[field.key]"
-                :readonly="readonly"
-                class="h-8 text-xs"
-                @update:model-value="value => handleFieldChange(field.key, value)"
-              />
-              <Input
-                v-else-if="field.type === 'number'"
-                :model-value="data[field.key]"
-                :readonly="readonly"
-                type="number"
-                class="h-8 text-xs"
-                @update:model-value="value => handleFieldChange(field.key, value)"
-              />
-              <Input
-                v-else-if="field.type === 'date'"
-                :model-value="data[field.key]"
-                :readonly="readonly"
-                type="date"
-                class="h-8 text-xs"
-                @update:model-value="value => handleFieldChange(field.key, value)"
-              />
-              <Textarea
-                v-else-if="field.type === 'textarea'"
-                :model-value="data[field.key]"
-                :readonly="readonly"
-                rows="3"
-                class="text-xs resize-none"
-                @update:model-value="value => handleFieldChange(field.key, value)"
-              />
-              <Select
-                v-else-if="field.type === 'select'"
-                :model-value="data[field.key]"
-                :disabled="readonly"
-                @update:model-value="value => handleFieldChange(field.key, value)"
-              >
-                <SelectTrigger size="sm" class="text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem
-                    v-for="option in field.options"
-                    :key="option.value"
-                    :value="option.value"
-                  >
-                    {{ option.label }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-      </template>
-    </DetailPage>
+    <!-- Main Content -->
+    <div v-else>
+      <DetailPage
+        :data="form"
+        :main-fields="mainFields"
+        :sidebar-fields="sidebarFields"
+        :has-unsaved-changes="hasUnsavedChanges"
+        :title="pageTitle"
+        :breadcrumbs="breadcrumbs"
+        :show-stats="!isNew"
+        :stats="stats"
+        @field-change="handleFieldChange"
+        @save="handleSave"
+        @back="handleBack"
+        @discard-changes="handleDiscardChanges"
+      />
+    </div>
   </div>
 </template>

@@ -34,7 +34,7 @@ import { ref } from 'vue';
 import { Building } from 'lucide-vue-next';
 import OrganizationCard from '@/components/features/organization/OrganizationCard.vue';
 import NewOrganizationForm from '@/components/features/organization/NewOrganizationForm.vue';
-import type { Organization, User } from '@/types';
+import type { Organization, UserExtended } from '@/types';
 
 interface OrganizationFormData {
   namn: string;
@@ -58,13 +58,13 @@ interface OrganizationFormData {
 interface Props {
   organizations: Organization[];
   selectedOrgId: string;
-  users: User[];
+  users: UserExtended[];
 }
 
 interface Emits {
   'update:organizations': [organizations: Organization[]];
   'update:selectedOrgId': [orgId: string];
-  'update:users': [users: User[]];
+  'update:users': [users: UserExtended[]];
 }
 
 const props = defineProps<Props>();

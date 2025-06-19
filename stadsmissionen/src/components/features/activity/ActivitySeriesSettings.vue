@@ -126,8 +126,8 @@ const handleSerieToggle = (checked: boolean) => {
           <span>
             Detta kommer skapa
             {{ serieInställningar.antalVeckor }} aktiviteter, en per
-            {{ serieInställningar.veckodag || 'vecka' }} från
-            {{ startDatum || 'startdatum' }}
+            {{ serieInställningar.veckodag ?? 'vecka' }} från
+            {{ startDatum ?? 'startdatum' }}
             {{ serieInställningar.slutDatum ? ` till ${serieInställningar.slutDatum}` : '' }}
           </span>
         </div>

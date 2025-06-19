@@ -5,12 +5,10 @@ import { useApiList } from '@/composables/useApi';
 import { useToast } from '@/composables/useToast';
 import api from '@/api';
 import type { ContactWithRelations } from '@/types/relationships';
+import type { TableColumn } from '@/types';
 
 // Components
-import StandardHeader from '@/components/layout/StandardHeader.vue';
-import ViewControls from '@/components/shared/ViewControls.vue';
-import DataTable from '@/components/shared/DataTable.vue';
-import PaginationControls from '@/components/shared/PaginationControls.vue';
+import ListPage from '@/components/shared/ListPage.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Mail, Phone, Plus, Trash2 } from 'lucide-vue-next';
@@ -18,7 +16,7 @@ import { Edit, Mail, Phone, Plus, Trash2 } from 'lucide-vue-next';
 const router = useRouter();
 const { success, error } = useToast();
 
-// Filter and search state
+// Filter state
 const contactTypeFilter = ref('all');
 const searchQuery = ref('');
 
@@ -26,30 +24,29 @@ const searchQuery = ref('');
 const currentPage = ref(1);
 const itemsPerPage = ref(25);
 
-// Fetch contacts with relations using enhanced API service
+// Reset pagination when filters change
+watch([searchQuery, contactTypeFilter], () => {
+  currentPage.value = 1;
+});
+
+// Fetch contacts with relations
 const {
   data: contacts,
   loading: contactsLoading,
   error: contactsError,
   refresh: refreshContacts,
-} = useApiList<ContactWithRelations[]>(() => api.contacts.getAll({ include: ['customer'] }), {
-  cacheKey: 'contacts-with-relations',
+} = useApiList(() => api.contacts.getAll({ include: ['customer'] }), {
+  cacheKey: 'contacts-with-customer',
 });
 
-// Loading state
-const isLoading = computed(() => contactsLoading.value);
-
-// Error state
-const hasError = computed(() => contactsError.value !== null);
-
 // Table columns
-const columns = [
+const columns: TableColumn<Record<string, unknown>>[] = [
   { key: 'FullName', label: 'Namn', sortable: true, type: 'custom' },
   { key: 'Title', label: 'Titel', sortable: true },
   { key: 'CustomerName', label: 'Företag', sortable: true, type: 'custom' },
-  { key: 'Department', label: 'Avdelning', sortable: true },
-  { key: 'Phone', label: 'Telefon', sortable: false },
   { key: 'Email', label: 'E-post', sortable: true },
+  { key: 'Phone', label: 'Telefon', sortable: false },
+  { key: 'Department', label: 'Avdelning', sortable: true },
   { key: 'IsPrimary', label: 'Typ', sortable: true, type: 'custom' },
   { key: 'actions', label: 'Åtgärder', sortable: false, type: 'actions' },
 ];
@@ -64,10 +61,10 @@ const breadcrumbs = computed(() => [
 const stats = computed(() => {
   if (!contacts.value) {
     return [
-      { label: 'Totalt', value: 0, color: 'text-blue-600' },
-      { label: 'Huvudkontakter', value: 0, color: 'text-green-600' },
-      { label: 'Sekundära', value: 0, color: 'text-purple-600' },
-      { label: 'Företag', value: 0, color: 'text-orange-600' },
+      { label: 'Totalt', value: '---', color: 'text-blue-600' },
+      { label: 'Huvudkontakter', value: '---', color: 'text-green-600' },
+      { label: 'Sekundära', value: '---', color: 'text-purple-600' },
+      { label: 'Företag', value: '---', color: 'text-orange-600' },
     ];
   }
 
@@ -147,22 +144,7 @@ const paginatedContacts = computed(() => {
   return filtered.slice(start, end);
 });
 
-// Reset to first page when search or filter changes
-watch([searchQuery, contactTypeFilter], () => {
-  currentPage.value = 1;
-});
-
-// Pagination handlers
-const handlePageUpdate = (page: number) => {
-  currentPage.value = page;
-};
-
-const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
-  itemsPerPage.value = newItemsPerPage;
-  currentPage.value = 1; // Reset to first page when changing items per page
-};
-
-// Action buttons for ViewControls
+// Action buttons for ListPage
 const addActions = computed(() => [
   {
     label: 'Ny kontaktperson',
@@ -172,7 +154,7 @@ const addActions = computed(() => [
   },
 ]);
 
-// Filters for ViewControls
+// Filters for ListPage
 const filters = computed(() => [
   {
     modelValue: contactTypeFilter.value,
@@ -188,7 +170,7 @@ const filters = computed(() => [
   },
 ]);
 
-// Helper functions that work with typed data
+// Helper functions
 const getContactTypeVariant = (isPrimary: boolean) => {
   return isPrimary ? 'default' : 'secondary';
 };
@@ -198,11 +180,9 @@ const getCustomerName = (contact: ContactWithRelations): string => {
 };
 
 const getFullName = (contact: ContactWithRelations): string => {
-  // Use the computed field from the enhanced type if available
   if (contact.fullName) {
     return contact.fullName;
   }
-  // Fallback to manual construction
   return `${contact.FirstName} ${contact.LastName}`.trim();
 };
 
@@ -223,7 +203,6 @@ const handleCallContact = (contact: any, event: Event) => {
   event.stopPropagation();
   const phone = contact.Phone ?? contact.Mobile;
   if (phone) {
-    // Use tel: protocol to initiate call
     const telLink = document.createElement('a');
     telLink.href = `tel:${phone}`;
     telLink.click();
@@ -240,7 +219,6 @@ const handleSendEmail = (contact: any, event: Event) => {
 const handleDeleteContact = async (contact: any, event: Event) => {
   event.stopPropagation();
 
-  // Simple confirmation (in a real app, you'd use a proper dialog)
   const confirmed = `Är du säker på att du vill ta bort kontaktpersonen "${contact.FirstName} ${contact.LastName}"?`;
 
   if (confirmed) {
@@ -260,126 +238,105 @@ const handleDeleteContact = async (contact: any, event: Event) => {
     }
   }
 };
+
+// Pagination handlers
+const handlePageUpdate = (page: number) => {
+  currentPage.value = page;
+};
+
+const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
+  itemsPerPage.value = newItemsPerPage;
+  currentPage.value = 1;
+};
+
+// Loading and error states
+const isLoading = computed(() => contactsLoading.value);
+const hasError = computed(() => contactsError.value !== null);
 </script>
 
 <template>
   <div>
-    <!-- Header with title, breadcrumbs, and stats -->
-    <StandardHeader
+    <ListPage
       title="Kontaktpersoner"
       description="Hantera kontaktpersoner och deras information"
       :breadcrumbs="breadcrumbs"
       :show-stats="true"
       :stats="stats"
-    />
-
-    <!-- View Controls with search, filters, and actions -->
-    <ViewControls
-      v-model:search-query="searchQuery"
+      :search-query="searchQuery"
+      search-placeholder="Sök kontaktpersoner..."
       :add-actions="addActions"
       :filters="filters"
-      search-placeholder="Sök kontaktpersoner..."
       :show-view-switcher="false"
-    />
+      :data="paginatedContacts ?? []"
+      :columns="columns"
+      :search-fields="['FirstName', 'LastName', 'Title', 'Email', 'Phone', 'Department']"
+      :loading="isLoading"
+      :total-items="filteredContacts.length"
+      :current-page="currentPage"
+      :items-per-page="itemsPerPage"
+      :has-error="hasError"
+      error-message="Ett fel uppstod vid laddning av kontaktpersoner"
+      @update:search-query="searchQuery = $event"
+      @update:current-page="handlePageUpdate"
+      @update:items-per-page="handleItemsPerPageUpdate"
+      @row-click="handleRowClick"
+      @refresh="refreshContacts"
+    >
+      <!-- Custom cell templates -->
+      <template #cell-FullName="{ row }">
+        <div class="font-medium">{{ row['FirstName'] }} {{ row['LastName'] }}</div>
+      </template>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-        <p class="text-muted-foreground">Laddar kontaktpersoner...</p>
-      </div>
-    </div>
+      <template #cell-CustomerName="{ row }">
+        <span class="text-muted-foreground">{{ getCustomerName(row) }}</span>
+      </template>
 
-    <!-- Error State -->
-    <div v-else-if="hasError" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <p class="text-destructive mb-2">Ett fel uppstod vid laddning av kontaktpersoner</p>
+      <template #cell-IsPrimary="{ row }">
+        <Badge :variant="getContactTypeVariant(row['IsPrimary'])">
+          {{ row['IsPrimary'] ? 'Huvudkontakt' : 'Sekundär' }}
+        </Badge>
+      </template>
+
+      <template #row-actions="{ row }">
         <Button
-          variant="outline"
-          @click="
-            () => {
-              /* Add refresh logic */
-            }
-          "
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+          title="Redigera"
+          @click="handleEditContact(row)"
         >
-          Försök igen
+          <Edit class="h-3.5 w-3.5" />
         </Button>
-      </div>
-    </div>
-
-    <!-- DataTable -->
-    <div v-else>
-      <DataTable
-        :data="paginatedContacts ?? []"
-        :columns="columns"
-        :search-fields="['FirstName', 'LastName', 'Title', 'Email', 'Phone', 'Department']"
-        :loading="isLoading"
-        @row-click="handleRowClick"
-      >
-        <template #cell-FullName="{ row }">
-          <div class="font-medium">{{ row.FirstName }} {{ row.LastName }}</div>
-        </template>
-
-        <template #cell-CustomerName="{ row }">
-          <span class="text-muted-foreground">{{ getCustomerName(row) }}</span>
-        </template>
-
-        <template #cell-IsPrimary="{ row }">
-          <Badge :variant="getContactTypeVariant(row.IsPrimary)">
-            {{ row.IsPrimary ? 'Huvudkontakt' : 'Sekundär' }}
-          </Badge>
-        </template>
-
-        <template #row-actions="{ row }">
-          <Button
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            title="Redigera"
-            @click="handleEditContact(row)"
-          >
-            <Edit class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            v-if="row.Phone || row.Mobile"
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
-            title="Ring"
-            @click="handleCallContact(row, $event)"
-          >
-            <Phone class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            v-if="row.Email"
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-            title="E-post"
-            @click="handleSendEmail(row, $event)"
-          >
-            <Mail class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-            title="Radera"
-            @click="handleDeleteContact(row, $event)"
-          >
-            <Trash2 class="h-3.5 w-3.5" />
-          </Button>
-        </template>
-      </DataTable>
-
-      <!-- Pagination Controls -->
-      <PaginationControls
-        :total-items="filteredContacts.length"
-        :current-page="currentPage"
-        :items-per-page="itemsPerPage"
-        @update:current-page="handlePageUpdate"
-        @update:items-per-page="handleItemsPerPageUpdate"
-      />
-    </div>
+        <Button
+          v-if="row['Phone'] || row['Mobile']"
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+          title="Ring"
+          @click="handleCallContact(row, $event)"
+        >
+          <Phone class="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          v-if="row['Email']"
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+          title="E-post"
+          @click="handleSendEmail(row, $event)"
+        >
+          <Mail class="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+          title="Radera"
+          @click="handleDeleteContact(row, $event)"
+        >
+          <Trash2 class="h-3.5 w-3.5" />
+        </Button>
+      </template>
+    </ListPage>
   </div>
 </template>

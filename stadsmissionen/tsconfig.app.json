@@ -2,6 +2,7 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2020",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
@@ -13,7 +14,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": ["DOM", "DOM.Iterable", "ES6", "ES2015", "ES2020", "ES2021", "ES2022"],
-    "types": ["vite/client", "node0", "estree"],
+    "types": ["vite/client", "estree"],
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

@@ -10,7 +10,7 @@ interface Props {
   gridCols?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   loading: false,
   columns: () => [],
   cardClass: '',
@@ -105,7 +105,7 @@ const handleCardClick = (item: Record<string, unknown>) => {
     <div v-else :class="['grid gap-4 pl-4 pr-4', gridCols]">
       <Card
         v-for="(item, index) in data"
-        :key="item.id || index"
+        :key="`${item['id']}-${index}`"
         :class="[
           'cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02]',
           cardClass,
@@ -125,49 +125,49 @@ const handleCardClick = (item: Record<string, unknown>) => {
                 `Item ${index + 1}`
               }}
             </CardTitle>
-            <div v-if="item.status" class="flex items-center gap-2">
-              <Badge :variant="getBadgeVariant(item.status as string)" class="text-xs">
+            <div v-if="item['status']" class="flex items-center gap-2">
+              <Badge :variant="getBadgeVariant(item['status'] as string)" class="text-xs">
                 {{ getDisplayValue(item, 'status') }}
               </Badge>
             </div>
           </CardHeader>
 
           <CardContent class="space-y-2">
-            <!-- Show customer for boats -->
-            <div v-if="item.customer" class="text-sm text-muted-foreground">
+            <!-- Show cards -->
+            <div v-if="item['customer']" class="text-sm text-muted-foreground">
               <strong>Kund:</strong>
               {{ getDisplayValue(item, 'customer') }}
             </div>
 
             <!-- Show key fields for different data types -->
-            <div v-if="item.email" class="text-sm text-muted-foreground">
+            <div v-if="item['email']" class="text-sm text-muted-foreground">
               {{ getDisplayValue(item, 'email') }}
             </div>
-            <div v-if="item.phone" class="text-sm text-muted-foreground">
+            <div v-if="item['phone']" class="text-sm text-muted-foreground">
               {{ getDisplayValue(item, 'phone') }}
             </div>
-            <div v-if="item.department" class="text-sm text-muted-foreground">
+            <div v-if="item['department']" class="text-sm text-muted-foreground">
               <strong>Avdelning:</strong>
               {{ getDisplayValue(item, 'department') }}
             </div>
 
             <!-- Show boat-specific fields -->
-            <div v-if="item.length && item.width" class="text-sm text-muted-foreground">
+            <div v-if="item['length'] && item['width']" class="text-sm text-muted-foreground">
               <strong>Mått:</strong>
-              {{ item.length }}m × {{ item.width }}m
+              {{ item['length'] }}m × {{ item['width'] }}m
             </div>
-            <div v-if="item.location" class="text-sm text-muted-foreground">
+            <div v-if="item['location']" class="text-sm text-muted-foreground">
               <strong>Plats:</strong>
               {{ getDisplayValue(item, 'location') }}
             </div>
 
             <!-- Show comments/description if available -->
-            <div v-if="item.comments" class="text-xs text-muted-foreground line-clamp-2">
+            <div v-if="item['comments']" class="text-xs text-muted-foreground line-clamp-2">
               {{ getDisplayValue(item, 'comments') }}
             </div>
 
             <!-- Show lastLogin for users -->
-            <div v-if="item.lastLogin" class="text-xs text-muted-foreground">
+            <div v-if="item['lastLogin']" class="text-xs text-muted-foreground">
               <strong>Senast inloggad:</strong>
               {{ getDisplayValue(item, 'lastLogin') }}
             </div>
@@ -204,7 +204,7 @@ const handleCardClick = (item: Record<string, unknown>) => {
         </slot>
 
         <!-- Actions slot for custom actions -->
-        <div v-if="$slots.actions" class="px-6 pb-6">
+        <div v-if="$slots['actions']" class="px-6 pb-6">
           <slot name="actions" :item="item" :index="index"></slot>
         </div>
       </Card>

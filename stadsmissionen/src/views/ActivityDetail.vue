@@ -1,52 +1,25 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import PageLayout from '@/components/layout/PageLayout.vue';
-import DataTable from '@/components/shared/DataTable.vue';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { useToast } from '@/composables/useToast';
+import { useApiItem, useApiList } from '@/composables/useApi';
+import api from '@/api';
+import type { ActivityType } from '@/types';
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+// Components
+import ExtendedDetailPage from '@/components/shared/ExtendedDetailPage.vue';
+import { Badge } from '@/components/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  ArrowLeft,
   BarChart3,
   Calendar,
   Clock,
-  Edit,
   MapPin,
-  Save,
-  Trash2,
   UserCheck,
+  UserMinus,
+  UserPlus,
   Users,
   UserX,
-  X,
 } from 'lucide-vue-next';
-
-// Use API service and composables
-import { useApiItem, useApiList } from '@/composables/useApi';
-import { useToast } from '@/composables/useToast';
-import api from '@/api';
-import type { Activity, ActivityType } from '@/types';
 
 // Define interfaces locally to ensure proper typing
 interface Attendance {
@@ -79,32 +52,81 @@ interface ParticipantData {
   Kommentar3: string;
 }
 
+interface JunctionData {
+  JunctionID: number;
+  OfficeID: number;
+  ParticipantID: number;
+  ParticipantGroupID: string | null;
+}
+
+interface OfficeData {
+  OfficeID: number;
+  Name: string;
+  Address: string;
+  PostalCode: string;
+  City: string;
+  Phone: string;
+  Email: string;
+}
+
 const route = useRoute();
 const router = useRouter();
-const { success, error: showError } = useToast();
+const { success, error } = useToast();
 
-// Get activity ID from route
-const activityId = computed(() => route.params['id'] as string);
+const activityId = route.params['id'] as string;
+const isNew = computed(() => activityId === 'new');
 
-// Fetch activity with all related data using relational API
+// API calls
 const {
   data: activityWithRelations,
-  loading: isLoading,
+  loading: activityLoading,
   error: activityError,
   refresh: refreshActivity,
 } = useApiItem(
-  () =>
-    api.activities.getById(activityId.value, { include: ['types', 'participants', 'attendances'] }),
+  () => {
+    if (isNew.value) return Promise.resolve({ success: true, data: null });
+    return api.activities.getById(activityId, {
+      include: ['types', 'participants'],
+    });
+  },
   {
-    cacheKey: `activity-with-relations-${activityId.value}`,
+    cacheKey: `activity-with-relations-${activityId}`,
   }
 );
 
-// Extract data from the combined response
-const activity = computed(() => activityWithRelations.value);
-const activityType = computed(() => activityWithRelations.value?.activityType);
-const attendances = computed(() => activityWithRelations.value?.attendances ?? []);
-const activityParticipants = computed(() => activityWithRelations.value?.participants ?? []);
+// Fetch attendances separately
+const {
+  data: _attendancesData,
+  loading: attendancesLoading,
+  error: attendancesError,
+  refresh: refreshAttendances,
+} = useApiList(
+  () => {
+    if (isNew.value) return Promise.resolve({ success: true, data: [] });
+    return api.attendances.getByActivityId(activityId);
+  },
+  {
+    cacheKey: `attendances-${activityId}`,
+  }
+);
+
+// Fetch offices data
+const {
+  data: officesData,
+  loading: officesLoading,
+  error: officesError,
+} = useApiList(() => api.offices.getAll(), {
+  cacheKey: 'offices',
+});
+
+// Fetch junction table data
+const {
+  data: junctionData,
+  loading: junctionLoading,
+  error: junctionError,
+} = useApiList(() => api.enheterParticipantsGroups.getAll(), {
+  cacheKey: 'enheterParticipantsGroups',
+});
 
 // Fetch activity types for editing dropdown
 const {
@@ -115,54 +137,15 @@ const {
   cacheKey: 'activityTypes',
 });
 
-// Error states
-const hasError = computed(() => activityError.value !== null || activityTypesError.value !== null);
+// Extract data from the combined response
+const activity = computed(() => activityWithRelations.value);
+const _activityType = computed(() => activityWithRelations.value?.activityType);
+const attendances = computed(() => _attendancesData.value ?? []);
+const activityParticipants = computed(() => activityWithRelations.value?.participants ?? []);
 
-// Statistics
-const stats = computed(() => {
-  if (!attendances.value) {
-    return [
-      { title: 'Totala registreringar', value: 0, color: 'blue' },
-      { title: 'Närvarande', value: 0, color: 'green' },
-      { title: 'Frånvarande', value: 0, color: 'red' },
-      { title: 'Närvarograd', value: '0%', color: 'purple' },
-    ];
-  }
-
-  const totalAttendances = attendances.value.length;
-  const presentCount = attendances.value.filter((a: Attendance) => a.Närvaro).length;
-  const absentCount = totalAttendances - presentCount;
-  const attendanceRate =
-    totalAttendances > 0 ? Math.round((presentCount / totalAttendances) * 100) : 0;
-
-  return [
-    {
-      title: 'Totala registreringar',
-      value: totalAttendances,
-      color: 'blue',
-    },
-    {
-      title: 'Närvarande',
-      value: presentCount,
-      color: 'green',
-    },
-    {
-      title: 'Frånvarande',
-      value: absentCount,
-      color: 'red',
-    },
-    {
-      title: 'Närvarograd',
-      value: `${attendanceRate}%`,
-      color: 'purple',
-    },
-  ];
-});
-
-// Edit mode
-const isEditing = ref(false);
-const isSaving = ref(false);
-const editForm = ref({
+// Form state
+const form = ref({
+  ActivityID: undefined as number | undefined,
   Namn: '',
   Beskrivning: '',
   Plats: '',
@@ -170,9 +153,7 @@ const editForm = ref({
   ActivityTypeID: 0,
 });
 
-// Delete mode
-const isDeleting = ref(false);
-const showDeleteDialog = ref(false);
+const hasUnsavedChanges = ref(false);
 
 // Helper function to format date for datetime-local input
 const formatDateForInput = (dateString: string): string => {
@@ -185,18 +166,52 @@ const formatDateForInput = (dateString: string): string => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-// Initialize edit form
-const initEditForm = () => {
-  if (activity.value) {
-    editForm.value = {
-      Namn: activity.value.Namn,
-      Beskrivning: activity.value.Beskrivning ?? '',
-      Plats: activity.value.Plats ?? '',
-      DatumTid: formatDateForInput(activity.value.DatumTid),
-      ActivityTypeID: activity.value.ActivityTypeID,
-    };
-  }
-};
+// Watch for activity data and populate form
+watch(
+  activity,
+  newActivity => {
+    if (newActivity) {
+      form.value = {
+        ActivityID: newActivity.ActivityID,
+        Namn: newActivity.Namn || '',
+        Beskrivning: newActivity.Beskrivning || '',
+        Plats: newActivity.Plats || '',
+        DatumTid: formatDateForInput(newActivity.DatumTid),
+        ActivityTypeID: newActivity.ActivityTypeID || 0,
+      };
+      hasUnsavedChanges.value = false;
+    }
+  },
+  { immediate: true }
+);
+
+// Initialize form for new activity
+if (isNew.value) {
+  hasUnsavedChanges.value = false;
+}
+
+// Field definitions for ComplexDetailPage
+const mainFields = computed(() => [
+  { key: 'Namn', label: 'Aktivitetsnamn', type: 'text' as const },
+  { key: 'Beskrivning', label: 'Beskrivning', type: 'textarea' as const },
+  { key: 'Plats', label: 'Plats', type: 'text' as const },
+  { key: 'DatumTid', label: 'Datum och tid', type: 'text' as const },
+  {
+    key: 'ActivityTypeID',
+    label: 'Aktivitetstyp',
+    type: 'select' as const,
+    options:
+      activityTypes.value?.map(type => ({
+        value: type.ActivityTypeID.toString(),
+        label: type.Typnamn,
+      })) || [],
+  },
+]);
+
+const sidebarFields = computed(() => [
+  { key: 'ActivityID', label: 'Aktivitets-ID', type: 'text' as const },
+  { key: 'CreatedDate', label: 'Skapad', type: 'date' as const },
+]);
 
 // Format date
 const formatDate = (dateString: string) => {
@@ -209,35 +224,62 @@ const formatDate = (dateString: string) => {
   });
 };
 
-// Format time only
-const formatTime = (dateString: string) => {
+// Format time only (unused but keeping for potential future use)
+const _formatTime = (dateString: string) => {
   return new Date(dateString).toLocaleString('sv-SE', {
     hour: '2-digit',
     minute: '2-digit',
   });
 };
 
-// Attendance table columns
-const attendanceColumns = [
-  { key: 'participant', label: 'Deltagare' },
-  { key: 'attendance', label: 'Närvaro' },
-  { key: 'datetime', label: 'Registrerad' },
-  { key: 'notes', label: 'Anteckningar' },
-];
+// Tabs configuration for ExtendedDetailPage
+const tabs = computed(() => [
+  {
+    key: 'attendances',
+    title: 'Närvaroregistreringar',
+    icon: UserCheck,
+  },
+  {
+    key: 'participants',
+    title: 'Deltagare',
+    icon: Users,
+  },
+  {
+    key: 'statistik',
+    title: 'Statistik',
+    icon: BarChart3,
+  },
+]);
 
-// Attendance table data
+// Data for tabs
 const attendanceTableData = computed(() => {
-  if (!attendances.value || !activityParticipants.value) return [];
-
   return attendances.value.map((attendance: Attendance) => {
     const participant = activityParticipants.value?.find(
       (p: ParticipantData) => p.ParticipantID === attendance.ParticipantID
     );
+
+    // Find participant's offices through junction table
+    const participantJunctions =
+      junctionData.value?.filter(
+        (j: JunctionData) => j.ParticipantID === attendance.ParticipantID
+      ) || [];
+
+    // Get office names for this participant
+    const participantOffices = participantJunctions
+      .map((junction: JunctionData) => {
+        const office = officesData.value?.find((o: OfficeData) => o.OfficeID === junction.OfficeID);
+        return office?.Name;
+      })
+      .filter(Boolean) // Remove undefined values
+      .filter((name, index, arr) => arr.indexOf(name) === index); // Remove duplicates
+
     return {
       id: attendance.AttendanceID,
       participant: participant
         ? `${participant.Fornamn} ${participant.Efternamn}`
         : 'Okänd deltagare',
+      phone: participant?.Telefon || '-',
+      offices: participantOffices,
       attendance: attendance.Närvaro,
       datetime: attendance.DatumTid,
       notes: attendance.Anteckningar ?? '-',
@@ -245,484 +287,494 @@ const attendanceTableData = computed(() => {
   });
 });
 
-// Save changes
-const saveChanges = () => {
-  if (!activity.value) return;
-
-  isSaving.value = true;
-  console.log('Saving changes:', editForm.value);
-
-  api.activities
-    .update(activityId.value, editForm.value)
-    .then(response => {
-      console.log('API Update response:', response);
-      if (response.success && response.data) {
-        console.log('Update successful, updating local data and refreshing cache...');
-
-        // First update local data immediately so user sees the change
-        if (activityWithRelations.value) {
-          activityWithRelations.value.Namn = response.data.Namn;
-          activityWithRelations.value.Beskrivning = response.data.Beskrivning;
-          activityWithRelations.value.Plats = response.data.Plats;
-          activityWithRelations.value.DatumTid = response.data.DatumTid;
-          activityWithRelations.value.ActivityTypeID = response.data.ActivityTypeID;
-          console.log('Local data updated:', activityWithRelations.value);
-        }
-
-        // Then refresh cache for persistence across navigation
-        refreshActivity()
-          .then(() => {
-            console.log('Cache refreshed successfully');
-          })
-          .catch(refreshError => {
-            console.error('Error refreshing cache:', refreshError);
-          });
-
-        // Exit edit mode immediately after local update
-        isEditing.value = false;
-
-        // Show success toast
-        success('Aktivitet uppdaterad', 'Ändringarna har sparats framgångsrikt');
-      } else {
-        console.error('Failed to save changes:', response.error);
-        showError('Kunde inte spara', response.error?.message ?? 'Ett fel uppstod vid sparande');
-      }
-    })
-    .catch(error => {
-      console.error('Error saving changes:', error);
-      showError('Kunde inte spara', 'Ett oväntat fel uppstod vid sparande');
-    })
-    .finally(() => {
-      isSaving.value = false;
-    });
-};
-
-// Cancel editing
-const cancelEdit = () => {
-  isEditing.value = false;
-  initEditForm();
-};
-
-// Start editing mode
-const startEdit = () => {
-  initEditForm(); // Re-initialize form with current data
-  isEditing.value = true;
-};
-
-// Computed property for activity type selection
-const selectedActivityType = computed({
-  get: () => editForm.value.ActivityTypeID.toString(),
-  set: (value: string) => {
-    editForm.value.ActivityTypeID = +value || 0;
-  },
+const participantTableData = computed(() => {
+  return (
+    activityParticipants.value?.map((participant: ParticipantData) => {
+      const participantAttendances = attendances.value.filter(
+        (a: Attendance) => a.ParticipantID === participant.ParticipantID
+      );
+      return {
+        id: participant.ParticipantID,
+        name: `${participant.Fornamn} ${participant.Efternamn}`,
+        phone: participant.Telefon,
+        email: participant['E-post'],
+        attendanceCount: participantAttendances.length,
+        presentCount: participantAttendances.filter((a: Attendance) => a.Närvaro).length,
+      };
+    }) ?? []
+  );
 });
 
-// Delete activity
-const deleteActivity = () => {
-  if (!activity.value) return;
+// Column definitions (unused but keeping for potential future use)
+const _attendanceColumns = [
+  { key: 'participant', label: 'Deltagare', sortable: true },
+  { key: 'phone', label: 'Telefon', sortable: false },
+  { key: 'offices', label: 'Enheter', sortable: false, type: 'custom' as const },
+  { key: 'attendance', label: 'Närvaro', sortable: true, type: 'custom' as const },
+  { key: 'datetime', label: 'Registrerad', sortable: true, type: 'custom' as const },
+  { key: 'notes', label: 'Anteckningar', sortable: false },
+  { key: 'actions', label: 'Åtgärder', type: 'actions' as const, width: '100px' },
+];
 
-  isDeleting.value = true;
+const _participantColumns = [
+  { key: 'name', label: 'Namn', sortable: true },
+  { key: 'phone', label: 'Telefon', sortable: false },
+  { key: 'email', label: 'E-post', sortable: false },
+  { key: 'attendanceCount', label: 'Registreringar', sortable: true, type: 'custom' as const },
+  { key: 'presentCount', label: 'Närvarande', sortable: true, type: 'custom' as const },
+  { key: 'actions', label: 'Åtgärder', type: 'actions' as const, width: '100px' },
+];
 
-  api.activities
-    .delete(activityId.value)
-    .then(response => {
-      console.log('API Delete response:', response);
-      if (response.success) {
-        success('Aktivitet borttagen', 'Aktiviteten har tagits bort framgångsrikt');
-        // Navigate back to activities list
-        router.push('/activities');
-      } else {
-        console.error('Failed to delete activity:', response.error);
-        showError(
-          'Kunde inte ta bort',
-          response.error?.message ?? 'Ett fel uppstod vid borttagning'
-        );
-      }
-    })
-    .catch(error => {
-      console.error('Error deleting activity:', error);
-      showError('Kunde inte ta bort', 'Ett oväntat fel uppstod vid borttagning');
-    })
-    .finally(() => {
-      isDeleting.value = false;
-      showDeleteDialog.value = false;
-    });
-};
+// Statistics
+const stats = computed(() => {
+  if (!activity.value) return [];
 
-// Go back to activity list
-const goBack = () => {
-  router.push('/activities');
-};
+  const totalAttendances = attendances.value.length;
+  const presentCount = attendances.value.filter((a: Attendance) => a.Närvaro).length;
+  const absentCount = totalAttendances - presentCount;
+  const attendanceRate =
+    totalAttendances > 0 ? Math.round((presentCount / totalAttendances) * 100) : 0;
 
-// Initialize on mount
-onMounted(() => {
-  initEditForm();
+  return [
+    {
+      label: 'Totala registreringar',
+      value: totalAttendances,
+    },
+    {
+      label: 'Närvarande',
+      value: presentCount,
+      color: 'text-green-600',
+    },
+    {
+      label: 'Frånvarande',
+      value: absentCount,
+      color: 'text-red-600',
+    },
+    {
+      label: 'Närvarograd',
+      value: `${attendanceRate}%`,
+      color: 'text-blue-600',
+    },
+  ];
 });
 
 // Breadcrumbs
 const breadcrumbs = computed(() => {
-  if (!activity.value) return 'Aktiviteter / Aktivitet';
-  return `Aktiviteter / ${activity.value.Namn}`;
+  if (isNew.value) {
+    return [
+      { label: 'Dashboard', to: '/' },
+      { label: 'Aktiviteter', to: '/activities' },
+      { label: 'Ny aktivitet', to: '', isCurrentPage: true },
+    ];
+  }
+  return [
+    { label: 'Dashboard', to: '/' },
+    { label: 'Aktiviteter', to: '/activities' },
+    { label: activity.value?.Namn || 'Aktivitetsdetaljer', to: '', isCurrentPage: true },
+  ];
 });
+
+// Page title
+const pageTitle = computed(() => {
+  if (isNew.value) return 'Lägg till ny aktivitet';
+  return activity.value?.Namn || 'Aktivitetsdetaljer';
+});
+
+// Event handlers
+const handleFieldChange = (key: string, value: unknown) => {
+  (form.value as any)[key] = value;
+  hasUnsavedChanges.value = true;
+};
+
+const handleSave = async () => {
+  try {
+    if (isNew.value) {
+      // Create new activity
+      const result = await api.activities.create(form.value);
+      if (result.success) {
+        success('Aktivitet skapad', 'Den nya aktiviteten har skapats framgångsrikt.');
+        router.push(`/activities/${result.data.ActivityID}`);
+      } else {
+        error('Fel vid skapande', result.error?.message || 'Kunde inte skapa aktiviteten.');
+      }
+    } else {
+      // Update existing activity
+      const result = await api.activities.update(activityId, form.value);
+      if (result.success) {
+        success('Aktivitet uppdaterad', 'Aktiviteten har uppdaterats framgångsrikt.');
+        hasUnsavedChanges.value = false;
+        await refreshActivity();
+        await refreshAttendances();
+      } else {
+        error('Fel vid uppdatering', result.error?.message || 'Kunde inte uppdatera aktiviteten.');
+      }
+    }
+  } catch (_err) {
+    error('Fel vid sparande', 'Ett oväntat fel inträffade. Försök igen.');
+  }
+};
+
+const handleDelete = async () => {
+  if (isNew.value) return;
+
+  try {
+    const result = await api.activities.delete(activityId);
+    if (result.success) {
+      success('Aktivitet borttagen', 'Aktiviteten har tagits bort framgångsrikt.');
+      router.push('/activities');
+    } else {
+      error('Fel vid borttagning', result.error?.message || 'Kunde inte ta bort aktiviteten.');
+    }
+  } catch (_err) {
+    error('Fel vid borttagning', 'Ett oväntat fel inträffade. Försök igen.');
+  }
+};
+
+const handleBack = () => {
+  router.push('/activities');
+};
+
+const handleDiscardChanges = () => {
+  if (activity.value) {
+    // Reset form to original data
+    form.value = {
+      ActivityID: activity.value.ActivityID,
+      Namn: activity.value.Namn || '',
+      Beskrivning: activity.value.Beskrivning || '',
+      Plats: activity.value.Plats || '',
+      DatumTid: formatDateForInput(activity.value.DatumTid),
+      ActivityTypeID: activity.value.ActivityTypeID || 0,
+    };
+  }
+  hasUnsavedChanges.value = false;
+};
+
+// Tab event handlers
+const handleAddTabItem = (tabKey: string) => {
+  switch (tabKey) {
+    case 'attendances':
+      router.push(`/attendance?activityId=${activityId}`);
+      break;
+    case 'participants':
+      router.push(`/participants/new?activityId=${activityId}`);
+      break;
+  }
+};
+
+const handleEditTabItem = (_tabKey: string, item: any) => {
+  switch (_tabKey) {
+    case 'attendances':
+      // Could navigate to edit attendance or show inline edit
+      break;
+    case 'participants':
+      router.push(`/participants/${item.id}`);
+      break;
+  }
+};
+
+const handleDeleteTabItem = (_tabKey: string, _item: any) => {
+  // Handle delete confirmation and API call
+  // TODO: Implement delete confirmation dialog and API call
+};
+
+const handleTabItemClick = (tabKey: string, item: any) => {
+  // Same as edit for now
+  handleEditTabItem(tabKey, item);
+};
+
+const handleTogglePresence = async (item: any) => {
+  try {
+    const newPresenceStatus = !item.attendance;
+
+    const result = await api.attendances.update(item.id.toString(), {
+      Närvaro: newPresenceStatus,
+      DatumTid: new Date().toISOString(),
+    });
+
+    if (result.success) {
+      success(
+        `Närvaro ${newPresenceStatus ? 'markerad' : 'borttagen'}`,
+        `Deltagaren har markerats som ${newPresenceStatus ? 'närvarande' : 'frånvarande'}.`
+      );
+
+      // Refresh attendance data
+      await refreshAttendances();
+    } else {
+      error('Fel vid uppdatering', result.error?.message || 'Kunde inte uppdatera närvarostatus.');
+    }
+  } catch (_err) {
+    error('Fel vid uppdatering', 'Ett oväntat fel inträffade. Försök igen.');
+  }
+};
+
+// Loading and error states
+const isLoading = computed(
+  () =>
+    activityLoading.value ||
+    activityTypesLoading.value ||
+    attendancesLoading.value ||
+    officesLoading.value ||
+    junctionLoading.value
+);
+const hasError = computed(
+  () =>
+    activityError.value !== null ||
+    activityTypesError.value !== null ||
+    attendancesError.value !== null ||
+    officesError.value !== null ||
+    junctionError.value !== null
+);
 </script>
 
 <template>
-  <PageLayout
-    :title="activity?.Namn || 'Aktivitet'"
-    :breadcrumbs="breadcrumbs"
-    show-stats
-    :stats="stats"
-  >
+  <div>
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-        <p class="text-muted-foreground">Laddar aktivitet...</p>
+        <div
+          class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4"
+        ></div>
+        <p class="text-muted-foreground">Laddar aktivitetsuppgifter...</p>
       </div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+    <div v-else-if="hasError && !isNew" class="flex items-center justify-center py-12">
       <div class="text-center">
-        <p class="text-destructive mb-2">Ett fel uppstod vid laddning av aktivitet</p>
-        <Button variant="outline" @click="refreshActivity">Försök igen</Button>
+        <div class="h-8 w-8 text-destructive mx-auto mb-4">⚠️</div>
+        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av aktivitetsuppgifter</p>
+        <button
+          class="px-4 py-2 bg-primary text-primary-foreground rounded"
+          @click="
+            () => {
+              refreshActivity();
+              refreshAttendances();
+            }
+          "
+        >
+          Försök igen
+        </button>
       </div>
     </div>
 
-    <!-- Activity not found -->
-    <div v-else-if="!activity" class="flex items-center justify-center h-64">
-      <div class="text-center">
-        <h3 class="text-lg font-semibold text-muted-foreground">Aktivitet hittades inte</h3>
-        <p class="text-sm text-muted-foreground mt-2">Den begärda aktiviteten kunde inte hittas.</p>
-        <Button class="mt-4" @click="goBack">
-          <ArrowLeft class="mr-2 h-4 w-4" />
-          Tillbaka till aktiviteter
-        </Button>
-      </div>
-    </div>
-
-    <div v-else class="space-y-6">
-      <!-- Header Actions -->
-      <div class="flex items-center justify-between">
-        <Button variant="outline" @click="goBack">
-          <ArrowLeft class="mr-2 h-4 w-4" />
-          Tillbaka
-        </Button>
-
-        <div class="flex gap-2">
-          <template v-if="!isEditing">
-            <Button variant="outline" @click="startEdit">
-              <Edit class="mr-2 h-4 w-4" />
-              Redigera
-            </Button>
-            <Dialog v-model:open="showDeleteDialog">
-              <DialogTrigger as-child>
-                <Button variant="destructive">
-                  <Trash2 class="mr-2 h-4 w-4" />
-                  Ta bort
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Ta bort aktivitet</DialogTitle>
-                  <DialogDescription>
-                    Är du säker på att du vill ta bort aktiviteten "{{ activity.Namn }}"? Denna
-                    åtgärd kan inte ångras och kommer att ta bort all relaterad data.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    :disabled="isDeleting"
-                    @click="showDeleteDialog = false"
-                  >
-                    Avbryt
-                  </Button>
-                  <Button variant="destructive" :disabled="isDeleting" @click="deleteActivity">
-                    <Trash2 class="mr-2 h-4 w-4" />
-                    {{ isDeleting ? 'Tar bort...' : 'Ta bort' }}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </template>
-          <template v-else>
-            <Button variant="default" :disabled="isSaving" @click="saveChanges">
-              <Save class="mr-2 h-4 w-4" />
-              {{ isSaving ? 'Sparar...' : 'Spara' }}
-            </Button>
-            <Button variant="outline" :disabled="isSaving" @click="cancelEdit">
-              <X class="mr-2 h-4 w-4" />
-              Avbryt
-            </Button>
-          </template>
-        </div>
-      </div>
-
-      <!-- Activity Information -->
-      <Card>
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <Calendar class="h-5 w-5" />
-            Aktivitetsinformation
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div v-if="!isEditing" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-              <div>
-                <Label class="text-sm font-medium text-muted-foreground">Namn</Label>
-                <p class="text-lg font-semibold">
-                  {{ activity.Namn }}
-                </p>
-              </div>
-
-              <div>
-                <Label class="text-sm font-medium text-muted-foreground">Typ</Label>
-                <Badge variant="secondary" class="mt-1">
-                  {{ activityType?.Typnamn || 'Okänd typ' }}
-                </Badge>
-              </div>
-
-              <div>
-                <Label class="text-sm font-medium text-muted-foreground">Plats</Label>
-                <p class="flex items-center gap-2 mt-1">
-                  <MapPin class="h-4 w-4 text-muted-foreground" />
-                  {{ activity.Plats }}
-                </p>
-              </div>
+    <!-- Main Content -->
+    <div v-else>
+      <ExtendedDetailPage
+        :title="pageTitle"
+        :data="form"
+        :breadcrumbs="breadcrumbs"
+        :show-stats="!isNew && !!activity"
+        :stats="stats"
+        :main-fields="mainFields"
+        :sidebar-fields="sidebarFields"
+        :tabs="tabs"
+        :has-unsaved-changes="hasUnsavedChanges"
+        default-tab="attendances"
+        @field-change="handleFieldChange"
+        @save="handleSave"
+        @delete="handleDelete"
+        @back="handleBack"
+        @discard-changes="handleDiscardChanges"
+      >
+        <!-- Attendance Tab Content -->
+        <template #tab-attendances>
+          <div class="bg-white rounded-lg border">
+            <div class="flex items-center justify-between p-4 border-b">
+              <h3 class="text-lg font-semibold flex items-center gap-2">
+                <UserCheck class="h-5 w-5" />
+                Närvaroregistreringar
+              </h3>
+              <button
+                class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                @click="handleAddTabItem('attendances')"
+              >
+                + Lägg till
+              </button>
             </div>
-
-            <div class="space-y-4">
-              <div>
-                <Label class="text-sm font-medium text-muted-foreground">Datum och tid</Label>
-                <p class="flex items-center gap-2 mt-1">
-                  <Clock class="h-4 w-4 text-muted-foreground" />
-                  {{ formatDate(activity.DatumTid) }}
-                </p>
+            <div class="p-4">
+              <div v-if="attendanceTableData.length === 0" class="text-center py-8 text-gray-500">
+                Inga närvaroregistreringar att visa
               </div>
-
-              <div>
-                <Label class="text-sm font-medium text-muted-foreground">Beskrivning</Label>
-                <p class="mt-1 text-sm">
-                  {{ activity.Beskrivning || 'Ingen beskrivning tillgänglig' }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Edit Form -->
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-4">
-              <div>
-                <Label for="name">Namn</Label>
-                <Input id="name" v-model="editForm.Namn" />
-              </div>
-
-              <div>
-                <Label for="type">Typ</Label>
-                <Select v-model="selectedActivityType">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj aktivitetstyp" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem
-                      v-for="type in activityTypes"
-                      :key="type.ActivityTypeID"
-                      :value="type.ActivityTypeID.toString()"
+              <div v-else class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                  <thead>
+                    <tr class="border-b">
+                      <th class="text-left p-2 font-medium">Deltagare</th>
+                      <th class="text-left p-2 font-medium">Telefon</th>
+                      <th class="text-left p-2 font-medium">Enheter</th>
+                      <th class="text-left p-2 font-medium">Närvaro</th>
+                      <th class="text-left p-2 font-medium">Registrerad</th>
+                      <th class="text-left p-2 font-medium">Anteckningar</th>
+                      <th class="text-left p-2 font-medium w-24">Åtgärder</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="item in attendanceTableData"
+                      :key="item.id"
+                      class="border-b hover:bg-gray-50 cursor-pointer"
+                      @click="handleTabItemClick('attendances', item)"
                     >
-                      {{ type.Typnamn }}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label for="location">Plats</Label>
-                <Input id="location" v-model="editForm.Plats" />
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <div>
-                <Label for="datetime">Datum och tid</Label>
-                <Input id="datetime" v-model="editForm.DatumTid" type="datetime-local" />
-              </div>
-
-              <div>
-                <Label for="description">Beskrivning</Label>
-                <Textarea id="description" v-model="editForm.Beskrivning" rows="3" />
+                      <td class="p-2">{{ item.participant }}</td>
+                      <td class="p-2">{{ item.phone }}</td>
+                      <td class="p-2">
+                        <div class="flex flex-wrap gap-1">
+                          <Badge
+                            v-for="office in item.offices"
+                            :key="office"
+                            variant="outline"
+                            class="text-xs"
+                          >
+                            {{ office }}
+                          </Badge>
+                          <span
+                            v-if="!item.offices || item.offices.length === 0"
+                            class="text-gray-500 text-sm"
+                          >
+                            Ingen enhet
+                          </span>
+                        </div>
+                      </td>
+                      <td class="p-2">
+                        <Badge :variant="item.attendance ? 'default' : 'destructive'">
+                          <UserCheck v-if="item.attendance" class="mr-1 h-3 w-3" />
+                          <UserX v-else class="mr-1 h-3 w-3" />
+                          {{ item.attendance ? 'Närvarande' : 'Frånvarande' }}
+                        </Badge>
+                      </td>
+                      <td class="p-2">{{ formatDate(item.datetime) }}</td>
+                      <td class="p-2">{{ item.notes }}</td>
+                      <td class="p-2">
+                        <div class="flex gap-1">
+                          <button
+                            v-if="!item.attendance"
+                            class="p-1 text-green-600 hover:bg-green-50 rounded flex items-center"
+                            title="Markera som närvarande"
+                            @click.stop="handleTogglePresence(item)"
+                          >
+                            <UserPlus class="h-4 w-4" />
+                          </button>
+                          <button
+                            v-if="item.attendance"
+                            class="p-1 text-orange-600 hover:bg-orange-50 rounded flex items-center"
+                            title="Markera som frånvarande"
+                            @click.stop="handleTogglePresence(item)"
+                          >
+                            <UserMinus class="h-4 w-4" />
+                          </button>
+                          <button
+                            class="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                            title="Redigera"
+                            @click.stop="handleEditTabItem('attendances', item)"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            class="p-1 text-red-600 hover:bg-red-50 rounded"
+                            title="Ta bort"
+                            @click.stop="handleDeleteTabItem('attendances', item)"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </template>
 
-      <!-- Tabs for different views -->
-      <Tabs default-value="attendances" class="w-full">
-        <TabsList class="grid w-full grid-cols-3">
-          <TabsTrigger value="attendances" class="flex items-center gap-2">
-            <UserCheck class="h-4 w-4" />
-            Närvaroregistreringar
-          </TabsTrigger>
-          <TabsTrigger value="participants" class="flex items-center gap-2">
-            <Users class="h-4 w-4" />
-            Deltagare
-          </TabsTrigger>
-          <TabsTrigger value="statistics" class="flex items-center gap-2">
-            <BarChart3 class="h-4 w-4" />
-            Statistik
-          </TabsTrigger>
-        </TabsList>
+        <!-- Participants Tab Content -->
+        <template #tab-participants>
+          <div class="bg-white rounded-lg border">
+            <div class="flex items-center justify-between p-4 border-b">
+              <h3 class="text-lg font-semibold flex items-center gap-2">
+                <Users class="h-5 w-5" />
+                Deltagare
+              </h3>
+              <button
+                class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                @click="handleAddTabItem('participants')"
+              >
+                + Lägg till
+              </button>
+            </div>
+            <div class="p-4">
+              <div v-if="participantTableData.length === 0" class="text-center py-8 text-gray-500">
+                Inga deltagare att visa
+              </div>
+              <div v-else class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                  <thead>
+                    <tr class="border-b">
+                      <th class="text-left p-2 font-medium">Namn</th>
+                      <th class="text-left p-2 font-medium">Telefon</th>
+                      <th class="text-left p-2 font-medium">E-post</th>
+                      <th class="text-left p-2 font-medium">Registreringar</th>
+                      <th class="text-left p-2 font-medium">Närvarande</th>
+                      <th class="text-left p-2 font-medium w-24">Åtgärder</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="item in participantTableData"
+                      :key="item.id"
+                      class="border-b hover:bg-gray-50 cursor-pointer"
+                      @click="handleTabItemClick('participants', item)"
+                    >
+                      <td class="p-2">{{ item.name }}</td>
+                      <td class="p-2">{{ item.phone }}</td>
+                      <td class="p-2">{{ item.email }}</td>
+                      <td class="p-2">
+                        <Badge variant="outline">{{ item.attendanceCount }} registreringar</Badge>
+                      </td>
+                      <td class="p-2">
+                        <Badge variant="default">{{ item.presentCount }} närvarande</Badge>
+                      </td>
+                      <td class="p-2">
+                        <div class="flex gap-1">
+                          <button
+                            class="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                            @click.stop="handleEditTabItem('participants', item)"
+                          >
+                            ✏️
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
 
-        <!-- Attendance Registrations -->
-        <TabsContent value="attendances" class="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Närvaroregistreringar</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DataTable :data="attendanceTableData" :columns="attendanceColumns">
-                <template #attendance="{ item }">
-                  <Badge :variant="item.attendance ? 'default' : 'destructive'">
-                    <UserCheck v-if="item.attendance" class="mr-1 h-3 w-3" />
-                    <UserX v-else class="mr-1 h-3 w-3" />
-                    {{ item.attendance ? 'Närvarande' : 'Frånvarande' }}
-                  </Badge>
-                </template>
-                <template #datetime="{ item }">
-                  {{ formatDate(item.datetime) }}
-                </template>
-                <template #notes="{ item }">
-                  <span class="text-sm text-muted-foreground">{{ item.notes }}</span>
-                </template>
-              </DataTable>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <!-- Participants -->
-        <TabsContent value="participants" class="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Deltagare ({{ activityParticipants?.length || 0 }})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Statistics Tab Content -->
+        <template #tab-statistik>
+          <div class="bg-white rounded-lg border">
+            <div class="p-4 border-b">
+              <h3 class="text-lg font-semibold flex items-center gap-2">
+                <BarChart3 class="h-5 w-5" />
+                Statistik
+              </h3>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div
-                  v-for="participant in (activityParticipants as ParticipantData[]) ?? []"
-                  :key="participant.ParticipantID"
-                  class="p-4 border rounded-lg"
+                  v-for="stat in stats"
+                  :key="stat.label"
+                  class="text-center p-4 bg-gray-50 rounded-lg"
                 >
-                  <h4 class="font-semibold">
-                    {{ participant.Fornamn }} {{ participant.Efternamn }}
-                  </h4>
-                  <p class="text-sm text-muted-foreground">
-                    {{ participant.Telefon }}
-                  </p>
-                  <p class="text-sm text-muted-foreground">
-                    {{ participant['E-post'] }}
-                  </p>
-
-                  <!-- Attendance status for this participant -->
-                  <div class="mt-2">
-                    <Badge
-                      v-for="attendance in (attendances as Attendance[])?.filter(
-                        (a: Attendance) => a.ParticipantID === participant.ParticipantID
-                      ) ?? []"
-                      :key="attendance.AttendanceID"
-                      :variant="attendance.Närvaro ? 'default' : 'destructive'"
-                      class="text-xs"
-                    >
-                      {{ formatTime(attendance.DatumTid) }} -
-                      {{ attendance.Närvaro ? 'Närvarande' : 'Frånvarande' }}
-                    </Badge>
-                  </div>
+                  <div class="text-2xl font-bold" :class="stat.color">{{ stat.value }}</div>
+                  <div class="text-sm text-gray-600">{{ stat.label }}</div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <!-- Statistics -->
-        <TabsContent value="statistics" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card v-for="stat in stats" :key="stat.title">
-              <CardContent class="p-6">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm font-medium text-muted-foreground">
-                      {{ stat.title }}
-                    </p>
-                    <p class="text-2xl font-bold">
-                      {{ stat.value }}
-                    </p>
-                  </div>
-                  <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <BarChart3 class="h-4 w-4 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            </div>
           </div>
-
-          <!-- Additional Statistics -->
-          <Card>
-            <CardHeader>
-              <CardTitle>Detaljerad statistik</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 class="font-semibold mb-2">Närvaroöversikt</h4>
-                    <div class="space-y-2">
-                      <div class="flex justify-between">
-                        <span class="text-sm">Totala registreringar:</span>
-                        <span class="font-medium">{{ attendances?.length || 0 }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-sm">Unika deltagare:</span>
-                        <span class="font-medium">{{ activityParticipants?.length || 0 }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-sm">Genomsnittlig närvaro per deltagare:</span>
-                        <span class="font-medium">
-                          {{
-                            (activityParticipants?.length || 0) > 0
-                              ? Number(
-                                  (attendances?.length || 0) / (activityParticipants?.length || 1)
-                                ).toFixed(1)
-                              : 0
-                          }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 class="font-semibold mb-2">Aktivitetsinformation</h4>
-                    <div class="space-y-2">
-                      <div class="flex justify-between">
-                        <span class="text-sm">Aktivitetstyp:</span>
-                        <span class="font-medium">{{ activityType?.Typnamn || 'Okänd' }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-sm">Plats:</span>
-                        <span class="font-medium">{{ activity.Plats }}</span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-sm">Datum:</span>
-                        <span class="font-medium">{{ formatDate(activity.DatumTid) }}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </template>
+      </ExtendedDetailPage>
     </div>
-  </PageLayout>
+  </div>
 </template>

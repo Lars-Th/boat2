@@ -5,15 +5,10 @@ import type {
   ActivityWithRelations,
   ActivityWithTypes,
   ParticipantWithActivities,
-  ParticipantWithFamily,
   ParticipantWithRelations,
   RelationalParams,
 } from '@/types/enhanced';
-import type {
-  ContactWithRelations,
-  CustomerWithRelations,
-  WorkOrderWithRelations,
-} from '@/types/relationships';
+import type { ContactWithRelations, CustomerWithRelations } from '@/types/relationships';
 
 // Import JSON data
 import activitiesData from '@/assets/data/activities.json';
@@ -28,6 +23,8 @@ import customersData from '@/assets/data/customers.json';
 import contactsData from '@/assets/data/contacts.json';
 import employeesData from '@/assets/data/employees.json';
 import permissionGroupsData from '@/assets/data/permissionGroups.json';
+import officesData from '@/assets/data/offices.json';
+import enheterParticipantsGroupsData from '@/assets/data/enheterParticipantsGroups.json';
 
 export class MockDataService {
   private delay = 300; // Simulate network delay
@@ -406,12 +403,7 @@ export class MockDataService {
   async getParticipants(
     params?: RelationalParams
   ): Promise<
-    ApiResponse<
-      | Participant[]
-      | ParticipantWithActivities[]
-      | ParticipantWithFamily[]
-      | ParticipantWithRelations[]
-    >
+    ApiResponse<Participant[] | ParticipantWithActivities[] | ParticipantWithRelations[]>
   > {
     const participants = participantsData as Participant[];
 
@@ -433,39 +425,6 @@ export class MockDataService {
         enhanced.activities = participantActivities as Activity[];
       }
 
-      if (params.include?.includes('family')) {
-        // Load family relations from familyRelations.json
-        const participantFamilyRelations = familyRelationsData.filter(
-          relation =>
-            relation.ParticipantID === participant.ParticipantID ||
-            relation.RelatedParticipantID === participant.ParticipantID
-        );
-
-        const familyMembers = participantFamilyRelations
-          .map(relation => {
-            const relatedParticipantId =
-              relation.ParticipantID === participant.ParticipantID
-                ? relation.RelatedParticipantID
-                : relation.ParticipantID;
-
-            const relatedParticipant = participants.find(
-              p => p.ParticipantID === relatedParticipantId
-            );
-
-            if (relatedParticipant) {
-              return {
-                ...relatedParticipant,
-                RelationType: relation.RelationType,
-                RelationID: relation.RelationID,
-              };
-            }
-            return null;
-          })
-          .filter(Boolean);
-
-        enhanced.family = familyMembers;
-      }
-
       if (params.include?.includes('attendances')) {
         const participantAttendances = attendancesData.filter(
           a => a.ParticipantID === participant.ParticipantID
@@ -483,13 +442,7 @@ export class MockDataService {
     id: string,
     params?: RelationalParams
   ): Promise<
-    ApiResponse<
-      | Participant
-      | ParticipantWithActivities
-      | ParticipantWithFamily
-      | ParticipantWithRelations
-      | null
-    >
+    ApiResponse<Participant | ParticipantWithActivities | ParticipantWithRelations | null>
   > {
     const participant = participantsData.find(p => p.ParticipantID === parseInt(id));
     if (!participant) {
@@ -511,39 +464,6 @@ export class MockDataService {
         activityIds.includes(activity.ActivityID)
       );
       enhanced.activities = participantActivities as Activity[];
-    }
-
-    if (params.include?.includes('family')) {
-      // Load family relations from familyRelations.json
-      const participantFamilyRelations = familyRelationsData.filter(
-        relation =>
-          relation.ParticipantID === participant.ParticipantID ||
-          relation.RelatedParticipantID === participant.ParticipantID
-      );
-
-      const familyMembers = participantFamilyRelations
-        .map(relation => {
-          const relatedParticipantId =
-            relation.ParticipantID === participant.ParticipantID
-              ? relation.RelatedParticipantID
-              : relation.ParticipantID;
-
-          const relatedParticipant = participantsData.find(
-            p => p.ParticipantID === relatedParticipantId
-          );
-
-          if (relatedParticipant) {
-            return {
-              ...relatedParticipant,
-              RelationType: relation.RelationType,
-              RelationID: relation.RelationID,
-            };
-          }
-          return null;
-        })
-        .filter(Boolean);
-
-      enhanced.family = familyMembers;
     }
 
     if (params.include?.includes('attendances')) {
@@ -628,19 +548,6 @@ export class MockDataService {
         ) as ContactWithRelations;
       }
 
-      if (params.include?.includes('workOrders')) {
-        const customerWorkOrders = workOrdersData.filter(
-          wo => wo.CustomerID === customer.CustomerID
-        );
-        enhanced.workOrders = customerWorkOrders as unknown as WorkOrderWithRelations[];
-
-        // Add computed fields
-        enhanced.totalWorkOrders = customerWorkOrders.length;
-        enhanced.activeWorkOrders = customerWorkOrders.filter(
-          wo => wo.Status === 'active' || wo.Status === 'in_progress' || wo.Status === 'pending'
-        ).length;
-      }
-
       return enhanced;
     });
 
@@ -672,17 +579,6 @@ export class MockDataService {
       enhanced.primaryContact = customerContacts.find(
         c => c.IsPrimary === true
       ) as ContactWithRelations;
-    }
-
-    if (params.include?.includes('workOrders')) {
-      const customerWorkOrders = workOrdersData.filter(wo => wo.CustomerID === customer.CustomerID);
-      enhanced.workOrders = customerWorkOrders as unknown as WorkOrderWithRelations[];
-
-      // Add computed fields
-      enhanced.totalWorkOrders = customerWorkOrders.length;
-      enhanced.activeWorkOrders = customerWorkOrders.filter(
-        wo => wo.Status === 'active' || wo.Status === 'in_progress' || wo.Status === 'pending'
-      ).length;
     }
 
     return this.mockRequest(enhanced);
@@ -768,19 +664,6 @@ export class MockDataService {
         enhanced.customer = customer as CustomerWithRelations;
       }
 
-      if (params.include?.includes('workOrders')) {
-        const customerWorkOrders = workOrdersData.filter(
-          wo => wo.ContactPersonID === contact.ContactID
-        );
-        enhanced.workOrders = customerWorkOrders as any[];
-
-        // Add computed fields
-        enhanced.totalWorkOrders = customerWorkOrders.length;
-        enhanced.activeWorkOrders = customerWorkOrders.filter(
-          wo => wo.Status === 'in_progress' || wo.Status === 'pending'
-        ).length;
-      }
-
       // Always add computed full name
       enhanced.fullName = `${contact.FirstName} ${contact.LastName}`.trim();
 
@@ -808,19 +691,6 @@ export class MockDataService {
     if (params.include?.includes('customer')) {
       const customer = customersData.find(c => c.CustomerID === contact.CustomerID);
       enhanced.customer = customer as CustomerWithRelations;
-    }
-
-    if (params.include?.includes('workOrders')) {
-      const customerWorkOrders = workOrdersData.filter(
-        wo => wo.ContactPersonID === contact.ContactID
-      );
-      enhanced.workOrders = customerWorkOrders as any[];
-
-      // Add computed fields
-      enhanced.totalWorkOrders = customerWorkOrders.length;
-      enhanced.activeWorkOrders = customerWorkOrders.filter(
-        wo => wo.Status === 'in_progress' || wo.Status === 'pending'
-      ).length;
     }
 
     // Always add computed full name
@@ -1027,7 +897,7 @@ export class MockDataService {
 
     // Extract user ID from mock token
     const tokenParts = token.split('-');
-    const userId = parseInt(tokenParts[2]);
+    const userId = parseInt(tokenParts[2] || '0');
 
     const user = usersData.find((u: any) => u.id === userId);
     if (!user) {
@@ -1127,5 +997,64 @@ export class MockDataService {
     }));
 
     return this.mockRequest(demoUsers);
+  }
+
+  // Offices methods
+  async getOffices(): Promise<ApiResponse<typeof officesData>> {
+    return this.mockRequest(officesData);
+  }
+
+  async getOfficeById(id: string): Promise<ApiResponse<(typeof officesData)[0] | null>> {
+    const office = officesData.find(o => o.OfficeID === parseInt(id));
+    return this.mockRequest(office || null);
+  }
+
+  // Junction table methods - Enheter Participants Groups
+  async getEnheterParticipantsGroups(): Promise<ApiResponse<typeof enheterParticipantsGroupsData>> {
+    return this.mockRequest(enheterParticipantsGroupsData);
+  }
+
+  async getEnheterParticipantsGroupsByParticipantId(
+    participantId: string
+  ): Promise<ApiResponse<typeof enheterParticipantsGroupsData>> {
+    const filtered = enheterParticipantsGroupsData.filter(
+      item => item.ParticipantID === parseInt(participantId)
+    );
+    return this.mockRequest(filtered);
+  }
+
+  async getEnheterParticipantsGroupsByOfficeId(
+    officeId: string
+  ): Promise<ApiResponse<typeof enheterParticipantsGroupsData>> {
+    const filtered = enheterParticipantsGroupsData.filter(
+      item => item.OfficeID === parseInt(officeId)
+    );
+    return this.mockRequest(filtered);
+  }
+
+  // Update attendance method
+  async updateAttendance(id: string, data: Partial<Attendance>): Promise<ApiResponse<Attendance>> {
+    const existingAttendanceIndex = attendancesData.findIndex(a => a.AttendanceID === parseInt(id));
+    if (existingAttendanceIndex === -1) {
+      return {
+        data: null as unknown as Attendance,
+        success: false,
+        error: {
+          message: 'Attendance not found',
+          code: 'NOT_FOUND',
+        },
+      };
+    }
+
+    const existingAttendance = attendancesData[existingAttendanceIndex]!;
+    const updatedAttendance = {
+      ...existingAttendance,
+      ...data,
+    } as Attendance;
+
+    // Actually update the data in the mock data array
+    (attendancesData as any)[existingAttendanceIndex] = updatedAttendance;
+
+    return this.mockRequest(updatedAttendance);
   }
 }

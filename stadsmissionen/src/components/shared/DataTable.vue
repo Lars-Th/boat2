@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import {
   Table,
   TableBody,
@@ -10,13 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
 import { ArrowUpDown, ChevronDown, ChevronUp, Edit, Trash2 } from 'lucide-vue-next';
 import type { TableColumn } from '@/types';
 
@@ -90,7 +84,7 @@ const getResponsiveClasses = (column: TableColumn, index: number) => {
   );
   const firstDataColumnIndex = nameColumnExists ? 1 : 0;
 
-  if (index === firstDataColumnIndex && column.type !== 'actions' && column.key !== 'actions') {
+  if (index === firstDataColumnIndex && column.key !== 'actions') {
     return '';
   }
 
@@ -215,7 +209,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div>
     <!-- Search and Filter Bar -->
     <slot
       name="filters"
@@ -237,7 +231,7 @@ defineExpose({
               v-for="(column, index) in columns"
               :key="column.key"
               :class="[
-                'bg-gray-100 text-xs px-6 first:pl-6 last:pr-6',
+                'bg-gray-100 text-xs first:pl-6 last:pr-6',
                 column.sortable ? 'cursor-pointer' : '',
                 column.align === 'right' ? 'text-right' : '',
                 column.align === 'center' ? 'text-center' : '',
@@ -275,7 +269,7 @@ defineExpose({
               v-for="(column, colIndex) in columns"
               :key="column.key"
               :class="[
-                'text-xs px-6 first:pl-6 last:pr-6',
+                'text-xs first:pl-6 last:pr-4',
                 column.key === 'company' || column.key === 'name' || column.key === 'companyName'
                   ? 'font-bold'
                   : '',

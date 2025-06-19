@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { type Component, computed } from 'vue';
-import { Button } from '@/components/ui/button';
+import { computed } from 'vue';
+import type { Component } from 'vue';
+import Button from '@/components/common/Button.vue';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -16,7 +17,7 @@ interface ActionButton {
   icon?: Component;
   onClick: () => void;
   class?: string;
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+  variant?: 'primary' | 'secondary';
   size?: 'default' | 'sm' | 'lg';
 }
 
@@ -97,21 +98,31 @@ const updateSearchQuery = (value: string | number) => {
   emit('update:search-query', stringValue);
 };
 
-const updateStatusFilter = (value: string) => {
-  emit('update:statusFilter', value);
+const updateStatusFilter = (value: unknown) => {
+  const stringValue = String(value || '');
+  emit('update:statusFilter', stringValue);
 };
 
-const updateSecondaryFilter = (value: string) => {
-  emit('update:secondaryFilter', value);
+const updateSecondaryFilter = (value: unknown) => {
+  const stringValue = String(value || '');
+  emit('update:secondaryFilter', stringValue);
 };
 
 const updateViewMode = (mode: 'list' | 'grid') => {
   emit('update:viewMode', mode);
 };
+
+// Helper function to handle filter changes
+const handleFilterChange = (filter: Filter) => {
+  return (value: unknown) => {
+    const stringValue = String(value || '');
+    filter.onChange(stringValue);
+  };
+};
 </script>
 
 <template>
-  <div class="bg-background px-6 mb-3 space-y-3">
+  <div class="mx-4 mb-2">
     <!-- Top Row: Action Buttons (left) and Additional Actions (right) -->
     <div class="flex items-center justify-between">
       <!-- Action Buttons (left side) -->
@@ -119,7 +130,7 @@ const updateViewMode = (mode: 'list' | 'grid') => {
         <Button
           v-for="button in leftActionButtons"
           :key="button.label"
-          :variant="button.variant || 'default'"
+          :variant="button.variant || 'primary'"
           :size="button.size || 'sm'"
           :class="['gap-2 text-xs font-semibold', button.class]"
           @click="button.onClick"
@@ -134,7 +145,7 @@ const updateViewMode = (mode: 'list' | 'grid') => {
         <Button
           v-for="button in additionalActions"
           :key="button.label"
-          :variant="button.variant || 'outline'"
+          :variant="button.variant || 'secondary'"
           :size="button.size || 'sm'"
           :class="['gap-2 text-xs font-semibold', button.class]"
           @click="button.onClick"
@@ -146,9 +157,9 @@ const updateViewMode = (mode: 'list' | 'grid') => {
     </div>
 
     <!-- Bottom Row: Search (left), View Switcher (center), and Filters (right) -->
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between gap-2 mt-2">
       <!-- Search Input (left side) -->
-      <div class="flex items-center">
+      <div class="flex items-center gap-2">
         <Input
           v-if="showSearch"
           :model-value="searchQuery"
@@ -160,36 +171,6 @@ const updateViewMode = (mode: 'list' | 'grid') => {
 
       <!-- View Switcher and Filters (right side) -->
       <div class="flex items-center gap-2">
-        <!-- View Switcher -->
-        <div v-if="showViewSwitcher" class="flex items-center border rounded-md bg-muted p-0.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            :class="[
-              'h-8 w-8 p-0 transition-all duration-200',
-              viewMode === 'list'
-                ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-            ]"
-            @click="updateViewMode('list')"
-          >
-            <List class="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            :class="[
-              'h-8 w-8 p-0 transition-all duration-200',
-              viewMode === 'grid'
-                ? 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-            ]"
-            @click="updateViewMode('grid')"
-          >
-            <LayoutGrid class="h-4 w-4" />
-          </Button>
-        </div>
-
         <!-- Filters -->
         <!-- New filters array system -->
         <template v-if="filters.length > 0">
@@ -197,7 +178,7 @@ const updateViewMode = (mode: 'list' | 'grid') => {
             v-for="(filter, index) in filters"
             :key="index"
             :model-value="filter.modelValue"
-            @update:model-value="filter.onChange"
+            @update:model-value="handleFilterChange(filter)"
           >
             <SelectTrigger class="w-[160px] h-8 text-xs">
               <SelectValue :placeholder="filter.placeholder" />

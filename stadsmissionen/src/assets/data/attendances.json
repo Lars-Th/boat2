@@ -12,7 +12,7 @@
     "ActivityID": 1,
     "ParticipantID": 4,
     "DatumTid": "2024-01-15T15:45:00",
-    "Närvaro": true,
+    "Närvaro": false,
     "Anteckningar": "Kom lite sent men deltog bra"
   },
   {
@@ -25,15 +25,15 @@
   },
   {
     "AttendanceID": 4,
-    "ActivityID": 2,
-    "ParticipantID": 2,
+    "ActivityID": 1,
+    "ParticipantID": 7,
     "DatumTid": "2024-01-16T16:00:00",
     "Närvaro": true,
     "Anteckningar": "Behövde hjälp med matematik"
   },
   {
     "AttendanceID": 5,
-    "ActivityID": 2,
+    "ActivityID": 1,
     "ParticipantID": 8,
     "DatumTid": "2024-01-16T16:10:00",
     "Närvaro": true,

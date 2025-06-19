@@ -5,26 +5,13 @@ import { useApiList } from '@/composables/useApi';
 import { useToast } from '@/composables/useToast';
 import api from '@/api';
 import type { CustomerWithRelations } from '@/types/relationships';
+import type { TableColumn } from '@/types';
 
 // Components
-import StandardHeader from '@/components/layout/StandardHeader.vue';
-import ViewControls from '@/components/shared/ViewControls.vue';
-import DataTable from '@/components/shared/DataTable.vue';
-import PaginationControls from '@/components/shared/PaginationControls.vue';
+import ListPage from '@/components/shared/ListPage.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Building,
-  Edit,
-  Mail,
-  MapPin,
-  Phone,
-  Plus,
-  Trash2,
-  User,
-  UserPlus,
-  Users,
-} from 'lucide-vue-next';
+import { Edit, Mail, Phone, Plus, Trash2, User, UserPlus, Users } from 'lucide-vue-next';
 
 const router = useRouter();
 const { success, error } = useToast();
@@ -48,21 +35,12 @@ const {
   loading: customersLoading,
   error: customersError,
   refresh: refreshCustomers,
-} = useApiList<CustomerWithRelations[]>(
-  () => api.customers.getAll({ include: ['contacts', 'workOrders'] }),
-  {
-    cacheKey: 'customers-with-relations',
-  }
-);
-
-// Loading state
-const isLoading = computed(() => customersLoading.value);
-
-// Error state
-const hasError = computed(() => customersError.value !== null);
+} = useApiList(() => api.customers.getAll({ include: ['contacts', 'workOrders'] }), {
+  cacheKey: 'customers-with-relations',
+});
 
 // Table columns
-const columns = [
+const columns: TableColumn<Record<string, unknown>>[] = [
   { key: 'CustomerNumber', label: 'Kundnummer', sortable: true, width: '120px' },
   { key: 'CompanyName', label: 'Företag', sortable: true, type: 'custom' },
   { key: 'PrimaryContact', label: 'Huvudkontakt', sortable: false, type: 'custom' },
@@ -84,10 +62,10 @@ const breadcrumbs = computed(() => [
 const stats = computed(() => {
   if (!customers.value) {
     return [
-      { label: 'Totalt', value: 0, color: 'text-blue-600' },
-      { label: 'Aktiva', value: 0, color: 'text-green-600' },
-      { label: 'Inaktiva', value: 0, color: 'text-orange-600' },
-      { label: 'Kontaktpersoner', value: 0, color: 'text-purple-600' },
+      { label: 'Totalt', value: '---', color: 'text-blue-600' },
+      { label: 'Aktiva', value: '---', color: 'text-green-600' },
+      { label: 'Inaktiva', value: '---', color: 'text-orange-600' },
+      { label: 'Kontaktpersoner', value: '---', color: 'text-purple-600' },
     ];
   }
 
@@ -157,17 +135,7 @@ const paginatedCustomers = computed(() => {
   return filtered.slice(start, end);
 });
 
-// Pagination handlers
-const handlePageUpdate = (page: number) => {
-  currentPage.value = page;
-};
-
-const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
-  itemsPerPage.value = newItemsPerPage;
-  currentPage.value = 1; // Reset to first page when changing items per page
-};
-
-// Action buttons for ViewControls
+// Action buttons for ListPage
 const addActions = computed(() => [
   {
     label: 'Ny kund',
@@ -177,7 +145,7 @@ const addActions = computed(() => [
   },
 ]);
 
-// Filters for ViewControls
+// Filters for ListPage
 const filters = computed(() => [
   {
     modelValue: statusFilter.value,
@@ -193,6 +161,7 @@ const filters = computed(() => [
   },
 ]);
 
+// Helper functions
 const getBadgeVariant = (status: string) => {
   return status === 'inactive' ? 'secondary' : 'default';
 };
@@ -201,9 +170,7 @@ const formatStatus = (status: string) => {
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
-// Helper functions that work with typed data
 const getPrimaryContactName = (customer: CustomerWithRelations): string => {
-  // Use the computed field from the enhanced type
   if (customer.primaryContact) {
     return (
       customer.primaryContact.fullName ??
@@ -211,7 +178,6 @@ const getPrimaryContactName = (customer: CustomerWithRelations): string => {
     );
   }
 
-  // Fallback to manual search if computed field not available
   if (customer.contacts && customer.contacts.length > 0) {
     const primary = customer.contacts.find(c => c.IsPrimary === true);
     if (primary) {
@@ -223,12 +189,10 @@ const getPrimaryContactName = (customer: CustomerWithRelations): string => {
 };
 
 const getPrimaryContactPhone = (customer: CustomerWithRelations): string => {
-  // Use the computed field from the enhanced type
   if (customer.primaryContact?.Phone) {
     return customer.primaryContact.Phone;
   }
 
-  // Fallback to manual search if computed field not available
   if (customer.contacts && customer.contacts.length > 0) {
     const primary = customer.contacts.find(c => c.IsPrimary === true);
     if (primary?.Phone) {
@@ -240,12 +204,10 @@ const getPrimaryContactPhone = (customer: CustomerWithRelations): string => {
 };
 
 const getPrimaryContactEmail = (customer: CustomerWithRelations): string => {
-  // Use the computed field from the enhanced type
   if (customer.primaryContact?.Email) {
     return customer.primaryContact.Email;
   }
 
-  // Fallback to manual search if computed field not available
   if (customer.contacts && customer.contacts.length > 0) {
     const primary = customer.contacts.find(c => c.IsPrimary === true);
     if (primary?.Email) {
@@ -274,10 +236,6 @@ const handleRowClick = (customer: CustomerWithRelations) => {
   router.push(`/customers/${customer.CustomerID}`);
 };
 
-const handleViewCustomer = (customer: CustomerWithRelations) => {
-  router.push(`/customers/${customer.CustomerID}`);
-};
-
 const handleEditCustomer = (customer: CustomerWithRelations) => {
   router.push(`/customers/${customer.CustomerID}/edit`);
 };
@@ -286,7 +244,6 @@ const handleCallCustomer = (customer: CustomerWithRelations, event: Event) => {
   event.stopPropagation();
   const phone = getPrimaryContactPhone(customer);
   if (phone && phone !== '-') {
-    // Use tel: protocol to initiate call
     const telLink = document.createElement('a');
     telLink.href = `tel:${phone}`;
     telLink.click();
@@ -305,14 +262,12 @@ const handleSendEmail = (customer: CustomerWithRelations, event: Event) => {
 
 const handleAddPrimaryContact = (customer: CustomerWithRelations, event: Event) => {
   event.stopPropagation();
-  // Navigate to create new contact with customer pre-selected
   router.push(`/contacts/new?customerId=${customer.CustomerID}`);
 };
 
 const handleDeleteCustomer = async (customer: CustomerWithRelations, event: Event) => {
   event.stopPropagation();
 
-  // Simple confirmation (in a real app, you'd use a proper dialog)
   const confirmed = confirm(`Är du säker på att du vill ta bort kunden "${customer.CompanyName}"?`);
 
   if (confirmed) {
@@ -329,152 +284,131 @@ const handleDeleteCustomer = async (customer: CustomerWithRelations, event: Even
     }
   }
 };
+
+// Pagination handlers
+const handlePageUpdate = (page: number) => {
+  currentPage.value = page;
+};
+
+const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
+  itemsPerPage.value = newItemsPerPage;
+  currentPage.value = 1;
+};
+
+// Loading and error states
+const isLoading = computed(() => customersLoading.value);
+const hasError = computed(() => customersError.value !== null);
 </script>
 
 <template>
   <div>
-    <!-- Header with title, breadcrumbs, and stats -->
-    <StandardHeader
+    <ListPage
       title="Kunder"
       description="Hantera kunder och deras information"
       :breadcrumbs="breadcrumbs"
       :show-stats="true"
       :stats="stats"
-    />
-
-    <!-- View Controls with search, filters, and actions -->
-    <ViewControls
-      v-model:search-query="searchQuery"
+      :search-query="searchQuery"
+      search-placeholder="Sök kunder..."
       :add-actions="addActions"
       :filters="filters"
-      search-placeholder="Sök kunder..."
       :show-view-switcher="false"
-    />
+      :data="paginatedCustomers || []"
+      :columns="columns"
+      :search-fields="['CompanyName', 'CustomerNumber', 'Email', 'City']"
+      :loading="isLoading"
+      :total-items="filteredCustomers.length"
+      :current-page="currentPage"
+      :items-per-page="itemsPerPage"
+      :has-error="hasError"
+      error-message="Ett fel uppstod vid laddning av kunder"
+      @update:search-query="searchQuery = $event"
+      @update:current-page="handlePageUpdate"
+      @update:items-per-page="handleItemsPerPageUpdate"
+      @row-click="handleRowClick"
+      @refresh="refreshCustomers"
+    >
+      <!-- Custom cell templates -->
+      <template #cell-CompanyName="{ row }">
+        <span class="font-bold">{{ row.CompanyName }}</span>
+      </template>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-        <p class="text-muted-foreground">Laddar kunder...</p>
-      </div>
-    </div>
+      <template #cell-PrimaryContact="{ row }">
+        <span class="text-muted-foreground">{{ getPrimaryContactName(row) }}</span>
+      </template>
 
-    <!-- Error State -->
-    <div v-else-if="hasError" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <p class="text-destructive mb-2">Ett fel uppstod vid laddning av kunder</p>
+      <template #cell-ContactCount="{ row }">
+        <Badge :variant="getBadgeVariant(row.Status)" class="gap-1">
+          <User v-if="getContactCount(row) < 2" class="h-3 w-3" />
+          <Users v-else class="h-3 w-3" />
+          {{ getContactCount(row) }}
+        </Badge>
+      </template>
+
+      <template #cell-ContactPhone="{ row }">
+        <span class="text-muted-foreground">{{ getPrimaryContactPhone(row) }}</span>
+      </template>
+
+      <template #cell-ContactEmail="{ row }">
+        <span class="text-muted-foreground">{{ getPrimaryContactEmail(row) }}</span>
+      </template>
+
+      <template #cell-Status="{ row }">
+        <Badge :variant="getBadgeVariant(row.Status)">
+          {{ formatStatus(row.Status) }}
+        </Badge>
+      </template>
+
+      <template #row-actions="{ row }">
         <Button
-          variant="outline"
-          @click="
-            () => {
-              /* Add refresh logic */
-            }
-          "
+          v-if="getPrimaryContactPhone(row) !== '-'"
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+          title="Ring"
+          @click="handleCallCustomer(row, $event)"
         >
-          Försök igen
+          <Phone class="h-3.5 w-3.5" />
         </Button>
-      </div>
-    </div>
-
-    <!-- DataTable -->
-    <div v-else>
-      <DataTable
-        :data="paginatedCustomers || []"
-        :columns="columns"
-        :search-fields="['CompanyName', 'CustomerNumber', 'Email', 'City']"
-        :loading="isLoading"
-        @row-click="handleRowClick"
-      >
-        <template #cell-CompanyName="{ row }">
-          <span class="font-bold">{{ row.CompanyName }}</span>
-        </template>
-
-        <template #cell-PrimaryContact="{ row }">
-          <span class="text-muted-foreground">{{ getPrimaryContactName(row) }}</span>
-        </template>
-
-        <template #cell-ContactCount="{ row }">
-          <Badge :variant="getBadgeVariant(row.Status)" class="gap-1">
-            <User v-if="getContactCount(row) < 2" class="h-3 w-3" />
-            <Users v-else class="h-3 w-3" />
-            {{ getContactCount(row) }}
-          </Badge>
-        </template>
-
-        <template #cell-ContactPhone="{ row }">
-          <span class="text-muted-foreground">{{ getPrimaryContactPhone(row) }}</span>
-        </template>
-
-        <template #cell-ContactEmail="{ row }">
-          <span class="text-muted-foreground">{{ getPrimaryContactEmail(row) }}</span>
-        </template>
-
-        <template #cell-Status="{ row }">
-          <Badge :variant="getBadgeVariant(row.Status)">
-            {{ formatStatus(row.Status) }}
-          </Badge>
-        </template>
-
-        <template #row-actions="{ row }">
-          <Button
-            v-if="getPrimaryContactPhone(row) !== '-'"
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
-            title="Ring"
-            @click="handleCallCustomer(row, $event)"
-          >
-            <Phone class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            v-if="getPrimaryContactEmail(row) !== '-'"
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-            title="E-post"
-            @click="handleSendEmail(row, $event)"
-          >
-            <Mail class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            v-if="!hasPrimaryContact(row)"
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-            title="Lägg till primärkontakt"
-            @click="handleAddPrimaryContact(row, $event)"
-          >
-            <UserPlus class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-            title="Redigera"
-            @click="handleEditCustomer(row)"
-          >
-            <Edit class="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-            title="Radera"
-            @click="handleDeleteCustomer(row, $event)"
-          >
-            <Trash2 class="h-3.5 w-3.5" />
-          </Button>
-        </template>
-      </DataTable>
-
-      <!-- Pagination Controls -->
-      <PaginationControls
-        :total-items="filteredCustomers.length"
-        :current-page="currentPage"
-        :items-per-page="itemsPerPage"
-        @update:current-page="handlePageUpdate"
-        @update:items-per-page="handleItemsPerPageUpdate"
-      />
-    </div>
+        <Button
+          v-if="getPrimaryContactEmail(row) !== '-'"
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+          title="E-post"
+          @click="handleSendEmail(row, $event)"
+        >
+          <Mail class="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          v-if="!hasPrimaryContact(row)"
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+          title="Lägg till primärkontakt"
+          @click="handleAddPrimaryContact(row, $event)"
+        >
+          <UserPlus class="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+          title="Redigera"
+          @click="handleEditCustomer(row)"
+        >
+          <Edit class="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+          title="Radera"
+          @click="handleDeleteCustomer(row, $event)"
+        >
+          <Trash2 class="h-3.5 w-3.5" />
+        </Button>
+      </template>
+    </ListPage>
   </div>
 </template>

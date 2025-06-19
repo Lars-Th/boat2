@@ -12,7 +12,7 @@ import DataTable from '@/components/shared/DataTable.vue';
 import PaginationControls from '@/components/shared/PaginationControls.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Plus, Trash2, UserPlus, Users } from 'lucide-vue-next';
+import { Edit, Plus, Trash2 } from 'lucide-vue-next';
 
 // Import organization settings
 import organizationSettings from '@/assets/data/organizationSettings.json';

@@ -1,0 +1,74 @@
+[
+  {
+    "OfficeID": 1,
+    "Name": "Barn och unga",
+    "Address": "Barnvägen 12",
+    "PostalCode": "58222",
+    "City": "Linköping",
+    "Phone": "013-123456",
+    "Email": "barnochung@ostergotlandsstadsmission.se"
+  },
+  {
+    "OfficeID": 2,
+    "Name": "Familjecentral",
+    "Address": "Familjevägen 8",
+    "PostalCode": "58223",
+    "City": "Linköping",
+    "Phone": "013-123457",
+    "Email": "familjecentral@ostergotlandsstadsmission.se"
+  },
+  {
+    "OfficeID": 3,
+    "Name": "Vuxenverksamhet",
+    "Address": "Vuxenvägen 15",
+    "PostalCode": "58224",
+    "City": "Linköping",
+    "Phone": "013-123458",
+    "Email": "vuxenverksamhet@ostergotlandsstadsmission.se"
+  },
+  {
+    "OfficeID": 4,
+    "Name": "Ekonomisk rådgivning",
+    "Address": "Ekonomivägen 5",
+    "PostalCode": "58225",
+    "City": "Linköping",
+    "Phone": "013-123459",
+    "Email": "ekonomi@ostergotlandsstadsmission.se"
+  },
+  {
+    "OfficeID": 5,
+    "Name": "Språkstöd",
+    "Address": "Språkvägen 20",
+    "PostalCode": "58226",
+    "City": "Linköping",
+    "Phone": "013-123460",
+    "Email": "sprakstod@ostergotlandsstadsmission.se"
+  },
+  {
+    "OfficeID": 6,
+    "Name": "Fritidsgård",
+    "Address": "Fritidsvägen 30",
+    "PostalCode": "58227",
+    "City": "Linköping",
+    "Phone": "013-123461",
+    "Email": "fritidsgard@ostergotlandsstadsmission.se"
+  },
+  {
+    "OfficeID": 7,
+    "Name": "Boendestöd",
+    "Address": "Boendevägen 18",
+    "PostalCode": "58228",
+    "City": "Linköping",
+    "Phone": "013-123462",
+    "Email": "boendestod@ostergotlandsstadsmission.se"
+  },
+  {
+    "OfficeID": 8,
+    "Name": "Arbetsträning",
+    "Address": "Arbetsvägen 25",
+    "PostalCode": "58229",
+    "City": "Linköping",
+    "Phone": "013-123463",
+    "Email": "arbetstraning@ostergotlandsstadsmission.se"
+  }
+]

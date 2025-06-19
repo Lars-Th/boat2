@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import Button from '@/components/common/Button.vue';
 import { Input } from '@/components/ui/input';
@@ -11,13 +12,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, FileText, Info, Save, Trash2, Undo2 } from 'lucide-vue-next';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Save, Trash2, Undo2 } from 'lucide-vue-next';
 
 interface Field {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'select' | 'date' | 'number';
+  type: 'text' | 'textarea' | 'select' | 'date' | 'number' | 'datetime-local';
   options?: { value: string; label: string }[];
+  readonly?: boolean;
+}
+
+interface Tab {
+  key: string;
+  title: string;
+  icon?: any;
 }
 
 interface Props {
@@ -29,7 +38,9 @@ interface Props {
   title?: string;
   breadcrumbs?: Array<{ label: string; to: string; isCurrentPage?: boolean }>;
   showStats?: boolean;
-  stats?: Array<{ label: string; value: string | number; color?: string; variant?: string }>;
+  stats?: Array<{ label: string; value: string | number; color?: string }>;
+  tabs?: Tab[];
+  defaultTab?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -41,14 +52,19 @@ const props = withDefaults(defineProps<Props>(), {
   breadcrumbs: () => [],
   showStats: false,
   stats: () => [],
+  tabs: () => [],
+  defaultTab: '',
 });
 
 const emit = defineEmits<{
   save: [];
+  delete: [];
   back: [];
   'discard-changes': [];
   'field-change': [key: string, value: any];
 }>();
+
+const activeTab = ref(props.defaultTab || props.tabs[0]?.key || '');
 
 const updateField = (key: string, value: any) => {
   if (!props.readonly) {
@@ -101,33 +117,30 @@ const formatValue = (value: any, type?: string) => {
           <Button
             v-if="!readonly && hasUnsavedChanges"
             variant="primary"
-            class="gap-2 h-8 text-xs"
+            size="sm"
+            class="gap-2"
             @click="$emit('save')"
           >
-            <Save class="h-3 w-3" />
+            <Save class="h-4 w-4" />
             Spara
           </Button>
-          <Button
-            variant="secondary"
-            class="gap-2 h-8 text-xs text-red-600"
-            @click="$emit('delete')"
-          >
-            <Trash2 class="h-3 w-3" />
+          <Button variant="secondary" size="sm" class="gap-2" @click="$emit('delete')">
+            <Trash2 class="h-4 w-4" />
             Radera
           </Button>
-          <Button variant="secondary" class="gap-2 h-8 text-xs" @click="$emit('back')">
-            <ArrowLeft class="h-3 w-3" />
+          <Button variant="secondary" size="sm" class="gap-2" @click="$emit('back')">
+            <ArrowLeft class="h-4 w-4" />
             Tillbaka
           </Button>
         </slot>
       </template>
     </StandardHeader>
 
-    <!-- Back Button and Save Button -->
-    <div class="flex items-center gap-2 mx-4">
+    <!-- Action Buttons Row -->
+    <div class="flex items-center gap-2 mx-4 mb-4">
       <!-- Back Button (always visible) -->
       <Button variant="secondary" size="sm" @click="$emit('back')">
-        <ArrowLeft class="w-3 h-3" />
+        <ArrowLeft class="w-4 h-4 mr-2" />
         Tillbaka
       </Button>
 
@@ -138,7 +151,7 @@ const formatValue = (value: any, type?: string) => {
         size="sm"
         @click="$emit('save')"
       >
-        <Save class="h-3 w-3" />
+        <Save class="h-4 w-4 mr-2" />
         Spara
       </Button>
 
@@ -149,64 +162,67 @@ const formatValue = (value: any, type?: string) => {
         size="sm"
         @click="$emit('discard-changes')"
       >
-        <Undo2 class="h-3 w-3" />
+        <Undo2 class="h-4 w-4 mr-2" />
         Ångra
       </Button>
     </div>
 
-    <!-- Form Content -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 m-4">
+    <!-- Main Form Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mx-4 mb-6">
       <!-- Main Content (2/3 width) -->
       <div class="lg:col-span-2">
         <slot name="main-content" :data="data" :readonly="readonly">
           <!-- Default form fields -->
-          <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold flex items-center text-gray-600 mb-2">
-              <FileText class="h-4 w-4" />
-              Grundläggande information
-            </h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div v-for="field in mainFields" :key="field.key" class="space-y-1">
-                <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
+          <div class="bg-white rounded-lg border p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div v-for="field in mainFields" :key="field.key" class="space-y-2">
+                <Label class="text-sm font-medium">{{ field.label }}</Label>
                 <Input
                   v-if="field.type === 'text'"
-                  :model-value="String(data[field.key] ?? '')"
-                  :readonly="readonly"
-                  class="h-8 text-xs"
+                  :model-value="(data[field.key] ?? '').toString()"
+                  :readonly="readonly || field.readonly"
+                  class="h-9"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Input
                   v-else-if="field.type === 'number'"
-                  :model-value="Number(data[field.key] ?? 0)"
-                  :readonly="readonly"
+                  :model-value="(data[field.key] ?? '').toString()"
+                  :readonly="readonly || field.readonly"
                   type="number"
-                  class="h-8 text-xs"
-                  @update:model-value="updateField(field.key, $event)"
+                  class="h-9"
+                  @update:model-value="updateField(field.key, +$event || 0)"
                 />
                 <Input
                   v-else-if="field.type === 'date'"
-                  :model-value="String(data[field.key] ?? '')"
-                  :readonly="readonly"
+                  :model-value="(data[field.key] ?? '').toString()"
+                  :readonly="readonly || field.readonly"
                   type="date"
-                  class="h-8 text-xs"
+                  class="h-9"
+                  @update:model-value="updateField(field.key, $event)"
+                />
+                <Input
+                  v-else-if="field.type === 'datetime-local'"
+                  :model-value="(data[field.key] ?? '').toString()"
+                  :readonly="readonly || field.readonly"
+                  type="datetime-local"
+                  class="h-9"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Textarea
                   v-else-if="field.type === 'textarea'"
-                  :model-value="String(data[field.key] ?? '')"
-                  :readonly="readonly"
+                  :model-value="(data[field.key] ?? '').toString()"
+                  :readonly="readonly || field.readonly"
                   rows="3"
-                  class="text-xs resize-none"
+                  class="resize-none"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Select
                   v-else-if="field.type === 'select'"
-                  :model-value="String(data[field.key] ?? '')"
-                  :disabled="readonly"
+                  :model-value="(data[field.key] ?? '').toString()"
+                  :disabled="readonly || field.readonly"
                   @update:model-value="updateField(field.key, $event)"
                 >
-                  <SelectTrigger size="sm" class="text-xs">
+                  <SelectTrigger class="h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -229,16 +245,11 @@ const formatValue = (value: any, type?: string) => {
       <div class="space-y-4">
         <slot name="sidebar-content" :data="data" :readonly="readonly">
           <!-- Default sidebar -->
-          <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
-              <Info class="h-4 w-4" />
-              Information
-            </h3>
-
-            <div class="space-y-2">
+          <div class="bg-white rounded-lg border p-6">
+            <div class="space-y-3">
               <div v-for="field in sidebarFields" :key="field.key" class="space-y-1">
-                <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
-                <div class="text-xs text-gray-700">
+                <Label class="text-sm font-medium text-muted-foreground">{{ field.label }}</Label>
+                <div class="text-sm">
                   {{ formatValue(data[field.key], field.type) }}
                 </div>
               </div>
@@ -247,10 +258,40 @@ const formatValue = (value: any, type?: string) => {
         </slot>
       </div>
     </div>
+
+    <!-- Tabs Section -->
+    <div v-if="tabs.length > 0" class="mx-4">
+      <Tabs v-model="activeTab" class="w-full">
+        <TabsList
+          class="grid w-full"
+          :style="{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }"
+        >
+          <TabsTrigger
+            v-for="tab in tabs"
+            :key="tab.key"
+            :value="tab.key"
+            class="flex items-center gap-2"
+          >
+            <component :is="tab.icon" v-if="tab.icon" class="h-4 w-4" />
+            {{ tab.title }}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent v-for="tab in tabs" :key="tab.key" :value="tab.key" class="mt-4">
+          <!-- Custom slot for each tab content -->
+          <slot :name="`tab-${tab.key}`" :tab="tab">
+            <!-- Default empty tab content -->
+            <div class="bg-white rounded-lg border p-6">
+              <p class="text-muted-foreground">Content for {{ tab.title }}</p>
+            </div>
+          </slot>
+        </TabsContent>
+      </Tabs>
+    </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .toast-enter-active,
 .toast-leave-active {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

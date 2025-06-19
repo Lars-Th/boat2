@@ -124,7 +124,7 @@ const handleTemplateChange = (templateId: string | null) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem
-                v-if="!activityTemplates || activityTemplates.length === 0"
+                v-if="!activityTemplates ?? activityTemplates.length === 0"
                 value=""
                 disabled
               >

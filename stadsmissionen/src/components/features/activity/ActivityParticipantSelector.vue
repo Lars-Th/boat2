@@ -44,7 +44,7 @@ const {
 });
 
 // Loading states
-const isLoading = computed(() => participantsLoading.value || participantGroupsLoading.value);
+const isLoading = computed(() => participantsLoading.value ?? participantGroupsLoading.value);
 
 // Error states
 const hasError = computed(
@@ -136,7 +136,7 @@ const displayParticipants = computed(() => {
 
           <TabsContent value="groups" class="space-y-4">
             <div
-              v-if="!participantGroups || participantGroups.length === 0"
+              v-if="!participantGroups ?? participantGroups.length === 0"
               class="text-center py-8 text-muted-foreground"
             >
               <p class="text-sm">Inga deltagargrupper tillgängliga</p>
@@ -179,7 +179,7 @@ const displayParticipants = computed(() => {
 
           <TabsContent value="individual" class="space-y-4">
             <div
-              v-if="!participants || participants.length === 0"
+              v-if="!participants ?? participants.length === 0"
               class="text-center py-8 text-muted-foreground"
             >
               <p class="text-sm">Inga deltagare tillgängliga</p>

@@ -39,12 +39,12 @@ const navigateTo = (breadcrumb: BreadcrumbItem) => {
 </script>
 
 <template>
-  <div class="bg-white px-6 py-3">
-    <div class="flex flex-col gap-3">
+  <div class="bg-white mx-4 my-2">
+    <div class="flex flex-col gap-2">
       <!-- Title and breadcrumbs (integrated from TitleBreadcrumbs) -->
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div class="flex-1">
-          <h1 class="text-3xl font-semibold text-foreground mb-1">
+          <h1 class="text-3xl font-semibold text-foreground">
             {{ title }}
           </h1>
 
@@ -83,25 +83,27 @@ const navigateTo = (breadcrumb: BreadcrumbItem) => {
       </div>
 
       <!-- Analytics/Stats (integrated from TitleAnalytics) -->
-      <div v-if="showStats && stats && stats.length > 0" class="flex gap-3 flex-wrap">
-        <div v-for="stat in stats" :key="stat.label" class="flex items-center gap-2">
-          <span class="text-xs text-muted-foreground">{{ stat.label }}:</span>
-          <span
-            class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
-            :class="{
-              'bg-primary text-primary-foreground': stat.variant === 'default' || !stat.variant,
-              'bg-secondary text-secondary-foreground': stat.variant === 'secondary',
-              'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300':
-                stat.color === 'text-green-600',
-              'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300':
-                stat.color === 'text-orange-600',
-              'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300':
-                stat.color === 'text-blue-600',
-              'bg-muted text-muted-foreground': stat.variant === 'outline',
-            }"
-          >
-            {{ stat.value }}
-          </span>
+      <div class="min-h-[1.5rem]">
+        <div v-if="showStats && stats && stats.length > 0" class="flex gap-2 flex-wrap">
+          <div v-for="stat in stats" :key="stat.label" class="flex items-center gap-2">
+            <span class="text-xs text-muted-foreground">{{ stat.label }}:</span>
+            <span
+              class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
+              :class="{
+                'bg-primary text-primary-foreground': stat.variant === 'default' || !stat.variant,
+                'bg-secondary text-secondary-foreground': stat.variant === 'secondary',
+                'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300':
+                  stat.color === 'text-green-600',
+                'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300':
+                  stat.color === 'text-orange-600',
+                'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300':
+                  stat.color === 'text-blue-600',
+                'bg-muted text-muted-foreground': stat.variant === 'outline',
+              }"
+            >
+              {{ stat.value }}
+            </span>
+          </div>
         </div>
       </div>
     </div>

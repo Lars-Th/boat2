@@ -53,6 +53,7 @@ withDefaults(defineProps<Props>(), {
   logoSrc: stadsmissionenLogo,
   logoAlt: 'Östergötlands Stadsmission',
   currentUser: () => ({
+    id: 1,
     name: 'Lars Thomas',
     email: 'lars.thomas@example.com',
     role: 'Administrator',
@@ -201,14 +202,10 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
             v-if="isMenuExpanded(item.name)"
             class="space-y-1 ml-5 pl-3 border-l border-primary/30"
           >
-            <template v-for="section in item.dropdown" :key="section.name">
-              <!-- Section header -->
-              <div
-                class="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2"
-              >
-                <component :is="section.icon" class="h-3 w-3" />
-                {{ section.name }}
-              </div>
+            <template
+              v-for="(section, sectionIndex) in item.dropdown"
+              :key="`section-${sectionIndex}`"
+            >
               <template v-for="child in section.children" :key="child.path">
                 <Button
                   :variant="isActiveRoute(child.path) ? 'default' : 'ghost'"
@@ -267,14 +264,10 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
             v-if="isMenuExpanded(item.name)"
             class="space-y-1 ml-5 pl-3 border-l border-primary/30"
           >
-            <template v-for="section in item.dropdown" :key="section.name">
-              <!-- Section header -->
-              <div
-                class="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2"
-              >
-                <component :is="section.icon" class="h-3 w-3" />
-                {{ section.name }}
-              </div>
+            <template
+              v-for="(section, sectionIndex) in item.dropdown"
+              :key="`bottom-section-${sectionIndex}`"
+            >
               <template v-for="child in section.children" :key="child.path">
                 <Button
                   :variant="isActiveRoute(child.path) ? 'default' : 'ghost'"

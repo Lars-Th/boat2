@@ -5,12 +5,14 @@ import {
   ClipboardList,
   Code,
   Download,
+  FileText,
   LayoutDashboard,
   List,
   Package,
   Plus,
   Settings,
   Shield,
+  Tag,
   User,
   UserCheck,
   UserPlus,
@@ -39,10 +41,11 @@ const AttendanceRegistration = () => import('@/views/AttendanceRegistration.vue'
 const ParticipantList = () => import('@/views/ParticipantList.vue');
 const ParticipantDetail = () => import('@/views/ParticipantDetail.vue');
 const NewParticipant = () => import('@/views/NewParticipant.vue');
+
 const Statistics = () => import('@/views/Statistics.vue');
 const Export = () => import('@/views/Export.vue');
 const ActivityTypes = () => import('@/views/ActivityTypes.vue');
-const ActivityTemplates = () => import('@/views/ActivityTemplates.vue');
+const ActivityTemplateList = () => import('@/views/ActivityTemplateList.vue');
 const NewActivityTemplate = () => import('@/views/NewActivityTemplate.vue');
 const ActivityTemplateDetail = () => import('@/views/ActivityTemplateDetail.vue');
 const ParticipantGroups = () => import('@/views/ParticipantGroups.vue');
@@ -52,6 +55,7 @@ const UserDetail = () => import('@/views/UserDetail.vue');
 
 // Development/Demo views
 const CustomComponents = () => import('@/views/CustomComponents.vue');
+const Placeholder = () => import('@/views/Placeholder.vue');
 
 // Authentication views
 const LoginForm = () => import('@/views/LoginForm.vue');
@@ -163,12 +167,7 @@ const routeDefinitions = [
               icon: UserPlus,
               permissions: ['H', 'A', 'SA'],
             },
-            {
-              name: 'Familjekopplingar',
-              path: '/family-connections',
-              icon: UserCheck,
-              permissions: ['H', 'A', 'SA'],
-            },
+
             {
               name: 'Deltagargrupper',
               path: '/participant-groups',
@@ -195,6 +194,7 @@ const routeDefinitions = [
     name: 'edit-participant',
     component: NewParticipant,
   },
+
   {
     path: '/participant-groups',
     name: 'participant-groups',
@@ -342,6 +342,24 @@ const routeDefinitions = [
             },
           ],
         },
+        {
+          name: 'System',
+          icon: Settings,
+          children: [
+            {
+              name: 'Aktivitetstyper',
+              path: '/activity-types',
+              icon: Tag,
+              permissions: ['A', 'SA'],
+            },
+            {
+              name: 'Aktivitetsmallar',
+              path: '/activity-templates',
+              icon: FileText,
+              permissions: ['A', 'SA'],
+            },
+          ],
+        },
       ],
     },
   },
@@ -376,7 +394,7 @@ const routeDefinitions = [
   {
     path: '/activity-templates',
     name: 'activity-templates',
-    component: ActivityTemplates,
+    component: ActivityTemplateList,
   },
   {
     path: '/activity-templates/new',
@@ -392,6 +410,13 @@ const routeDefinitions = [
     path: '/activity-templates/:id/edit',
     name: 'edit-activity-template',
     component: NewActivityTemplate,
+  },
+
+  // Placeholder route
+  {
+    path: '/placeholder',
+    name: 'placeholder',
+    component: Placeholder,
   },
 
   // Catch-all route - redirect any unknown paths to dashboard

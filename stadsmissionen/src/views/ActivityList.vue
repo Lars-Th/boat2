@@ -11,7 +11,7 @@ import ViewControls from '@/components/shared/ViewControls.vue';
 import DataTable from '@/components/shared/DataTable.vue';
 import PaginationControls from '@/components/shared/PaginationControls.vue';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Calendar, Edit, MapPin, Plus, Trash2, Users } from 'lucide-vue-next';
+import { Edit, Plus, Trash2 } from 'lucide-vue-next';
+import type { TableColumn } from '@/types';
 
 const router = useRouter();
 const { success, error: showError } = useToast();
@@ -71,7 +72,7 @@ const hasError = computed(
 );
 
 // Table columns
-const columns = [
+const columns: TableColumn<Record<string, unknown>>[] = [
   { key: 'Namn', label: 'Aktivitet', sortable: true, type: 'custom' },
   { key: 'ActivityType', label: 'Typ', sortable: true, type: 'custom' },
   { key: 'DatumTid', label: 'Datum & Tid', sortable: true, type: 'custom' },
@@ -308,7 +309,7 @@ const confirmDelete = async () => {
         @row-click="handleRowClick"
       >
         <template #cell-Namn="{ row }">
-          <span class="font-bold">{{ row.Namn }}</span>
+          <span class="font-bold">{{ row['Namn'] }}</span>
         </template>
 
         <template #cell-ActivityType="{ row }">
@@ -316,7 +317,7 @@ const confirmDelete = async () => {
         </template>
 
         <template #cell-DatumTid="{ row }">
-          <span class="text-muted-foreground">{{ formatDateTime(row.DatumTid) }}</span>
+          <span class="text-muted-foreground">{{ formatDateTime(row['DatumTid'] as string) }}</span>
         </template>
 
         <template #row-actions="{ row }">

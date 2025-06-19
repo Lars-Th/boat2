@@ -46,13 +46,18 @@ export abstract class BaseService<T> {
   // Helper method for custom endpoints
   protected async get<TResult>(
     endpoint: string,
-    params?: QueryParams
+    params?: QueryParams,
+    options?: any
   ): Promise<ApiResponse<TResult>> {
-    return this.httpClient.get<TResult>(endpoint, params);
+    return this.httpClient.get<TResult>(endpoint, params, options);
   }
 
-  protected async post<TResult>(endpoint: string, data?: unknown): Promise<ApiResponse<TResult>> {
-    return this.httpClient.post<TResult>(endpoint, data);
+  protected async post<TResult>(
+    endpoint: string,
+    data?: unknown,
+    options?: any
+  ): Promise<ApiResponse<TResult>> {
+    return this.httpClient.post<TResult>(endpoint, data, options);
   }
 
   protected async put<TResult>(endpoint: string, data?: unknown): Promise<ApiResponse<TResult>> {

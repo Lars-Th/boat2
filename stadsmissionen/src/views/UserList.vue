@@ -13,13 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Edit, Plus, Trash2, UserPlus } from 'lucide-vue-next';
 import type { BreadcrumbItem, TableColumn } from '@/types';
@@ -41,6 +35,15 @@ interface LoginAccount {
   lastLogin: string;
   createdAt: string;
   department: string;
+}
+
+interface User {
+  id: number;
+  email: string;
+  name: string;
+  permissionGroup?: {
+    name: string;
+  };
 }
 
 // const router = useRouter()
@@ -88,7 +91,7 @@ const {
   data: usersWithPermissionGroups,
   loading: usersLoading,
   error: usersError,
-} = useApiList(
+} = useApiList<User>(
   () =>
     api.users.getAll({
       include: ['permissionGroup'],
@@ -106,7 +109,7 @@ const hasError = computed(() => usersError.value !== null);
 const loginAccounts = computed(() => {
   if (!usersWithPermissionGroups.value) return [];
 
-  return usersWithPermissionGroups.value.map((user: any) => {
+  return usersWithPermissionGroups.value.map((user: User) => {
     return {
       id: user.id,
       username: user.email.split('@')[0], // Extract username from email
@@ -291,7 +294,11 @@ function addUser() {
     !newUser.value.lastName ||
     !newUser.value.role
   ) {
-    showToast('Vänligen fyll i alla obligatoriska fält', 'error');
+    try {
+      showToast('Vänligen fyll i alla obligatoriska fält', 'error');
+    } catch (_error) {
+      console.error('Failed to show toast');
+    }
     return;
   }
 
@@ -312,20 +319,28 @@ function addUser() {
   // Add to list (in real app, this would be an API call)
   loginAccounts.value.push(newUserAccount);
 
-  showToast('Användare skapad framgångsrikt', 'success');
+  try {
+    showToast('Användare skapad framgångsrikt', 'success');
+  } catch (_error) {
+    console.error('Failed to show toast');
+  }
   closeAddUserModal();
 }
 
-function editUser(user: Record<string, unknown>) {
+function editUser(user: LoginAccount & { fullName: string }) {
   router.push(`/settings/login-accounts/${user.id}`);
 }
 
-function deleteUser(user: Record<string, unknown>) {
-  const userId = user.id as number;
+function deleteUser(user: LoginAccount & { fullName: string }) {
+  const userId = user.id;
   const index = loginAccounts.value.findIndex(acc => acc.id === userId);
   if (index > -1) {
     loginAccounts.value.splice(index, 1);
-    showToast('Användare raderad', 'success');
+    try {
+      showToast('Användare raderad', 'success');
+    } catch (_error) {
+      console.error('Failed to show toast');
+    }
   }
 }
 

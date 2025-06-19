@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import PageLayout from '@/components/layout/PageLayout.vue';
+import { computed, ref } from 'vue';
+import StandardHeader from '@/components/layout/StandardHeader.vue';
+import ViewControls from '@/components/shared/ViewControls.vue';
 import DataTable from '@/components/shared/DataTable.vue';
+import PaginationControls from '@/components/shared/PaginationControls.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,6 +54,19 @@ const recentAttendances = computed(() => {
     .sort((a, b) => new Date(b.DatumTid).getTime() - new Date(a.DatumTid).getTime());
 });
 
+// Pagination state
+const currentPage = ref(1);
+const itemsPerPage = ref(25);
+const searchQuery = ref('');
+const statusFilter = ref('');
+
+// Paginated data
+const paginatedAttendances = computed(() => {
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  const endIndex = startIndex + itemsPerPage.value;
+  return recentAttendances.value.slice(startIndex, endIndex);
+});
+
 // Table columns
 const columns = [
   {
@@ -68,45 +83,47 @@ const columns = [
     key: 'DatumTid',
     label: 'Registrerad',
     sortable: true,
-    format: (value: string) => new Date(value).toLocaleString('sv-SE'),
+    format: (value: unknown) => {
+      if (typeof value === 'string') {
+        return new Date(value).toLocaleString('sv-SE');
+      }
+      return String(value || '');
+    },
   },
   {
     key: 'Närvaro',
     label: 'Status',
     sortable: true,
+    type: 'custom' as const,
   },
   {
     key: 'Anteckningar',
     label: 'Anteckningar',
     sortable: false,
+    type: 'custom' as const,
   },
 ];
 
-// Statistics - now computed from API data
+// Statistics
 const stats = computed(() => [
   {
-    title: 'Totalt registreringar',
+    label: 'Totalt registreringar',
     value: enhancedAttendances.value.length,
-    icon: CheckCircle,
-    color: 'blue',
   },
   {
-    title: 'Närvarande',
+    label: 'Närvarande',
     value: enhancedAttendances.value.filter(a => a.Närvaro).length,
-    icon: CheckCircle,
-    color: 'green',
+    color: 'text-green-600',
   },
   {
-    title: 'Frånvarande',
+    label: 'Frånvarande',
     value: enhancedAttendances.value.filter(a => !a.Närvaro).length,
-    icon: XCircle,
-    color: 'red',
+    color: 'text-red-600',
   },
   {
-    title: 'Senaste veckan',
+    label: 'Senaste veckan',
     value: recentAttendances.value.length,
-    icon: Clock,
-    color: 'purple',
+    color: 'text-blue-600',
   },
 ]);
 
@@ -122,108 +139,138 @@ const todaysActivities = computed(() => {
     })
     .slice(0, 3);
 });
+
+// Breadcrumbs
+const breadcrumbs = [
+  { label: 'Dashboard', to: '/' },
+  { label: 'Aktiviteter', to: '/activities' },
+  { label: 'Närvaroregistrering', isCurrentPage: true },
+];
+
+// View controls handlers
+const handleAddNew = () => {
+  console.log('Add new attendance');
+};
+
+const actionButtons = [
+  {
+    label: 'Ny registrering',
+    onClick: handleAddNew,
+    variant: 'default' as const,
+  },
+];
 </script>
 
 <template>
-  <PageLayout
-    title="Närvaroregistrering"
-    breadcrumbs="Dashboard / Aktiviteter / Närvaroregistrering"
-    show-stats
-    :stats="stats"
-  >
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-      <!-- QR Code Scanner -->
-      <Card>
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <QrCode class="h-5 w-5" />
-            QR-kod Scanner
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="flex flex-col items-center gap-4">
-            <div
-              class="w-32 h-32 border-2 border-dashed border-muted-foreground rounded-lg flex items-center justify-center"
-            >
-              <QrCode class="h-12 w-12 text-muted-foreground" />
-            </div>
-            <Button class="w-full">Starta Scanner</Button>
-          </div>
-        </CardContent>
-      </Card>
+  <div class="min-h-screen">
+    <!-- Standard Header -->
+    <StandardHeader
+      title="Närvaroregistrering"
+      :breadcrumbs="breadcrumbs"
+      :stats="stats"
+      show-stats
+    />
 
-      <!-- Quick Registration -->
-      <Card>
-        <CardHeader>
-          <CardTitle>Snabbregistrering</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="space-y-4">
-            <Button variant="outline" class="w-full justify-start gap-2">
-              <CheckCircle class="h-4 w-4 text-green-600" />
-              Registrera närvaro
-            </Button>
-            <Button variant="outline" class="w-full justify-start gap-2">
-              <XCircle class="h-4 w-4 text-red-600" />
-              Registrera frånvaro
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <!-- Main Content -->
+    <div class="py-6">
+      <!-- Cards Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 p-4">
+        <!-- QR Code Scanner -->
+        <Card>
+          <CardHeader>
+            <CardTitle class="flex items-center gap-2">
+              <QrCode class="h-5 w-5" />
+              QR-kod Scanner
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="flex flex-col items-center gap-4">
+              <div
+                class="w-32 h-32 border-2 border-dashed border-muted-foreground rounded-lg flex items-center justify-center"
+              >
+                <QrCode class="h-12 w-12 text-muted-foreground" />
+              </div>
+              <Button class="w-full">Starta Scanner</Button>
+            </div>
+          </CardContent>
+        </Card>
 
-      <!-- Today's Activities -->
-      <Card>
-        <CardHeader>
-          <CardTitle>Dagens aktiviteter</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="space-y-2">
-            <div v-if="activitiesLoading" class="text-center py-4">
-              <Loader2 class="h-4 w-4 animate-spin mx-auto" />
-              <p class="text-sm text-muted-foreground">Laddar aktiviteter...</p>
+        <!-- Quick Registration -->
+        <Card>
+          <CardHeader>
+            <CardTitle>Snabbregistrering</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-4">
+              <Button variant="outline" class="w-full justify-start gap-2">
+                <CheckCircle class="h-4 w-4 text-green-600" />
+                Registrera närvaro
+              </Button>
+              <Button variant="outline" class="w-full justify-start gap-2">
+                <XCircle class="h-4 w-4 text-red-600" />
+                Registrera frånvaro
+              </Button>
             </div>
-            <div v-else-if="activitiesError" class="text-center py-4">
-              <p class="text-sm text-destructive">Kunde inte ladda aktiviteter</p>
-            </div>
-            <div
-              v-for="activity in todaysActivities"
-              v-else
-              :key="activity.ActivityID"
-              class="p-2 border rounded text-sm"
-            >
-              <div class="font-medium">
-                {{ activity.Namn }}
+          </CardContent>
+        </Card>
+
+        <!-- Today's Activities -->
+        <Card>
+          <CardHeader>
+            <CardTitle>Dagens aktiviteter</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="space-y-2">
+              <div v-if="activitiesLoading" class="text-center py-4">
+                <Loader2 class="h-4 w-4 animate-spin mx-auto" />
+                <p class="text-sm text-muted-foreground">Laddar aktiviteter...</p>
               </div>
-              <div class="text-muted-foreground">
-                {{ activity.Plats }}
+              <div v-else-if="activitiesError" class="text-center py-4">
+                <p class="text-sm text-destructive">Kunde inte ladda aktiviteter</p>
+              </div>
+              <div
+                v-for="activity in todaysActivities"
+                v-else
+                :key="activity.ActivityID"
+                class="p-2 border rounded text-sm"
+              >
+                <div class="font-medium">
+                  {{ activity.Namn }}
+                </div>
+                <div class="text-muted-foreground">
+                  {{ activity.Plats }}
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- View Controls -->
+      <ViewControls
+        v-model:search-query="searchQuery"
+        v-model:status-filter="statusFilter"
+        :action-buttons="actionButtons"
+        search-placeholder="Sök registreringar..."
+        :show-view-switcher="false"
+      />
+
+      <!-- Data Table -->
+      <DataTable :data="paginatedAttendances" :columns="columns">
+        <template #cell-Närvaro="{ value }">
+          <Badge :variant="value ? 'default' : 'destructive'">
+            <CheckCircle v-if="value" class="h-3 w-3 mr-1" />
+            <XCircle v-else class="h-3 w-3 mr-1" />
+            {{ value ? 'Närvarande' : 'Frånvarande' }}
+          </Badge>
+        </template>
+
+        <template #cell-Anteckningar="{ value }">
+          <span class="text-sm text-muted-foreground">
+            {{ value ?? 'Inga anteckningar' }}
+          </span>
+        </template>
+      </DataTable>
     </div>
-
-    <Card>
-      <CardHeader>
-        <CardTitle>Senaste registreringar</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <DataTable :data="recentAttendances" :columns="columns">
-          <template #cell-Närvaro="{ value }">
-            <Badge :variant="value ? 'default' : 'destructive'">
-              <CheckCircle v-if="value" class="h-3 w-3 mr-1" />
-              <XCircle v-else class="h-3 w-3 mr-1" />
-              {{ value ? 'Närvarande' : 'Frånvarande' }}
-            </Badge>
-          </template>
-
-          <template #cell-Anteckningar="{ value }">
-            <span class="text-sm text-muted-foreground">
-              {{ value ?? 'Inga anteckningar' }}
-            </span>
-          </template>
-        </DataTable>
-      </CardContent>
-    </Card>
-  </PageLayout>
+  </div>
 </template>

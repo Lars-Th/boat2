@@ -1,5 +1,5 @@
 import { computed, ref } from 'vue';
-import type { BaseToastOptions, Toast, UseNotificationsReturn } from '@/types';
+import type { Toast, ToastOptions, UseNotificationsReturn } from '@/types';
 
 // Global state for notifications
 const notifications = ref<Toast[]>([]);
@@ -13,7 +13,7 @@ const unreadCount = computed(() => {
   return notifications.value.filter(n => !n.read).length;
 });
 
-const addNotification = (options: BaseToastOptions): string => {
+const addNotification = (options: ToastOptions): string => {
   const newNotification: Toast = {
     ...options,
     id: generateId(),
@@ -68,4 +68,4 @@ export const useNotifications = (): UseNotificationsReturn => {
 };
 
 // Export types for convenience
-export type { Toast, BaseToastOptions, UseNotificationsReturn } from '@/types';
+export type { Toast, ToastOptions, UseNotificationsReturn } from '@/types';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef } from 'vue';
+import { computed, nextTick, onMounted, ref, shallowRef } from 'vue';
 import {
   ChevronDown,
   ChevronRight,
@@ -23,11 +23,9 @@ import { Button } from '@/components/ui/button';
 // Import all components
 import DataTable from '@/components/shared/DataTable.vue';
 import ViewControls from '@/components/shared/ViewControls.vue';
-import DashboardCard from '@/components/shared/DashboardCard.vue';
-import ListPage from '@/components/shared/ListPage.vue';
 import DetailPage from '@/components/shared/DetailPage.vue';
-import CustomerDetailCard from '@/components/shared/CustomerDetailCard.vue';
 import ComplexDetailPage from '@/components/shared/ComplexDetailPage.vue';
+import ListPage from '@/components/shared/ListPage.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ErrorBoundary from '@/components/common/ErrorBoundary.vue';
 import PageLayout from '@/components/layout/PageLayout.vue';
@@ -303,16 +301,7 @@ const fileTree: TreeNode[] = [
           isCollapsed: false,
         },
       },
-      {
-        name: 'PageLayout.vue',
-        path: 'layout/PageLayout.vue',
-        type: 'file',
-        component: PageLayout,
-        props: {
-          title: 'Demo Page',
-          showHeader: true,
-        },
-      },
+
       {
         name: 'StandardHeader.vue',
         path: 'layout/StandardHeader.vue',
@@ -342,17 +331,6 @@ const fileTree: TreeNode[] = [
     path: 'shared',
     type: 'folder',
     children: [
-      {
-        name: 'DashboardCard.vue',
-        path: 'shared/DashboardCard.vue',
-        type: 'file',
-        component: DashboardCard,
-        props: {
-          title: 'Demo Card',
-          description: 'This is a demo dashboard card',
-          value: '123',
-        },
-      },
       {
         name: 'DataTable.vue',
         path: 'shared/DataTable.vue',
@@ -438,6 +416,84 @@ const fileTree: TreeNode[] = [
         },
       },
       {
+        name: 'ListPage.vue',
+        path: 'shared/ListPage.vue',
+        type: 'file',
+        component: ListPage,
+        props: {
+          title: 'Demo Lista',
+          description: 'En demonstration av ListPage-komponenten',
+          breadcrumbs: [
+            { label: 'Dashboard', to: '/dashboard' },
+            { label: 'Demo', to: '/demo' },
+            { label: 'Lista', isCurrentPage: true },
+          ],
+          showStats: true,
+          stats: [
+            { label: 'Totalt', value: 156, color: 'text-blue-600' },
+            { label: 'Aktiva', value: 142, color: 'text-green-600' },
+            { label: 'Väntar', value: 8, color: 'text-orange-600' },
+            { label: 'Inaktiva', value: 6, color: 'text-red-600' },
+          ],
+          searchQuery: '',
+          searchPlaceholder: 'Sök demo objekt...',
+          addActions: [
+            {
+              label: 'Lägg till objekt',
+              icon: Plus,
+              onClick: () => console.log('Add object clicked'),
+              variant: 'default',
+            },
+          ],
+          filters: [
+            {
+              modelValue: 'all',
+              placeholder: 'Status',
+              options: [
+                { key: 'all', label: 'Alla status', value: 'all' },
+                { key: 'active', label: 'Aktiva', value: 'active' },
+                { key: 'inactive', label: 'Inaktiva', value: 'inactive' },
+              ],
+              onChange: value => console.log('Filter changed:', value),
+            },
+          ],
+          data: [
+            {
+              id: 1,
+              name: 'Demo Objekt 1',
+              status: 'active',
+              created: '2024-01-20',
+              category: 'Kategori A',
+            },
+            {
+              id: 2,
+              name: 'Demo Objekt 2',
+              status: 'inactive',
+              created: '2024-01-19',
+              category: 'Kategori B',
+            },
+            {
+              id: 3,
+              name: 'Demo Objekt 3',
+              status: 'active',
+              created: '2024-01-18',
+              category: 'Kategori A',
+            },
+          ],
+          columns: [
+            { key: 'name', label: 'Namn', sortable: true },
+            { key: 'status', label: 'Status', sortable: true, type: 'custom' },
+            { key: 'category', label: 'Kategori', sortable: true },
+            { key: 'created', label: 'Skapad', sortable: true },
+            { key: 'actions', label: 'Åtgärder', type: 'actions', width: '120px' },
+          ],
+          totalItems: 3,
+          currentPage: 1,
+          itemsPerPage: 10,
+          loading: false,
+        },
+      },
+      {
         name: 'ViewControls.vue',
         path: 'shared/ViewControls.vue',
         type: 'file',
@@ -500,248 +556,7 @@ const fileTree: TreeNode[] = [
           showSearch: true,
         },
       },
-      {
-        name: 'ListPage.vue',
-        path: 'shared/ListPage.vue',
-        type: 'file',
-        component: ListPage,
-        props: {
-          title: 'Demo Lista',
-          description: 'En demonstration av ListPage-komponenten',
-          breadcrumbs: [
-            { label: 'Dashboard', to: '/overview' },
-            { label: 'Demo', to: '/demo' },
-            { label: 'Lista', isCurrentPage: true },
-          ],
-          showStats: true,
-          stats: [
-            { label: 'Totalt', value: 15, color: 'text-blue-600' },
-            { label: 'Aktiva', value: 12, color: 'text-green-600' },
-            { label: 'Inaktiva', value: 3, color: 'text-orange-600' },
-          ],
-          columns: [
-            { key: 'name', label: 'Namn', sortable: true },
-            { key: 'email', label: 'E-post', sortable: true },
-            { key: 'phone', label: 'Telefon', sortable: true, class: 'hidden sm:table-cell' },
-            {
-              key: 'department',
-              label: 'Avdelning',
-              sortable: true,
-              class: 'hidden md:table-cell',
-            },
-            {
-              key: 'status',
-              label: 'Status',
-              sortable: true,
-              type: 'badge',
-              class: 'hidden lg:table-cell',
-              badgeVariant: (value: string) => (value === 'active' ? 'default' : 'secondary'),
-            },
-            {
-              key: 'lastLogin',
-              label: 'Senast inloggad',
-              sortable: true,
-              class: 'hidden xl:table-cell',
-              format: (value: string) =>
-                value ? new Date(value).toLocaleDateString('sv-SE') : '-',
-            },
-            { key: 'actions', label: 'Åtgärder', type: 'actions', width: '120px', align: 'right' },
-          ],
-          data: [
-            {
-              id: 1,
-              name: 'John Doe',
-              email: 'john@example.com',
-              phone: '070-123 45 67',
-              department: 'IT',
-              status: 'active',
-              lastLogin: '2024-01-20T10:30:00Z',
-            },
-            {
-              id: 2,
-              name: 'Jane Smith',
-              email: 'jane@example.com',
-              phone: '070-234 56 78',
-              department: 'HR',
-              status: 'active',
-              lastLogin: '2024-01-19T14:15:00Z',
-            },
-            {
-              id: 3,
-              name: 'Bob Johnson',
-              email: 'bob@example.com',
-              phone: '070-345 67 89',
-              department: 'Sales',
-              status: 'inactive',
-              lastLogin: '2024-01-10T09:00:00Z',
-            },
-            {
-              id: 4,
-              name: 'Alice Williams',
-              email: 'alice@example.com',
-              phone: '070-456 78 90',
-              department: 'Marketing',
-              status: 'active',
-              lastLogin: '2024-01-21T16:45:00Z',
-            },
-            {
-              id: 5,
-              name: 'Charlie Brown',
-              email: 'charlie@example.com',
-              phone: '070-567 89 01',
-              department: 'Finance',
-              status: 'active',
-              lastLogin: '2024-01-18T11:20:00Z',
-            },
-            {
-              id: 6,
-              name: 'Diana Prince',
-              email: 'diana@example.com',
-              phone: '070-678 90 12',
-              department: 'Legal',
-              status: 'active',
-              lastLogin: '2024-01-20T13:25:00Z',
-            },
-            {
-              id: 7,
-              name: 'Edward Norton',
-              email: 'edward@example.com',
-              phone: '070-789 01 23',
-              department: 'Operations',
-              status: 'inactive',
-              lastLogin: '2024-01-15T08:30:00Z',
-            },
-            {
-              id: 8,
-              name: 'Fiona Green',
-              email: 'fiona@example.com',
-              phone: '070-890 12 34',
-              department: 'Design',
-              status: 'active',
-              lastLogin: '2024-01-21T12:00:00Z',
-            },
-            {
-              id: 9,
-              name: 'George Miller',
-              email: 'george@example.com',
-              phone: '070-901 23 45',
-              department: 'Research',
-              status: 'active',
-              lastLogin: '2024-01-19T17:45:00Z',
-            },
-            {
-              id: 10,
-              name: 'Helen Carter',
-              email: 'helen@example.com',
-              phone: '070-012 34 56',
-              department: 'Quality',
-              status: 'inactive',
-              lastLogin: '2024-01-12T10:15:00Z',
-            },
-            {
-              id: 11,
-              name: 'Ivan Petrov',
-              email: 'ivan@example.com',
-              phone: '070-123 45 67',
-              department: 'IT',
-              status: 'active',
-              lastLogin: '2024-01-21T09:30:00Z',
-            },
-            {
-              id: 12,
-              name: 'Julia Anderson',
-              email: 'julia@example.com',
-              phone: '070-234 56 78',
-              department: 'Marketing',
-              status: 'active',
-              lastLogin: '2024-01-20T15:45:00Z',
-            },
-            {
-              id: 13,
-              name: 'Kevin Lee',
-              email: 'kevin@example.com',
-              phone: '070-345 67 89',
-              department: 'Sales',
-              status: 'inactive',
-              lastLogin: '2024-01-08T12:20:00Z',
-            },
-            {
-              id: 14,
-              name: 'Lisa Wang',
-              email: 'lisa@example.com',
-              phone: '070-456 78 90',
-              department: 'Finance',
-              status: 'active',
-              lastLogin: '2024-01-21T11:10:00Z',
-            },
-            {
-              id: 15,
-              name: 'Mark Thompson',
-              email: 'mark@example.com',
-              phone: '070-567 89 01',
-              department: 'HR',
-              status: 'active',
-              lastLogin: '2024-01-19T16:30:00Z',
-            },
-          ],
-          searchFields: ['name', 'email', 'phone', 'department'],
-          addActions: [
-            {
-              label: 'Lägg till person',
-              icon: Plus,
-              onClick: () => console.log('Add person clicked'),
-            },
-            {
-              label: 'Importera',
-              icon: Upload,
-              onClick: () => console.log('Import clicked'),
-              class: 'bg-blue-600 hover:bg-blue-700 text-white',
-            },
-          ],
-          additionalActions: [
-            {
-              label: 'Exportera',
-              icon: Download,
-              onClick: () => console.log('Export clicked'),
-            },
-            {
-              label: 'Rapporter',
-              icon: FileText,
-              onClick: () => console.log('Reports clicked'),
-            },
-          ],
-          filters: [
-            {
-              modelValue: 'all',
-              placeholder: 'Status',
-              options: [
-                { key: 'all', label: 'Alla status', value: 'all' },
-                { key: 'active', label: 'Aktiva', value: 'active' },
-                { key: 'inactive', label: 'Inaktiva', value: 'inactive' },
-              ],
-              onChange: (value: string) => console.log('Status filter changed:', value),
-            },
-            {
-              modelValue: 'all',
-              placeholder: 'Avdelning',
-              options: [
-                { key: 'all', label: 'Alla avdelningar', value: 'all' },
-                { key: 'IT', label: 'IT', value: 'IT' },
-                { key: 'HR', label: 'HR', value: 'HR' },
-                { key: 'Sales', label: 'Försäljning', value: 'Sales' },
-                { key: 'Marketing', label: 'Marknadsföring', value: 'Marketing' },
-                { key: 'Finance', label: 'Ekonomi', value: 'Finance' },
-              ],
-              onChange: (value: string) => console.log('Department filter changed:', value),
-            },
-          ],
-          // Pagination props
-          showPagination: true,
-          itemsPerPage: 5, // Show 5 items per page to demonstrate pagination with 10 total items
-          // View switcher props
-          showViewSwitcher: true,
-        },
-      },
+
       {
         name: 'DetailPage.vue',
         path: 'shared/DetailPage.vue',
@@ -814,48 +629,7 @@ const fileTree: TreeNode[] = [
           hasUnsavedChanges: false,
         },
       },
-      {
-        name: 'CustomerDetailCard.vue',
-        path: 'shared/CustomerDetailCard.vue',
-        type: 'file',
-        component: CustomerDetailCard,
-        props: {
-          customer: {
-            CustomerID: 1,
-            CompanyName: 'Demo Företag AB',
-            ContactPerson: 'Anna Andersson',
-            Phone: '08-123 456 78',
-            Email: 'anna@demoforetag.se',
-            Address: 'Demovägen 123',
-            PostalCode: '12345',
-            City: 'Stockholm',
-            Country: 'Sverige',
-            OrganizationNumber: '556123-4567',
-            VATNumber: 'SE556123456701',
-            PaymentTerms: '30 dagar',
-            CreditLimit: 50000,
-            CreatedAt: '2024-01-01T10:00:00Z',
-            UpdatedAt: '2024-01-20T14:30:00Z',
-            Notes: 'Viktigt konto - prioriterad kund',
-          },
-          isEditing: false,
-          editForm: {
-            CompanyName: 'Demo Företag AB',
-            ContactPerson: 'Anna Andersson',
-            Phone: '08-123 456 78',
-            Email: 'anna@demoforetag.se',
-            Address: 'Demovägen 123',
-            PostalCode: '12345',
-            City: 'Stockholm',
-            Country: 'Sverige',
-            OrganizationNumber: '556123-4567',
-            VATNumber: 'SE556123456701',
-            PaymentTerms: '30 dagar',
-            CreditLimit: 50000,
-            Notes: 'Viktigt konto - prioriterad kund',
-          },
-        },
-      },
+
       {
         name: 'ComplexDetailPage.vue',
         path: 'shared/ComplexDetailPage.vue',
@@ -1055,7 +829,7 @@ const fileTree: TreeNode[] = [
 ];
 
 // State
-const expandedFolders = ref(new Set(['pages', 'features', 'features/boats', 'shared']));
+const expandedFolders = ref(new Set(['pages', 'features', 'shared']));
 const selectedComponent = shallowRef<TreeNode | null>(null);
 
 // Viewport state
@@ -1064,6 +838,12 @@ const currentViewport = ref<ViewportType>('desktop');
 
 // View toggle state
 const currentView = ref<'components' | 'toasts'>('components');
+
+// Component preview ref for isolated styling
+const componentPreview = ref<HTMLElement | null>(null);
+
+// Spacing target selection
+const spacingTarget = ref<SpacingTarget>('all');
 
 // Methods
 const toggleFolder = (path: string) => {
@@ -1203,6 +983,154 @@ const uiComponentCount = computed(() => {
   };
   countComponents(uiNodes);
   return count;
+});
+
+// Spacing Variables Management with Algebraic Relationships
+interface SpacingVariable {
+  name: string;
+  variable: string;
+  baseValue: number; // The base mathematical relationship
+  computedValue: number; // Current computed value
+}
+
+type SpacingTarget = 'all' | 'margin' | 'padding' | 'gap';
+
+// Base mathematical relationships for spacing (in rem)
+// These define the algebraic function: f(x) = baseValue * multiplier
+const spacingVariables = ref<SpacingVariable[]>([
+  { name: 'Space 0', variable: '--space-0', baseValue: 0, computedValue: 0 },
+  { name: 'Space 1', variable: '--space-1', baseValue: 0.25, computedValue: 0.25 },
+  { name: 'Space 2', variable: '--space-2', baseValue: 0.5, computedValue: 0.5 },
+  { name: 'Space 3', variable: '--space-3', baseValue: 0.75, computedValue: 0.75 },
+  { name: 'Space 4', variable: '--space-4', baseValue: 1, computedValue: 1 },
+  { name: 'Space 5', variable: '--space-5', baseValue: 1.25, computedValue: 1.25 },
+  { name: 'Space 6', variable: '--space-6', baseValue: 1.5, computedValue: 1.5 },
+  { name: 'Space 8', variable: '--space-8', baseValue: 2, computedValue: 2 },
+  { name: 'Space 10', variable: '--space-10', baseValue: 2.5, computedValue: 2.5 },
+  { name: 'Space 12', variable: '--space-12', baseValue: 3, computedValue: 3 },
+  { name: 'Space 16', variable: '--space-16', baseValue: 4, computedValue: 4 },
+  { name: 'Space 20', variable: '--space-20', baseValue: 5, computedValue: 5 },
+  { name: 'Space 24', variable: '--space-24', baseValue: 6, computedValue: 6 },
+]);
+
+// Global spacing multiplier - the single control that affects all spacing
+const spacingMultiplier = ref<number>(1);
+
+// Usage examples for margins and paddings
+const marginExamples = [
+  { class: 'm-1', description: 'margin: 0.25rem' },
+  { class: 'm-2', description: 'margin: 0.5rem' },
+  { class: 'm-4', description: 'margin: 1rem' },
+  { class: 'mx-6', description: 'margin-left & right: 1.5rem' },
+  { class: 'my-8', description: 'margin-top & bottom: 2rem' },
+];
+
+const paddingExamples = [
+  { class: 'p-1', description: 'padding: 0.25rem' },
+  { class: 'p-2', description: 'padding: 0.5rem' },
+  { class: 'p-4', description: 'padding: 1rem' },
+  { class: 'px-6', description: 'padding-left & right: 1.5rem' },
+  { class: 'py-8', description: 'padding-top & bottom: 2rem' },
+];
+
+const gapExamples = [
+  { class: 'gap-1', description: 'gap: 0.25rem' },
+  { class: 'gap-2', description: 'gap: 0.5rem' },
+  { class: 'gap-4', description: 'gap: 1rem' },
+  { class: 'gap-x-6', description: 'column-gap: 1.5rem' },
+  { class: 'gap-y-8', description: 'row-gap: 2rem' },
+];
+
+// Variable mapping for spacing numbers to match main.css variables
+const spacingMap: { [key: string]: string } = {
+  '--space-0': '0',
+  '--space-1': '1',
+  '--space-2': '2',
+  '--space-3': '3',
+  '--space-4': '4',
+  '--space-5': '5',
+  '--space-6': '6',
+  '--space-8': '8',
+  '--space-10': '10',
+  '--space-12': '12',
+  '--space-16': '16',
+  '--space-20': '20',
+  '--space-24': '24',
+};
+
+// Compute all spacing values using algebraic function: f(x) = baseValue * multiplier
+const computeSpacingValues = () => {
+  spacingVariables.value.forEach(spacing => {
+    // Apply algebraic function: computedValue = baseValue * multiplier
+    spacing.computedValue = spacing.baseValue * spacingMultiplier.value;
+  });
+};
+
+// Update CSS custom properties for all spacing variables
+const updateAllSpacingVariables = () => {
+  if (componentPreview.value) {
+    spacingVariables.value.forEach(spacing => {
+      const remValue = `${spacing.computedValue}rem`;
+
+      // Apply to the base spacing variable
+      componentPreview.value.style.setProperty(spacing.variable, remValue);
+
+      // Get the spacing number for this variable
+      const spaceNum = spacingMap[spacing.variable];
+      if (spaceNum) {
+        // Apply to the actual CSS variables used in main.css based on selection
+        if (spacingTarget.value === 'margin' || spacingTarget.value === 'all') {
+          componentPreview.value.style.setProperty(`--margin-${spaceNum}`, remValue);
+        }
+
+        if (spacingTarget.value === 'padding' || spacingTarget.value === 'all') {
+          componentPreview.value.style.setProperty(`--padding-${spaceNum}`, remValue);
+        }
+
+        if (spacingTarget.value === 'gap' || spacingTarget.value === 'all') {
+          componentPreview.value.style.setProperty(`--gap-${spaceNum}`, remValue);
+        }
+      }
+    });
+  }
+};
+
+// Update individual spacing variable (for manual overrides)
+const updateIndividualSpacing = (index: number, value: number) => {
+  spacingVariables.value[index].computedValue = value;
+  updateAllSpacingVariables();
+};
+
+// Handle multiplier change
+const onMultiplierChange = () => {
+  computeSpacingValues();
+  updateAllSpacingVariables();
+};
+
+// Reset spacing multiplier to default
+const resetSpacingMultiplier = () => {
+  spacingMultiplier.value = 1;
+  onMultiplierChange();
+};
+
+// Reset all individual values to computed values
+const resetToComputedValues = () => {
+  computeSpacingValues();
+  updateAllSpacingVariables();
+};
+
+// Update all spacing variables when target changes
+const onSpacingTargetChange = () => {
+  updateAllSpacingVariables();
+};
+
+// Initialize spacing variables when component mounts
+onMounted(() => {
+  // Wait for next tick to ensure component preview is rendered
+  nextTick(() => {
+    computeSpacingValues();
+    updateAllSpacingVariables();
+  });
 });
 </script>
 
@@ -1453,6 +1381,7 @@ const uiComponentCount = computed(() => {
             <!-- Component Preview with Viewport Styling -->
             <div class="flex justify-center">
               <div
+                ref="componentPreview"
                 :style="viewportStyles"
                 class="bg-white border border-gray-300 shadow-lg overflow-auto"
               >
@@ -1524,12 +1453,287 @@ const uiComponentCount = computed(() => {
                   @sub-item-click="handleSubItemClick"
                 />
 
+                <!-- Special handling for ListPage to show custom slots -->
+                <ListPage
+                  v-else-if="selectedComponent.name === 'ListPage.vue'"
+                  v-bind="selectedComponent.props || {}"
+                >
+                  <template #cell-status="{ row }">
+                    <span
+                      :class="[
+                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                        row.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800',
+                      ]"
+                    >
+                      {{ row.status === 'active' ? 'Aktiv' : 'Inaktiv' }}
+                    </span>
+                  </template>
+                  <template #row-actions="{ row }">
+                    <div class="flex items-center gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Visa objekt"
+                        class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        @click="
+                          event => {
+                            event.stopPropagation();
+                            console.log('View object:', row);
+                          }
+                        "
+                      >
+                        <User class="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Redigera"
+                        class="h-6 w-6 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                        @click="
+                          event => {
+                            event.stopPropagation();
+                            console.log('Edit object:', row);
+                          }
+                        "
+                      >
+                        <Edit class="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Radera"
+                        class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        @click="
+                          event => {
+                            event.stopPropagation();
+                            console.log('Delete object:', row);
+                          }
+                        "
+                      >
+                        <Trash2 class="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </template>
+                </ListPage>
+
                 <!-- Default component rendering for all other components -->
                 <component
                   :is="selectedComponent.component"
                   v-else
                   v-bind="selectedComponent.props || {}"
                 />
+              </div>
+            </div>
+
+            <!-- Spacing Variables Editor -->
+            <div class="mt-8 bg-white border border-gray-300 rounded-lg shadow-sm">
+              <div class="border-b border-gray-200 px-6 py-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                  <h3 class="text-lg font-semibold text-gray-900">Spacing Variables Editor</h3>
+                  <div class="flex items-center gap-2">
+                    <h3 class="text-m font-semibold text-blue-900 mb-2">Spacing Multiplier</h3>
+                    <input
+                      v-model="spacingMultiplier"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="5"
+                      class="w-20 px-3 py-2 border border-blue-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                      @input="onMultiplierChange"
+                    />
+                  </div>
+                  <!-- Spacing Target Selector -->
+                  <div class="mt-4 sm:mt-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Apply to:</label>
+                    <select
+                      v-model="spacingTarget"
+                      class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      @change="onSpacingTargetChange"
+                    >
+                      <option value="all">All (Margin, Padding & Gap)</option>
+                      <option value="margin">Margin Only</option>
+                      <option value="padding">Padding Only</option>
+                      <option value="gap">Gap Only</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6">
+                <!-- Individual Controls Section -->
+                <div class="border-t border-gray-200 pt-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 class="text-md font-semibold text-gray-900">
+                        Individual Spacing Controls
+                      </h4>
+                      <p class="text-sm text-gray-600 mt-1">
+                        Fine-tune individual spacing values. Changes override the algebraic
+                        multiplier for specific values.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      class="flex items-center gap-2"
+                      @click="resetToComputedValues"
+                    >
+                      <Settings class="h-3 w-3" />
+                      Reset to Computed
+                    </Button>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div
+                      v-for="(spacing, index) in spacingVariables"
+                      :key="spacing.name"
+                      class="space-y-2"
+                    >
+                      <label class="block text-sm font-medium text-gray-700">
+                        {{ spacing.name }} ({{ spacing.variable }})
+                      </label>
+                      <div class="flex items-center space-x-2">
+                        <input
+                          :value="spacing.computedValue"
+                          type="number"
+                          step="0.25"
+                          min="0"
+                          max="20"
+                          class="w-20 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          @input="
+                            updateIndividualSpacing(index, parseFloat($event.target.value) || 0)
+                          "
+                        />
+                        <span class="text-sm text-gray-500">rem</span>
+                        <div class="flex-1">
+                          <div
+                            class="h-4 bg-blue-500 rounded"
+                            :style="{
+                              width: `${spacing.computedValue * 20 > 100 ? 100 : spacing.computedValue * 20}%`,
+                            }"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="text-xs text-gray-500">
+                        {{ Math.round(spacing.computedValue * 16) }}px
+                      </div>
+                      <div class="text-xs text-blue-600">
+                        Base: {{ spacing.baseValue }}rem × {{ spacingMultiplier }} =
+                        {{ (spacing.baseValue * spacingMultiplier).toFixed(2) }}rem
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Usage Examples -->
+                <div class="mt-8 border-t border-gray-200 pt-6">
+                  <h4 class="text-md font-semibold text-gray-900 mb-4">Usage Examples</h4>
+                  <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-blue-800">
+                      <strong>Current Target:</strong>
+                      <span v-if="spacingTarget === 'all'">
+                        All margin, padding, and gap utilities will be affected
+                      </span>
+                      <span v-else-if="spacingTarget === 'margin'">
+                        Only margin utilities (m-, mx-, my-, mt-, mr-, mb-, ml-) will be affected
+                      </span>
+                      <span v-else-if="spacingTarget === 'padding'">
+                        Only padding utilities (p-, px-, py-, pt-, pr-, pb-, pl-) will be affected
+                      </span>
+                      <span v-else>Only gap utilities (gap-, gap-x-, gap-y-) will be affected</span>
+                    </p>
+                  </div>
+
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Margin Examples -->
+                    <div
+                      v-if="spacingTarget === 'all' || spacingTarget === 'margin'"
+                      class="space-y-4"
+                    >
+                      <h5 class="text-sm font-medium text-gray-700">Margin Examples</h5>
+                      <div class="space-y-3">
+                        <div
+                          v-for="example in marginExamples"
+                          :key="example.class"
+                          class="flex items-center space-x-3"
+                        >
+                          <code class="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                            {{ example.class }}
+                          </code>
+                          <div class="flex-1">
+                            <div class="bg-gray-200 p-1 rounded">
+                              <div :class="example.class" class="bg-blue-500 w-8 h-8 rounded"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Padding Examples -->
+                    <div
+                      v-if="spacingTarget === 'all' || spacingTarget === 'padding'"
+                      class="space-y-4"
+                    >
+                      <h5 class="text-sm font-medium text-gray-700">Padding Examples</h5>
+                      <div class="space-y-3">
+                        <div
+                          v-for="example in paddingExamples"
+                          :key="example.class"
+                          class="flex items-center space-x-3"
+                        >
+                          <code class="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                            {{ example.class }}
+                          </code>
+                          <div class="flex-1">
+                            <div :class="example.class" class="bg-blue-500 rounded">
+                              <div class="bg-white w-8 h-8 rounded"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Gap Examples -->
+                    <div
+                      v-if="spacingTarget === 'all' || spacingTarget === 'gap'"
+                      class="space-y-4"
+                    >
+                      <h5 class="text-sm font-medium text-gray-700">Gap Examples</h5>
+                      <div class="space-y-3">
+                        <div
+                          v-for="example in gapExamples"
+                          :key="example.class"
+                          class="flex items-center space-x-3"
+                        >
+                          <code class="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                            {{ example.class }}
+                          </code>
+                          <div class="flex-1">
+                            <div :class="['flex', example.class]" class="bg-gray-200 p-1 rounded">
+                              <div class="bg-blue-500 w-4 h-4 rounded"></div>
+                              <div class="bg-blue-500 w-4 h-4 rounded"></div>
+                              <div class="bg-blue-500 w-4 h-4 rounded"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Reset Button -->
+                <div class="mt-6 flex justify-end">
+                  <Button
+                    variant="outline"
+                    class="flex items-center gap-2"
+                    @click="resetSpacingMultiplier"
+                  >
+                    <Settings class="h-4 w-4" />
+                    Reset Multiplier (1×)
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

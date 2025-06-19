@@ -173,7 +173,7 @@
   "git.confirmSync": false,
   "git.autofetch": true,
   // Terminal configuration
-  "terminal.integrated.defaultProfile.windows": "Git Bash",
+  "terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)",
   "terminal.integrated.fontSize": 14,
   // Workbench configuration
   "workbench.editor.enablePreview": false,

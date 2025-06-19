@@ -33,13 +33,29 @@ const {
   refetch: refetchCustomers,
 } = useApi(() => api.customers.getAll(), { immediate: true });
 
+// Add time entries API call
+const {
+  data: timeEntries,
+  loading: timeEntriesLoading,
+  error: timeEntriesError,
+  refetch: refetchTimeEntries,
+} = useApi(() => Promise.resolve({ data: [], success: true }), { immediate: true });
+
 // Loading and error states
 const isLoading = computed(
-  () => tasksLoading.value || workOrdersLoading.value || customersLoading.value
+  () =>
+    tasksLoading.value ||
+    workOrdersLoading.value ||
+    customersLoading.value ||
+    timeEntriesLoading.value
 );
 
 const hasError = computed(
-  () => tasksError.value !== null || workOrdersError.value !== null || customersError.value !== null
+  () =>
+    tasksError.value !== null ||
+    workOrdersError.value !== null ||
+    customersError.value !== null ||
+    timeEntriesError.value !== null
 );
 
 // Event handlers
@@ -48,7 +64,12 @@ const handleAddTimeEntry = () => {
 };
 
 const handleRetry = async () => {
-  await Promise.all([refetchTimeEntries(), refetchWorkOrders(), refetchCustomers()]);
+  await Promise.all([
+    refetchTimeEntries(),
+    refetchWorkOrders(),
+    refetchCustomers(),
+    refetchTasks(),
+  ]);
 };
 
 // Filters

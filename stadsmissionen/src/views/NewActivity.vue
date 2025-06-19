@@ -31,7 +31,7 @@ import type { ActivityTemplate } from '@/types';
 
 const router = useRouter();
 const { success, warning } = useToast();
-const { getCurrentUserId } = useAuth();
+const { currentUser } = useAuth();
 
 // Fetch data using enhanced API service with relational parameters
 const {
@@ -39,7 +39,7 @@ const {
   loading: templatesLoading,
   error: templatesError,
   refresh: refreshTemplates,
-} = useApiList<ActivityTemplate>(() => api.activityTemplates.getAll({ include: ['type'] }), {
+} = useApiList<ActivityTemplate>(() => api.activityTemplates.getAll(), {
   cacheKey: 'activityTemplates',
 });
 
@@ -246,7 +246,7 @@ const handleSave = () => {
         enhet: form.value.enhet,
         anteckningar: form.value.anteckningar,
         skapadDatum: new Date().toISOString(),
-        skapadAv: getCurrentUserId(),
+        skapadAv: currentUser.value?.id || 'unknown',
       };
 
       activities.push(activity);
@@ -271,7 +271,7 @@ const handleSave = () => {
       enhet: form.value.enhet,
       anteckningar: form.value.anteckningar,
       skapadDatum: new Date().toISOString(),
-      skapadAv: getCurrentUserId(),
+      skapadAv: currentUser.value?.id || 'unknown',
     };
 
     console.log('Creating single activity:', activity);

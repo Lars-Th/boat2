@@ -105,9 +105,7 @@ watch([totalPages, () => currentPageState.value], ([newTotalPages, currentPageVa
 </script>
 
 <template>
-  <div
-    class="flex items-center justify-between text-xs text-muted-foreground px-6 py-2 border-t mb-10 pt-5"
-  >
+  <div class="flex items-center justify-between text-xs text-muted-foreground mx-6 my-2 mb-10 mt-6">
     <!-- Items per page selector -->
     <div v-if="showItemsPerPageSelector" class="flex items-center gap-2">
       <span>Visa</span>

@@ -7,7 +7,7 @@ import api from '@/api';
 
 // Components
 import ComplexDetailPage from '@/components/shared/ComplexDetailPage.vue';
-import { ArrowLeft, FileText, Save, Trash2, User } from 'lucide-vue-next';
+import { ArrowLeft, Save, Trash2, User } from 'lucide-vue-next';
 
 const route = useRoute();
 const router = useRouter();
@@ -26,7 +26,7 @@ const {
   () => {
     if (isNew.value) return Promise.resolve(null);
     return api.customers.getById(customerId, {
-      include: ['contacts', 'workOrders'],
+      include: ['contacts'],
     });
   },
   {
@@ -133,7 +133,6 @@ const subTables = computed(() => {
   if (!customer.value) return [];
 
   const contacts = customer.value.contacts ?? [];
-  const workOrders = customer.value.workOrders ?? [];
 
   return [
     {
@@ -154,23 +153,6 @@ const subTables = computed(() => {
         { key: 'actions', label: 'Åtgärder', type: 'actions' as const, width: '100px' },
       ],
     },
-    {
-      key: 'workOrders',
-      title: 'Arbetsordrar',
-      icon: FileText,
-      data: workOrders,
-      allowAdd: true,
-      allowEdit: true,
-      allowDelete: false,
-      columns: [
-        { key: 'WorkOrderNumber', label: 'Ordernummer', sortable: true },
-        { key: 'Title', label: 'Titel', sortable: true },
-        { key: 'Type', label: 'Typ', sortable: true, type: 'custom' as const },
-        { key: 'Status', label: 'Status', sortable: true, type: 'custom' as const },
-        { key: 'CreatedDate', label: 'Skapad', sortable: true, type: 'custom' as const },
-        { key: 'actions', label: 'Åtgärder', type: 'actions' as const, width: '100px' },
-      ],
-    },
   ];
 });
 
@@ -179,23 +161,11 @@ const stats = computed(() => {
   if (!customer.value) return [];
 
   const contacts = customer.value.contacts ?? [];
-  const workOrders = customer.value.workOrders ?? [];
 
   return [
     {
       label: 'Kontaktpersoner',
       value: contacts.length,
-      color: 'text-blue-600',
-    },
-    {
-      label: 'Arbetsordrar',
-      value: workOrders.length,
-      color: 'text-green-600',
-    },
-    {
-      label: 'Aktiva ordrar',
-      value: workOrders.filter((wo: any) => wo.Status === 'active').length,
-      color: 'text-orange-600',
     },
   ];
 });
@@ -321,9 +291,6 @@ const handleAddSubItem = (tableKey: string) => {
     case 'contacts':
       router.push(`/contacts/new?customerId=${customerId}`);
       break;
-    case 'workOrders':
-      router.push(`/work-orders/new?customerId=${customerId}`);
-      break;
   }
 };
 
@@ -331,9 +298,6 @@ const handleEditSubItem = (tableKey: string, item: any) => {
   switch (tableKey) {
     case 'contacts':
       router.push(`/contacts/${item.ContactID}`);
-      break;
-    case 'workOrders':
-      router.push(`/work-orders/${item.WorkOrderID}`);
       break;
   }
 };
@@ -354,7 +318,7 @@ const hasError = computed(() => customerError.value !== null);
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div>
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">

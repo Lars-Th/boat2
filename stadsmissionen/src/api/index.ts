@@ -138,7 +138,7 @@ export const api = {
 
     update: (id: string, data: Partial<Attendance>) =>
       USE_MOCK_API
-        ? Promise.reject(new Error('Not implemented in mock'))
+        ? (apiService as MockDataService).updateAttendance(id, data)
         : (apiService as ApiConfiguration).attendances.update(id, data),
 
     delete: (id: string) =>
@@ -222,6 +222,37 @@ export const api = {
       USE_MOCK_API
         ? (apiService as MockDataService).getParticipantGroups()
         : Promise.reject(new Error('Participant groups not implemented in real API yet')),
+  },
+
+  // Offices
+  offices: {
+    getAll: () =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getOffices()
+        : Promise.reject(new Error('Offices not implemented in real API yet')),
+
+    getById: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getOfficeById(id)
+        : Promise.reject(new Error('Offices not implemented in real API yet')),
+  },
+
+  // Junction table - Enheter Participants Groups
+  enheterParticipantsGroups: {
+    getAll: () =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getEnheterParticipantsGroups()
+        : Promise.reject(new Error('Junction table not implemented in real API yet')),
+
+    getByParticipantId: (participantId: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getEnheterParticipantsGroupsByParticipantId(participantId)
+        : Promise.reject(new Error('Junction table not implemented in real API yet')),
+
+    getByOfficeId: (officeId: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getEnheterParticipantsGroupsByOfficeId(officeId)
+        : Promise.reject(new Error('Junction table not implemented in real API yet')),
   },
 
   activityTemplates: {

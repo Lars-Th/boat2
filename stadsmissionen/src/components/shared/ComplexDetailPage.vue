@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import DataTable from '@/components/shared/DataTable.vue';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/common/Button.vue';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -13,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Edit, FileText, Info, List, Plus, Save, Trash2, Undo2 } from 'lucide-vue-next';
+import { ArrowLeft, Edit, FileText, Info, Plus, Save, Trash2, Undo2 } from 'lucide-vue-next';
+import type { Component } from 'vue';
 
 interface Field {
   key: string;
@@ -25,22 +25,34 @@ interface Field {
 interface SubTable {
   key: string;
   title: string;
-  icon?: any;
-  data: any[];
-  columns: any[];
+  icon?: Component;
+  data: Record<string, unknown>[];
+  columns: Record<string, unknown>[];
   allowAdd?: boolean;
   allowEdit?: boolean;
   allowDelete?: boolean;
 }
 
+interface BreadcrumbItem {
+  label: string;
+  to?: string;
+  isCurrentPage?: boolean;
+}
+
+interface StatItem {
+  label: string;
+  value: string | number;
+  color?: string;
+}
+
 interface Props {
   title: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   readonly?: boolean;
   hasUnsavedChanges?: boolean;
-  breadcrumbs?: any[];
+  breadcrumbs?: BreadcrumbItem[];
   showStats?: boolean;
-  stats?: any[];
+  stats?: StatItem[];
   mainFields?: Field[];
   sidebarFields?: Field[];
   subTables?: SubTable[];
@@ -62,34 +74,34 @@ const emit = defineEmits<{
   delete: [];
   back: [];
   'discard-changes': [];
-  'field-change': [key: string, value: any];
+  'field-change': [key: string, value: unknown];
   'add-sub-item': [tableKey: string];
-  'edit-sub-item': [tableKey: string, item: any];
-  'delete-sub-item': [tableKey: string, item: any];
-  'sub-item-click': [tableKey: string, item: any];
+  'edit-sub-item': [tableKey: string, item: Record<string, unknown>];
+  'delete-sub-item': [tableKey: string, item: Record<string, unknown>];
+  'sub-item-click': [tableKey: string, item: Record<string, unknown>];
 }>();
 
-const updateField = (key: string, value: any) => {
+const updateField = (key: string, value: unknown) => {
   if (!props.readonly) {
     emit('field-change', key, value);
   }
 };
 
-const formatValue = (value: any, type?: string) => {
+const formatValue = (value: unknown, type?: string) => {
   if (value === null || value === undefined) return '-';
 
   switch (type) {
     case 'date':
-      return new Date(value).toLocaleDateString('sv-SE');
+      return new Date(value as string).toLocaleDateString('sv-SE');
     case 'number':
-      return new Intl.NumberFormat('sv-SE').format(value);
+      return new Intl.NumberFormat('sv-SE').format(value as number);
     default:
-      return String(value);
+      return `${value}`;
   }
 };
 </script>
 <template>
-  <div class="relative">
+  <div>
     <!-- Persistent Toast in Top Right -->
     <Transition name="toast" appear>
       <div
@@ -112,17 +124,22 @@ const formatValue = (value: any, type?: string) => {
         <slot name="actions">
           <Button
             v-if="!readonly && hasUnsavedChanges"
+            variant="primary"
             class="gap-2 h-8 text-xs"
             @click="$emit('save')"
           >
             <Save class="h-3 w-3" />
             Spara
           </Button>
-          <Button variant="destructive" class="gap-2 h-8 text-xs" @click="$emit('delete')">
+          <Button
+            variant="secondary"
+            class="gap-2 h-8 text-xs text-red-600"
+            @click="$emit('delete')"
+          >
             <Trash2 class="h-3 w-3" />
             Radera
           </Button>
-          <Button variant="outline" class="gap-2 h-8 text-xs" @click="$emit('back')">
+          <Button variant="secondary" class="gap-2 h-8 text-xs" @click="$emit('back')">
             <ArrowLeft class="h-3 w-3" />
             Tillbaka
           </Button>
@@ -131,14 +148,9 @@ const formatValue = (value: any, type?: string) => {
     </StandardHeader>
 
     <!-- Back Button and Save Button -->
-    <div class="flex items-center gap-3 ml-4">
+    <div class="flex items-center gap-2 mx-4">
       <!-- Back Button (always visible) -->
-      <Button
-        variant="outline"
-        size="sm"
-        class="h-10 text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/80 shadow-sm"
-        @click="$emit('back')"
-      >
+      <Button variant="secondary" size="sm" @click="$emit('back')">
         <ArrowLeft class="w-3 h-3" />
         Tillbaka
       </Button>
@@ -146,39 +158,39 @@ const formatValue = (value: any, type?: string) => {
       <!-- Save Button (appears when there are changes) -->
       <Button
         v-if="!readonly && hasUnsavedChanges"
+        variant="primary"
         size="sm"
-        class="h-10 px-3 text-xs bg-amber-600 hover:bg-amber-700 text-white shadow-sm"
         @click="$emit('save')"
       >
-        <Save class="h-3 w-3 mr-1" />
+        <Save class="h-3 w-3" />
         Spara
       </Button>
 
       <!-- Discard Changes Button (appears when there are changes) -->
       <Button
         v-if="!readonly && hasUnsavedChanges"
+        variant="secondary"
         size="sm"
-        class="h-10 px-3 text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 shadow-sm"
         @click="$emit('discard-changes')"
       >
-        <Undo2 class="h-3 w-3 mr-1" />
+        <Undo2 class="h-3 w-3" />
         Ångra
       </Button>
     </div>
 
     <!-- Main Content and Sidebar -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 m-4">
       <!-- Main Content (2/3 width) -->
       <div class="lg:col-span-2 space-y-4">
         <!-- Main Form -->
         <slot name="main-content" :data="data" :readonly="readonly">
-          <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
+          <div class="bg-white rounded-lg border">
+            <h3 class="text-sm font-semibold flex items-center p-2 text-gray-600">
               <FileText class="h-4 w-4" />
               Grundläggande information
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-2">
               <div v-for="field in mainFields" :key="field.key" class="space-y-1">
                 <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
                 <Input
@@ -238,7 +250,7 @@ const formatValue = (value: any, type?: string) => {
 
         <!-- Sub Tables -->
         <div v-for="(table, index) in subTables" :key="index" class="bg-white rounded-lg border">
-          <div class="p-4 border-b">
+          <div class="p-2">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-semibold flex items-center gap-2 text-gray-600">
                 <component :is="table.icon" class="h-4 w-4" />
@@ -249,6 +261,7 @@ const formatValue = (value: any, type?: string) => {
               </h3>
               <Button
                 v-if="table.allowAdd && !readonly"
+                variant="primary"
                 size="sm"
                 class="h-6 text-xs"
                 @click="$emit('add-sub-item', table.key)"
@@ -259,7 +272,7 @@ const formatValue = (value: any, type?: string) => {
             </div>
           </div>
 
-          <div class="p-0">
+          <div>
             <DataTable
               :data="table.data || []"
               :columns="table.columns"
@@ -271,7 +284,7 @@ const formatValue = (value: any, type?: string) => {
                 <div class="flex items-center gap-0.5">
                   <Button
                     v-if="table.allowEdit && !readonly"
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     title="Redigera"
                     class="h-6 w-6 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
@@ -281,7 +294,7 @@ const formatValue = (value: any, type?: string) => {
                   </Button>
                   <Button
                     v-if="table.allowDelete && !readonly"
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     title="Radera"
                     class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"

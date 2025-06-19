@@ -6,6 +6,7 @@ interface Props {
   variant?: 'primary' | 'secondary' | 'muted';
   text?: string;
   fullScreen?: boolean;
+  message?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -13,6 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'primary',
   text: '',
   fullScreen: false,
+  message: 'Laddar...',
 });
 
 const sizeClasses = computed(() => {

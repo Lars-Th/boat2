@@ -325,11 +325,13 @@ const showAllPositions = () => {
 };
 
 const showStressTest = () => {
+  const methods = { success, error, warning, info };
+  const types = ['success', 'error', 'warning', 'info'] as const;
+
   for (let i = 1; i <= 10; i++) {
     setTimeout(() => {
-      const types = ['success', 'error', 'warning', 'info'] as const;
-      const type = types[i % 4];
-      const methods = { success, error, warning, info };
+      const typeIndex = (i - 1) % 4;
+      const type = types[typeIndex] as keyof typeof methods;
       methods[type](`Stress Test ${i}`, `Detta är toast nummer ${i} i stress testet`);
     }, i * 200);
   }
