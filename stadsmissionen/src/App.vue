@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
-import NavigationSidebar from '@/components/layout/NavigationSidebar.vue';
-import ToastContainer from '@/components/ui/toast/ToastContainer.vue';
-import ErrorBoundary from '@/components/common/ErrorBoundary.vue';
+import { onMounted } from 'vue';
+import { RouterView, useRoute } from 'vue-router';
+import { useAuth } from './composables/useAuth';
+import NavigationSidebar from './components/layout/NavigationSidebar.vue';
+import ToastContainer from './components/common/ToastContainer.vue';
+import ErrorBoundary from './components/common/ErrorBoundary.vue';
 
-// Simulerad användarinfo
-const currentUser = {
-  name: 'Lars Thomas',
-  email: 'lars.thomas@example.com',
-  role: 'Administrator',
-};
+const { currentUser, isAuthenticated, logout, initializeAuth } = useAuth();
+const route = useRoute();
+
+// Initialize authentication on app start
+onMounted(async () => {
+  await initializeAuth();
+});
 
 // Handle user actions from sidebar
-const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
+const handleUserAction = async (action: 'profile' | 'settings' | 'logout') => {
   switch (action) {
     case 'profile':
       console.log('Navigate to profile');
@@ -21,7 +24,7 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
       console.log('Navigate to settings');
       break;
     case 'logout':
-      console.log('Logout user');
+      await logout();
       break;
   }
 };
@@ -29,9 +32,10 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
 
 <template>
   <ErrorBoundary show-details>
-    <div class="flex h-screen bg-white">
+    <!-- Authenticated Layout -->
+    <div v-if="isAuthenticated && route.name !== 'login'" class="flex h-screen bg-white">
       <!-- Navigation Sidebar -->
-      <NavigationSidebar :current-user="currentUser" @user-action="handleUserAction" />
+      <NavigationSidebar :current-user="currentUser || undefined" @user-action="handleUserAction" />
 
       <!-- Main Content Area -->
       <main class="flex-1 overflow-auto bg-white">
@@ -39,6 +43,12 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
       </main>
 
       <!-- Toast Container -->
+      <ToastContainer />
+    </div>
+
+    <!-- Login Layout -->
+    <div v-else class="h-screen bg-white">
+      <RouterView />
       <ToastContainer />
     </div>
   </ErrorBoundary>

@@ -7,6 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +35,7 @@ import {
   Edit,
   MapPin,
   Save,
+  Trash2,
   UserCheck,
   UserX,
   Users,
@@ -34,6 +44,7 @@ import {
 
 // Use API service and composables
 import { useApiItem, useApiList } from '@/composables/useApi';
+import { useToast } from '@/composables/useToast';
 import api from '@/api';
 import type { Activity, ActivityType } from '@/types';
 
@@ -70,19 +81,32 @@ interface ParticipantData {
 
 const route = useRoute();
 const router = useRouter();
+const { success, error: showError } = useToast();
 
 // Get activity ID from route
 const activityId = computed(() => route.params['id'] as string);
 
-// Fetch data using API service
+// Fetch activity with all related data using relational API
 const {
-  data: activity,
-  loading: activityLoading,
+  data: activityWithRelations,
+  loading: isLoading,
   error: activityError,
-} = useApiItem<Activity>(() => api.activities.getById(activityId.value), {
-  cacheKey: `activity-${activityId.value}`,
-});
+  refresh: refreshActivity,
+} = useApiItem(
+  () =>
+    api.activities.getById(activityId.value, { include: ['types', 'participants', 'attendances'] }),
+  {
+    cacheKey: `activity-with-relations-${activityId.value}`,
+  }
+);
 
+// Extract data from the combined response
+const activity = computed(() => activityWithRelations.value);
+const activityType = computed(() => activityWithRelations.value?.activityType);
+const attendances = computed(() => activityWithRelations.value?.attendances || []);
+const activityParticipants = computed(() => activityWithRelations.value?.participants || []);
+
+// Fetch activity types for editing dropdown
 const {
   data: activityTypes,
   loading: activityTypesLoading,
@@ -91,66 +115,8 @@ const {
   cacheKey: 'activityTypes',
 });
 
-// Helper functions to properly type the API calls
-const getAttendancesByActivityId = (activityId: string) => {
-  return (
-    api.attendances as unknown as {
-      getByActivityId: (
-        id: string
-      ) => Promise<{ data: Attendance[]; success: boolean; message?: string }>;
-    }
-  ).getByActivityId(activityId);
-};
-
-const getParticipantsByActivityId = (activityId: string) => {
-  return (
-    api.participants as unknown as {
-      getByActivityId: (
-        id: string
-      ) => Promise<{ data: ParticipantData[]; success: boolean; message?: string }>;
-    }
-  ).getByActivityId(activityId);
-};
-
-const {
-  data: attendances,
-  loading: attendancesLoading,
-  error: attendancesError,
-} = useApiList<Attendance>(() => getAttendancesByActivityId(activityId.value), {
-  cacheKey: `attendances-${activityId.value}`,
-});
-
-const {
-  data: activityParticipants,
-  loading: participantsLoading,
-  error: participantsError,
-} = useApiList<ParticipantData>(() => getParticipantsByActivityId(activityId.value), {
-  cacheKey: `participants-${activityId.value}`,
-});
-
-// Get activity type
-const activityType = computed(() => {
-  if (!activity.value || !activityTypes.value) return null;
-  return activityTypes.value.find(at => at.ActivityTypeID === activity.value?.ActivityTypeID);
-});
-
-// Loading states
-const isLoading = computed(
-  () =>
-    activityLoading.value ||
-    activityTypesLoading.value ||
-    attendancesLoading.value ||
-    participantsLoading.value
-);
-
 // Error states
-const hasError = computed(
-  () =>
-    activityError.value !== null ||
-    activityTypesError.value !== null ||
-    attendancesError.value !== null ||
-    participantsError.value !== null
-);
+const hasError = computed(() => activityError.value !== null || activityTypesError.value !== null);
 
 // Statistics
 const stats = computed(() => {
@@ -195,6 +161,7 @@ const stats = computed(() => {
 
 // Edit mode
 const isEditing = ref(false);
+const isSaving = ref(false);
 const editForm = ref({
   Namn: '',
   Beskrivning: '',
@@ -203,6 +170,21 @@ const editForm = ref({
   ActivityTypeID: 0,
 });
 
+// Delete mode
+const isDeleting = ref(false);
+const showDeleteDialog = ref(false);
+
+// Helper function to format date for datetime-local input
+const formatDateForInput = (dateString: string): string => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 // Initialize edit form
 const initEditForm = () => {
   if (activity.value) {
@@ -210,7 +192,7 @@ const initEditForm = () => {
       Namn: activity.value.Namn,
       Beskrivning: activity.value.Beskrivning ?? '',
       Plats: activity.value.Plats ?? '',
-      DatumTid: activity.value.DatumTid,
+      DatumTid: formatDateForInput(activity.value.DatumTid),
       ActivityTypeID: activity.value.ActivityTypeID,
     };
   }
@@ -265,16 +247,106 @@ const attendanceTableData = computed(() => {
 
 // Save changes
 const saveChanges = () => {
-  // In a real app, this would make an API call
+  if (!activity.value) return;
+
+  isSaving.value = true;
   console.log('Saving changes:', editForm.value);
-  isEditing.value = false;
-  // Here you would update the activity data
+
+  api.activities
+    .update(activityId.value, editForm.value)
+    .then(response => {
+      console.log('API Update response:', response);
+      if (response.success && response.data) {
+        console.log('Update successful, updating local data and refreshing cache...');
+
+        // First update local data immediately so user sees the change
+        if (activityWithRelations.value) {
+          activityWithRelations.value.Namn = response.data.Namn;
+          activityWithRelations.value.Beskrivning = response.data.Beskrivning;
+          activityWithRelations.value.Plats = response.data.Plats;
+          activityWithRelations.value.DatumTid = response.data.DatumTid;
+          activityWithRelations.value.ActivityTypeID = response.data.ActivityTypeID;
+          console.log('Local data updated:', activityWithRelations.value);
+        }
+
+        // Then refresh cache for persistence across navigation
+        refreshActivity()
+          .then(() => {
+            console.log('Cache refreshed successfully');
+          })
+          .catch(refreshError => {
+            console.error('Error refreshing cache:', refreshError);
+          });
+
+        // Exit edit mode immediately after local update
+        isEditing.value = false;
+
+        // Show success toast
+        success('Aktivitet uppdaterad', 'Ändringarna har sparats framgångsrikt');
+      } else {
+        console.error('Failed to save changes:', response.error);
+        showError('Kunde inte spara', response.error?.message || 'Ett fel uppstod vid sparande');
+      }
+    })
+    .catch(error => {
+      console.error('Error saving changes:', error);
+      showError('Kunde inte spara', 'Ett oväntat fel uppstod vid sparande');
+    })
+    .finally(() => {
+      isSaving.value = false;
+    });
 };
 
 // Cancel editing
 const cancelEdit = () => {
   isEditing.value = false;
   initEditForm();
+};
+
+// Start editing mode
+const startEdit = () => {
+  initEditForm(); // Re-initialize form with current data
+  isEditing.value = true;
+};
+
+// Computed property for activity type selection
+const selectedActivityType = computed({
+  get: () => editForm.value.ActivityTypeID.toString(),
+  set: (value: string) => {
+    editForm.value.ActivityTypeID = +value || 0;
+  },
+});
+
+// Delete activity
+const deleteActivity = () => {
+  if (!activity.value) return;
+
+  isDeleting.value = true;
+
+  api.activities
+    .delete(activityId.value)
+    .then(response => {
+      console.log('API Delete response:', response);
+      if (response.success) {
+        success('Aktivitet borttagen', 'Aktiviteten har tagits bort framgångsrikt');
+        // Navigate back to activities list
+        router.push('/activities');
+      } else {
+        console.error('Failed to delete activity:', response.error);
+        showError(
+          'Kunde inte ta bort',
+          response.error?.message || 'Ett fel uppstod vid borttagning'
+        );
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting activity:', error);
+      showError('Kunde inte ta bort', 'Ett oväntat fel uppstod vid borttagning');
+    })
+    .finally(() => {
+      isDeleting.value = false;
+      showDeleteDialog.value = false;
+    });
 };
 
 // Go back to activity list
@@ -313,16 +385,7 @@ const breadcrumbs = computed(() => {
     <div v-else-if="hasError" class="flex items-center justify-center py-12">
       <div class="text-center">
         <p class="text-destructive mb-2">Ett fel uppstod vid laddning av aktivitet</p>
-        <Button
-          variant="outline"
-          @click="
-            () => {
-              /* Add refresh logic */
-            }
-          "
-        >
-          Försök igen
-        </Button>
+        <Button variant="outline" @click="refreshActivity">Försök igen</Button>
       </div>
     </div>
 
@@ -347,16 +410,48 @@ const breadcrumbs = computed(() => {
         </Button>
 
         <div class="flex gap-2">
-          <Button v-if="!isEditing" variant="outline" @click="isEditing = true">
-            <Edit class="mr-2 h-4 w-4" />
-            Redigera
-          </Button>
-          <template v-else>
-            <Button variant="default" @click="saveChanges">
-              <Save class="mr-2 h-4 w-4" />
-              Spara
+          <template v-if="!isEditing">
+            <Button variant="outline" @click="startEdit">
+              <Edit class="mr-2 h-4 w-4" />
+              Redigera
             </Button>
-            <Button variant="outline" @click="cancelEdit">
+            <Dialog v-model:open="showDeleteDialog">
+              <DialogTrigger as-child>
+                <Button variant="destructive">
+                  <Trash2 class="mr-2 h-4 w-4" />
+                  Ta bort
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Ta bort aktivitet</DialogTitle>
+                  <DialogDescription>
+                    Är du säker på att du vill ta bort aktiviteten "{{ activity.Namn }}"? Denna
+                    åtgärd kan inte ångras och kommer att ta bort all relaterad data.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    :disabled="isDeleting"
+                    @click="showDeleteDialog = false"
+                  >
+                    Avbryt
+                  </Button>
+                  <Button variant="destructive" :disabled="isDeleting" @click="deleteActivity">
+                    <Trash2 class="mr-2 h-4 w-4" />
+                    {{ isDeleting ? 'Tar bort...' : 'Ta bort' }}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </template>
+          <template v-else>
+            <Button variant="default" :disabled="isSaving" @click="saveChanges">
+              <Save class="mr-2 h-4 w-4" />
+              {{ isSaving ? 'Sparar...' : 'Spara' }}
+            </Button>
+            <Button variant="outline" :disabled="isSaving" @click="cancelEdit">
               <X class="mr-2 h-4 w-4" />
               Avbryt
             </Button>
@@ -426,7 +521,7 @@ const breadcrumbs = computed(() => {
 
               <div>
                 <Label for="type">Typ</Label>
-                <Select v-model="editForm.ActivityTypeID">
+                <Select v-model="selectedActivityType">
                   <SelectTrigger>
                     <SelectValue placeholder="Välj aktivitetstyp" />
                   </SelectTrigger>
@@ -532,9 +627,9 @@ const breadcrumbs = computed(() => {
                   <!-- Attendance status for this participant -->
                   <div class="mt-2">
                     <Badge
-                      v-for="attendance in ((attendances as Attendance[]) ?? []).filter(
+                      v-for="attendance in (attendances as Attendance[])?.filter(
                         (a: Attendance) => a.ParticipantID === participant.ParticipantID
-                      )"
+                      ) ?? []"
                       :key="attendance.AttendanceID"
                       :variant="attendance.Närvaro ? 'default' : 'destructive'"
                       class="text-xs"
@@ -595,7 +690,7 @@ const breadcrumbs = computed(() => {
                         <span class="font-medium">
                           {{
                             (activityParticipants?.length || 0) > 0
-                              ? (
+                              ? Number(
                                   (attendances?.length || 0) / (activityParticipants?.length || 1)
                                 ).toFixed(1)
                               : 0

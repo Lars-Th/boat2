@@ -11,6 +11,12 @@ export {
   useDataFetching,
 } from '@/composables/useAsyncOperation';
 
+// Export API composables
+export { useApi, useApiList, useApiItem } from '@/composables/useApi';
+
+// Export organization management
+export { useOrganizationManagement } from '@/composables/useOrganizationManagement';
+
 // Export types
 export type {
   BaseToastOptions,

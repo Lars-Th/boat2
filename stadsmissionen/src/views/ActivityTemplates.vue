@@ -7,50 +7,62 @@ import SearchAndFilter from '@/components/shared/SearchAndFilter.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Edit, Eye, FileText, MessageSquare, Plus, Trash2, Users } from 'lucide-vue-next';
+import {
+  AlertCircle,
+  Edit,
+  Eye,
+  FileText,
+  Loader2,
+  MessageSquare,
+  Plus,
+  Trash2,
+  Users,
+} from 'lucide-vue-next';
 
 // Use API service and composables
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
-import type { ActivityType } from '@/types';
+import type { ActivityTemplate, ActivityType } from '@/types';
 
 const router = useRouter();
 const searchTerm = ref('');
 
-// Fetch data using API service
+// Fetch data using enhanced API with relational data
 const {
   data: activityTemplates,
   loading: templatesLoading,
   error: templatesError,
   refresh: refreshTemplates,
-} = useApiList(() => api.activityTemplates.getAll(), {
-  cacheKey: 'activityTemplates',
-});
+} = useApiList<ActivityTemplate>(
+  () => api.activityTemplates.getAll({ include: ['type', 'activities'] }),
+  {
+    cacheKey: 'activityTemplatesWithRelations',
+  }
+);
 
 const {
   data: activityTypes,
-  loading: activityTypesLoading,
-  error: activityTypesError,
-  refresh: refreshActivityTypes,
+  loading: typesLoading,
+  error: typesError,
+  refresh: refreshTypes,
 } = useApiList<ActivityType>(() => api.activityTypes.getAll(), {
   cacheKey: 'activityTypes',
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || activityTypesLoading.value);
-const hasError = computed(() => templatesError.value !== null || activityTypesError.value !== null);
+const isLoading = computed(() => templatesLoading.value || typesLoading.value);
+const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
-  await Promise.all([refreshTemplates(), refreshActivityTypes()]);
+  await Promise.all([refreshTemplates(), refreshTypes()]);
 };
 
-// Get activity type details
+// Get activity type details from relational data or fallback to separate types
 const getActivityTypeDetails = (typeIds: string[]) => {
   if (!activityTypes.value) return [];
-
   return typeIds.map(id => {
-    const type = activityTypes.value?.find(t => t.ActivityTypeID.toString() === id);
+    const type = activityTypes.value?.find(t => t.ActivityTypeID === parseInt(id));
     return (
       type ?? {
         ActivityTypeID: id,
@@ -62,13 +74,16 @@ const getActivityTypeDetails = (typeIds: string[]) => {
   });
 };
 
-// Enhanced templates with calculated data
+// Enhanced templates with calculated data from relations
 const enhancedTemplates = computed(() => {
   if (!activityTemplates.value) return [];
 
   return activityTemplates.value.map(template => {
     const types = getActivityTypeDetails(template.aktivitetstyper);
     const primaryPurpose = types.length > 0 && types[0] ? types[0].Syfte : 'Inget syfte angivet';
+
+    // Calculate usage statistics from included activities relation
+    const usageCount = template.activities ? template.activities.length : 0;
 
     return {
       ...template,
@@ -77,12 +92,14 @@ const enhancedTemplates = computed(() => {
       questionCount: template.resultatformular.length,
       durationHours: Math.floor(template.standardVaraktighet / 60),
       durationMinutes: template.standardVaraktighet % 60,
+      usageCount, // New: Usage statistics from relations
     };
   });
 });
 
 // Filter templates based on search
 const filteredTemplates = computed(() => {
+  if (!enhancedTemplates.value) return [];
   if (!searchTerm.value) return enhancedTemplates.value;
 
   const search = searchTerm.value.toLowerCase();
@@ -129,6 +146,12 @@ const columns = [
     type: 'custom' as const,
   },
   {
+    key: 'usageCount',
+    label: 'Användning',
+    sortable: true,
+    type: 'custom' as const,
+  },
+  {
     key: 'beskrivning',
     label: 'Beskrivning',
     sortable: true,
@@ -142,7 +165,7 @@ const columns = [
   },
 ];
 
-// Statistics
+// Statistics calculated from enhanced relational data
 const stats = computed(() => {
   if (!activityTemplates.value) {
     return [
@@ -153,28 +176,30 @@ const stats = computed(() => {
     ];
   }
 
+  const templates = activityTemplates.value;
+
   return [
     {
       title: 'Totalt mallar',
-      value: activityTemplates.value.length,
+      value: templates.length,
       icon: FileText,
       color: 'blue',
     },
     {
       title: 'Standard-mallar',
-      value: activityTemplates.value.filter(t => t.malltyp === 'Standard').length,
+      value: templates.filter(t => t.malltyp === 'Standard').length,
       icon: Users,
       color: 'green',
     },
     {
       title: 'Samtal-mallar',
-      value: activityTemplates.value.filter(t => t.malltyp === 'Samtal').length,
+      value: templates.filter(t => t.malltyp === 'Samtal').length,
       icon: MessageSquare,
       color: 'purple',
     },
     {
       title: 'Öppet hus-mallar',
-      value: activityTemplates.value.filter(t => t.malltyp === 'OppetHus').length,
+      value: templates.filter(t => t.malltyp === 'OppetHus').length,
       icon: FileText,
       color: 'orange',
     },
@@ -208,30 +233,26 @@ const handleNewTemplate = () => {
   router.push('/activity-templates/new');
 };
 
-const handleRowClick = (template: Record<string, unknown>) => {
-  // Navigate to template detail view
-  router.push(`/activity-templates/${template['id']}`);
+const handleRowClick = (template: any) => {
+  router.push(`/activity-templates/${template.id}`);
 };
 
-const handleEditTemplate = (template: Record<string, unknown>, event: Event) => {
+const handleEditTemplate = (template: any, event: MouseEvent) => {
   event.stopPropagation();
-  // Navigate to edit template (same as new template but with data)
-  router.push(`/activity-templates/${template['id']}/edit`);
+  router.push(`/activity-templates/${template.id}/edit`);
 };
 
-const handleDeleteTemplate = (template: Record<string, unknown>, event: Event) => {
+const handleDeleteTemplate = (template: any, event: MouseEvent) => {
   event.stopPropagation();
-  if (confirm(`Är du säker på att du vill ta bort mallen "${template['namn']}"?`)) {
-    // TODO: Implement actual delete API call
-    console.log('Delete template:', template['id']);
-    // For now, just log the action
+  if (confirm(`Är du säker på att du vill ta bort mallen "${template.namn}"?`)) {
+    // TODO: Implement API call to delete template
+    console.log('Delete template:', template.id);
   }
 };
 
-const handleViewTemplate = (template: Record<string, unknown>, event: Event) => {
+const handleViewTemplate = (template: any, event: MouseEvent) => {
   event.stopPropagation();
-  // Navigate to template detail view
-  router.push(`/activity-templates/${template['id']}`);
+  router.push(`/activity-templates/${template.id}`);
 };
 </script>
 
@@ -245,21 +266,25 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+        <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
         <p class="text-muted-foreground">Laddar aktivitetsmallar...</p>
       </div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="hasError" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <p class="text-destructive mb-2">Ett fel uppstod vid laddning av aktivitetsmallar</p>
-        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+    <div v-else-if="hasError" class="text-center py-12">
+      <div class="text-red-500 mb-4">
+        <AlertCircle class="h-12 w-12 mx-auto mb-2" />
+        <p class="text-lg font-semibold">Kunde inte ladda aktivitetsmallar</p>
+        <p class="text-sm text-muted-foreground mt-1">
+          {{ templatesError?.message || typesError?.message }}
+        </p>
       </div>
+      <Button variant="outline" @click="handleRefresh">Försök igen</Button>
     </div>
 
-    <!-- Content -->
-    <template v-else>
+    <!-- Main Content -->
+    <div v-else>
       <!-- SearchAndFilter with padding -->
       <div class="px-6 py-4">
         <SearchAndFilter
@@ -276,24 +301,8 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
         </SearchAndFilter>
       </div>
 
-      <!-- Empty State -->
-      <div
-        v-if="!activityTemplates || activityTemplates.length === 0"
-        class="flex items-center justify-center py-12"
-      >
-        <div class="text-center">
-          <FileText class="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-          <p class="text-muted-foreground mb-4">Inga aktivitetsmallar tillgängliga</p>
-          <Button @click="handleNewTemplate">
-            <Plus class="h-4 w-4 mr-2" />
-            Skapa första mallen
-          </Button>
-        </div>
-      </div>
-
       <!-- DataTable full width -->
       <DataTable
-        v-else
         :data="filteredTemplates"
         :columns="columns"
         class="cursor-pointer"
@@ -303,21 +312,21 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
         <template #cell-malltyp="{ row }">
           <div class="flex items-center gap-2">
             <component
-              :is="getTemplateTypeInfo(String(row['malltyp'])).icon"
+              :is="getTemplateTypeInfo(row.malltyp).icon"
               class="h-4 w-4"
-              :class="`text-${getTemplateTypeInfo(String(row['malltyp'])).color}-600`"
+              :class="`text-${getTemplateTypeInfo(row.malltyp).color}-600`"
             />
             <Badge
               :variant="
-                String(row['malltyp']) === 'Standard'
+                row.malltyp === 'Standard'
                   ? 'default'
-                  : String(row['malltyp']) === 'Samtal'
+                  : row.malltyp === 'Samtal'
                     ? 'secondary'
                     : 'outline'
               "
               class="text-xs"
             >
-              {{ getTemplateTypeInfo(String(row['malltyp'])).label }}
+              {{ getTemplateTypeInfo(row.malltyp).label }}
             </Badge>
           </div>
         </template>
@@ -325,7 +334,7 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
         <template #cell-types="{ row }">
           <div class="flex flex-wrap gap-1">
             <Badge
-              v-for="type in (row['types'] as ActivityType[])?.slice(0, 2) || []"
+              v-for="type in (row.types || []).slice(0, 2)"
               :key="type.ActivityTypeID"
               variant="outline"
               class="text-xs"
@@ -333,19 +342,21 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
             >
               {{ type.Typnamn }}
             </Badge>
-            <Badge
-              v-if="(row['types'] as ActivityType[])?.length > 2"
-              variant="outline"
-              class="text-xs"
-            >
-              +{{ (row['types'] as ActivityType[]).length - 2 }}
+            <Badge v-if="(row.types || []).length > 2" variant="outline" class="text-xs">
+              +{{ (row.types || []).length - 2 }}
             </Badge>
+          </div>
+        </template>
+
+        <template #cell-usageCount="{ row }">
+          <div class="text-center">
+            <Badge variant="secondary" class="text-xs">{{ row.usageCount }} aktiviteter</Badge>
           </div>
         </template>
 
         <template #cell-beskrivning="{ row }">
           <div class="text-xs text-muted-foreground">
-            {{ row['beskrivning'] }}
+            {{ row.beskrivning }}
           </div>
         </template>
 
@@ -429,6 +440,6 @@ const handleViewTemplate = (template: Record<string, unknown>, event: Event) => 
           </Card>
         </div>
       </div>
-    </template>
+    </div>
   </PageLayout>
 </template>

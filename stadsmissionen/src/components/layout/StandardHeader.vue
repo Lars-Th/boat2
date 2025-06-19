@@ -13,7 +13,6 @@ interface Stat {
 
 interface Props {
   title: string;
-  description?: string;
   breadcrumbs?: BreadcrumbItem[];
   stats?: Stat[];
   showBackButton?: boolean;
@@ -40,8 +39,8 @@ const navigateTo = (breadcrumb: BreadcrumbItem) => {
 </script>
 
 <template>
-  <div class="bg-white px-6 py-4">
-    <div class="flex flex-col gap-4">
+  <div class="bg-white px-6 py-3">
+    <div class="flex flex-col gap-3">
       <!-- Title and breadcrumbs (integrated from TitleBreadcrumbs) -->
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div class="flex-1">
@@ -58,7 +57,7 @@ const navigateTo = (breadcrumb: BreadcrumbItem) => {
               <!-- Breadcrumb item -->
               <button
                 v-if="breadcrumb.to && !breadcrumb.isCurrentPage"
-                class="hover:text-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 rounded px-1"
+                class="hover:text-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 rounded"
                 @click="navigateTo(breadcrumb)"
               >
                 {{ breadcrumb.label }}
@@ -80,15 +79,11 @@ const navigateTo = (breadcrumb: BreadcrumbItem) => {
               />
             </template>
           </nav>
-
-          <p v-if="description" class="text-sm text-muted-foreground mt-1">
-            {{ description }}
-          </p>
         </div>
       </div>
 
       <!-- Analytics/Stats (integrated from TitleAnalytics) -->
-      <div v-if="showStats && stats && stats.length > 0" class="flex gap-3 mt-3 flex-wrap">
+      <div v-if="showStats && stats && stats.length > 0" class="flex gap-3 flex-wrap">
         <div v-for="stat in stats" :key="stat.label" class="flex items-center gap-2">
           <span class="text-xs text-muted-foreground">{{ stat.label }}:</span>
           <span
@@ -107,19 +102,6 @@ const navigateTo = (breadcrumb: BreadcrumbItem) => {
           >
             {{ stat.value }}
           </span>
-        </div>
-      </div>
-
-      <!-- Actions and filters row -->
-      <div class="flex items-center justify-between h-10">
-        <!-- Action buttons on the left -->
-        <div class="flex items-center gap-2">
-          <slot name="actions" />
-        </div>
-
-        <!-- Search and filters on the right -->
-        <div class="flex items-center gap-2">
-          <slot name="filters" />
         </div>
       </div>
     </div>

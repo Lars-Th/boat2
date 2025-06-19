@@ -1,80 +1,44 @@
 [
   {
-    "id": "user-1",
-    "namn": "Anna Administratör",
-    "epost": "anna.admin@ostergotlandsstadsmission.se",
-    "losenord": "admin123",
-    "roller": ["systemadministrator"],
-    "organisationId": "org-1",
-    "enheter": [],
-    "aktiv": true,
-    "senastInloggad": "2025-01-15T09:30:00Z",
-    "skapadDatum": "2024-06-01T08:00:00Z",
-    "uppdateradDatum": "2025-01-10T14:20:00Z"
+    "id": 1,
+    "name": "Lars Thomas",
+    "email": "lars.thomas@ostergotlandsstadsmission.se",
+    "password": "admin123",
+    "permissionID": 1
   },
   {
-    "id": "user-2",
-    "namn": "Erik Enhetschef",
-    "epost": "erik.enhetschef@ostergotlandsstadsmission.se",
-    "losenord": "erik123",
-    "roller": ["administrator"],
-    "organisationId": "org-1",
-    "enheter": [],
-    "aktiv": true,
-    "senastInloggad": "2025-01-15T08:45:00Z",
-    "skapadDatum": "2024-08-15T10:00:00Z",
-    "uppdateradDatum": "2025-01-05T16:30:00Z"
+    "id": 2,
+    "name": "Erik Enhetschef",
+    "email": "erik.enhetschef@ostergotlandsstadsmission.se",
+    "password": "erik123",
+    "permissionID": 2
   },
   {
-    "id": "user-3",
-    "namn": "Maria Koordinator",
-    "epost": "maria.koordinator@ostergotlandsstadsmission.se",
-    "losenord": "maria123",
-    "roller": ["handlaggare"],
-    "organisationId": "org-1",
-    "enheter": ["Barn och unga"],
-    "aktiv": true,
-    "senastInloggad": "2025-01-15T07:20:00Z",
-    "skapadDatum": "2024-09-01T14:30:00Z",
-    "uppdateradDatum": "2024-12-20T11:15:00Z"
+    "id": 3,
+    "name": "Maria Koordinator",
+    "email": "maria.koordinator@ostergotlandsstadsmission.se",
+    "password": "maria123",
+    "permissionID": 3
   },
   {
-    "id": "user-4",
-    "namn": "Johan Handläggare",
-    "epost": "johan.handlaggare@ostergotlandsstadsmission.se",
-    "losenord": "johan123",
-    "roller": ["handlaggare"],
-    "organisationId": "org-1",
-    "enheter": ["Ekonomisk rådgivning"],
-    "aktiv": true,
-    "senastInloggad": "2025-01-14T16:15:00Z",
-    "skapadDatum": "2024-10-10T11:00:00Z",
-    "uppdateradDatum": "2025-01-08T09:45:00Z"
+    "id": 4,
+    "name": "Johan Tölp",
+    "email": "johan.handlaggare@ostergotlandsstadsmission.se",
+    "password": "johan123",
+    "permissionID": 3
   },
   {
-    "id": "user-5",
-    "namn": "Lisa Medarbetare",
-    "epost": "lisa.medarbetare@ostergotlandsstadsmission.se",
-    "losenord": "lisa123",
-    "roller": ["handlaggare"],
-    "organisationId": "org-1",
-    "enheter": ["Familjecentral", "Språkstöd"],
-    "aktiv": true,
-    "senastInloggad": "2025-01-15T10:00:00Z",
-    "skapadDatum": "2024-11-15T09:15:00Z",
-    "uppdateradDatum": "2024-12-30T13:20:00Z"
+    "id": 5,
+    "name": "Lisa Medarbetare",
+    "email": "lisa.medarbetare@ostergotlandsstadsmission.se",
+    "password": "lisa123",
+    "permissionID": 3
   },
   {
-    "id": "user-6",
-    "namn": "Karin Stockholmsadmin",
-    "epost": "karin.admin@stadsmissionen.se",
-    "losenord": "karin123",
-    "roller": ["administrator"],
-    "organisationId": "org-2",
-    "enheter": [],
-    "aktiv": true,
-    "senastInloggad": "2025-01-14T14:30:00Z",
-    "skapadDatum": "2024-07-01T00:00:00Z",
-    "uppdateradDatum": "2024-12-15T10:00:00Z"
+    "id": 6,
+    "name": "Karin Stockholmsadmin",
+    "email": "karin.admin@stadsmissionen.se",
+    "password": "karin123",
+    "permissionID": 4
   }
 ]

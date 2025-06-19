@@ -1,84 +1,60 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import PageLayout from '@/components/layout/PageLayout.vue';
-import DataTable from '@/components/shared/DataTable.vue';
-import SearchAndFilter from '@/components/shared/SearchAndFilter.vue';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Edit, Loader2, Trash2, UserPlus, Users } from 'lucide-vue-next';
-import type { Organization, Participant, TableColumn } from '@/types';
-import { useToast } from '@/composables/useToast';
-
-// Use API service and composables
 import { useApiList } from '@/composables/useApi';
+import { useToast } from '@/composables/useToast';
 import api from '@/api';
 
-// Import family relations data
-import familyRelationsJsonData from '@/assets/data/familyRelations.json';
+// Components
+import StandardHeader from '@/components/layout/StandardHeader.vue';
+import ViewControls from '@/components/shared/ViewControls.vue';
+import DataTable from '@/components/shared/DataTable.vue';
+import PaginationControls from '@/components/shared/PaginationControls.vue';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Edit, Plus, Trash2, UserPlus, Users } from 'lucide-vue-next';
+
+// Import organization settings
+import organizationSettings from '@/assets/data/organizationSettings.json';
 
 const router = useRouter();
-const { success } = useToast();
-const searchTerm = ref('');
+const { success, error } = useToast();
 
-// Fetch data using API services
+// Filter state
+const ageFilter = ref('all');
+const genderFilter = ref('all');
+const searchQuery = ref('');
+
+// Pagination state
+const currentPage = ref(1);
+const itemsPerPage = ref(25);
+
+// Reset pagination when filters change
+watch([searchQuery, ageFilter, genderFilter], () => {
+  currentPage.value = 1;
+});
+
+// Use standardized API pattern for participants with relations
 const {
-  data: participants,
+  data: participantsWithRelations,
   loading: participantsLoading,
   error: participantsError,
   refresh: refreshParticipants,
-} = useApiList<Participant>(() => api.participants.getAll(), {
-  cacheKey: 'participants',
+} = useApiList(() => api.participants.getAll({ include: ['activities', 'family'] }), {
+  cacheKey: 'participants-with-relations',
 });
 
-const {
-  data: organizations,
-  loading: organizationsLoading,
-  error: organizationsError,
-  refresh: refreshOrganizations,
-} = useApiList<Organization>(() => api.organizations.getAll(), {
-  cacheKey: 'organizations',
-});
+// Loading state
+const isLoading = computed(() => participantsLoading.value);
 
-// Mock family relations data (since API endpoint doesn't exist)
-interface FamilyRelation {
-  ParticipantID: number;
-  RelatedParticipantID: number;
-  RelationType: string;
-}
+// Error state
+const hasError = computed(() => participantsError.value !== null);
 
-// Enhanced participant interface
-interface EnhancedParticipant extends Participant {
-  fullName: string;
-  age: string | number;
-  familyRelations: FamilyRelation[];
-  hasGuardian: boolean;
-  hasSiblings: boolean;
-  guardianNames: string[];
-  siblingNames: string[];
-  totalRelations: number;
-}
-
-const familyRelationsData = computed((): FamilyRelation[] => {
-  // TODO: Replace with actual API call when endpoint is available
-  // When API is ready, use: return api.familyRelations.getAll()
-  return familyRelationsJsonData; // Use imported JSON data instead of empty array
-});
-
-// Loading and error states
-const isLoading = computed(() => participantsLoading.value || organizationsLoading.value);
-const hasError = computed(
-  () => participantsError.value !== null || organizationsError.value !== null
+// Get current organization
+const currentOrg = organizationSettings.organizations.find(
+  org => org.id === organizationSettings.currentOrganization
 );
-
-// Refresh function for error recovery
-const handleRefresh = async () => {
-  await Promise.all([refreshParticipants(), refreshOrganizations()]);
-};
-
-// Get current organization (use first organization as current)
-const currentOrg = computed(() => organizations.value?.[0]);
-const enheter = computed(() => currentOrg.value?.enheter ?? []);
+const enheter = currentOrg?.enheter ?? [];
 
 // Calculate age from personnummer or return unknown
 const calculateAge = (personnummer: string) => {
@@ -88,69 +64,28 @@ const calculateAge = (personnummer: string) => {
   return currentYear - year;
 };
 
-// Get family relations for a participant
-const getFamilyRelations = (participantId: number) => {
-  return familyRelationsData.value.filter(
-    rel => rel.ParticipantID === participantId || rel.RelatedParticipantID === participantId
-  );
-};
-
-// Get related participant names
-const getRelatedParticipantNames = (participantId: number, relationType: string) => {
-  const relations = familyRelationsData.value.filter(
-    (rel: FamilyRelation) =>
-      (rel.ParticipantID === participantId || rel.RelatedParticipantID === participantId) &&
-      rel.RelationType === relationType
-  );
-
-  return relations.map((rel: FamilyRelation) => {
-    const relatedId =
-      rel.ParticipantID === participantId ? rel.RelatedParticipantID : rel.ParticipantID;
-    const relatedParticipant = participants.value?.find(
-      (p: Participant) => p.ParticipantID === relatedId
-    );
-    return relatedParticipant
-      ? `${relatedParticipant.Fornamn} ${relatedParticipant.Efternamn}`
-      : 'Okänd';
-  });
-};
-
-// Enhanced participants with calculated data
+// Enhanced participants with calculated data using the new relationship system
 const enhancedParticipants = computed(() => {
-  if (!participants.value) return [];
+  if (!participantsWithRelations.value) return [];
 
-  return participants.value.map((participant: Participant) => {
-    const familyRelations = getFamilyRelations(participant.ParticipantID);
-    const guardianNames = getRelatedParticipantNames(participant.ParticipantID, 'Målsman');
-    const siblingNames = getRelatedParticipantNames(participant.ParticipantID, 'Syskon');
+  return participantsWithRelations.value.map(participant => {
+    const guardianNames = participant.guardians?.map(g => `${g.Fornamn} ${g.Efternamn}`) || [];
+    const siblingNames = participant.siblings?.map(s => `${s.Fornamn} ${s.Efternamn}`) || [];
+    const childrenNames = participant.children?.map(c => `${c.Fornamn} ${c.Efternamn}`) || [];
 
     return {
       ...participant,
       fullName: `${participant.Fornamn} ${participant.Efternamn}`,
       age: calculateAge(participant.Personnummer),
-      familyRelations,
-      hasGuardian: familyRelations.some((rel: FamilyRelation) => rel.RelationType === 'Målsman'),
-      hasSiblings: familyRelations.some((rel: FamilyRelation) => rel.RelationType === 'Syskon'),
+      hasGuardian: (participant.guardians?.length || 0) > 0,
+      hasSiblings: (participant.siblings?.length || 0) > 0,
+      hasChildren: (participant.children?.length || 0) > 0,
       guardianNames,
       siblingNames,
-      totalRelations: familyRelations.length,
+      childrenNames,
+      totalRelations: participant.familyRelations?.length || 0,
     };
   });
-});
-
-// Filter participants based on search
-const filteredParticipants = computed(() => {
-  if (!searchTerm.value) return enhancedParticipants.value;
-
-  const search = searchTerm.value.toLowerCase();
-  return enhancedParticipants.value.filter(
-    participant =>
-      participant.fullName.toLowerCase().includes(search) ||
-      participant.Telefon?.toLowerCase().includes(search) ||
-      participant['E-post']?.toLowerCase().includes(search) ||
-      participant.Adress?.toLowerCase().includes(search) ||
-      participant.Enheter?.some(enhet => enhet.toLowerCase().includes(search))
-  );
 });
 
 // Gender icon mapping
@@ -167,213 +102,254 @@ const getGenderIcon = (kon: string) => {
   }
 };
 
-// Table columns with new structure
-const columns: TableColumn[] = [
-  {
-    key: 'fullName',
-    label: 'Namn',
-    sortable: true,
-  },
-  {
-    key: 'enheter',
-    label: 'Enhet',
-    sortable: false,
-    type: 'custom' as const,
-  },
-  {
-    key: 'age',
-    label: 'Ålder',
-    sortable: true,
-  },
-  {
-    key: 'kon',
-    label: 'Kön',
-    sortable: true,
-    type: 'custom' as const,
-  },
-  {
-    key: 'relations',
-    label: 'Familj',
-    sortable: false,
-    type: 'custom' as const,
-  },
-  {
-    key: 'actions',
-    label: '',
-    sortable: false,
-    type: 'actions' as const,
-  },
+// Table columns
+const columns = [
+  { key: 'fullName', label: 'Namn', sortable: true, type: 'custom' },
+  { key: 'enheter', label: 'Enhet', sortable: false, type: 'custom' },
+  { key: 'age', label: 'Ålder', sortable: true },
+  { key: 'kon', label: 'Kön', sortable: true, type: 'custom' },
+  { key: 'relations', label: 'Familj', sortable: false, type: 'custom' },
+  { key: 'actions', label: 'Åtgärder', sortable: false, type: 'actions' },
 ];
 
-// Statistics with new data structure
-const stats = computed(() => [
+// Breadcrumbs
+const breadcrumbs = computed(() => [
+  { label: 'Dashboard', to: '/' },
+  { label: 'Deltagare', to: '', isCurrentPage: true },
+]);
+
+// Statistics
+const stats = computed(() => {
+  if (!enhancedParticipants.value) {
+    return [
+      { label: 'Totalt', value: 0, color: 'text-blue-600' },
+      { label: 'Barn (under 18)', value: 0, color: 'text-green-600' },
+      { label: 'Med familjerelationer', value: 0, color: 'text-purple-600' },
+      { label: 'Totala enheter', value: enheter.length, color: 'text-orange-600' },
+    ];
+  }
+
+  const childrenCount = enhancedParticipants.value.filter(
+    p => typeof p.age === 'number' && p.age < 18
+  ).length;
+  const withRelationsCount = enhancedParticipants.value.filter(p => p.totalRelations > 0).length;
+
+  return [
+    {
+      label: 'Totalt',
+      value: enhancedParticipants.value.length,
+      color: 'text-blue-600',
+    },
+    {
+      label: 'Barn (under 18)',
+      value: childrenCount,
+      color: 'text-green-600',
+    },
+    {
+      label: 'Med familjerelationer',
+      value: withRelationsCount,
+      color: 'text-purple-600',
+    },
+    {
+      label: 'Totala enheter',
+      value: enheter.length,
+      color: 'text-orange-600',
+    },
+  ];
+});
+
+// Filtered participants based on filters and search
+const filteredParticipants = computed(() => {
+  if (!enhancedParticipants.value) return [];
+
+  return enhancedParticipants.value.filter(participant => {
+    // Age filter
+    const matchesAge =
+      ageFilter.value === 'all' ||
+      (ageFilter.value === 'child' &&
+        typeof participant.age === 'number' &&
+        participant.age < 18) ||
+      (ageFilter.value === 'adult' &&
+        typeof participant.age === 'number' &&
+        participant.age >= 18) ||
+      (ageFilter.value === 'unknown' && participant.age === 'Okänd');
+
+    // Gender filter
+    const matchesGender = genderFilter.value === 'all' || participant.Kon === genderFilter.value;
+
+    // Search filter
+    const matchesSearch =
+      !searchQuery.value ||
+      [
+        participant.fullName,
+        participant.Telefon,
+        participant['E-post'],
+        participant.Adress,
+        ...(participant.Enheter || []),
+      ].some(field => field?.toString().toLowerCase().includes(searchQuery.value.toLowerCase()));
+
+    return matchesAge && matchesGender && matchesSearch;
+  });
+});
+
+// Paginated participants
+const paginatedParticipants = computed(() => {
+  const filtered = filteredParticipants.value;
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filtered.slice(start, end);
+});
+
+// Pagination handlers
+const handlePageUpdate = (page: number) => {
+  currentPage.value = page;
+};
+
+const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
+  itemsPerPage.value = newItemsPerPage;
+  currentPage.value = 1;
+};
+
+// Action buttons for ViewControls
+const addActions = computed(() => [
   {
-    title: 'Totalt deltagare',
-    value: participants.value?.length ?? 0,
-    icon: Users,
-    color: 'blue',
-  },
-  {
-    title: 'Barn (under 18)',
-    value: enhancedParticipants.value.filter(
-      (p: EnhancedParticipant) => typeof p.age === 'number' && p.age < 18
-    ).length,
-    icon: Users,
-    color: 'green',
-  },
-  {
-    title: 'Med familjerelationer',
-    value: enhancedParticipants.value.filter((p: EnhancedParticipant) => p.totalRelations > 0)
-      .length,
-    icon: Users,
-    color: 'purple',
-  },
-  {
-    title: 'Totala enheter',
-    value: enheter.value.length,
-    icon: Users,
-    color: 'orange',
+    label: 'Ny deltagare',
+    icon: Plus,
+    onClick: handleNewParticipant,
+    variant: 'default' as const,
   },
 ]);
 
-const filters = [
+// Filters for ViewControls
+const filters = computed(() => [
   {
-    key: 'age',
-    label: 'Åldersgrupp',
+    modelValue: ageFilter.value,
+    placeholder: 'Alla åldrar',
     options: [
-      { value: 'child', label: 'Barn (under 18)' },
-      { value: 'adult', label: 'Vuxen (18+)' },
-      { value: 'unknown', label: 'Okänd ålder' },
+      { key: 'all', label: 'Alla åldrar', value: 'all' },
+      { key: 'child', label: 'Barn (under 18)', value: 'child' },
+      { key: 'adult', label: 'Vuxen (18+)', value: 'adult' },
+      { key: 'unknown', label: 'Okänd ålder', value: 'unknown' },
     ],
+    onChange: (value: string) => {
+      ageFilter.value = value;
+    },
   },
   {
-    key: 'kon',
-    label: 'Kön',
+    modelValue: genderFilter.value,
+    placeholder: 'Alla kön',
     options: [
-      { value: 'Man', label: 'Man' },
-      { value: 'Kvinna', label: 'Kvinna' },
-      { value: 'Annat', label: 'Annat' },
-      { value: 'Vill ej uppge', label: 'Vill ej uppge' },
+      { key: 'all', label: 'Alla kön', value: 'all' },
+      { key: 'Man', label: 'Man', value: 'Man' },
+      { key: 'Kvinna', label: 'Kvinna', value: 'Kvinna' },
+      { key: 'Annat', label: 'Annat', value: 'Annat' },
+      { key: 'Vill ej uppge', label: 'Vill ej uppge', value: 'Vill ej uppge' },
     ],
+    onChange: (value: string) => {
+      genderFilter.value = value;
+    },
   },
-  {
-    key: 'enheter',
-    label: 'Enhet',
-    options: enheter.value.map((enhet: string) => ({
-      value: enhet,
-      label: enhet,
-    })),
-  },
-  {
-    key: 'relations',
-    label: 'Familjerelationer',
-    options: [
-      { value: 'has_relations', label: 'Har familjerelationer' },
-      { value: 'guardian', label: 'Har målsman' },
-      { value: 'siblings', label: 'Har syskon' },
-      { value: 'no_relations', label: 'Inga relationer' },
-    ],
-  },
-];
+]);
 
+// Event handlers
 const handleNewParticipant = () => {
   router.push('/participants/new');
 };
 
-// Update function signatures to use proper types with casting
-const handleRowClick = (item: Record<string, unknown>) => {
-  const participant = item as unknown as Participant;
+const handleRowClick = (participant: any) => {
   router.push(`/participants/${participant.ParticipantID}`);
 };
 
-const handleEditParticipant = (item: Record<string, unknown>) => {
-  const participant = item as unknown as Participant;
+const handleEditParticipant = (participant: any) => {
   router.push(`/participants/${participant.ParticipantID}/edit`);
 };
 
-const handleDeleteParticipant = (item: Record<string, unknown>) => {
-  const participant = item as unknown as Participant;
-  if (confirm(`Är du säker på att du vill ta bort ${participant.fullName}?`)) {
-    // Remove from array
-    console.log('Deleting participant:', participant.ParticipantID);
-    success('Deltagare borttagen', 'Deltagaren har tagits bort framgångsrikt');
-  }
-};
+const handleDeleteParticipant = async (participant: any, event: Event) => {
+  event.stopPropagation();
 
-const handleFamilyConnections = () => {
-  router.push('/family-connections');
+  const confirmed = confirm(`Är du säker på att du vill ta bort ${participant.fullName}?`);
+
+  if (confirmed) {
+    try {
+      // In a real app, you'd call the API
+      console.log('Deleting participant:', participant.ParticipantID);
+      success('Deltagare borttagen', 'Deltagaren har tagits bort framgångsrikt');
+      await refreshParticipants();
+    } catch (err) {
+      error('Fel vid borttagning', 'Ett oväntat fel inträffade. Försök igen.');
+    }
+  }
 };
 </script>
 
 <template>
-  <PageLayout title="Deltagare" breadcrumbs="Dashboard / Deltagare" show-stats :stats="stats">
+  <div>
+    <!-- Header with title, breadcrumbs, and stats -->
+    <StandardHeader
+      title="Deltagare"
+      description="Hantera deltagare och deras information"
+      :breadcrumbs="breadcrumbs"
+      :show-stats="true"
+      :stats="stats"
+    />
+
+    <!-- View Controls with search, filters, and actions -->
+    <ViewControls
+      v-model:search-query="searchQuery"
+      :add-actions="addActions"
+      :filters="filters"
+      search-placeholder="Sök deltagare..."
+      :show-view-switcher="false"
+    />
+
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center py-12">
-      <div class="flex items-center gap-3">
-        <Loader2 class="h-6 w-6 animate-spin" />
-        <span class="text-lg">Laddar deltagare...</span>
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+        <p class="text-muted-foreground">Laddar deltagare...</p>
       </div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="hasError" class="flex flex-col items-center justify-center py-12">
-      <div class="flex items-center gap-3 mb-4">
-        <AlertCircle class="h-6 w-6 text-red-500" />
-        <span class="text-lg text-red-600">Kunde inte ladda deltagare</span>
+    <div v-else-if="hasError" class="flex items-center justify-center py-12">
+      <div class="text-center">
+        <p class="text-destructive mb-2">Ett fel uppstod vid laddning av deltagare</p>
+        <Button variant="outline" @click="refreshParticipants">Försök igen</Button>
       </div>
-      <Button variant="outline" @click="handleRefresh">Försök igen</Button>
     </div>
 
-    <!-- Content -->
-    <template v-else>
-      <!-- SearchAndFilter with padding -->
-      <div class="px-6 py-4">
-        <SearchAndFilter
-          v-model:search="searchTerm"
-          :filters="filters"
-          placeholder="Sök deltagare..."
-        >
-          <template #actions>
-            <Button variant="outline" class="gap-2" @click="handleFamilyConnections">
-              <Users class="h-4 w-4" />
-              Familjekopplingar
-            </Button>
-            <Button class="gap-2" @click="handleNewParticipant">
-              <UserPlus class="h-4 w-4" />
-              Ny deltagare
-            </Button>
-          </template>
-        </SearchAndFilter>
-      </div>
-
-      <!-- DataTable full width -->
+    <!-- DataTable -->
+    <div v-else>
       <DataTable
-        :data="filteredParticipants"
+        :data="paginatedParticipants || []"
         :columns="columns"
-        class="cursor-pointer"
+        :loading="isLoading"
         @row-click="handleRowClick"
       >
-        <!-- Custom column renderers -->
-        <template #enheter="{ row }">
+        <template #cell-fullName="{ row }">
+          <span class="font-bold">{{ row.fullName }}</span>
+        </template>
+
+        <template #cell-enheter="{ row }">
           <div class="flex flex-wrap gap-1">
-            <Badge v-for="enhet in row.Enheter" :key="enhet" variant="secondary" class="text-xs">
+            <Badge v-for="enhet in row.Enheter" :key="enhet" variant="default" class="text-xs">
               {{ enhet }}
             </Badge>
           </div>
         </template>
 
-        <template #kon="{ row }">
+        <template #cell-kon="{ row }">
           <div class="flex items-center gap-2">
             <span class="text-lg">{{ getGenderIcon(row.Kon) }}</span>
-            <span class="text-sm">{{ row.Kon }}</span>
+            <span class="text-muted-foreground">{{ row.Kon }}</span>
           </div>
         </template>
 
-        <template #relations="{ row }">
+        <template #cell-relations="{ row }">
           <div class="flex gap-1">
             <Badge
               v-if="row.hasGuardian"
-              variant="outline"
+              variant="default"
               class="text-xs"
               :title="`Målsman: ${row.guardianNames.join(', ')}`"
             >
@@ -381,7 +357,7 @@ const handleFamilyConnections = () => {
             </Badge>
             <Badge
               v-if="row.hasSiblings"
-              variant="outline"
+              variant="default"
               class="text-xs"
               :title="`Syskon: ${row.siblingNames.join(', ')}`"
             >
@@ -389,7 +365,7 @@ const handleFamilyConnections = () => {
             </Badge>
             <Badge
               v-if="row.totalRelations > 0 && !row.hasGuardian && !row.hasSiblings"
-              variant="outline"
+              variant="default"
               class="text-xs"
             >
               👥 {{ row.totalRelations }}
@@ -397,29 +373,36 @@ const handleFamilyConnections = () => {
           </div>
         </template>
 
-        <template #actions="{ row }">
-          <div class="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              class="h-8 w-8 p-0"
-              title="Redigera deltagare"
-              @click="() => handleEditParticipant(row)"
-            >
-              <Edit class="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              class="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-              title="Ta bort deltagare"
-              @click="() => handleDeleteParticipant(row)"
-            >
-              <Trash2 class="h-4 w-4" />
-            </Button>
-          </div>
+        <template #row-actions="{ row }">
+          <Button
+            size="sm"
+            variant="ghost"
+            class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+            title="Redigera"
+            @click="handleEditParticipant(row)"
+          >
+            <Edit class="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+            title="Radera"
+            @click="handleDeleteParticipant(row, $event)"
+          >
+            <Trash2 class="h-3.5 w-3.5" />
+          </Button>
         </template>
       </DataTable>
-    </template>
-  </PageLayout>
+
+      <!-- Pagination Controls -->
+      <PaginationControls
+        :total-items="filteredParticipants.length"
+        :current-page="currentPage"
+        :items-per-page="itemsPerPage"
+        @update:current-page="handlePageUpdate"
+        @update:items-per-page="handleItemsPerPageUpdate"
+      />
+    </div>
+  </div>
 </template>

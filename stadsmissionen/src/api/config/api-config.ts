@@ -3,6 +3,9 @@ import {
   ActivityService,
   ActivityTypeService,
   AttendanceService,
+  AuthService,
+  ContactService,
+  CustomerService,
   ParticipantService,
 } from '../services';
 
@@ -13,6 +16,9 @@ export class ApiConfiguration {
   public readonly activityTypes: ActivityTypeService;
   public readonly attendances: AttendanceService;
   public readonly participants: ParticipantService;
+  public readonly auth: AuthService;
+  public readonly customers: CustomerService;
+  public readonly contacts: ContactService;
 
   constructor(baseURL?: string) {
     this.httpClient = new HttpClient({
@@ -24,6 +30,9 @@ export class ApiConfiguration {
     this.activityTypes = new ActivityTypeService(this.httpClient);
     this.attendances = new AttendanceService(this.httpClient);
     this.participants = new ParticipantService(this.httpClient);
+    this.auth = new AuthService(this.httpClient);
+    this.customers = new CustomerService(this.httpClient);
+    this.contacts = new ContactService(this.httpClient);
   }
 
   setBaseURL(baseURL: string): void {

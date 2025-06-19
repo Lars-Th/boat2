@@ -14,7 +14,7 @@ const breadcrumbs = [
   { label: 'Inställningar', isCurrentPage: true },
 ];
 
-const notifications = ref(true);
+const otifications = ref(true);
 const darkMode = ref(false);
 const autoSave = ref(true);
 </script>

@@ -22,7 +22,7 @@ export interface UseApiReturn<T> {
 
 // Simple in-memory cache
 const cache = new Map<string, { data: unknown; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 1000; // ms
 
 function convertErrorToDetails(error: unknown): Record<string, unknown> | null {
   if (!error) return null;

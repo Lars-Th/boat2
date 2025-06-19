@@ -1,15 +1,50 @@
-import { ref } from 'vue';
-import type { BaseToastOptions, Toast, UseToastReturn } from '@/types';
+import { reactive, ref } from 'vue';
+import type { Toast, ToastConfig, ToastOptions, UseToastReturn } from '@/types';
 
+// Global state
 const toasts = ref<Toast[]>([]);
 let toastId = 0;
+
+// Default configuration
+const defaultConfig: ToastConfig = {
+  position: 'top-right',
+  duration: 5000,
+  maxToasts: 5,
+  pauseOnHover: true,
+  closeOnClick: false,
+  showProgressBar: false,
+  newestOnTop: true,
+  preventDuplicates: false,
+  icons: {
+    success: '✅',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️',
+    confirm: '❓',
+  },
+};
+
+const config = reactive<ToastConfig>({ ...defaultConfig });
 
 export function useToast(): UseToastReturn {
   const generateId = (): string => {
     return `toast-${++toastId}-${Date.now()}`;
   };
 
-  const addToast = (options: BaseToastOptions): string => {
+  const addToast = (options: ToastOptions): string => {
+    // Prevent duplicates if enabled
+    if (config.preventDuplicates) {
+      const duplicate = toasts.value.find(
+        t =>
+          t.title === options.title &&
+          t.description === options.description &&
+          t.type === options.type
+      );
+      if (duplicate) {
+        return duplicate.id;
+      }
+    }
+
     const toast: Toast = {
       id: generateId(),
       title: options.title,
@@ -18,15 +53,31 @@ export function useToast(): UseToastReturn {
       type: options.type ?? 'info',
       timestamp: Date.now(),
       read: false,
-      duration: options.duration ?? 5000,
+      duration: options.duration ?? config.duration ?? 5000,
       persistent: options.persistent ?? false,
       actions: options.actions ?? [],
-      timeout: options.timeout,
+      position: options.position ?? config.position,
+      icon: options.icon ?? config.icons?.[options.type ?? 'info'],
+      closable: options.closable ?? true,
     };
 
-    toasts.value.push(toast);
+    // Add to beginning or end based on config
+    if (config.newestOnTop) {
+      toasts.value.unshift(toast);
+    } else {
+      toasts.value.push(toast);
+    }
 
-    // Auto remove toast after duration
+    // Limit number of toasts
+    if (config.maxToasts && toasts.value.length > config.maxToasts) {
+      if (config.newestOnTop) {
+        toasts.value = toasts.value.slice(0, config.maxToasts);
+      } else {
+        toasts.value = toasts.value.slice(-config.maxToasts);
+      }
+    }
+
+    // Auto remove toast after duration (unless persistent)
     if (toast.duration && toast.duration > 0 && !toast.persistent) {
       setTimeout(() => {
         removeToast(toast.id);
@@ -47,56 +98,141 @@ export function useToast(): UseToastReturn {
     toasts.value = [];
   };
 
+  const updateToast = (id: string, options: Partial<ToastOptions>): void => {
+    const toast = toasts.value.find(t => t.id === id);
+    if (toast) {
+      Object.assign(toast, options);
+    }
+  };
+
   const success = (
     title: string,
     description?: string,
-    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
+    options: Omit<ToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'success',
       title,
-      ...(description && { description }),
+      description,
+      variant: 'success',
     });
   };
 
   const error = (
     title: string,
     description?: string,
-    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
+    options: Omit<ToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'error',
       title,
-      ...(description && { description }),
+      description,
+      variant: 'destructive',
+      duration: options.duration ?? 8000, // Längre duration för fel
     });
   };
 
   const warning = (
     title: string,
     description?: string,
-    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
+    options: Omit<ToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'warning',
       title,
-      ...(description && { description }),
+      description,
+      variant: 'warning',
     });
   };
 
   const info = (
     title: string,
     description?: string,
-    options: Omit<BaseToastOptions, 'type' | 'title' | 'description'> = {}
+    options: Omit<ToastOptions, 'type' | 'title' | 'description'> = {}
   ): string => {
     return addToast({
       ...options,
       type: 'info',
       title,
-      ...(description && { description }),
+      description,
     });
+  };
+
+  const confirm = (
+    title: string,
+    description?: string,
+    onConfirm?: () => void,
+    onCancel?: () => void
+  ): string => {
+    return addToast({
+      type: 'confirm',
+      title,
+      description,
+      persistent: true,
+      actions: [
+        {
+          label: 'Bekräfta',
+          action: onConfirm ?? (() => {}),
+          style: 'primary',
+        },
+        {
+          label: 'Avbryt',
+          action: onCancel ?? (() => {}),
+          style: 'secondary',
+        },
+      ],
+    });
+  };
+
+  const promise = async <T>(
+    promise: Promise<T>,
+    options: { loading: string; success: string; error: string }
+  ): Promise<T> => {
+    const loadingId = addToast({
+      type: 'info',
+      title: options.loading,
+      persistent: true,
+      closable: false,
+    });
+
+    try {
+      const result = await promise;
+      removeToast(loadingId);
+      success(options.success);
+      return result;
+    } catch (err) {
+      removeToast(loadingId);
+      error(options.error, err instanceof Error ? err.message : 'Ett fel uppstod');
+      throw err;
+    }
+  };
+
+  const unsavedChanges = (onSave: () => void, onDiscard: () => void): string => {
+    return addToast({
+      type: 'warning',
+      title: 'Osparade ändringar',
+      description: 'Du har ändringar som inte har sparats.',
+      persistent: true,
+      actions: [
+        {
+          label: 'Spara',
+          action: onSave,
+          style: 'primary',
+        },
+        {
+          label: 'Ignorera',
+          action: onDiscard,
+          style: 'secondary',
+        },
+      ],
+    });
+  };
+
+  const setConfig = (newConfig: Partial<ToastConfig>): void => {
+    Object.assign(config, newConfig);
   };
 
   return {
@@ -104,12 +240,15 @@ export function useToast(): UseToastReturn {
     addToast,
     removeToast,
     clearToasts,
+    updateToast,
     success,
     error,
     warning,
     info,
+    confirm,
+    promise,
+    unsavedChanges,
+    config,
+    setConfig,
   };
 }
-
-// Export types for backward compatibility
-export type { Toast, BaseToastOptions, ToastAction, UseToastReturn } from '@/types';

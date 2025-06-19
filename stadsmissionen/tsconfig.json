@@ -8,10 +8,24 @@
       "path": "./tsconfig.node.json"
     }
   ],
-  "compilerOptions": {
+    "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES6",
+      "ES2015",
+      "ES2020",
+      "ES2021",
+      "ES2022"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "types": ["vite/client", "node"]
   }
 }

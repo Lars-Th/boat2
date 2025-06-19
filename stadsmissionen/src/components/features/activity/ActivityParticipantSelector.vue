@@ -26,12 +26,12 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-// Fetch data using API service
+// Fetch data using enhanced API service with relational parameters
 const {
   data: participants,
   loading: participantsLoading,
   error: participantsError,
-} = useApiList<Participant>(() => api.participants.getAll(), {
+} = useApiList<Participant>(() => api.participants.getAll({ include: ['activities'] }), {
   cacheKey: 'participants',
 });
 

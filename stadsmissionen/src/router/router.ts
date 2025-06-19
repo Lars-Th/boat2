@@ -1,29 +1,40 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import {
+  Anchor,
   BarChart3,
   Calendar,
+  CheckCircle,
   ClipboardList,
-  Cog,
+  Clock,
+  Code,
   Download,
   FileText,
+  FolderOpen,
   LayoutDashboard,
   List,
+  Package,
   Palette,
+  PieChart,
   Plus,
   Settings,
-  Tag,
+  Shield,
   User,
   UserCheck,
-  UserCog,
   UserPlus,
   Users,
   Users2,
+  Wrench,
 } from 'lucide-vue-next';
 
-// Import views - all as dynamic imports for consistency
+// Import existing views - all as dynamic imports for consistency
 const Dashboard = () => import('@/views/Dashboard.vue');
 
-// Placeholder components for new views (will be created)
+// User management views
+// MyAccount removed - using UserDetail instead
+const UserList = () => import('@/views/UserList.vue');
+const PermissionGroups = () => import('@/views/PermissionGroups.vue');
+
+// Existing views (activity management system)
 const ActivityList = () => import('@/views/ActivityList.vue');
 const ActivityDetail = () => import('@/views/ActivityDetail.vue');
 const NewActivity = () => import('@/views/NewActivity.vue');
@@ -34,16 +45,42 @@ const NewParticipant = () => import('@/views/NewParticipant.vue');
 const FamilyConnections = () => import('@/views/FamilyConnections.vue');
 const Statistics = () => import('@/views/Statistics.vue');
 const Export = () => import('@/views/Export.vue');
-const UserManagement = () => import('@/views/UserManagement.vue');
-const SystemSettings = () => import('@/views/SystemSettings.vue');
 const ActivityTypes = () => import('@/views/ActivityTypes.vue');
 const ActivityTemplates = () => import('@/views/ActivityTemplates.vue');
 const NewActivityTemplate = () => import('@/views/NewActivityTemplate.vue');
 const ActivityTemplateDetail = () => import('@/views/ActivityTemplateDetail.vue');
 const ParticipantGroups = () => import('@/views/ParticipantGroups.vue');
-const MyProfile = () => import('@/views/MyProfile.vue');
+
+// New views from migrated project (work order management system)
+const CustomerList = () => import('@/views/CustomerList.vue');
+const CustomerDetail = () => import('@/views/CustomerDetail.vue');
+const ContactPersonList = () => import('@/views/ContactPersonList.vue');
+const ContactPersonDetail = () => import('@/views/ContactPersonDetail.vue');
+const WorkOrderList = () => import('@/views/WorkOrderList.vue');
+const WorkOrderDetail = () => import('@/views/WorkOrderDetail.vue');
+const ReadyForAttestation = () => import('@/views/ReadyForAttestation.vue');
+const ReadyForInvoicing = () => import('@/views/ReadyForInvoicing.vue');
+const WorkOrderReport = () => import('@/views/WorkOrderReport.vue');
+const MachineList = () => import('@/views/MachineList.vue');
+const MachineDetail = () => import('@/views/MachineDetail.vue');
+const ToolList = () => import('@/views/ToolList.vue');
+const ToolDetail = () => import('@/views/ToolDetail.vue');
+const MachineSummary = () => import('@/views/MachineSummary.vue');
+const PlanningCalendar = () => import('@/views/PlanningCalendar.vue');
+const TimeReporting = () => import('@/views/TimeReporting.vue');
+const TimeSummary = () => import('@/views/TimeSummary.vue');
 const UserDetail = () => import('@/views/UserDetail.vue');
-const ThemeSettings = () => import('@/views/ThemeSettings.vue');
+
+// Boat views
+const BoatCustomers = () => import('@/views/BoatCustomers.vue');
+const BoatList = () => import('@/views/BoatList.vue');
+const BoatDetail = () => import('@/views/BoatDetail.vue');
+
+// Development/Demo views
+const CustomComponents = () => import('@/views/CustomComponents.vue');
+
+// Authentication views
+const LoginForm = () => import('@/views/LoginForm.vue');
 
 // Single source of truth for routes and navigation
 const routeDefinitions = [
@@ -51,12 +88,20 @@ const routeDefinitions = [
   {
     path: '/',
     name: 'root',
-    redirect: '/dashboard',
+    redirect: '/home',
+  },
+
+  // Authentication routes
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginForm,
+    meta: { requiresAuth: false },
   },
 
   // Dashboard (Översikt)
   {
-    path: '/dashboard',
+    path: '/home',
     name: 'dashboard',
     component: Dashboard,
     navigation: {
@@ -67,7 +112,7 @@ const routeDefinitions = [
     },
   },
 
-  // Aktiviteter section
+  // Aktiviteter section (existing system)
   {
     path: '/activities',
     name: 'activities',
@@ -79,8 +124,6 @@ const routeDefinitions = [
       permissions: ['H', 'A', 'SA'],
       dropdown: [
         {
-          name: 'Aktiviteter',
-          icon: Calendar,
           children: [
             {
               name: 'Lista aktiviteter',
@@ -121,7 +164,7 @@ const routeDefinitions = [
     component: AttendanceRegistration,
   },
 
-  // Deltagare section
+  // Deltagare section (existing system)
   {
     path: '/participants',
     name: 'participants',
@@ -133,8 +176,6 @@ const routeDefinitions = [
       permissions: ['H', 'A', 'SA'],
       dropdown: [
         {
-          name: 'Deltagare',
-          icon: Users,
           children: [
             {
               name: 'Lista deltagare',
@@ -191,7 +232,7 @@ const routeDefinitions = [
     component: ParticipantGroups,
   },
 
-  // Rapporter section
+  // Rapporter section (existing system)
   {
     path: '/reports',
     name: 'reports',
@@ -203,8 +244,6 @@ const routeDefinitions = [
       permissions: ['A', 'SA'],
       dropdown: [
         {
-          name: 'Rapporter',
-          icon: BarChart3,
           children: [
             {
               name: 'Statistik',
@@ -228,57 +267,54 @@ const routeDefinitions = [
     name: 'export',
     component: Export,
   },
-
-  // Administration section (bottom navigation)
+  // Båtar section (moved to Development folder)
   {
-    path: '/admin',
-    name: 'admin',
-    component: UserManagement,
+    path: '/boats',
+    name: 'boats',
+    component: BoatList,
+  },
+  {
+    path: '/boats/customers',
+    name: 'boat-customers',
+    component: BoatCustomers,
+  },
+  {
+    path: '/boats/list',
+    name: 'boat-list',
+    component: BoatList,
+  },
+  {
+    path: '/boats/list/new',
+    name: 'boat-new',
+    component: BoatDetail,
+  },
+  {
+    path: '/boats/list/:id',
+    name: 'boat-detail',
+    component: BoatDetail,
+  },
+
+  // NEW SECTIONS FROM MIGRATED PROJECT
+
+  // Kund section with dropdown
+  {
+    path: '/customers',
+    name: 'customers',
+    component: CustomerList,
     navigation: {
-      name: 'Administration',
-      icon: Settings,
-      section: 'bottom',
+      name: 'Kund',
+      icon: Users,
+      section: 'main',
       permissions: ['H', 'A', 'SA'],
       dropdown: [
         {
-          name: 'Administration',
-          icon: Settings,
           children: [
+            { name: 'Kunder', path: '/customers', icon: Users, permissions: ['H', 'A', 'SA'] },
             {
-              name: 'Mina sidor',
-              path: '/my-profile',
-              icon: User,
+              name: 'Kontaktpersoner',
+              path: '/contacts',
+              icon: UserCheck,
               permissions: ['H', 'A', 'SA'],
-            },
-            {
-              name: 'Användarhantering',
-              path: '/admin/users',
-              icon: UserCog,
-              permissions: ['A', 'SA'],
-            },
-            {
-              name: 'Inställningar',
-              path: '/settings',
-              icon: Cog,
-              permissions: ['SA'],
-            },
-            {
-              name: 'Teman',
-              path: '/themes',
-              icon: Palette,
-              permissions: ['SA'],
-            },
-            {
-              name: 'Aktivitetstyper',
-              path: '/activity-types',
-              icon: Tag,
-              permissions: ['A', 'SA'],
-            },
-            {
-              name: 'Aktivitetsmallar',
-              path: '/activity-templates',
-              icon: FileText,
-              permissions: ['A', 'SA'],
             },
           ],
         },
@@ -286,30 +322,284 @@ const routeDefinitions = [
     },
   },
   {
-    path: '/my-profile',
-    name: 'my-profile',
-    component: MyProfile,
+    path: '/customers/:id',
+    name: 'customer-detail',
+    component: CustomerDetail,
   },
   {
-    path: '/admin/users',
-    name: 'admin-users',
-    component: UserManagement,
+    path: '/contacts',
+    name: 'contacts',
+    component: ContactPersonList,
   },
   {
-    path: '/admin/users/:id',
+    path: '/contacts/:id',
+    name: 'contact-detail',
+    component: ContactPersonDetail,
+  },
+
+  // Temporis section with all work management tools
+  {
+    path: '/work-orders',
+    name: 'work-orders',
+    component: WorkOrderList,
+    navigation: {
+      name: 'Temporis',
+      icon: FolderOpen,
+      section: 'main',
+      permissions: ['H', 'A', 'SA'],
+      dropdown: [
+        {
+          name: 'Arbetsordrar',
+          icon: ClipboardList,
+          children: [
+            {
+              name: 'Arbetsordrar',
+              path: '/work-orders',
+              icon: ClipboardList,
+              permissions: ['H', 'A', 'SA'],
+            },
+            {
+              name: 'Klara för attestering',
+              path: '/ready-attestation',
+              icon: CheckCircle,
+              permissions: ['A', 'SA'],
+            },
+            {
+              name: 'Klara för Fakturering',
+              path: '/ready-invoicing',
+              icon: FileText,
+              permissions: ['A', 'SA'],
+            },
+            {
+              name: 'Rapport',
+              path: '/work-order-report',
+              icon: BarChart3,
+              permissions: ['A', 'SA'],
+            },
+          ],
+        },
+        {
+          name: 'Maskiner',
+          icon: Wrench,
+          children: [
+            { name: 'Maskiner', path: '/machines', icon: Wrench, permissions: ['H', 'A', 'SA'] },
+            { name: 'Redskap', path: '/tools', icon: Settings, permissions: ['H', 'A', 'SA'] },
+            {
+              name: 'Sammanställning',
+              path: '/machine-summary',
+              icon: PieChart,
+              permissions: ['A', 'SA'],
+            },
+          ],
+        },
+        {
+          name: 'Tid',
+          icon: Clock,
+          children: [
+            {
+              name: 'Tidredovisning',
+              path: '/time-reporting',
+              icon: Clock,
+              permissions: ['H', 'A', 'SA'],
+            },
+            {
+              name: 'Sammanställning',
+              path: '/time-summary',
+              icon: PieChart,
+              permissions: ['A', 'SA'],
+            },
+          ],
+        },
+        {
+          name: 'Planering',
+          icon: Calendar,
+          children: [
+            {
+              name: 'Planeringskalender',
+              path: '/planning-calendar',
+              icon: Calendar,
+              permissions: ['H', 'A', 'SA'],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    path: '/work-orders/:id',
+    name: 'work-order-detail',
+    component: WorkOrderDetail,
+  },
+  {
+    path: '/ready-attestation',
+    name: 'ready-attestation',
+    component: ReadyForAttestation,
+  },
+  {
+    path: '/ready-invoicing',
+    name: 'ready-invoicing',
+    component: ReadyForInvoicing,
+  },
+  {
+    path: '/work-order-report',
+    name: 'work-order-report',
+    component: WorkOrderReport,
+  },
+
+  // Machine routes (now part of Temporis)
+  {
+    path: '/machines',
+    name: 'machines',
+    component: MachineList,
+  },
+  {
+    path: '/machines/:id',
+    name: 'machine-detail',
+    component: MachineDetail,
+  },
+  {
+    path: '/tools',
+    name: 'tools',
+    component: ToolList,
+  },
+  {
+    path: '/tools/:id',
+    name: 'tool-detail',
+    component: ToolDetail,
+  },
+  {
+    path: '/machine-summary',
+    name: 'machine-summary',
+    component: MachineSummary,
+  },
+
+  // Planning Calendar route (now part of Temporis)
+  {
+    path: '/planning-calendar',
+    name: 'planning-calendar',
+    component: PlanningCalendar,
+  },
+
+  // Time reporting routes (now part of Temporis)
+  {
+    path: '/time-reporting',
+    name: 'time-reporting',
+    component: TimeReporting,
+  },
+
+  {
+    path: '/time-summary',
+    name: 'time-summary',
+    component: TimeSummary,
+  },
+
+  // BOTTOM NAVIGATION - Updated structure from migrated project
+
+  // Development folder (bottom navigation)
+  {
+    path: '/custom-components',
+    name: 'custom-components',
+    component: CustomComponents,
+    navigation: {
+      name: 'Development',
+      icon: Code,
+      section: 'bottom',
+      permissions: ['H', 'A', 'SA'],
+      dropdown: [
+        {
+          name: 'Komponenter',
+          icon: Package,
+          children: [
+            {
+              name: 'Komponenter',
+              path: '/custom-components',
+              icon: Package,
+              permissions: ['H', 'A', 'SA'],
+            },
+          ],
+        },
+        {
+          name: 'Båtar',
+          icon: Anchor,
+          children: [
+            {
+              name: 'Kunder',
+              path: '/boats/customers',
+              icon: Users,
+              permissions: ['H', 'A', 'SA'],
+            },
+            {
+              name: 'Båtar',
+              path: '/boats/list',
+              icon: Anchor,
+              permissions: ['H', 'A', 'SA'],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Inställningar section with dropdown (bottom navigation)
+  {
+    path: '/settings',
+    name: 'settings',
+    component: UserDetail,
+    navigation: {
+      name: 'Inställningar',
+      icon: Settings,
+      section: 'bottom',
+      permissions: ['H', 'A', 'SA'],
+      dropdown: [
+        {
+          name: 'Användare',
+          icon: Users,
+          children: [
+            {
+              name: 'Mitt konto',
+              path: '/settings/my-account',
+              icon: User,
+              permissions: ['H', 'A', 'SA'],
+            },
+            {
+              name: 'Inloggningskonton',
+              path: '/settings/login-accounts',
+              icon: UserCheck,
+              permissions: ['A', 'SA'],
+            },
+            {
+              name: 'Behörighetsgrupper',
+              path: '/settings/permission-groups',
+              icon: Shield,
+              permissions: ['A', 'SA'],
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // User management routes
+  {
+    path: '/settings/my-account',
+    name: 'settings-my-account',
+    component: UserDetail,
+  },
+  {
+    path: '/settings/login-accounts',
+    name: 'settings-login-accounts',
+    component: UserList,
+  },
+  {
+    path: '/settings/login-accounts/:id',
     name: 'user-detail',
     component: UserDetail,
   },
   {
-    path: '/settings',
-    name: 'settings',
-    component: SystemSettings,
+    path: '/settings/permission-groups',
+    name: 'settings-permission-groups',
+    component: PermissionGroups,
   },
-  {
-    path: '/themes',
-    name: 'themes',
-    component: ThemeSettings,
-  },
+
+  // Legacy routes for existing activity management system
   {
     path: '/activity-types',
     name: 'activity-types',
@@ -340,41 +630,29 @@ const routeDefinitions = [
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    redirect: '/dashboard',
+    redirect: '/home',
   },
 ];
-
-// Helper function to check permissions
-const hasPermission = (userRole: string, requiredPermissions: string[]) => {
-  const roleMap: { [key: string]: string } = {
-    Handläggare: 'H',
-    Administratör: 'A',
-    Systemadministratör: 'SA',
-  };
-
-  const userPermission = roleMap[userRole] ?? 'H';
-  return requiredPermissions.includes(userPermission);
-};
 
 // Derive navigation items by section with permission filtering
 export const mainNavigationItems = routeDefinitions
   .filter(route => route.navigation?.section === 'main')
   .map(route => ({
-    name: route.navigation?.name ?? '',
+    name: route.navigation!.name,
     path: route.path,
-    icon: route.navigation?.icon,
-    dropdown: route.navigation?.dropdown,
-    permissions: route.navigation?.permissions ?? [],
+    icon: route.navigation!.icon,
+    dropdown: route.navigation!.dropdown,
+    permissions: route.navigation!.permissions,
   }));
 
 export const bottomNavigationItems = routeDefinitions
   .filter(route => route.navigation?.section === 'bottom')
   .map(route => ({
-    name: route.navigation?.name ?? '',
+    name: route.navigation!.name,
     path: route.path,
-    icon: route.navigation?.icon,
-    dropdown: route.navigation?.dropdown,
-    permissions: route.navigation?.permissions ?? [],
+    icon: route.navigation!.icon,
+    dropdown: route.navigation!.dropdown,
+    permissions: route.navigation!.permissions,
   }));
 
 // Keep legacy export for compatibility
@@ -393,69 +671,91 @@ const router = createRouter({
 });
 
 // Navigation guards with permission checking
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   console.log(`[Router] Navigating to: ${to.fullPath}`);
 
   // Always redirect root to dashboard
   if (to.path === '/') {
-    next('/dashboard');
+    next('/home');
     return;
   }
 
-  // Permission checking implementation
+  // Allow access to login page without authentication
+  if (to.name === 'login') {
+    next();
+    return;
+  }
+
+  // Check for stored user data directly to avoid circular dependency issues
   try {
-    // Import auth composable dynamically to avoid circular dependencies
-    import('@/composables/useAuth')
-      .then(({ useAuth }) => {
-        const { currentUser } = useAuth();
-        const user = currentUser.value;
+    let currentUser = null;
 
-        if (!user) {
-          console.warn('[Router] No authenticated user found');
-          next('/login'); // Redirect to login if no user
-          return;
+    // Try to get user from localStorage first
+    const storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+      try {
+        currentUser = JSON.parse(storedUser);
+      } catch (error) {
+        console.error('[Router] Error parsing stored user:', error);
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('authToken');
+      }
+    }
+
+    // If no stored user and we're in development mode, set default user
+    if (!currentUser && (import.meta.env.DEV || import.meta.env['VITE_USE_MOCK_API'] === 'true')) {
+      try {
+        // Import API dynamically to avoid circular dependencies
+        const { default: api } = await import('@/api');
+        const response = await api.auth.getDefaultUser();
+        if (response.success && response.data) {
+          currentUser = response.data;
+          const mockToken = `mock-token-${response.data.id}-${Date.now()}`;
+          localStorage.setItem('currentUser', JSON.stringify(response.data));
+          localStorage.setItem('authToken', mockToken);
+          console.log('🔧 Development mode: Auto-logged in as default user (Lars Thomas)');
         }
+      } catch (error) {
+        console.error('[Router] Error setting default user:', error);
+      }
+    }
 
-        const route = routeDefinitions.find(r => r.name === to.name);
-        if (route?.navigation?.permissions) {
-          const userRoles = user.roller;
-          const requiredPermissions = route.navigation.permissions;
+    if (!currentUser) {
+      console.warn('[Router] No authenticated user found');
+      next('/login');
+      return;
+    }
 
-          // Map permission codes to role names (matching the actual role names in useAuth)
-          const permissionToRole: { [key: string]: string[] } = {
-            H: ['handlaggare'],
-            A: ['administrator', 'enhetsansvarig'],
-            SA: ['systemadministrator'],
-          };
+    // Check permissions for the route
+    const route = routeDefinitions.find(r => r.name === to.name);
+    if (route?.navigation?.permissions) {
+      const requiredPermissions = route.navigation.permissions;
 
-          const allowedRoles = requiredPermissions.flatMap(perm => permissionToRole[perm] ?? []);
-          const hasAccess = allowedRoles.some(role => userRoles.includes(role));
+      // Map permission codes to role names (matching the actual role names in useAuth)
+      const permissionToRole: { [key: string]: string[] } = {
+        H: ['Handläggare'],
+        A: ['Administratör', 'Enhetsansvarig'],
+        SA: ['Systemadministratör'],
+      };
 
-          if (!hasAccess) {
-            console.warn(`[Router] Access denied to ${to.path}`);
-            console.warn(`[Router] User roles:`, userRoles);
-            console.warn(`[Router] Required permissions:`, requiredPermissions);
-            console.warn(`[Router] Allowed roles:`, allowedRoles);
-            next('/dashboard'); // Redirect to dashboard if no permission
-            return;
-          }
-        }
+      const allowedRoles = requiredPermissions.flatMap(perm => permissionToRole[perm] ?? []);
+      const hasAccess = allowedRoles.includes(currentUser.role);
 
-        next();
-      })
-      .catch(error => {
-        console.error('[Router] Error checking permissions:', error);
-        next(); // Continue navigation on error
-      });
+      if (!hasAccess) {
+        console.warn(`[Router] Access denied to ${to.path}`);
+        console.warn(`[Router] User role:`, currentUser.role);
+        console.warn(`[Router] Required permissions:`, requiredPermissions);
+        console.warn(`[Router] Allowed roles:`, allowedRoles);
+        next('/home'); // Redirect to dashboard if no permission
+        return;
+      }
+    }
+
+    next();
   } catch (error) {
-    console.error('[Router] Permission check failed:', error);
-    next(); // Continue navigation on error
+    console.error('[Router] Navigation error:', error);
+    next('/login');
   }
 });
 
-router.afterEach(to => {
-  console.log(`[Router] Finished navigating to: ${to.fullPath}`);
-});
-
-export { hasPermission };
 export default router;

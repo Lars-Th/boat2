@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "name": "Administratör",
+    "administreraInloggningskonton": true,
+    "hanteraAnvandare": true,
+    "laddaUppOchRedigera": true,
+    "visaOchLaddaNer": true,
+    "lasaPubliceradeNyheter": true,
+    "publiceranyheter": true,
+    "administreraKategorier": true,
+    "redigeraVerksamheter": true,
+    "skapaVerksamheter": true
+  },
+  {
+    "id": 2,
+    "name": "Full tillgång till dokument",
+    "administreraInloggningskonton": false,
+    "hanteraAnvandare": false,
+    "laddaUppOchRedigera": true,
+    "visaOchLaddaNer": true,
+    "lasaPubliceradeNyheter": true,
+    "publiceranyheter": false,
+    "administreraKategorier": false,
+    "redigeraVerksamheter": false,
+    "skapaVerksamheter": false
+  },
+  {
+    "id": 3,
+    "name": "Tillgång till dokument",
+    "administreraInloggningskonton": false,
+    "hanteraAnvandare": false,
+    "laddaUppOchRedigera": false,
+    "visaOchLaddaNer": true,
+    "lasaPubliceradeNyheter": true,
+    "publiceranyheter": false,
+    "administreraKategorier": false,
+    "redigeraVerksamheter": false,
+    "skapaVerksamheter": false
+  },
+  {
+    "id": 4,
+    "name": "Versamhetsanvändare",
+    "administreraInloggningskonton": false,
+    "hanteraAnvandare": false,
+    "laddaUppOchRedigera": false,
+    "visaOchLaddaNer": false,
+    "lasaPubliceradeNyheter": true,
+    "publiceranyheter": false,
+    "administreraKategorier": false,
+    "redigeraVerksamheter": true,
+    "skapaVerksamheter": true
+  }
+]

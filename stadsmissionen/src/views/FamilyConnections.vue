@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import PageLayout from '@/components/layout/PageLayout.vue';
+import { computed, ref } from 'vue';
+import StandardHeader from '@/components/layout/StandardHeader.vue';
 import DataTable from '@/components/shared/DataTable.vue';
+import PaginationControls from '@/components/shared/PaginationControls.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,8 +14,9 @@ import { useApiList } from '@/composables/useApi';
 import api from '@/api';
 import type { Participant } from '@/types';
 
-// Import family relations data (temporary until API is fully implemented)
-import familyRelationsJsonData from '@/assets/data/familyRelations.json';
+// Pagination state
+const currentPage = ref(1);
+const itemsPerPage = ref(25);
 
 // Type definition for FamilyRelation (component-specific)
 interface FamilyRelation {
@@ -35,18 +37,15 @@ interface FamilyGroup {
   siblings: SiblingRelation[];
 }
 
-// Fetch data using API service
+// Fetch participants using enhanced API with family relationships
 const {
   data: participants,
   loading: participantsLoading,
   error: participantsError,
   refresh: refreshParticipants,
-} = useApiList<Participant>(() => api.participants.getAll(), {
-  cacheKey: 'participants',
+} = useApiList<Participant>(() => api.participants.getAll({ include: ['family'] }), {
+  cacheKey: 'participantsWithFamily',
 });
-
-// Use JSON data for now (TODO: Replace with API call when familyRelations endpoint is ready)
-const familyRelations = computed<FamilyRelation[]>(() => familyRelationsJsonData);
 
 // Loading and error states
 const isLoading = computed(() => participantsLoading.value);
@@ -64,6 +63,28 @@ const calculateAge = (personnummer: string) => {
   const currentYear = new Date().getFullYear();
   return currentYear - year;
 };
+
+// Extract family relations from participants' family relationship data
+const familyRelations = computed<FamilyRelation[]>(() => {
+  if (!participants.value) return [];
+
+  const relations: FamilyRelation[] = [];
+
+  // Extract family relationships from the enhanced API data
+  participants.value.forEach(participant => {
+    if (participant.family && participant.family.length > 0) {
+      participant.family.forEach(familyMember => {
+        relations.push({
+          ParticipantID: participant.ParticipantID,
+          RelatedParticipantID: familyMember.ParticipantID,
+          RelationType: familyMember.RelationType || 'Family',
+        });
+      });
+    }
+  });
+
+  return relations;
+});
 
 // Enhanced family relations with participant names
 const enhancedRelations = computed(() => {
@@ -180,274 +201,242 @@ const columns = [
   },
 ];
 
-// Statistics
+// Breadcrumbs
+const breadcrumbs = computed(() => [
+  { label: 'Dashboard', to: '/' },
+  { label: 'Deltagare', to: '/participants' },
+  { label: 'Familjerelationer', to: '', isCurrentPage: true },
+]);
+
+// Statistics calculated from relational data
 const stats = computed(() => {
   if (!familyRelations.value) {
     return [
-      { title: 'Totalt relationer', value: 0, icon: Users, color: 'blue' },
-      { title: 'Målsman-relationer', value: 0, icon: UserCheck, color: 'green' },
-      { title: 'Syskon-relationer', value: 0, icon: Users, color: 'purple' },
-      { title: 'Familjegrupper', value: 0, icon: Network, color: 'orange' },
+      { label: 'Totalt relationer', value: 0, color: 'text-blue-600' },
+      { label: 'Målsman-relationer', value: 0, color: 'text-green-600' },
+      { label: 'Syskon-relationer', value: 0, color: 'text-purple-600' },
+      { label: 'Familjegrupper', value: 0, color: 'text-orange-600' },
     ];
   }
 
   return [
     {
-      title: 'Totalt relationer',
+      label: 'Totalt relationer',
       value: familyRelations.value.length,
-      icon: Users,
-      color: 'blue',
+      color: 'text-blue-600',
     },
     {
-      title: 'Målsman-relationer',
+      label: 'Målsman-relationer',
       value: guardianRelations.value.length,
-      icon: UserCheck,
-      color: 'green',
+      color: 'text-green-600',
     },
     {
-      title: 'Syskon-relationer',
+      label: 'Syskon-relationer',
       value: siblingRelations.value.length,
-      icon: Users,
-      color: 'purple',
+      color: 'text-purple-600',
     },
     {
-      title: 'Familjegrupper',
+      label: 'Familjegrupper',
       value: familyGroups.value.length,
-      icon: Network,
-      color: 'orange',
+      color: 'text-orange-600',
     },
   ];
 });
 
-const handleAddRelation = () => {
-  // TODO: Open add relation dialog
-  console.log('Add new family relation');
+// Paginated relations
+const paginatedRelations = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return enhancedRelations.value.slice(start, end);
+});
+
+// Pagination handlers
+const handlePageUpdate = (page: number) => {
+  currentPage.value = page;
 };
 
-const handleDeleteRelation = (relation: Record<string, unknown>) => {
-  // TODO: Delete relation
-  console.log('Delete relation:', relation);
+const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
+  itemsPerPage.value = newItemsPerPage;
+  currentPage.value = 1;
+};
+
+// Handle adding new family connection
+const handleAddConnection = () => {
+  // TODO: Implement add family connection functionality
+  // This would likely open a modal or navigate to a form
+  console.log('Add family connection');
+};
+
+// Handle removing family connection
+const handleRemoveConnection = (relation: any) => {
+  // TODO: Implement remove family connection API call
+  console.log('Remove family connection:', relation);
 };
 </script>
 
 <template>
-  <PageLayout
-    title="Familjekopplingar"
-    breadcrumbs="Dashboard / Deltagare / Familjekopplingar"
-    show-stats
-    :stats="stats"
-  >
+  <div>
+    <!-- Header with title, breadcrumbs, and stats -->
+    <StandardHeader
+      title="Familjerelationer"
+      description="Hantera familjerelationer mellan deltagare"
+      :breadcrumbs="breadcrumbs"
+      :show-stats="true"
+      :stats="stats"
+    >
+      <template #actions>
+        <Button class="gap-2" @click="handleAddConnection">
+          <Plus class="h-4 w-4" />
+          Lägg till relation
+        </Button>
+      </template>
+    </StandardHeader>
+
     <!-- Loading State -->
     <div v-if="isLoading" class="flex items-center justify-center py-12">
       <div class="text-center">
         <Loader2 class="h-8 w-8 animate-spin mx-auto mb-4" />
-        <p class="text-muted-foreground">Laddar familjekopplingar...</p>
+        <p class="text-muted-foreground">Laddar familjerelationer...</p>
       </div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="hasError" class="flex items-center justify-center py-12">
-      <div class="text-center">
-        <AlertCircle class="h-8 w-8 text-destructive mx-auto mb-4" />
-        <p class="text-destructive mb-4">Ett fel uppstod vid laddning av familjekopplingar</p>
-        <Button variant="outline" @click="handleRefresh">Försök igen</Button>
+    <div v-else-if="hasError" class="text-center py-12">
+      <div class="text-red-500 mb-4">
+        <AlertCircle class="h-12 w-12 mx-auto mb-2" />
+        <p class="text-lg font-semibold">Kunde inte ladda familjerelationer</p>
+        <p class="text-sm text-muted-foreground mt-1">
+          {{ participantsError?.message }}
+        </p>
       </div>
+      <Button variant="outline" @click="handleRefresh">Försök igen</Button>
     </div>
 
     <!-- Main Content -->
-    <div v-else class="px-6 py-4 space-y-6">
-      <!-- Actions -->
-      <div class="flex justify-end">
-        <Button class="gap-2" @click="handleAddRelation">
-          <Plus class="h-4 w-4" />
-          Lägg till relation
-        </Button>
-      </div>
-
-      <!-- Empty State -->
-      <div v-if="enhancedRelations.length === 0" class="text-center py-12">
-        <Network class="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-        <h3 class="text-lg font-semibold mb-2">Inga familjekopplingar</h3>
-        <p class="text-muted-foreground mb-4">
-          Börja med att lägga till relationer mellan deltagare
-        </p>
-        <Button class="gap-2" @click="handleAddRelation">
-          <Plus class="h-4 w-4" />
-          Lägg till första relationen
-        </Button>
-      </div>
-
-      <!-- Tabs for different views -->
-      <Tabs v-else default-value="visual" class="w-full">
+    <div v-else>
+      <Tabs default-value="relations" class="space-y-6">
         <TabsList class="grid w-full grid-cols-3">
-          <TabsTrigger value="visual">
-            <Network class="h-4 w-4 mr-2" />
-            Relationsvy
-          </TabsTrigger>
-          <TabsTrigger value="guardians">
-            <UserCheck class="h-4 w-4 mr-2" />
-            Målsman ({{ guardianRelations.length }})
-          </TabsTrigger>
-          <TabsTrigger value="siblings">
-            <Users class="h-4 w-4 mr-2" />
-            Syskon ({{ siblingRelations.length }})
-          </TabsTrigger>
+          <TabsTrigger value="relations">Alla relationer</TabsTrigger>
+          <TabsTrigger value="families">Familjegrupper</TabsTrigger>
+          <TabsTrigger value="orphans">Enstaka personer</TabsTrigger>
         </TabsList>
 
-        <!-- Visual Relations View -->
-        <TabsContent value="visual" class="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle class="flex items-center gap-2">
-                <Network class="h-5 w-5" />
-                Familjegrupper ({{ familyGroups.length }})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div
-                v-if="familyGroups.length > 0"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        <!-- All Relations Tab -->
+        <TabsContent value="relations" class="space-y-4">
+          <DataTable
+            :data="paginatedRelations"
+            :columns="columns"
+            :search-fields="['participantName', 'relatedParticipantName', 'RelationType']"
+            placeholder="Sök familjerelationer..."
+          >
+            <template #actions="{ row }">
+              <Button
+                variant="ghost"
+                size="sm"
+                class="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                title="Ta bort relation"
+                @click="handleRemoveConnection(row)"
               >
-                <div
-                  v-for="(group, index) in familyGroups"
-                  :key="index"
-                  class="border rounded-lg p-4 space-y-4"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  <!-- Guardian -->
-                  <div class="text-center">
-                    <div class="bg-blue-100 dark:bg-blue-900 rounded-lg p-3 mb-2">
-                      <div class="font-semibold text-blue-800 dark:text-blue-200">
-                        {{
-                          `${(group as FamilyGroup)['guardian']?.Fornamn} ${(group as FamilyGroup)['guardian']?.Efternamn}` ||
-                          'Okänd målsman'
-                        }}
-                      </div>
-                      <div class="text-sm text-blue-600 dark:text-blue-300">
-                        {{
-                          (group as FamilyGroup)['guardian']
-                            ? calculateAge((group as FamilyGroup)['guardian'].Personnummer)
-                            : '?'
-                        }}
-                        år
-                      </div>
-                      <Badge variant="default" class="mt-1">Målsman</Badge>
-                    </div>
-                  </div>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </Button>
+            </template>
+          </DataTable>
 
-                  <!-- Connection line -->
-                  <div class="flex justify-center">
-                    <div class="w-px h-6 bg-gray-300" />
-                  </div>
+          <!-- Pagination Controls -->
+          <PaginationControls
+            :total-items="enhancedRelations.length"
+            :current-page="currentPage"
+            :items-per-page="itemsPerPage"
+            @update:current-page="handlePageUpdate"
+            @update:items-per-page="handleItemsPerPageUpdate"
+          />
+        </TabsContent>
 
-                  <!-- Children -->
-                  <div class="space-y-2">
+        <!-- Family Groups Tab -->
+        <TabsContent value="families" class="space-y-4">
+          <div v-if="familyGroups.length === 0" class="text-center py-12">
+            <Network class="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <p class="text-lg font-semibold">Inga familjegrupper</p>
+            <p class="text-sm text-muted-foreground">
+              Det finns inga identifierade familjegrupper ännu.
+            </p>
+          </div>
+
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card
+              v-for="family in familyGroups"
+              :key="family.guardian.ParticipantID"
+              class="relative"
+            >
+              <CardHeader class="pb-3">
+                <CardTitle class="text-lg flex items-center gap-2">
+                  <UserCheck class="h-5 w-5 text-green-600" />
+                  {{ family.guardian.Fornamn }} {{ family.guardian.Efternamn }}
+                  <Badge variant="outline" class="text-xs ml-auto">Målsman</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent class="space-y-3">
+                <!-- Children -->
+                <div v-if="family.children.length > 0">
+                  <h4 class="text-sm font-medium text-muted-foreground mb-2">Barn</h4>
+                  <div class="space-y-1">
                     <div
-                      v-for="child in (group as FamilyGroup)['children']"
+                      v-for="child in family.children"
                       :key="child.ParticipantID"
-                      class="bg-green-50 dark:bg-green-900 rounded-lg p-2 text-center"
+                      class="flex items-center gap-2 text-sm"
                     >
-                      <div class="font-medium text-green-800 dark:text-green-200">
-                        {{ `${child.Fornamn} ${child.Efternamn}` }}
-                      </div>
-                      <div class="text-sm text-green-600 dark:text-green-300">
+                      <Users class="h-4 w-4 text-blue-600" />
+                      {{ child.Fornamn }} {{ child.Efternamn }}
+                      <Badge variant="secondary" class="text-xs">
                         {{ calculateAge(child.Personnummer) }} år
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Sibling connections -->
-                  <div
-                    v-if="(group as FamilyGroup)['siblings'].length > 0"
-                    class="mt-4 pt-4 border-t"
-                  >
-                    <div class="text-xs text-muted-foreground text-center mb-2">
-                      Syskonrelationer
-                    </div>
-                    <div class="space-y-1">
-                      <div
-                        v-for="sibling in (group as FamilyGroup)['siblings']"
-                        :key="`${sibling.person1.ParticipantID}-${sibling.person2.ParticipantID}`"
-                        class="text-xs text-center bg-purple-50 dark:bg-purple-900 rounded p-1"
-                      >
-                        <span class="text-purple-700 dark:text-purple-300">
-                          {{ `${sibling.person1.Fornamn} ${sibling.person1.Efternamn}` }}
-                          ↔
-                          {{ `${sibling.person2.Fornamn} ${sibling.person2.Efternamn}` }}
-                        </span>
-                      </div>
+                      </Badge>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div v-else class="text-center py-8 text-muted-foreground">
-                Inga familjegrupper hittades
-              </div>
-            </CardContent>
-          </Card>
+
+                <!-- Siblings -->
+                <div v-if="family.siblings.length > 0">
+                  <h4 class="text-sm font-medium text-muted-foreground mb-2">Syskonrelationer</h4>
+                  <div class="space-y-1">
+                    <div
+                      v-for="sibling in family.siblings"
+                      :key="`${sibling.person1.ParticipantID}-${sibling.person2.ParticipantID}`"
+                      class="text-xs text-muted-foreground"
+                    >
+                      {{ sibling.person1.Fornamn }} ↔ {{ sibling.person2.Fornamn }}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
-        <!-- Guardian Relations Tab -->
-        <TabsContent value="guardians" class="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle class="flex items-center gap-2">
-                <UserCheck class="h-5 w-5" />
-                Målsman-relationer ({{ guardianRelations.length }})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div v-if="guardianRelations.length === 0" class="text-center py-8">
-                <UserCheck class="h-8 w-8 text-muted-foreground mx-auto mb-4" />
-                <p class="text-muted-foreground">Inga målsman-relationer registrerade</p>
-              </div>
-              <DataTable v-else :data="guardianRelations" :columns="columns">
-                <template #cell-RelationType="{ value }">
-                  <Badge variant="default">
-                    {{ value }}
-                  </Badge>
-                </template>
-
-                <template #cell-actions="{ row }">
-                  <Button size="sm" variant="destructive" @click="handleDeleteRelation(row)">
-                    Ta bort
-                  </Button>
-                </template>
-              </DataTable>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <!-- Sibling Relations Tab -->
-        <TabsContent value="siblings" class="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle class="flex items-center gap-2">
-                <Users class="h-5 w-5" />
-                Syskon-relationer ({{ siblingRelations.length }})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div v-if="siblingRelations.length === 0" class="text-center py-8">
-                <Users class="h-8 w-8 text-muted-foreground mx-auto mb-4" />
-                <p class="text-muted-foreground">Inga syskon-relationer registrerade</p>
-              </div>
-              <DataTable v-else :data="siblingRelations" :columns="columns">
-                <template #cell-RelationType="{ value }">
-                  <Badge variant="secondary">
-                    {{ value }}
-                  </Badge>
-                </template>
-
-                <template #cell-actions="{ row }">
-                  <Button size="sm" variant="destructive" @click="handleDeleteRelation(row)">
-                    Ta bort
-                  </Button>
-                </template>
-              </DataTable>
-            </CardContent>
-          </Card>
+        <!-- Orphans Tab -->
+        <TabsContent value="orphans" class="space-y-4">
+          <div class="text-center py-12">
+            <Users class="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <p class="text-lg font-semibold">Enstaka personer</p>
+            <p class="text-sm text-muted-foreground">
+              Personer utan registrerade familjerelationer visas här när funktionen är
+              implementerad.
+            </p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
-  </PageLayout>
+  </div>
 </template>

@@ -21,7 +21,7 @@ import {
 } from 'lucide-vue-next';
 
 // Use API service and composables
-import { useApiList } from '@/composables/useApi';
+import { useApiItem, useApiList } from '@/composables/useApi';
 import api from '@/api';
 import type { Activity, ActivityType, Attendance, Participant, TableColumn } from '@/types';
 
@@ -33,25 +33,23 @@ const router = useRouter();
 
 const participantId = computed(() => parseInt(route.params['id'] as string));
 
-// Fetch data using API services
+// Fetch participant with related data using relational API
 const {
-  data: participants,
-  loading: participantsLoading,
-  error: participantsError,
-  refresh: refreshParticipants,
-} = useApiList<Participant>(() => api.participants.getAll(), {
-  cacheKey: 'participants',
-});
+  data: participantWithRelations,
+  loading: participantLoading,
+  error: participantError,
+  refresh: refreshParticipant,
+} = useApiItem(
+  () =>
+    api.participants.getById(participantId.value.toString(), {
+      include: ['activities', 'family', 'attendances'],
+    }),
+  {
+    cacheKey: `participant-${participantId.value}`,
+  }
+);
 
-const {
-  data: activities,
-  loading: activitiesLoading,
-  error: activitiesError,
-  refresh: refreshActivities,
-} = useApiList<Activity>(() => api.activities.getAll(), {
-  cacheKey: 'activities',
-});
-
+// Fetch activity types for display
 const {
   data: activityTypes,
   loading: typesLoading,
@@ -61,14 +59,11 @@ const {
   cacheKey: 'activityTypes',
 });
 
-const {
-  data: attendances,
-  loading: attendancesLoading,
-  error: attendancesError,
-  refresh: refreshAttendances,
-} = useApiList<Attendance>(() => api.attendances.getAll(), {
-  cacheKey: 'attendances',
-});
+// Extract data from relational response
+const participant = computed(() => participantWithRelations.value);
+const activities = computed(() => participantWithRelations.value?.activities || []);
+const attendances = computed(() => participantWithRelations.value?.attendances || []);
+const familyMembers = computed(() => participantWithRelations.value?.familyMembers || []);
 
 // Mock family relations data (since API endpoint doesn't exist)
 interface FamilyRelation {
@@ -84,37 +79,14 @@ const familyRelationsData = computed((): FamilyRelation[] => {
 });
 
 // Loading and error states
-const isLoading = computed(
-  () =>
-    participantsLoading.value ||
-    activitiesLoading.value ||
-    typesLoading.value ||
-    attendancesLoading.value
-);
+const isLoading = computed(() => participantLoading.value || typesLoading.value);
 
-const hasError = computed(
-  () =>
-    participantsError.value !== null ||
-    activitiesError.value !== null ||
-    typesError.value !== null ||
-    attendancesError.value !== null
-);
+const hasError = computed(() => participantError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
-  await Promise.all([
-    refreshParticipants(),
-    refreshActivities(),
-    refreshTypes(),
-    refreshAttendances(),
-  ]);
+  await Promise.all([refreshParticipant(), refreshTypes()]);
 };
-
-// Find participant
-const participant = computed(() => {
-  if (!participants.value) return null;
-  return participants.value.find(p => p.ParticipantID === participantId.value);
-});
 
 // Calculate age
 const calculateAge = (personnummer: string) => {

@@ -141,7 +141,7 @@ const selectedActivityTypes = computed(() => {
   if (!activityTypes.value) return [];
   return form.value.aktivitetstyper
     .map(id => {
-      return activityTypes.value?.find(type => type.ActivityTypeID.toString() === id);
+      return activityTypes.value?.find(type => type.ActivityTypeID === parseInt(id));
     })
     .filter((type): type is NonNullable<typeof type> => Boolean(type));
 });

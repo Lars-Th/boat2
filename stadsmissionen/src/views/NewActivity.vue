@@ -33,19 +33,28 @@ const router = useRouter();
 const { success, warning } = useToast();
 const { getCurrentUserId } = useAuth();
 
-// Fetch data using API service
+// Fetch data using enhanced API service with relational parameters
 const {
   data: activityTemplates,
   loading: templatesLoading,
   error: templatesError,
   refresh: refreshTemplates,
-} = useApiList<ActivityTemplate>(() => api.activityTemplates.getAll(), {
+} = useApiList<ActivityTemplate>(() => api.activityTemplates.getAll({ include: ['type'] }), {
   cacheKey: 'activityTemplates',
 });
 
+// Fetch activity types for dropdown population
+const {
+  data: activityTypes,
+  loading: typesLoading,
+  error: typesError,
+} = useApiList(() => api.activityTypes.getAll(), {
+  cacheKey: 'activityTypes',
+});
+
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value);
-const hasError = computed(() => templatesError.value !== null);
+const isLoading = computed(() => templatesLoading.value || typesLoading.value);
+const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {

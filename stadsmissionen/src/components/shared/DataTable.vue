@@ -11,14 +11,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  ArrowUpDown,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  Mail,
-  Trash2,
-} from 'lucide-vue-next';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ArrowUpDown, ChevronDown, ChevronUp, Edit, Trash2 } from 'lucide-vue-next';
 import type { TableColumn } from '@/types';
 
 interface Props {
@@ -41,7 +40,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  itemsPerPage: 10,
+  itemsPerPage: 25,
   searchFields: () => [],
   filterField: '',
   filterOptions: () => [],
@@ -54,14 +53,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   rowClick: [item: Record<string, unknown>];
-  sendEmail: [item: Record<string, unknown>, event: Event];
   delete: [item: Record<string, unknown>, event: Event];
   edit: [item: Record<string, unknown>];
   view: [item: Record<string, unknown>];
 }>();
-
-// Paginering
-const currentPage = ref(1);
 
 // Sök och filter
 const searchQuery = ref('');
@@ -71,14 +66,55 @@ const statusFilter = ref('all');
 const sortField = ref('');
 const sortDirection = ref<'asc' | 'desc'>('asc');
 
-// Filtrerad och sorterad lista
+// Function to get responsive classes for columns
+const getResponsiveClasses = (column: TableColumn, index: number) => {
+  // Use custom class if provided
+  if (column.class) {
+    return column.class;
+  }
+
+  // Always show name/company columns and actions
+  if (
+    column.key === 'name' ||
+    column.key === 'companyName' ||
+    column.key === 'company' ||
+    column.type === 'actions' ||
+    column.key === 'actions'
+  ) {
+    return '';
+  }
+
+  // Always show first non-name column (usually the first filter/category)
+  const nameColumnExists = props.columns.some(
+    col => col.key === 'name' || col.key === 'companyName' || col.key === 'company'
+  );
+  const firstDataColumnIndex = nameColumnExists ? 1 : 0;
+
+  if (index === firstDataColumnIndex && column.type !== 'actions' && column.key !== 'actions') {
+    return '';
+  }
+
+  // Hide other columns on smaller screens
+  // sm: >= 640px, md: >= 768px, lg: >= 1024px, xl: >= 1280px
+  if (index <= 2) {
+    return 'hidden sm:table-cell'; // Show from small screens up
+  } else if (index <= 4) {
+    return 'hidden md:table-cell'; // Show from medium screens up
+  } else {
+    return 'hidden lg:table-cell'; // Show from large screens up
+  }
+};
+
+// Filtrerad och sorterad lista - now returns all data since pagination is handled externally
 const filteredData = computed(() => {
   const filtered = props.data.filter((item: Record<string, unknown>) => {
     // Search functionality
     const matchesSearch =
       props.searchFields.length === 0 ||
       props.searchFields.some(field => {
-        const value = item[field];
+        const value = field.includes('.')
+          ? field.split('.').reduce((obj: any, key: string) => obj?.[key], item)
+          : item[field];
         return value && String(value).toLowerCase().includes(searchQuery.value.toLowerCase());
       });
 
@@ -109,25 +145,6 @@ const filteredData = computed(() => {
   return filtered;
 });
 
-// Paginerad lista
-const paginatedData = computed(() => {
-  const itemsPerPageValue = props.itemsPerPage ?? 10;
-  const start = (currentPage.value - 1) * itemsPerPageValue;
-  const end = start + itemsPerPageValue;
-  return filteredData.value.slice(start, end);
-});
-
-// Totalt antal sidor
-const totalPages = computed(() => {
-  const itemsPerPageValue = props.itemsPerPage ?? 10;
-  return Math.ceil(filteredData.value.length / itemsPerPageValue);
-});
-
-// Reset page when search or filter changes
-watch([searchQuery, statusFilter], () => {
-  currentPage.value = 1;
-});
-
 const sortBy = (field: string) => {
   if (sortField.value === field) {
     sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
@@ -149,14 +166,6 @@ const handleRowClick = (item: Record<string, unknown>) => {
   emit('rowClick', item);
 };
 
-const handleSendEmail = (item: Record<string, unknown>, event: Event) => {
-  event.stopPropagation();
-  if (props.onSendEmail) {
-    props.onSendEmail(item, event);
-  }
-  emit('sendEmail', item, event);
-};
-
 const handleDelete = (item: Record<string, unknown>, event: Event) => {
   event.stopPropagation();
   if (confirm(props.deleteConfirmMessage)) {
@@ -167,30 +176,20 @@ const handleDelete = (item: Record<string, unknown>, event: Event) => {
   }
 };
 
-const goToPage = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-  }
-};
-
-const previousPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
-};
-
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
-};
-
 const getCellValue = (item: Record<string, unknown>, column: TableColumn) => {
-  if (column.render) {
-    return column.render(item[String(column.key)], item);
+  const value = item[column.key];
+
+  // Apply formatting if provided
+  if (column.format && value !== null && value !== undefined) {
+    return column.format(value);
   }
 
-  return item[String(column.key)];
+  // Apply custom render function if provided
+  if (column.render) {
+    return column.render(value, item);
+  }
+
+  return value;
 };
 
 const getBadgeVariant = (
@@ -212,8 +211,6 @@ defineExpose({
   searchQuery,
   statusFilter,
   filteredData,
-  currentPage,
-  totalPages,
 });
 </script>
 
@@ -231,146 +228,124 @@ defineExpose({
       <!-- Default filter implementation can be added here if needed -->
     </slot>
 
-    <!-- Table -->
-    <Table>
-      <TableHeader class="bg-gray-100">
-        <TableRow>
-          <TableHead
-            v-for="column in columns"
-            :key="column.key"
-            :class="[
-              'bg-gray-100 text-xs',
-              column.sortable ? 'cursor-pointer' : '',
-              column.align === 'right' ? 'text-right' : '',
-              column.align === 'center' ? 'text-center' : '',
-            ]"
-            :style="column.width ? { width: column.width } : {}"
-            @click="column.sortable ? sortBy(column.key) : null"
-          >
-            <div v-if="column.sortable" class="flex items-center gap-2">
-              {{ column.label }}
-              <component :is="getSortIcon(column.key)" class="h-3 w-3" />
-            </div>
-            <span v-else>{{ column.label }}</span>
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        <TableRow
-          v-for="(item, index) in paginatedData"
-          :key="String(item['id'] || item['ParticipantID'] || item['ActivityID'] || index)"
-          class="hover:bg-muted/30 cursor-pointer"
-          @click="handleRowClick(item)"
-        >
-          <TableCell
-            v-for="column in columns"
-            :key="column.key"
-            :class="[
-              'text-xs',
-              column.key === 'company' || column.key === 'name' ? 'font-bold' : '',
-              column.align === 'right' ? 'text-right' : '',
-              column.align === 'center' ? 'text-center' : '',
-            ]"
-          >
-            <!-- Badge type -->
-            <Badge
-              v-if="column.type === 'badge'"
-              :variant="getBadgeVariant(getCellValue(item, column), column)"
-              class="text-xs"
+    <!-- Table - full width without padding -->
+    <div class="w-full overflow-x-auto">
+      <Table class="w-full">
+        <TableHeader class="bg-gray-100">
+          <TableRow class="border-t border-gray-300 border-b border-gray-300">
+            <TableHead
+              v-for="(column, index) in columns"
+              :key="column.key"
+              :class="[
+                'bg-gray-100 text-xs px-6 first:pl-6 last:pr-6',
+                column.sortable ? 'cursor-pointer' : '',
+                column.align === 'right' ? 'text-right' : '',
+                column.align === 'center' ? 'text-center' : '',
+                getResponsiveClasses(column, index),
+              ]"
+              :style="column.width ? { width: column.width } : {}"
+              @click="column.sortable ? sortBy(column.key) : null"
             >
-              {{ getCellValue(item, column) }}
-            </Badge>
-
-            <!-- Custom type with slot -->
-            <slot
-              v-else-if="column.type === 'custom'"
-              :name="`cell-${column.key}`"
-              :value="getCellValue(item, column)"
-              :row="item"
+              <div
+                v-if="column.sortable"
+                class="flex items-center gap-2"
+                :class="
+                  column.align === 'right'
+                    ? 'justify-end'
+                    : column.align === 'center'
+                      ? 'justify-center'
+                      : ''
+                "
+              >
+                {{ column.label }}
+                <component :is="getSortIcon(column.key)" class="h-3 w-3" />
+              </div>
+              <span v-else>{{ column.label }}</span>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow
+            v-for="(item, index) in filteredData"
+            :key="String(item['id'] || item['ParticipantID'] || item['ActivityID'] || index)"
+            class="hover:bg-muted/30 cursor-pointer"
+            @click="handleRowClick(item)"
+          >
+            <TableCell
+              v-for="(column, colIndex) in columns"
+              :key="column.key"
+              :class="[
+                'text-xs px-6 first:pl-6 last:pr-6',
+                column.key === 'company' || column.key === 'name' || column.key === 'companyName'
+                  ? 'font-bold'
+                  : '',
+                column.align === 'right' ? 'text-right' : '',
+                column.align === 'center' ? 'text-center' : '',
+                column.class || '',
+                getResponsiveClasses(column, colIndex),
+              ]"
             >
-              {{ getCellValue(item, column) }}
-            </slot>
+              <!-- Badge type -->
+              <Badge
+                v-if="column.type === 'badge'"
+                :variant="getBadgeVariant(getCellValue(item, column), column)"
+                class="text-xs"
+              >
+                {{ getCellValue(item, column) }}
+              </Badge>
 
-            <!-- Actions type -->
-            <div v-else-if="column.type === 'actions'" class="flex gap-1 justify-end">
-              <!-- Custom actions slot -->
-              <slot name="actions" :row="item">
-                <!-- Default actions -->
-                <Button
-                  v-if="onSendEmail && item['email']"
-                  variant="ghost"
-                  size="sm"
-                  class="text-xs h-6 w-6 p-0"
-                  title="Skicka e-post"
-                  @click="handleSendEmail(item, $event)"
-                >
-                  <Mail class="h-3 w-3" />
-                </Button>
-                <Button
-                  v-if="onDelete"
-                  variant="ghost"
-                  size="sm"
-                  class="text-xs h-6 w-6 p-0 text-red-600 hover:text-red-800"
-                  title="Radera"
-                  @click="handleDelete(item, $event)"
-                >
-                  <Trash2 class="h-3 w-3" />
-                </Button>
+              <!-- Custom type with slot -->
+              <slot
+                v-else-if="column.type === 'custom'"
+                :name="`cell-${column.key}`"
+                :value="getCellValue(item, column)"
+                :row="item"
+              >
+                {{ getCellValue(item, column) }}
               </slot>
-            </div>
 
-            <!-- Regular text -->
-            <span v-else>{{ getCellValue(item, column) }}</span>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
+              <!-- Actions type -->
+              <div
+                v-else-if="column.type === 'actions'"
+                class="flex items-center gap-0.5 justify-end"
+                :class="
+                  column.align === 'right'
+                    ? 'justify-end'
+                    : column.align === 'center'
+                      ? 'justify-center'
+                      : ''
+                "
+              >
+                <!-- Custom actions slot -->
+                <slot name="row-actions" :row="item">
+                  <!-- Default actions - always show edit and delete -->
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    title="Redigera"
+                    @click="$emit('edit', item)"
+                  >
+                    <Edit class="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    title="Radera"
+                    @click="handleDelete(item, $event)"
+                  >
+                    <Trash2 class="h-3.5 w-3.5" />
+                  </Button>
+                </slot>
+              </div>
 
-    <!-- Pagination -->
-    <div class="flex items-center justify-between mt-4 mb-8 px-4">
-      <div class="text-xs text-muted-foreground">
-        Visar {{ (currentPage - 1) * (itemsPerPage ?? 10) + 1 }}-{{
-          Math.min(currentPage * (itemsPerPage ?? 10), filteredData.length)
-        }}
-        av {{ filteredData.length }} objekt
-      </div>
-      <div class="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          class="text-xs h-8"
-          :disabled="currentPage === 1"
-          @click="previousPage"
-        >
-          <ChevronLeft class="h-3 w-3 mr-1" />
-          Föregående
-        </Button>
-
-        <div class="flex gap-1">
-          <Button
-            v-for="page in Math.min(totalPages, 5)"
-            :key="page"
-            variant="outline"
-            size="sm"
-            class="text-xs h-8 w-8"
-            :class="{ 'bg-primary text-primary-foreground': page === currentPage }"
-            @click="goToPage(page)"
-          >
-            {{ page }}
-          </Button>
-        </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          class="text-xs h-8"
-          :disabled="currentPage === totalPages"
-          @click="nextPage"
-        >
-          Nästa
-          <ChevronRight class="h-3 w-3 ml-1" />
-        </Button>
-      </div>
+              <!-- Regular text -->
+              <span v-else>{{ getCellValue(item, column) }}</span>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
     </div>
   </div>
 </template>

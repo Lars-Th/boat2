@@ -6,30 +6,41 @@ import type { ApiError, ApiResponse } from '../api/client/types';
 
 // Core entity types
 export interface Customer {
-  id: number;
-  name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  postalCode?: string;
-  country?: string;
-  createdAt: string;
-  updatedAt: string;
+  CustomerID: number; // Matches JSON: "CustomerID"
+  CustomerNumber: string; // Matches JSON: "CustomerNumber"
+  CompanyName: string; // Matches JSON: "CompanyName"
+  OrganizationNumber: string; // Matches JSON: "OrganizationNumber"
+  Phone: string; // Matches JSON: "Phone"
+  Email: string; // Matches JSON: "Email"
+  Address: string; // Matches JSON: "Address"
+  PostalCode: string; // Matches JSON: "PostalCode"
+  City: string; // Matches JSON: "City"
+  Country: string; // Matches JSON: "Country"
+  InvoiceAddress: {
+    // Matches JSON nested structure
+    Address: string;
+    PostalCode: string;
+    City: string;
+  };
+  PaymentTerms: number; // Matches JSON: "PaymentTerms"
+  VATNumber: string; // Matches JSON: "VATNumber"
+  Status: 'active' | 'inactive'; // Matches JSON: "Status" with enum validation
+  CreatedDate: string; // Matches JSON: "CreatedDate"
+  Notes: string; // Matches JSON: "Notes"
 }
 
 export interface Contact {
-  id: number;
-  customerId: number;
-  firstName: string;
-  lastName: string;
-  email?: string;
-  phone?: string;
-  position?: string;
-  department?: string;
-  isPrimary: boolean;
-  createdAt: string;
-  updatedAt: string;
+  ContactID: number; // Matches JSON: "ContactID"
+  CustomerID: number; // Matches JSON: "CustomerID"
+  FirstName: string; // Matches JSON: "FirstName"
+  LastName: string; // Matches JSON: "LastName"
+  Title: string; // Matches JSON: "Title"
+  Phone: string; // Matches JSON: "Phone"
+  Mobile: string; // Matches JSON: "Mobile"
+  Email: string; // Matches JSON: "Email"
+  Department: string; // Matches JSON: "Department"
+  IsPrimary: boolean; // Matches JSON: "IsPrimary"
+  Notes: string; // Matches JSON: "Notes"
 }
 
 export interface WorkOrder {
@@ -69,6 +80,14 @@ export enum WorkOrderPriority {
 
 // User and Authentication types
 export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  permissionID: number;
+}
+
+export interface UserExtended {
   id: string;
   namn: string;
   epost: string;
@@ -106,6 +125,7 @@ export interface TableColumn<T = Record<string, unknown>> {
   align?: 'left' | 'center' | 'right';
   type?: 'text' | 'badge' | 'actions' | 'custom';
   render?: (value: unknown, row: T) => string | VNode;
+  format?: (value: unknown) => string;
   badgeVariant?: (value: unknown) => string;
 }
 
@@ -149,63 +169,146 @@ export interface SortOption {
   direction: 'asc' | 'desc';
 }
 
-// Toast/Notification types
+// Enhanced Toast types from advanced toast library
+export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'confirm';
+export type ToastVariant = 'default' | 'destructive' | 'success' | 'warning';
+export type ToastPosition =
+  | 'top-right'
+  | 'top-left'
+  | 'bottom-right'
+  | 'bottom-left'
+  | 'top-center'
+  | 'bottom-center';
+
 export interface ToastAction {
   label: string;
   action: () => void;
   style?: 'primary' | 'secondary' | 'destructive';
+  variant?: 'default' | 'outline' | 'ghost';
 }
 
-export type ToastVariant = 'default' | 'destructive' | 'success' | 'warning' | 'info' | 'confirm';
-export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'confirm';
-
-export interface BaseToastOptions {
-  type?: ToastType;
-  title?: string;
+export interface Toast {
+  id: string;
+  title: string;
   description?: string;
+  message?: string;
   variant?: ToastVariant;
-  timeout?: number;
+  type?: ToastType;
+  timestamp: number;
+  read: boolean;
   duration?: number;
   persistent?: boolean;
   actions?: ToastAction[];
+  position?: ToastPosition;
+  icon?: string;
+  closable?: boolean;
 }
 
-export interface Toast extends BaseToastOptions {
-  id: string;
-  timestamp: number;
-  read?: boolean;
-  confirmVariant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+export interface ToastOptions {
+  title: string;
+  message?: string;
+  description?: string;
+  type?: ToastType;
+  variant?: ToastVariant;
+  duration?: number;
+  persistent?: boolean;
+  actions?: ToastAction[];
+  position?: ToastPosition;
+  icon?: string;
+  closable?: boolean;
+}
+
+export interface ToastConfig {
+  position?: ToastPosition;
+  duration?: number;
+  maxToasts?: number;
+  pauseOnHover?: boolean;
+  closeOnClick?: boolean;
+  showProgressBar?: boolean;
+  newestOnTop?: boolean;
+  preventDuplicates?: boolean;
+  icons?: {
+    success?: string;
+    error?: string;
+    warning?: string;
+    info?: string;
+    confirm?: string;
+  };
+}
+
+export interface UseToastReturn {
+  toasts: Ref<Toast[]>;
+  addToast: (options: ToastOptions) => string;
+  removeToast: (id: string) => void;
+  clearToasts: () => void;
+  updateToast: (id: string, options: Partial<ToastOptions>) => void;
+  success: (
+    title: string,
+    description?: string,
+    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
+  error: (
+    title: string,
+    description?: string,
+    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
+  warning: (
+    title: string,
+    description?: string,
+    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
+  info: (
+    title: string,
+    description?: string,
+    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
+  ) => string;
+  confirm: (
+    title: string,
+    description?: string,
+    onConfirm?: () => void,
+    onCancel?: () => void
+  ) => string;
+  promise: <T>(
+    promise: Promise<T>,
+    options: { loading: string; success: string; error: string }
+  ) => Promise<T>;
+  unsavedChanges: (onSave: () => void, onDiscard: () => void) => string;
+  config: ToastConfig;
+  setConfig: (newConfig: Partial<ToastConfig>) => void;
+}
+
+// Legacy notification types for backward compatibility
+export interface Notification extends Toast {
+  confirm?: boolean;
   onConfirm?: () => void;
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
 }
 
-export interface UseToastReturn {
-  toasts: Ref<Toast[]>;
-  addToast: (options: BaseToastOptions) => string;
-  removeToast: (id: string) => void;
-  clearToasts: () => void;
-  success: (
-    title: string,
-    description?: string,
-    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
-  error: (
-    title: string,
-    description?: string,
-    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
-  warning: (
-    title: string,
-    description?: string,
-    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
-  info: (
-    title: string,
-    description?: string,
-    options?: Omit<BaseToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
+export interface NotificationOptions {
+  title: string;
+  message?: string;
+  description?: string;
+  type?: 'success' | 'error' | 'warning' | 'info' | 'confirm';
+  duration?: number;
+  persistent?: boolean;
+  actions?: NotificationAction[];
+}
+
+export interface NotificationAction {
+  label: string;
+  action: () => void;
+  style?: 'primary' | 'secondary' | 'destructive';
+}
+
+export interface UseNotificationsReturn {
+  notifications: Ref<Notification[]>;
+  unreadCount: Ref<number>;
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  removeNotification: (id: string) => void;
+  markAsRead: (id: string) => void;
+  clearAll: () => void;
 }
 
 // Statistics interface
@@ -372,6 +475,37 @@ export interface LoginAccount {
   status: string;
   lastLogin: string;
   fullName?: string;
+}
+
+export interface Boat {
+  BoatID: number;
+  BoatNumber: string;
+  BoatName: string;
+  RegistrationNumber: string;
+  BoatType: string;
+  BoatModel: string;
+  YearBuilt: number;
+  Length: number;
+  Width: number;
+  Owner: string;
+  OwnerPhone: string;
+  OwnerEmail: string;
+  HarbourLocation: string;
+  Status: 'active' | 'maintenance' | 'inactive';
+  CreatedDate: string;
+  LastModified: string;
+  LastService: string;
+  NextService: string;
+  TechnicalDetails: {
+    Engine: string;
+    FuelType: string;
+    HullMaterial: string;
+    SailArea?: number;
+    Draft?: number;
+    MaxSpeed?: number;
+    FuelCapacity?: number;
+  };
+  Notes: string;
 }
 
 // Route params interface

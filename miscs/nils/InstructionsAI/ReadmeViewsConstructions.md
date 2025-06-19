@@ -39,7 +39,7 @@ These components are typically unstyled or minimally styled and focus on functio
 Custom components encapsulate business logic and provide reusable patterns:
 - **PageLayout.vue**: Standard page wrapper with breadcrumbs, stats, and title
 - **DataTable.vue**: Feature-rich table with sorting, filtering, and actions
-- **SearchAndFilter.vue**: Search and filter bar with action buttons
+- **ViewControls.vue**: Search and filter bar with action buttons
 - **DashboardCard.vue**: Card component for dashboard metrics
 - **ProspectorChat.vue**: Chat interface component
 - **StatusNotification.vue**: Application-wide notifications
@@ -107,9 +107,9 @@ Each route is defined in the `routeDefinitions` array:
   path: '/route-path',
   name: 'route-name',
   component: ViewComponent,
-  navigation: { 
-    name: 'Display Name', 
-    icon: IconComponent 
+  navigation: {
+    name: 'Display Name',
+    icon: IconComponent
   } // Optional: include for nav menu
 }
 ```
@@ -131,7 +131,7 @@ Example from router:
 
 {
   path: '/customers/:id',
-  name: 'customer-details', 
+  name: 'customer-details',
   component: CustomerDetails
   // ❌ No navigation property = hidden from nav
 }
@@ -283,4 +283,4 @@ See existing views for implementation patterns:
 ### Component Not Rendering
 - Check that the view file exists and exports default
 - Verify all imported components exist
-- Check browser console for errors 
+- Check browser console for errors

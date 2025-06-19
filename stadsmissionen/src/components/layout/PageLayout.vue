@@ -47,7 +47,7 @@ const mappedStats = computed(() => {
 </script>
 
 <template>
-  <div class="w-full">
+  <div class="w-full gap-3">
     <!-- Header with margins -->
     <StandardHeader
       :title="title"

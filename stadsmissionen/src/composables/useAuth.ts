@@ -1,129 +1,114 @@
 import { computed, ref } from 'vue';
-import type { User } from '@/types';
+import { useRouter } from 'vue-router';
+import api from '@/api';
+import type { AuthUser } from '@/types/enhanced';
 
-// Mock user data - replace with actual API calls
-const currentUser = ref<User | null>({
-  id: 'current-user',
-  namn: 'Current User',
-  epost: 'user@example.com',
-  losenord: '',
-  roller: ['administrator'], // Changed to administrator to allow reports access
-  enheter: ['Barn och unga'],
-  organisationId: 'org-1',
-  aktiv: true,
-  skapadDatum: new Date().toISOString(),
-  senastInloggad: new Date().toISOString(),
-});
-
-const isAuthenticated = ref(true);
-const isLoading = ref(false);
+// Global state
+const currentUser = ref<AuthUser | null>(null);
+const isAuthenticated = computed(() => currentUser.value !== null);
 
 export function useAuth() {
-  const login = async (email: string, password: string): Promise<boolean> => {
-    isLoading.value = true;
+  const router = useRouter();
+
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> => {
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Use API to authenticate
+      const response = await api.auth.login(email, password);
 
-      // Mock successful login
-      currentUser.value = {
-        id: `user-${Date.now()}`,
-        namn: 'Authenticated User',
-        epost: email,
-        losenord: password,
-        roller: ['systemadministrator'], // Changed to administrator to allow reports access
-        enheter: ['Barn och unga'],
-        organisationId: 'org-1',
-        aktiv: true,
-        skapadDatum: new Date().toISOString(),
-        senastInloggad: new Date().toISOString(),
-      };
+      if (!response.success || !response.data) {
+        return {
+          success: false,
+          error: response.error?.message || 'Felaktigt användarnamn eller lösenord',
+        };
+      }
 
-      isAuthenticated.value = true;
-      return true;
+      // Set current user from API response
+      currentUser.value = response.data.user;
+
+      // Store user and token in localStorage for persistence
+      localStorage.setItem('currentUser', JSON.stringify(currentUser.value));
+      if (response.data.token) {
+        localStorage.setItem('authToken', response.data.token);
+      }
+
+      // Redirect to dashboard
+      router.push('/dashboard');
+
+      return { success: true };
     } catch (error) {
-      console.error('Login failed:', error);
-      return false;
-    } finally {
-      isLoading.value = false;
+      console.error('Login error:', error);
+      return { success: false, error: 'Ett fel uppstod vid inloggning' };
     }
   };
 
-  const logout = async (): Promise<void> => {
-    isLoading.value = true;
+  const logout = async () => {
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const token = localStorage.getItem('authToken');
 
+      // Call API logout if we have a token
+      if (token) {
+        await api.auth.logout(token);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Continue with local logout even if API call fails
+    } finally {
+      // Clear local state regardless of API call result
       currentUser.value = null;
-      isAuthenticated.value = false;
-    } catch (error) {
-      console.error('Logout failed:', error);
-    } finally {
-      isLoading.value = false;
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('authToken');
+      router.push('/login');
     }
   };
 
-  const getCurrentUser = (): User | null => {
-    return currentUser.value;
+  const initializeAuth = async () => {
+    // Check if user is stored in localStorage (router guard may have already set this)
+    const storedUser = localStorage.getItem('currentUser');
+    const storedToken = localStorage.getItem('authToken');
+
+    if (storedUser) {
+      try {
+        currentUser.value = JSON.parse(storedUser);
+
+        // If we have a token, validate it with the API
+        if (storedToken && !storedToken.startsWith('mock-token-')) {
+          try {
+            const response = await api.auth.getCurrentUser(storedToken);
+            if (response.success && response.data) {
+              // Token is valid, use fresh user data from API
+              currentUser.value = response.data;
+              localStorage.setItem('currentUser', JSON.stringify(response.data));
+            } else {
+              // Token is invalid, clear stored data
+              localStorage.removeItem('currentUser');
+              localStorage.removeItem('authToken');
+              currentUser.value = null;
+            }
+          } catch (error) {
+            console.error('Error validating stored token:', error);
+            // Keep the stored user data if API is unavailable
+          }
+        }
+      } catch (parseError) {
+        console.error('Error parsing stored user:', parseError);
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('authToken');
+        currentUser.value = null;
+      }
+    }
+
+    // If still no user and in development mode, the router guard will handle default user setup
+    // We don't need to duplicate that logic here
   };
-
-  const getCurrentUserId = (): string => {
-    return currentUser.value?.id ?? 'anonymous';
-  };
-
-  const hasRole = (role: string): boolean => {
-    return currentUser.value?.roller.includes(role) ?? false;
-  };
-
-  const hasAnyRole = (roles: string[]): boolean => {
-    return roles.some(role => hasRole(role));
-  };
-
-  const canAccessEnhet = (enhet: string): boolean => {
-    return currentUser.value?.enheter.includes(enhet) ?? false;
-  };
-
-  const isAdmin = computed(() => hasAnyRole(['admin', 'systemadministrator']));
-  const isManager = computed(() => hasAnyRole(['enhetsansvarig', 'administrator']));
-
-  // Permission checking functions
-  const canCreateActivity = computed(() =>
-    hasAnyRole(['handlaggare', 'enhetsansvarig', 'administrator'])
-  );
-
-  const canEditUser = computed(() => hasAnyRole(['administrator', 'systemadministrator']));
-
-  const canDeleteUser = computed(() => hasRole('systemadministrator'));
-
-  const canExportData = computed(() =>
-    hasAnyRole(['enhetsansvarig', 'administrator', 'systemadministrator'])
-  );
-
-  const canManagePermissions = computed(() => hasAnyRole(['administrator', 'systemadministrator']));
 
   return {
-    // State
     currentUser: computed(() => currentUser.value),
-    isAuthenticated: computed(() => isAuthenticated.value),
-    isLoading: computed(() => isLoading.value),
-
-    // Actions
+    isAuthenticated,
     login,
     logout,
-    getCurrentUser,
-    getCurrentUserId,
-
-    // Permissions
-    hasRole,
-    hasAnyRole,
-    canAccessEnhet,
-    isAdmin,
-    isManager,
-    canCreateActivity,
-    canEditUser,
-    canDeleteUser,
-    canExportData,
-    canManagePermissions,
+    initializeAuth,
   };
 }

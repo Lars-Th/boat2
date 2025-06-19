@@ -8,4 +8,6 @@ export { AttendanceService } from '@/api/services/attendance.service';
 export { FamilyRelationsService } from '@/api/services/family-relations.service';
 export { OrganizationService } from '@/api/services/organization.service';
 export { ParticipantService } from '@/api/services/participant.service';
-export { UserService } from '@/api/services/user.service';
+export { AuthService } from '@/api/services/auth.service';
+export { CustomerService } from '@/api/services/customer.service';
+export { ContactService } from '@/api/services/contact.service';

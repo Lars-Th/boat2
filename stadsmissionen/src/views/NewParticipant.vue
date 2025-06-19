@@ -35,9 +35,20 @@ const {
   cacheKey: 'organizations',
 });
 
+// Fetch existing participants with family relations for family connections
+const {
+  data: participantsWithFamily,
+  loading: participantsLoading,
+  error: participantsError,
+} = useApiList(() => api.participants.getAll({ include: ['family'] }), {
+  cacheKey: 'participants-family',
+});
+
 // Loading and error states
-const isLoading = computed(() => organizationsLoading.value);
-const hasError = computed(() => organizationsError.value !== null);
+const isLoading = computed(() => organizationsLoading.value || participantsLoading.value);
+const hasError = computed(
+  () => organizationsError.value !== null || participantsError.value !== null
+);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
