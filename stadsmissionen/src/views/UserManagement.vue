@@ -46,7 +46,7 @@ const {
   loading: usersLoading,
   error: usersError,
   refetch: refetchUsers,
-} = useApi(() => api.users?.getAll() || Promise.resolve({ data: [], success: true }), {
+} = useApi(() => api.users?.getAll() ?? Promise.resolve({ data: [], success: true }), {
   immediate: true,
 });
 
@@ -57,7 +57,7 @@ const {
   refetch: refetchOrganizations,
 } = useApi(
   () =>
-    api.organizationSettings?.getAll() ||
+    api.organizationSettings?.getAll() ??
     Promise.resolve({ data: { organizations: [] }, success: true }),
   { immediate: true }
 );
@@ -118,7 +118,7 @@ const router = useRouter();
 
 // Get organizations from API data
 const organizations = computed(() => {
-  return organizationSettings.value?.organizations || [];
+  return organizationSettings.value?.organizations ?? [];
 });
 
 // Reactive data
@@ -705,9 +705,9 @@ const getBadgeVariant = (
         <template #cell-roles="{ row }">
           <div class="flex flex-wrap gap-1">
             <Badge
-              v-for="role in (row as any).roles || []"
-              :key="role?.id || 'unknown'"
-              :variant="getBadgeVariant(role?.color || 'outline')"
+              v-for="role in (row as any).roles ?? []"
+              :key="role?.id ?? 'unknown'"
+              :variant="getBadgeVariant(role?.color ?? 'outline')"
               class="text-xs"
             >
               {{ role?.namn || 'Okänd roll' }}

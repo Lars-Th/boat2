@@ -1,4 +1,4 @@
-Good to have as cursor references:
+# Good to have as cursor references
 
 [https://devdocs.io/vue/]
 

@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
+import type { WorkOrderWithRelations } from '@/types/relationships';
 import PageLayout from '@/components/layout/PageLayout.vue';
 import DataTable from '@/components/shared/DataTable.vue';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ const {
   data: workOrdersWithRelations,
   loading: workOrdersLoading,
   error: workOrdersError,
-} = useApiList(
+} = useApiList<WorkOrderWithRelations>(
   () =>
     api.workOrders.getAll({
       include: ['customer', 'createdBy', 'contact', 'tasks', 'assignedUsers'],
@@ -40,21 +41,22 @@ const workOrdersWithCustomers = computed(() => {
   if (!workOrdersWithRelations.value) return [];
 
   return workOrdersWithRelations.value
-    .filter((workOrder: any) => workOrder.Status === 'active')
-    .map((workOrder: any) => {
+    .filter(workOrder => workOrder.Status === 'active')
+    .map(workOrder => {
       // Calculate registered hours from included tasks
-      const registeredHours = workOrder.tasks
-        ? workOrder.tasks
-            .filter((task: any) => task.Status === 'approved')
-            .reduce((total: number, task: any) => total + (task.Hours || 0), 0)
+      const registeredHours = workOrder.Tasks
+        ? workOrder.Tasks.filter((task: any) => task.Status === 'approved').reduce(
+            (total: number, task: any) => total + (task.Hours ?? 0),
+            0
+          )
         : 0;
 
       return {
         ...workOrder,
         CustomerName:
-          workOrder.customer?.CompanyName ?? workOrder.customer?.companyName ?? 'Okänd kund',
+          workOrder.customer?.CompanyName ?? workOrder.customer?.CompanyName ?? 'Okänd kund',
         RegisteredHours: registeredHours,
-        CreatedByName: workOrder.createdByUser?.namn ?? 'Okänd användare',
+        CreatedByName: (workOrder as any).createdByUser?.namn ?? 'Okänd användare',
       };
     });
 });
@@ -89,14 +91,12 @@ const stats = computed(() => {
     ];
   }
 
-  const activeOrders = workOrdersWithRelations.value.filter(
-    (wo: any) => wo.Status === 'active'
-  ).length;
+  const activeOrders = workOrdersWithRelations.value.filter(wo => wo.Status === 'active').length;
   const completedOrders = workOrdersWithRelations.value.filter(
-    (wo: any) => wo.Status === 'completed'
+    wo => wo.Status === 'completed'
   ).length;
   const attestableOrders = workOrdersWithRelations.value.filter(
-    (wo: any) => wo.Status === 'attestable'
+    wo => wo.Status === 'attestable'
   ).length;
 
   return [
@@ -127,60 +127,13 @@ const stats = computed(() => {
   ];
 });
 
-// Helper functions
-const formatDate = (dateString: string) => {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('sv-SE');
-};
-
-const getTypeVariant = (type: string) => {
-  switch (type) {
-    case 'standard':
-      return 'default';
-    case 'QuickField':
-      return 'destructive';
-    case 'GoodWill':
-      return 'secondary';
-    default:
-      return 'outline';
-  }
-};
-
-const getTypeText = (type: string) => {
-  switch (type) {
-    case 'standard':
-      return 'Standard';
-    case 'QuickField':
-      return 'Snabborder';
-    case 'GoodWill':
-      return 'Goodwill';
-    default:
-      return type;
-  }
-};
-
-const getPriorityVariant = (priority: string) => {
-  switch (priority) {
-    case 'urgent':
-      return 'destructive';
-    case 'high':
-      return 'default';
-    case 'medium':
-      return 'secondary';
-    case 'low':
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
 // Helper function to get employee name by ID
 const getEmployeeName = (employeeId: number | string) => {
   if (!employees.value) return 'Laddar...';
   if (typeof employeeId === 'string') return employeeId;
 
-  const employee = employees.value.find((emp: any) => emp.id === employeeId);
-  return employee?.name || 'Okänd användare';
+  const employee = employees.value.find(emp => emp.id === employeeId);
+  return employee?.name ?? 'Okänd användare';
 };
 
 // Event handlers
@@ -188,19 +141,19 @@ const handleNewWorkOrder = () => {
   router.push('/work-orders/new');
 };
 
-const handleRowClick = (workOrder: any) => {
+const handleRowClick = (workOrder: WorkOrderWithRelations) => {
   router.push(`/work-orders/${workOrder.WorkOrderID}`);
 };
 
-const handleViewOrder = (workOrder: any) => {
+const handleViewOrder = (workOrder: WorkOrderWithRelations) => {
   router.push(`/work-orders/${workOrder.WorkOrderID}`);
 };
 
-const handleEditOrder = (workOrder: any) => {
+const handleEditOrder = (workOrder: WorkOrderWithRelations) => {
   router.push(`/work-orders/${workOrder.WorkOrderID}/edit`);
 };
 
-const handleAddTime = (workOrder: any) => {
+const handleAddTime = (workOrder: WorkOrderWithRelations) => {
   router.push(`/time-reporting?workOrder=${workOrder.WorkOrderID}`);
 };
 </script>
@@ -249,50 +202,74 @@ const handleAddTime = (workOrder: any) => {
       @row-click="handleRowClick"
     >
       <template #cell-Type="{ value }">
-        <Badge :variant="getTypeVariant(value)">
-          {{ getTypeText(value) }}
-        </Badge>
-      </template>
-
-      <template #cell-StartDate="{ value }">
-        {{ formatDate(value) }}
-      </template>
-
-      <template #cell-DueDate="{ value }">
-        {{ value ? formatDate(value) : '-' }}
-      </template>
-
-      <template #cell-Priority="{ value }">
-        <Badge :variant="getPriorityVariant(value)">
+        <Badge variant="default">
           {{ value }}
         </Badge>
       </template>
 
+      <template #cell-StartDate="{ value }">
+        {{ value ? new Date(value).toLocaleDateString('sv-SE') : '-' }}
+      </template>
+
+      <template #cell-DueDate="{ value }">
+        {{ value ? new Date(value).toLocaleDateString('sv-SE') : '-' }}
+      </template>
+
       <template #cell-AssignedTo="{ row }">
-        <span v-if="row.assignedUsers && row.assignedUsers.length > 0">
-          {{ row.assignedUsers[0].FirstName }} {{ row.assignedUsers[0].LastName }}
-        </span>
-        <span v-else-if="row.AssignedTo">
-          {{ getEmployeeName(row.AssignedTo) }}
-        </span>
-        <span v-else class="text-muted-foreground text-xs">Ej tilldelad</span>
+        <div>
+          <span v-if="(row as Record<string, any>)['assignedUsers'] && (row as Record<string, any>)['assignedUsers'].length > 0">
+            {{ (row as Record<string, any>)['assignedUsers'][0].name }}
+          </span>
+          <span v-else-if="(row as Record<string, any>)['AssignedTo']">
+            {{ getEmployeeName((row as Record<string, any>)['AssignedTo']) }}
+          </span>
+          <span v-else class="text-muted-foreground text-xs">Ej tilldelad</span>
+        </div>
       </template>
 
       <template #cell-Hours="{ row }">
         <div class="text-sm">
-          <div>{{ row.RegisteredHours || 0 }}h / {{ row.EstimatedHours }}h</div>
-          <div class="text-muted-foreground text-xs">
-            {{ Math.round(((row.RegisteredHours || 0) / row.EstimatedHours) * 100) }}% registrerat
+          <div>
+            {{ (row as Record<string, any>)['RegisteredHours'] ?? 0 }}h / {{ (row as Record<string, any>)['EstimatedHours'] ?? 0 }}h
           </div>
-          <div class="text-muted-foreground text-xs">Faktisk: {{ row.ActualHours }}h</div>
+          <div class="text-muted-foreground text-xs">
+            {{
+              (row as Record<string, any>)['EstimatedHours']
+                ? Math.round(
+                    (((row as Record<string, any>)['RegisteredHours'] ?? 0) / (row as Record<string, any>)['EstimatedHours']) * 100
+                  )
+                : 0
+            }}% registrerat
+          </div>
+          <div class="text-muted-foreground text-xs">
+            Faktisk: {{ (row as Record<string, any>)['ActualHours'] ?? 0 }}h
+          </div>
         </div>
       </template>
 
       <template #cell-actions="{ row }">
         <div class="flex">
-          <Button size="sm" variant="outline" @click="handleViewOrder(row)">Visa</Button>
-          <Button size="sm" variant="outline" @click="handleEditOrder(row)">Redigera</Button>
-          <Button size="sm" variant="outline" @click="handleAddTime(row)">Tid</Button>
+          <Button
+            size="sm"
+            variant="outline"
+            @click="handleViewOrder(row as unknown as WorkOrderWithRelations)"
+          >
+            Visa
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            @click="handleEditOrder(row as unknown as WorkOrderWithRelations)"
+          >
+            Redigera
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            @click="handleAddTime(row as unknown as WorkOrderWithRelations)"
+          >
+            Tid
+          </Button>
         </div>
       </template>
     </DataTable>

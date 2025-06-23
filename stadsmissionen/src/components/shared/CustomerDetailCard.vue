@@ -56,9 +56,9 @@ const localCustomer = computed({
 
 const displayName = computed(() => {
   if (props.customer.customerType === 'Företag') {
-    return props.customer.companyName || '';
+    return props.customer.companyName ?? '';
   }
-  return `${props.customer.firstName || ''} ${props.customer.lastName || ''}`.trim();
+  return `${props.customer.firstName ?? ''} ${props.customer.lastName ?? ''}`.trim();
 });
 
 const handleNameInput = (event: Event) => {
@@ -187,7 +187,7 @@ const updateField = (field: keyof CustomerData, value: any) => {
             </Label>
             <input
               v-if="localCustomer.customerType === 'Företag'"
-              :value="localCustomer.companyName || ''"
+              :value="localCustomer.companyName ?? ''"
               :readonly="readonly"
               class="h-8 w-full text-xs border border-input rounded-md px-2"
               :style="
@@ -220,7 +220,7 @@ const updateField = (field: keyof CustomerData, value: any) => {
             </Label>
             <input
               v-if="localCustomer.customerType === 'Företag'"
-              :value="localCustomer.organizationNumber || ''"
+              :value="localCustomer.organizationNumber ?? ''"
               :readonly="readonly"
               class="h-8 w-full text-xs border border-input rounded-md px-2"
               :style="
@@ -232,7 +232,7 @@ const updateField = (field: keyof CustomerData, value: any) => {
             />
             <input
               v-else
-              :value="localCustomer.personalNumber || ''"
+              :value="localCustomer.personalNumber ?? ''"
               :readonly="readonly"
               class="h-8 w-full text-xs border border-input rounded-md px-2"
               :style="
@@ -258,7 +258,7 @@ const updateField = (field: keyof CustomerData, value: any) => {
           <div>
             <Label class="text-[10px] font-medium text-gray-500 mb-1 block">Förnamn</Label>
             <input
-              :value="localCustomer.contactFirstName || ''"
+              :value="localCustomer.contactFirstName ?? ''"
               :readonly="readonly"
               class="h-8 w-full text-xs border border-input rounded-md px-2"
               :style="
@@ -273,7 +273,7 @@ const updateField = (field: keyof CustomerData, value: any) => {
           <div>
             <Label class="text-[10px] font-medium text-gray-500 mb-1 block">Efternamn</Label>
             <input
-              :value="localCustomer.contactLastName || ''"
+              :value="localCustomer.contactLastName ?? ''"
               :readonly="readonly"
               class="h-8 w-full text-xs border border-input rounded-md px-2"
               :style="
@@ -422,7 +422,7 @@ const updateField = (field: keyof CustomerData, value: any) => {
         </h3>
 
         <textarea
-          :value="localCustomer.notes || ''"
+          :value="localCustomer.notes ?? ''"
           :readonly="readonly"
           rows="8"
           placeholder="Lägg till anteckningar om kunden..."

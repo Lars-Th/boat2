@@ -30,10 +30,10 @@ const enhancedAttendances = computed(() => {
       activity.attendances.forEach((attendance: any) => {
         attendances.push({
           ...attendance,
-          activityName: activity.namn || activity.Namn,
-          activityDate: activity.datumTid || activity.DatumTid,
-          activityPlace: activity.plats || activity.Plats,
-          participantName: attendance.participantName || 'Okänd deltagare',
+          activityName: activity.Namn,
+          activityDate: activity.DatumTid,
+          activityPlace: activity.Plats,
+          participantName: attendance.participantName ?? 'Okänd deltagare',
         });
       });
     }
@@ -92,13 +92,13 @@ const stats = computed(() => [
   },
   {
     title: 'Närvarande',
-    value: enhancedAttendances.value.filter(a => a.närvaro || a.Närvaro).length,
+    value: enhancedAttendances.value.filter(a => a.Närvaro).length,
     icon: CheckCircle,
     color: 'green',
   },
   {
     title: 'Frånvarande',
-    value: enhancedAttendances.value.filter(a => !(a.närvaro || a.Närvaro)).length,
+    value: enhancedAttendances.value.filter(a => !a.Närvaro).length,
     icon: XCircle,
     color: 'red',
   },
@@ -117,7 +117,7 @@ const todaysActivities = computed(() => {
   const today = new Date().toISOString().split('T')[0];
   return activitiesWithRelations.value
     .filter((activity: any) => {
-      const activityDate = (activity.datumTid || activity.DatumTid || '').split('T')[0];
+      const activityDate = (activity.DatumTid ?? '').split('T')[0];
       return activityDate === today;
     })
     .slice(0, 3);
@@ -188,14 +188,14 @@ const todaysActivities = computed(() => {
             <div
               v-for="activity in todaysActivities"
               v-else
-              :key="activity.ActivityID || activity.id"
+              :key="activity.ActivityID"
               class="p-2 border rounded text-sm"
             >
               <div class="font-medium">
-                {{ activity.namn || activity.Namn }}
+                {{ activity.Namn }}
               </div>
               <div class="text-muted-foreground">
-                {{ activity.plats || activity.Plats }}
+                {{ activity.Plats }}
               </div>
             </div>
           </div>
@@ -219,7 +219,7 @@ const todaysActivities = computed(() => {
 
           <template #cell-Anteckningar="{ value }">
             <span class="text-sm text-muted-foreground">
-              {{ value || 'Inga anteckningar' }}
+              {{ value ?? 'Inga anteckningar' }}
             </span>
           </template>
         </DataTable>

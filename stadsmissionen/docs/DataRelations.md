@@ -10,7 +10,7 @@ This prototype system uses JSON files as a mock database with a service layer ar
 
 All data is stored as JSON files in the assets directory:
 
-```
+``` bash
 src/assets/data/
 ├── participants.json       # Customer participants/contacts
 ├── timeEntries.json       # Time tracking entries
@@ -32,6 +32,7 @@ src/assets/data/
 ### Core Entities
 
 #### 1. Work Orders (`workOrders.json`)
+
 ```typescript
 interface WorkOrder {
   WorkOrderID: number           // Primary key
@@ -67,6 +68,7 @@ interface WorkOrder {
 ```
 
 #### 2. Time Entries (`timeEntries.json`)
+
 ```typescript
 interface TimeEntry {
   TimeEntryID: number        // Primary key
@@ -85,6 +87,7 @@ interface TimeEntry {
 ```
 
 #### 3. Employees (`employees.json`)
+
 ```typescript
 interface Employee {
   id: number                // Primary key
@@ -101,6 +104,7 @@ interface Employee {
 ```
 
 #### 4. Customers (`customers.json`)
+
 ```typescript
 interface Customer {
   CustomerID: number       // Primary key
@@ -117,6 +121,7 @@ interface Customer {
 ```
 
 #### 5. Participants (`participants.json`)
+
 ```typescript
 interface Participant {
   ParticipantID: number    // Primary key
@@ -143,6 +148,7 @@ interface Participant {
 ### Relationship Mapping
 
 #### Primary Relationships
+
 1. **WorkOrder → Customer**: `WorkOrderID.CustomerID` → `customers.CustomerID`
 2. **WorkOrder → Contact**: `WorkOrderID.ContactPersonID` → `contacts.ContactID`
 3. **WorkOrder → Employee**: `WorkOrderID.AssignedUserIDs[]` → `employees.id`
@@ -150,6 +156,7 @@ interface Participant {
 5. **TimeEntry → Employee**: `TimeEntry.UserID` → `employees.id`
 
 #### Computed Relationships
+
 - **Registered Hours**: Sum of `timeEntries.Hours` where `WorkOrderID` matches and `Status = "approved"`
 - **Work Order Progress**: `ActualHours / EstimatedHours * 100`
 - **Employee Workload**: Sum of assigned work order hours per employee
@@ -158,7 +165,7 @@ interface Participant {
 
 ### Architecture: `src/services/api/`
 
-```
+``` bash
 src/services/api/
 ├── index.ts      # Main API service factory
 ├── base.ts       # Base API client with common functionality
@@ -169,6 +176,7 @@ src/services/api/
 ### Service Pattern
 
 #### 1. API Factory (`index.ts`)
+
 ```typescript
 // Determines which API implementation to use
 const apiService = import.meta.env.VITE_USE_MOCK_API === 'true'
@@ -177,12 +185,14 @@ const apiService = import.meta.env.VITE_USE_MOCK_API === 'true'
 ```
 
 #### 2. Mock Service (`mock.ts`)
+
 - Simulates network delays (300ms)
 - Implements full CRUD operations
 - Uses JSON data as source of truth
 - Provides consistent API interface
 
 #### 3. Base Service (`base.ts`)
+
 - Common HTTP client functionality
 - Error handling patterns
 - Request/response interceptors
@@ -206,6 +216,7 @@ async deleteWorkOrder(id: string): Promise<ApiResponse<boolean>>
 ### 1. Time Calculations
 
 #### Registered Hours Calculation
+
 ```typescript
 function getRegisteredHours(workOrderId: number): number {
   return timeEntries
@@ -218,6 +229,7 @@ function getRegisteredHours(workOrderId: number): number {
 ```
 
 #### Work Order Progress
+
 ```typescript
 function calculateProgress(workOrder: WorkOrder): number {
   if (!workOrder.EstimatedHours) return 0
@@ -228,6 +240,7 @@ function calculateProgress(workOrder: WorkOrder): number {
 ### 2. Status Logic
 
 #### Invoice Readiness
+
 ```typescript
 function isReadyForInvoicing(workOrder: WorkOrder): boolean {
   return workOrder.Status === 'completed' &&
@@ -238,6 +251,7 @@ function isReadyForInvoicing(workOrder: WorkOrder): boolean {
 ```
 
 #### Attestation Readiness
+
 ```typescript
 function isReadyForAttestation(workOrder: WorkOrder): boolean {
   return workOrder.Status === 'completed' &&
@@ -249,12 +263,14 @@ function isReadyForAttestation(workOrder: WorkOrder): boolean {
 ### 3. Sorting Logic
 
 #### Default Sort Orders
+
 - **Work Orders**: `CreatedDate DESC, Priority ASC, Status ASC`
 - **Time Entries**: `Date DESC, StartTime DESC`
 - **Employees**: `name ASC, department ASC`
 - **Customers**: `Name ASC`
 
 #### Priority Mapping
+
 ```typescript
 const priorityOrder = { 'urgent': 1, 'high': 2, 'medium': 3, 'low': 4 }
 const statusOrder = { 'active': 1, 'planning': 2, 'on_hold': 3, 'completed': 4 }
@@ -295,17 +311,20 @@ permissions: ["H", "A", "SA"]  // H=Handläggare, A=Administratör, SA=Systemadm
 ## Data Consistency Rules
 
 ### 1. Referential Integrity
+
 - All foreign key references must exist in target tables
 - Deletion of referenced entities should cascade or be prevented
 - Updates to primary keys should cascade to foreign keys
 
 ### 2. Business Rules
+
 - Work orders cannot be deleted if they have time entries
 - Time entries cannot exceed 24 hours per day per employee
 - Approved time entries cannot be modified
 - Completed work orders cannot have new time entries
 
 ### 3. Validation Rules
+
 - Required fields must be present
 - Date formats must be consistent (ISO 8601)
 - Numeric fields must be non-negative
@@ -324,6 +343,7 @@ permissions: ["H", "A", "SA"]  // H=Handläggare, A=Administratör, SA=Systemadm
 ### API Contract Preservation
 
 The mock service interface serves as the API contract:
+
 - All method signatures must be preserved
 - Response formats must remain consistent
 - Error handling patterns must be maintained
@@ -359,6 +379,7 @@ The mock service interface serves as the API contract:
 ## Error Handling
 
 ### API Response Format
+
 ```typescript
 interface ApiResponse<T> {
   data: T
@@ -373,6 +394,7 @@ interface ApiResponse<T> {
 ```
 
 ### Common Error Codes
+
 - `NOT_FOUND`: Entity does not exist
 - `VALIDATION_ERROR`: Data validation failed
 - `NETWORK_ERROR`: Simulated network failure

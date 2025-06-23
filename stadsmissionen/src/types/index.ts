@@ -609,11 +609,3 @@ export interface FilterOption {
 export type { ApiError, ApiResponse };
 
 // Remove NotificationOptions and Notification interfaces as they're now consolidated with Toast
-export interface UseNotificationsReturn {
-  notifications: Ref<Toast[]>;
-  unreadCount: Ref<number>;
-  addNotification: (options: BaseToastOptions) => string;
-  removeNotification: (id: string) => void;
-  markAsRead: (id: string) => void;
-  clearAll: () => void;
-}

@@ -104,10 +104,10 @@
               <option value="">Välj en anställd...</option>
               <option
                 v-for="employee in availableEmployees"
-                :key="employee.EmployeeID"
-                :value="employee.EmployeeID"
+                :key="employee['id']"
+                :value="employee['id']"
               >
-                {{ employee.FirstName }} {{ employee.LastName }} - {{ employee.Position }}
+                {{ employee['name'] }} - {{ employee['role'] }}
               </option>
             </select>
           </div>
@@ -237,27 +237,10 @@ declare global {
 }
 
 // Global functions
-const { parseInt, Math, encodeURIComponent, window, confirm } = globalThis;
+const { Math, encodeURIComponent, window } = globalThis;
 import PageLayout from '@/components/layout/PageLayout.vue';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  AlertCircle,
-  Building,
-  CheckSquare,
-  Clock,
-  Edit,
-  ExternalLink,
-  FileText,
-  Info,
-  MapPin,
-  Navigation,
-  Plus,
-  Trash2,
-  User,
-  Users,
-  X,
-} from 'lucide-vue-next';
+import { AlertCircle, CheckSquare, Clock, Edit, FileText, Users, X } from 'lucide-vue-next';
 
 // Feature Components
 import {
@@ -293,62 +276,33 @@ const {
 );
 
 // Get customer with contacts separately to ensure we have all contact information
-const {
-  data: customerWithContacts,
-  loading: customerLoading,
-  error: customerError,
-} = useApiItem(
+const { data: customerWithContacts } = useApiItem(
   () =>
-    workOrderWithRelations.value?.CustomerID
-      ? api.customers.getById(workOrderWithRelations.value.CustomerID.toString(), {
-          include: ['contacts'],
-        })
-      : null,
+    api.customers.getById(workOrderWithRelations.value?.CustomerID ?? '', {
+      include: ['contacts'],
+    }),
   {
-    cacheKey: `customer-${workOrderWithRelations.value?.CustomerID}-with-contacts`,
-    enabled: computed(() => !!workOrderWithRelations.value?.CustomerID),
+    cacheKey: `customer-${workOrderWithRelations.value?.CustomerID}`,
+    immediate: false,
   }
 );
 
-// Computed data from relations
+// Computed properties for easier access
 const workOrder = computed(() => workOrderWithRelations.value);
-const customerInfo = computed(() => workOrder.value?.customer);
+const customerInfo = computed(() => customerWithContacts.value);
 const contactInfo = computed(() => workOrder.value?.contact);
+const customerContacts = computed(() => (customerInfo.value as any)?.contacts ?? []);
+const mainContact = computed(() => customerContacts.value.find((c: any) => c.IsMainContact));
+const otherContacts = computed(() => customerContacts.value.filter((c: any) => !c.IsMainContact));
 const createdByUser = computed(() => workOrder.value?.createdByUser);
 const assignedEmployee = computed(() => workOrder.value?.assignedEmployee);
-const tasks = computed(() => workOrder.value?.tasks || []);
+const tasks = computed(() => workOrder.value?.Tasks ?? []);
 
-// Get customer contacts from the separate API call
-const customerContacts = computed(() => {
-  return customerWithContacts.value?.contacts || [];
-});
-
-// Find the main contact (IsPrimary = true)
-const mainContact = computed(() => {
-  return customerContacts.value.find((contact: any) => contact.IsPrimary) || null;
-});
-
-// Get other contacts (not main contact)
-const otherContacts = computed(() => {
-  return customerContacts.value.filter((contact: any) => !contact.IsPrimary);
-});
-
-// Computed statistics from related data
+// Calculate registered hours from tasks
 const registeredHours = computed(() => {
   return tasks.value
     .filter((task: any) => task.Status === 'approved')
-    .reduce((total: number, task: any) => total + (task.Hours || 0), 0);
-});
-
-const pendingHours = computed(() => {
-  return tasks.value
-    .filter((task: any) => task.Status === 'pending')
-    .reduce((total: number, task: any) => total + (task.Hours || 0), 0);
-});
-
-const progress = computed(() => {
-  if (!workOrder.value?.EstimatedHours) return 0;
-  return Math.round((registeredHours.value / workOrder.value.EstimatedHours) * 100);
+    .reduce((total: number, task: any) => total + (task.Hours ?? 0), 0);
 });
 
 const error = computed(() => (hasError.value ? 'Failed to load work order' : ''));
@@ -370,28 +324,8 @@ const newTask = ref({
 });
 
 // Fetch additional reference data for dropdowns
-const {
-  data: employees,
-  loading: employeesLoading,
-  error: employeesError,
-} = useApiList(() => api.employees.getAll(), {
+const { data: employees } = useApiList(() => api.employees.getAll(), {
   cacheKey: 'employees',
-});
-
-const {
-  data: machines,
-  loading: machinesLoading,
-  error: machinesError,
-} = useApiList(() => api.machines.getAll(), {
-  cacheKey: 'machines',
-});
-
-const {
-  data: tools,
-  loading: toolsLoading,
-  error: toolsError,
-} = useApiList(() => api.tools.getAll(), {
-  cacheKey: 'tools',
 });
 
 const workOrderStats = computed(() => {
@@ -400,7 +334,7 @@ const workOrderStats = computed(() => {
   const stats = [
     {
       title: 'Uppgifter',
-      value: tasks.value?.length || 0,
+      value: tasks.value?.length ?? 0,
       icon: CheckSquare,
       color: 'blue',
     },
@@ -413,13 +347,13 @@ const workOrderStats = computed(() => {
     { title: 'Registrerat', value: `${registeredHours.value}h`, icon: Clock, color: 'green' },
     {
       title: 'Ansvarig',
-      value: assignedEmployee.value?.name || 'Ej tilldelad',
+      value: assignedEmployee.value?.['name'] ?? 'Ej tilldelad',
       icon: Users,
       color: 'orange',
     },
   ];
 
-  const totalValue = (workOrder.value.ActualHours || 0) * (workOrder.value.HourlyRate || 0);
+  const totalValue = (workOrder.value.ActualHours ?? 0) * (workOrder.value.HourlyRate ?? 0);
   stats.push({
     title: 'Värde',
     value: `${totalValue.toString()} kr`,
@@ -434,8 +368,8 @@ const availableEmployees = computed(() => {
   if (!employees.value || !workOrder.value) return [];
 
   // Filter out employees that are already assigned
-  const assignedIds = workOrder.value.AssignedUserIDs || [];
-  return employees.value.filter((emp: any) => !assignedIds.includes(emp.EmployeeID));
+  const assignedIds = workOrder.value.AssignedUserIDs ?? [];
+  return employees.value.filter((emp: any) => !assignedIds.includes(emp['id']));
 });
 
 // Helper functions
@@ -454,253 +388,6 @@ const getWorkOrderTypeDescription = () => {
   }
 };
 
-const getMachineName = (machineId: number) => {
-  const machine = machines.value.find((m: any) => m.MachineID === machineId);
-  return machine?.Name || 'Okänd maskin';
-};
-
-const getToolNames = (toolIds: number[]) => {
-  return toolIds.map(id => {
-    const tool = tools.value.find((t: any) => t.ToolID === id);
-    return tool?.Name || 'Okänt verktyg';
-  });
-};
-
-const formatDate = (dateString: string) => {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('sv-SE');
-};
-
-const formatDateTime = (dateString: string) => {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleString('sv-SE');
-};
-
-// Badge variants
-const getTypeVariant = (type: string) => {
-  switch (type) {
-    case 'standard':
-      return 'default';
-    case 'quick_field':
-      return 'destructive';
-    case 'service_non_billable':
-      return 'secondary';
-    default:
-      return 'outline';
-  }
-};
-
-const getTypeText = (type: string) => {
-  switch (type) {
-    case 'standard':
-      return 'Standard';
-    case 'quick_field':
-      return 'Snabborder';
-    case 'service_non_billable':
-      return 'Service/Övrigt';
-    default:
-      return type;
-  }
-};
-
-const getStatusVariant = (status: string) => {
-  switch (status) {
-    case 'planning':
-      return 'secondary';
-    case 'active':
-      return 'default';
-    case 'completed':
-      return 'outline';
-    case 'on_hold':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-};
-
-const getStatusText = (status: string) => {
-  switch (status) {
-    case 'planning':
-      return 'Planering';
-    case 'active':
-      return 'Aktiv';
-    case 'completed':
-      return 'Slutförd';
-    case 'on_hold':
-      return 'Pausad';
-    default:
-      return status;
-  }
-};
-
-const getPriorityVariant = (priority: string) => {
-  switch (priority) {
-    case 'urgent':
-      return 'destructive';
-    case 'high':
-      return 'default';
-    case 'medium':
-      return 'secondary';
-    case 'low':
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const getPriorityText = (priority: string) => {
-  switch (priority) {
-    case 'urgent':
-      return 'Akut';
-    case 'high':
-      return 'Hög';
-    case 'medium':
-      return 'Medium';
-    case 'low':
-      return 'Låg';
-    default:
-      return priority;
-  }
-};
-
-const getAttestationVariant = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'secondary';
-    case 'approved':
-      return 'default';
-    case 'rejected':
-      return 'destructive';
-    case 'not_applicable':
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const getAttestationText = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'Väntar';
-    case 'approved':
-      return 'Godkänd';
-    case 'rejected':
-      return 'Avvisad';
-    case 'not_applicable':
-      return 'Ej tillämplig';
-    default:
-      return status;
-  }
-};
-
-const getInvoiceVariant = (status: string) => {
-  switch (status) {
-    case 'not_ready':
-      return 'secondary';
-    case 'ready':
-      return 'default';
-    case 'invoiced':
-      return 'outline';
-    case 'not_applicable':
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const getInvoiceText = (status: string) => {
-  switch (status) {
-    case 'not_ready':
-      return 'Ej klar';
-    case 'ready':
-      return 'Klar';
-    case 'invoiced':
-      return 'Fakturerad';
-    case 'not_applicable':
-      return 'Ej tillämplig';
-    default:
-      return status;
-  }
-};
-
-const getTaskTypeVariant = (type: string) => {
-  switch (type) {
-    case 'standard':
-      return 'default';
-    case 'pause':
-      return 'secondary';
-    case 'other':
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const getTaskTypeText = (type: string) => {
-  switch (type) {
-    case 'standard':
-      return 'Standard';
-    case 'pause':
-      return 'Paus';
-    case 'other':
-      return 'Övrigt';
-    default:
-      return type;
-  }
-};
-
-const getTaskStatusVariant = (status: string) => {
-  switch (status) {
-    case 'planning':
-      return 'secondary';
-    case 'active':
-      return 'default';
-    case 'completed':
-      return 'outline';
-    default:
-      return 'secondary';
-  }
-};
-
-const getTaskStatusText = (status: string) => {
-  switch (status) {
-    case 'planning':
-      return 'Planering';
-    case 'active':
-      return 'Aktiv';
-    case 'completed':
-      return 'Slutförd';
-    default:
-      return status;
-  }
-};
-
-const getTimeEntryStatusVariant = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'secondary';
-    case 'approved':
-      return 'default';
-    case 'rejected':
-      return 'destructive';
-    default:
-      return 'secondary';
-  }
-};
-
-const getTimeEntryStatusText = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'Väntar';
-    case 'approved':
-      return 'Godkänd';
-    case 'rejected':
-      return 'Avvisad';
-    default:
-      return status;
-  }
-};
-
 // Actions
 const editWorkOrder = () => {
   router.push(`/work-orders/${workOrder.value.WorkOrderID}/edit`);
@@ -710,14 +397,18 @@ const generateReport = () => {
   // TODO: Implement report generation
 };
 
-// Person management - removed as we now use AssignedTo field directly
+const addAssignedPerson = () => {
+  // TODO: Implement adding assigned person
+  showAddPersonDialog.value = false;
+  selectedEmployeeId.value = '';
+};
 
 // Task management
 const addTask = () => {
   if (!newTask.value.title || !workOrder.value) return;
 
   // Generate new task ID (in real app, this would come from the API)
-  const newTaskId = Math.max(...(workOrder.value.Tasks?.map((t: any) => t.TaskID) || [0])) + 1;
+  const newTaskId = Math.max(...(workOrder.value.Tasks?.map((t: any) => t.TaskID) ?? [0])) + 1;
 
   const task = {
     TaskID: newTaskId,
@@ -735,9 +426,7 @@ const addTask = () => {
   };
 
   // Add to work order tasks
-  if (!workOrder.value.Tasks) {
-    workOrder.value.Tasks = [];
-  }
+  workOrder.value.Tasks ??= [];
   workOrder.value.Tasks.push(task);
 
   // Reset form and close dialog
@@ -753,20 +442,6 @@ const addTask = () => {
   showAddTaskDialog.value = false;
 
   // Task added successfully
-};
-
-const editTask = (taskId: number) => {
-  // TODO: Implement task editing
-};
-
-const deleteTask = (taskId: number) => {
-  if (!workOrder.value) return;
-
-  if (window.confirm('Är du säker på att du vill ta bort denna uppgift?')) {
-    workOrder.value.Tasks =
-      workOrder.value.Tasks?.filter((task: any) => task.TaskID !== taskId) || [];
-    // Task deleted successfully
-  }
 };
 
 const addTimeEntry = () => {

@@ -20,7 +20,7 @@ const emit = defineEmits<{
 
 // Progress bar for duration
 const progress = ref(100);
-const progressInterval = ref<number | undefined>();
+const progressInterval = ref<NodeJS.Timeout | undefined>();
 
 // Toast type to classes mapping
 const getToastClasses = (toast: ToastType): string => {
@@ -39,7 +39,7 @@ const getToastClasses = (toast: ToastType): string => {
       'border-purple-200 bg-purple-50 text-purple-800 dark:border-purple-800 dark:bg-purple-900 dark:text-purple-200',
   };
 
-  return `${baseClasses} ${typeClasses[toast.type || 'info']}`;
+  return `${baseClasses} ${typeClasses[toast.type ?? 'info']}`;
 };
 
 // Icon classes
@@ -52,7 +52,7 @@ const getIconClasses = (toast: ToastType): string => {
     confirm: 'bg-purple-100 text-purple-600 dark:bg-purple-800 dark:text-purple-200',
   };
 
-  return iconClasses[toast.type || 'info'];
+  return iconClasses[toast.type ?? 'info'];
 };
 
 // Action button classes
@@ -63,7 +63,7 @@ const getActionClasses = (style?: string): string => {
     destructive: 'bg-red-600 text-white border-red-600 hover:bg-red-700',
   };
 
-  return `text-xs font-medium px-3 py-1.5 rounded border transition-all ${styleClasses[style || 'secondary']}`;
+  return `text-xs font-medium px-3 py-1.5 rounded border transition-all ${styleClasses[style ?? 'secondary']}`;
 };
 
 // Handle actions

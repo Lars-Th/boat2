@@ -45,7 +45,7 @@ export class MockDataService {
   private async mockRequest<T>(data: T): Promise<ApiResponse<T>> {
     await this.simulateNetworkDelay();
 
-    // Simulate occasional network errors (5% chance)
+    // Simulate occasional network errors (0.005% chance)
     if (Math.random() < 0.00005) {
       return {
         data: null as T,
@@ -77,7 +77,7 @@ export class MockDataService {
       Versamhetsanvändare: 'Handläggare',
     };
 
-    return roleMapping[group.name] || 'Handläggare';
+    return roleMapping[group.name] ?? 'Handläggare';
   }
 
   // Activities with relational support
@@ -95,7 +95,7 @@ export class MockDataService {
     }
 
     const enhancedActivities = activities.map(activity => {
-      const enhanced: any = { ...activity };
+      const enhanced = { ...activity } as any;
 
       if (params.include?.includes('types')) {
         const activityType = (activityTypesData as unknown as ActivityType[]).find(
@@ -145,7 +145,7 @@ export class MockDataService {
       return this.mockRequest(activity as Activity);
     }
 
-    const enhanced: any = { ...activity };
+    const enhanced = { ...activity } as any;
 
     if (params.include?.includes('types')) {
       const activityType = (activityTypesData as unknown as ActivityType[]).find(
@@ -204,7 +204,7 @@ export class MockDataService {
     };
 
     // Actually update the data in the mock data array
-    activitiesData[existingActivityIndex] = updatedActivity as any;
+    (activitiesData as any)[existingActivityIndex] = updatedActivity;
 
     return this.mockRequest(updatedActivity as Activity);
   }
@@ -609,27 +609,27 @@ export class MockDataService {
   }
 
   // Work Orders with enhanced relational support and computed fields
-  async getWorkOrders(params?: RelationalParams): Promise<ApiResponse<any[]>> {
-    const workOrders = workOrdersData as any[];
+  async getWorkOrders(params?: RelationalParams): Promise<ApiResponse<WorkOrderWithRelations[]>> {
+    const workOrders = workOrdersData as unknown as WorkOrderWithRelations[];
 
     const enhancedWorkOrders = workOrders.map(workOrder => {
-      const enhanced: any = { ...workOrder };
+      const enhanced = { ...workOrder } as WorkOrderWithRelations;
 
       // Get all tasks for this work order
       const workOrderTasks = tasksData.filter(task => task.WorkOrderID === workOrder.WorkOrderID);
 
       // Compute ActualHours from all tasks
-      enhanced.ActualHours = workOrderTasks.reduce((total, task) => total + task.Hours, 0);
+      enhanced.ActualHours = workOrderTasks.reduce((total, task) => total + (task.Hours ?? 0), 0);
 
       // Add basic relations if requested
       if (params?.include?.includes('customer')) {
         const customer = customersData.find(c => c.CustomerID === workOrder.CustomerID);
-        enhanced.customer = customer;
+        enhanced.customer = customer as CustomerWithRelations;
       }
 
       if (params?.include?.includes('createdBy')) {
-        const createdByUser = usersData.find(u => u.id === workOrder.CreatedBy);
-        enhanced.createdByUser = createdByUser;
+        const createdByUser = usersData.find(u => u.id === (workOrder as any).CreatedBy);
+        (enhanced as any).createdByUser = createdByUser;
       }
 
       if (params?.include?.includes('tasks')) {
@@ -641,18 +641,18 @@ export class MockDataService {
             employee,
           };
         });
-        enhanced.tasks = enhancedTasks;
+        (enhanced as any).tasks = enhancedTasks;
       }
 
       if (params?.include?.includes('contact')) {
         const contact = contactsData.find(c => c.ContactID === workOrder.ContactPersonID);
-        enhanced.contact = contact;
+        enhanced.contact = contact as ContactWithRelations;
       }
 
       if (params?.include?.includes('assignedEmployee')) {
         // Find employee by ID from AssignedTo field
         const assignedEmployee = employeesData.find(e => e.id === Number(workOrder.AssignedTo));
-        enhanced.assignedEmployee = assignedEmployee;
+        (enhanced as any).assignedEmployee = assignedEmployee;
       }
 
       if (params?.include?.includes('assignedUsers')) {
@@ -665,8 +665,8 @@ export class MockDataService {
             const nameParts = assignedEmployee.name.split(' ');
             const enhancedEmployee = {
               ...assignedEmployee,
-              FirstName: nameParts[0] || '',
-              LastName: nameParts.slice(1).join(' ') || '',
+              FirstName: nameParts[0] ?? '',
+              LastName: nameParts.slice(1).join(' ') ?? '',
             };
             assignedUsers.push(enhancedEmployee);
           }
@@ -676,9 +676,9 @@ export class MockDataService {
 
       if (params?.include?.includes('attestedBy')) {
         // Handle attestedBy relationship - get user who attested the work order
-        if (workOrder.AttestedBy) {
-          const attestedByUser = usersData.find(u => u.id === workOrder.AttestedBy);
-          enhanced.attestedBy = attestedByUser;
+        if ((workOrder as any).AttestedBy) {
+          const attestedByUser = usersData.find(u => u.id === (workOrder as any).AttestedBy);
+          (enhanced as any).attestedBy = attestedByUser;
         }
       }
 
@@ -1186,7 +1186,7 @@ export class MockDataService {
       id: Math.max(...boatsData.map(b => b.id)) + 1,
       createdDate: new Date().toISOString(),
       lastModified: new Date().toISOString(),
-    } as (typeof boatsData)[0];
+    } as unknown as (typeof boatsData)[0];
 
     // Actually add the boat to the array
     boatsData.push(newBoat);
@@ -1214,7 +1214,7 @@ export class MockDataService {
       ...boatsData[boatIndex],
       ...data,
       lastModified: new Date().toISOString(),
-    } as (typeof boatsData)[0];
+    } as unknown as (typeof boatsData)[0];
 
     // Actually update the boat in the array
     boatsData[boatIndex] = updatedBoat;
@@ -1352,7 +1352,7 @@ export class MockDataService {
     return this.mockRequest(true);
   }
 
-  async getCurrentUser(token: string): Promise<
+  async getCurrentUser(token: string = ''): Promise<
     ApiResponse<{
       id: number;
       name: string;
@@ -1363,7 +1363,7 @@ export class MockDataService {
   > {
     // In a real API, this would validate the token and return user info
     // For mock, we'll just return null if no valid token format
-    if (!token?.startsWith('mock-token-')) {
+    if (!token.startsWith('mock-token-')) {
       return {
         data: null,
         success: false,

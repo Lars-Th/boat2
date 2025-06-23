@@ -31,21 +31,21 @@ const {
   data: workOrders,
   loading: workOrdersLoading,
   error: workOrdersError,
-  refetch: refetchWorkOrders,
+  refresh: refetchWorkOrders,
 } = useApiList(() => api.workOrders.getAll(), { cacheKey: 'workOrders' });
 
 const {
   data: customers,
   loading: customersLoading,
   error: customersError,
-  refetch: refetchCustomers,
+  refresh: refetchCustomers,
 } = useApiList(() => api.customers.getAll(), { cacheKey: 'customers' });
 
 const {
   data: employees,
   loading: employeesLoading,
   error: employeesError,
-  refetch: refetchEmployees,
+  refresh: refetchEmployees,
 } = useApiList(() => api.employees.getAll(), { cacheKey: 'employees' });
 
 // Loading and error states
@@ -706,7 +706,7 @@ const isWeekend = (date: Date) => {
 };
 
 const isHoliday = (dateString: string) => {
-  return holidays.value.hasOwnProperty(dateString);
+  return Object.prototype.hasOwnProperty.call(holidays.value, dateString);
 };
 
 const isWorkDay = (date: Date) => {

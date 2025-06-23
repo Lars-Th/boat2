@@ -24,46 +24,58 @@ src/
 ## 🏗️ Architecture Layers
 
 ### 1. **Data Layer** (`/services/api/`)
+
 **Purpose**: Handle all external data communication
+
 - `base.ts` - Base HTTP client with error handling
 - `mock.ts` - Mock data for development
 - `real.ts` - Production API implementation
 - `index.ts` - Unified API interface
 
 **Responsibilities**:
+
 - HTTP requests/responses
 - Data transformation
 - Error handling
 - Environment switching (mock/real)
 
 ### 2. **Validation Layer** (`/schemas/`)
+
 **Purpose**: Define data validation rules and schemas
+
 - `validationSchemas.ts` - Validation schemas for all entities
 
 **Responsibilities**:
+
 - Field validation rules
 - Custom business logic validation
 - Display names for error messages
 - Type-safe validation schemas
 
 ### 3. **Business Logic Layer** (`/composables/`)
+
 **Purpose**: Reactive business logic and state management
+
 - `useValidation.ts` - Form validation logic
 - `useApi.ts` - API state management
 - `useOrganizationManagement.ts` - Organization-specific logic
 
 **Responsibilities**:
+
 - Reactive state management
 - Business logic implementation
 - Cross-component state sharing
 - Integration between layers
 
 ### 4. **Presentation Layer** (`/views/` & `/components/`)
+
 **Purpose**: User interface and user interactions
+
 - Views: Page-level components
 - Components: Reusable UI elements
 
 **Responsibilities**:
+
 - User interface rendering
 - User interaction handling
 - Component composition
@@ -77,6 +89,7 @@ Views → Composables → API Services → External APIs
 ## 📋 How to Create a New View
 
 ### Step 1: Define Your Data Types
+
 ```typescript
 // src/types/index.ts
 export interface MyEntity {
@@ -87,18 +100,20 @@ export interface MyEntity {
 ```
 
 ### Step 2: Create Validation Schema
+
 ```typescript
 // src/schemas/validationSchemas.ts
 export const myEntityValidationSchema = {
-  name: { 
-    rules: ['required'], 
-    displayName: 'Entity Name' 
+  name: {
+    rules: ['required'],
+    displayName: 'Entity Name'
   },
   // ... other fields
 }
 ```
 
 ### Step 3: Add API Methods
+
 ```typescript
 // src/services/api/mock.ts & real.ts
 async getMyEntities(): Promise<ApiResponse<MyEntity[]>> {
@@ -111,6 +126,7 @@ async createMyEntity(data: Partial<MyEntity>): Promise<ApiResponse<MyEntity>> {
 ```
 
 ### Step 4: Update API Index
+
 ```typescript
 // src/services/api/index.ts
 export const api = {
@@ -123,6 +139,7 @@ export const api = {
 ```
 
 ### Step 5: Create Composable (if needed)
+
 ```typescript
 // src/composables/useMyEntity.ts
 import { ref } from 'vue'
@@ -133,26 +150,26 @@ import { api } from '@/services/api'
 
 export function useMyEntity() {
   const entities = ref<MyEntity[]>([])
-  
+
   // Fetch data
   const { data, loading, error, execute } = useApi(
     () => api.myEntities.getAll()
   )
-  
+
   // Validation
   const { validateWithSchema, errors } = useValidation()
-  
+
   const createEntity = async (formData: Partial<MyEntity>) => {
     const isValid = validateWithSchema(formData, myEntityValidationSchema)
     if (!isValid) return false
-    
+
     const result = await api.myEntities.create(formData)
     if (result.success) {
       entities.value.push(result.data)
     }
     return result.success
   }
-  
+
   return {
     entities,
     loading,
@@ -165,18 +182,19 @@ export function useMyEntity() {
 ```
 
 ### Step 6: Create Your View
+
 ```vue
 <!-- src/views/MyEntityView.vue -->
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useMyEntity } from '@/composables/useMyEntity'
 
-const { 
-  entities, 
-  loading, 
-  error, 
-  createEntity, 
-  fetchEntities 
+const {
+  entities,
+  loading,
+  error,
+  createEntity,
+  fetchEntities
 } = useMyEntity()
 
 onMounted(() => {
@@ -239,6 +257,7 @@ import { myEntityValidationSchema } from '@/schemas/validationSchemas' // Use co
 ## 🔧 Common Patterns
 
 ### Form Handling with Validation
+
 ```typescript
 // In your composable
 const { validateForApi } = useValidation()
@@ -249,12 +268,13 @@ const submitForm = async (formData: Record<string, unknown>) => {
     myEntityValidationSchema,
     (data) => api.myEntities.create(data)
   )
-  
+
   return result
 }
 ```
 
 ### Loading States
+
 ```typescript
 // Use the useApi composable for automatic loading states
 const { data, loading, error, execute } = useApi(
@@ -264,6 +284,7 @@ const { data, loading, error, execute } = useApi(
 ```
 
 ### Error Handling
+
 ```typescript
 // Composables handle errors, views display them
 const { error } = useMyEntity()
@@ -277,31 +298,36 @@ const { error } = useMyEntity()
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 - **Utils**: Test pure functions in isolation
 - **Composables**: Test business logic with mocked dependencies
 - **Components**: Test UI behavior and user interactions
 
 ### Integration Tests
+
 - **API Services**: Test with mock server
 - **Views**: Test complete user workflows
 
 ## 🚀 Performance Considerations
 
 ### Lazy Loading
+
 ```typescript
 // Lazy load views
 const MyView = () => import('@/views/MyView.vue')
 ```
 
 ### Computed Properties
+
 ```typescript
 // Use computed for derived state
-const filteredEntities = computed(() => 
+const filteredEntities = computed(() =>
   entities.value.filter(entity => entity.active)
 )
 ```
 
 ### Caching
+
 ```typescript
 // Use caching in API calls
 const { data } = useApi(
@@ -327,4 +353,4 @@ const { data } = useApi(
 3. **Console Logs**: Added automatically in development mode
 4. **Error Boundaries**: Check error objects for detailed information
 
-This architecture ensures maintainable, scalable, and testable code while following Vue 3 and TypeScript best practices. 
+This architecture ensures maintainable, scalable, and testable code while following Vue 3 and TypeScript best practices.

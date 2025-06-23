@@ -42,7 +42,7 @@
         :columns="columns"
         :search-fields="['WorkOrderNumber', 'Title', 'CustomerName', 'AssignedTo']"
         :items-per-page="20"
-        :show-selection="true"
+        show-selection
         @row-click="handleViewOrder"
       >
         <template #cell-WorkOrderNumber="{ value }">
@@ -148,23 +148,21 @@ import { Badge } from '@/components/ui/badge';
 import {
   AlertCircle,
   Building,
-  Calendar,
   Clock,
   DollarSign,
   Download,
   Eye,
   FileText,
   Loader2,
-  Users,
 } from 'lucide-vue-next';
 
 // Use API service and composables
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
-import type { WorkOrder } from '@/types';
+import type { WorkOrderWithRelations } from '@/types/relationships';
 
 const router = useRouter();
-const selectedOrders = ref([]);
+const selectedOrders = ref<WorkOrderWithRelations[]>([]);
 
 // Fetch work orders with enhanced relational data
 const {
@@ -172,7 +170,7 @@ const {
   loading: workOrdersLoading,
   error: workOrdersError,
   refresh: refreshWorkOrders,
-} = useApiList<WorkOrder>(
+} = useApiList<WorkOrderWithRelations>(
   () =>
     api.workOrders.getAll({
       include: ['customer', 'tasks', 'assignedUsers', 'timeEntries', 'attestedBy'],
@@ -208,7 +206,7 @@ const completedWorkOrders = computed(() => {
     .filter(order => order.Status === 'completed')
     .map(order => ({
       ...order,
-      CustomerName: order.customer?.CompanyName || 'Okänd kund',
+      CustomerName: order.customer?.CompanyName ?? 'Okänd kund',
     }));
 });
 
@@ -235,8 +233,8 @@ const completedOrderStats = computed(() => {
     return (
       sum +
       (order.timeEntries
-        ? order.timeEntries.reduce((hourSum, entry) => hourSum + (entry.Hours || 0), 0)
-        : order.ActualHours || 0)
+        ? order.timeEntries.reduce((hourSum, entry) => hourSum + (entry.Hours ?? 0), 0)
+        : (order.ActualHours ?? 0))
     );
   }, 0);
 
@@ -289,11 +287,11 @@ const columns = [
 ];
 
 // Event handlers
-const handleViewOrder = (order: any) => {
+const handleViewOrder = (order: WorkOrderWithRelations) => {
   router.push(`/work-orders/${order.WorkOrderID}`);
 };
 
-const handleDownloadReport = (order: any) => {
+const handleDownloadReport = (order: WorkOrderWithRelations) => {
   // Generate PDF content as HTML
   const pdfContent = generateWorkOrderPDF(order);
 
@@ -318,17 +316,17 @@ const handleDownloadReport = (order: any) => {
 };
 
 // Generate PDF content for work order
-const generateWorkOrderPDF = (order: any) => {
+const generateWorkOrderPDF = (order: WorkOrderWithRelations) => {
   const assignedUser =
     order.assignedUsers && order.assignedUsers.length > 0
-      ? `${order.assignedUsers[0].FirstName} ${order.assignedUsers[0].LastName}`
+      ? `${order.assignedUsers[0].name}`
       : getEmployeeName(order.AssignedTo);
 
-  const attestedBy = order.attestedBy ? order.attestedBy.namn : '-';
+  const attestedBy = order.attestedBy ? order.attestedBy.name : '-';
   const orderValue = calculateOrderValue(order);
   const registeredHours = order.timeEntries
-    ? order.timeEntries.reduce((sum, entry) => sum + (entry.Hours || 0), 0)
-    : order.ActualHours || 0;
+    ? order.timeEntries.reduce((sum, entry) => sum + (entry.Hours ?? 0), 0)
+    : (order.ActualHours ?? 0);
 
   return `
 <!DOCTYPE html>
@@ -375,7 +373,7 @@ const generateWorkOrderPDF = (order: any) => {
                 </div>
                 <div class="info-item">
                     <span class="label">Beskrivning:</span>
-                    <span class="value">${order.Description || '-'}</span>
+                    <span class="value">${order.Description ?? '-'}</span>
                 </div>
                 <div class="info-item">
                     <span class="label">Typ:</span>
@@ -389,7 +387,7 @@ const generateWorkOrderPDF = (order: any) => {
                 </div>
                 <div class="info-item">
                     <span class="label">Prioritet:</span>
-                    <span class="value status-badge priority-${order.Priority || 'medium'}">${order.Priority || 'Medium'}</span>
+                    <span class="value status-badge priority-${order.Priority ?? 'medium'}">${order.Priority ?? 'Medium'}</span>
                 </div>
                 <div class="info-item">
                     <span class="label">Kund:</span>
@@ -435,7 +433,7 @@ const generateWorkOrderPDF = (order: any) => {
             <div>
                 <div class="info-item">
                     <span class="label">Uppskattade timmar:</span>
-                    <span class="value">${order.EstimatedHours || 0}h</span>
+                    <span class="value">${order.EstimatedHours ?? 0}h</span>
                 </div>
                 <div class="info-item">
                     <span class="label">Registrerade timmar:</span>
@@ -445,7 +443,7 @@ const generateWorkOrderPDF = (order: any) => {
             <div>
                 <div class="info-item">
                     <span class="label">Timtaxa:</span>
-                    <span class="value">${order.HourlyRate || 0} kr/h</span>
+                    <span class="value">${order.HourlyRate ?? 0} kr/h</span>
                 </div>
                 <div class="info-item">
                     <span class="label">Totalt värde:</span>
@@ -498,11 +496,11 @@ const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('sv-SE');
 };
 
-const calculateOrderValue = (order: any) => {
+const calculateOrderValue = (order: WorkOrderWithRelations) => {
   const hours = order.timeEntries
-    ? order.timeEntries.reduce((sum, entry) => sum + (entry.Hours || 0), 0)
-    : order.ActualHours || 0;
-  return hours * (order.HourlyRate || 0);
+    ? order.timeEntries.reduce((sum, entry) => sum + (entry.Hours ?? 0), 0)
+    : (order.ActualHours ?? 0);
+  return hours * (order.HourlyRate ?? 0);
 };
 
 const getTypeVariant = (type: string) => {
@@ -511,7 +509,7 @@ const getTypeVariant = (type: string) => {
     quick_field: 'destructive',
     service_non_billable: 'secondary',
   };
-  return variants[type] || 'default';
+  return variants[type] ?? 'default';
 };
 
 const getTypeText = (type: string) => {
@@ -520,7 +518,7 @@ const getTypeText = (type: string) => {
     quick_field: 'Snabborder',
     service_non_billable: 'Service (ej fakturerabart)',
   };
-  return texts[type] || type;
+  return texts[type] ?? type;
 };
 
 const getPriorityVariant = (priority: string) => {
@@ -530,7 +528,7 @@ const getPriorityVariant = (priority: string) => {
     high: 'default',
     urgent: 'destructive',
   };
-  return variants[priority] || 'default';
+  return variants[priority] ?? 'default';
 };
 
 // Helper function to get employee name by ID
@@ -538,7 +536,7 @@ const getEmployeeName = (employeeId: number | string) => {
   if (!employees.value) return 'Laddar...';
   if (typeof employeeId === 'string') return employeeId;
 
-  const employee = employees.value.find((emp: any) => emp.id === employeeId);
-  return employee?.name || 'Okänd användare';
+  const employee = employees.value.find(emp => emp.id === employeeId);
+  return employee?.name ?? 'Okänd användare';
 };
 </script>

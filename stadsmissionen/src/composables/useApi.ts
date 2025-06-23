@@ -1,11 +1,11 @@
 import { computed, ref, type Ref, shallowRef } from 'vue';
 import type { ApiError, ApiResponse } from '@/api/client/types';
 
-export interface UseApiOptions {
+export interface UseApiOptions<T = unknown> {
   immediate?: boolean;
   cache?: boolean;
   cacheKey?: string;
-  onSuccess?: (data: unknown) => void;
+  onSuccess?: (data: T) => void;
   onError?: (error: ApiError) => void;
 }
 
@@ -41,7 +41,7 @@ function convertErrorToDetails(error: unknown): Record<string, unknown> | null {
 
 export function useApi<T>(
   apiCall: () => Promise<ApiResponse<T>>,
-  options: UseApiOptions = {}
+  options: UseApiOptions<T> = {}
 ): UseApiReturn<T> {
   const { immediate = false, cache: useCache = false, cacheKey, onSuccess, onError } = options;
 
@@ -156,7 +156,7 @@ export function useApi<T>(
 // Specialized composables for common patterns
 export function useApiList<T>(
   apiCall: () => Promise<ApiResponse<T[]>>,
-  options: UseApiOptions = {}
+  options: UseApiOptions<T[]> = {}
 ) {
   const api = useApi(apiCall, { immediate: true, cache: true, ...options });
 
@@ -172,7 +172,7 @@ export function useApiList<T>(
 
 export function useApiItem<T>(
   apiCall: () => Promise<ApiResponse<T | null>>,
-  options: UseApiOptions = {}
+  options: UseApiOptions<T | null> = {}
 ) {
   return useApi(apiCall, { immediate: true, cache: true, ...options });
 }
@@ -180,7 +180,7 @@ export function useApiItem<T>(
 // Mutation composable for create/update/delete operations
 export function useApiMutation<TData, TVariables = unknown>(
   apiCall: (variables: TVariables) => Promise<ApiResponse<TData>>,
-  options: UseApiOptions = {}
+  options: UseApiOptions<TData> = {}
 ) {
   const loading = ref(false);
   const error = ref<ApiError | null>(null);
