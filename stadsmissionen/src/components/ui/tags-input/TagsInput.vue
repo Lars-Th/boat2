@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type HTMLAttributes, computed } from 'vue';
+import { computed, type HTMLAttributes } from 'vue';
 import { reactiveOmit } from '@vueuse/core';
 import {
   TagsInputRoot,

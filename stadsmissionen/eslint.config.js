@@ -47,7 +47,7 @@ export default [
         project: './tsconfig.eslint.json',
         tsconfigRootDir: import.meta.dirname,
       },
-              globals: {
+      globals: {
         // Node.js globals
         process: 'readonly',
         Buffer: 'readonly',
@@ -56,6 +56,11 @@ export default [
         // Browser globals
         ...globals.browser,
         ...globals.node,
+        window: 'readonly',
+        document: 'readonly',
+        console: 'readonly',
+        alert: 'readonly',
+        confirm: 'readonly',
         // ES2021+ globals
         globalThis: 'readonly',
         // Built-in JavaScript globals
@@ -64,7 +69,6 @@ export default [
         Number: 'readonly',
         Set: 'readonly',
         Promise: 'readonly',
-        console: 'readonly',
         // Vite globals
         import: 'readonly',
       },
@@ -120,7 +124,9 @@ export default [
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      '@typescript-eslint/consistent-type-imports': 'off',
+      '@typescript-eslint/consistent-type-imports': [
+        'error', {prefer: 'type-imports', fixStyle: 'inline-type-imports'}
+      ],
 
       // General JavaScript/TypeScript rules
       'no-undef': 'off', // TypeScript handles this
@@ -132,7 +138,7 @@ export default [
       'prefer-template': 'error',
       'prefer-arrow-callback': 'error',
       'arrow-spacing': 'error',
-      'no-duplicate-imports': 'off', // Disabled to avoid conflicts with module resolution
+      'no-duplicate-imports': 'warn', // Disabled to avoid conflicts with module resolution
       'no-useless-rename': 'error',
       'no-useless-computed-key': 'error',
       'no-useless-constructor': 'error',
@@ -144,14 +150,15 @@ export default [
         },
       ],
 
-      // Import/Export rules - disabled to avoid conflicts
-      'sort-imports': 'off',
-      'import/order': 'off',
-      'import/no-unresolved': 'off',
-      'import/extensions': 'off',
-      'import/no-absolute-path': 'off',
-      'import/no-dynamic-require': 'off',
-      'import/no-webpack-loader-syntax': 'off',
+      // Import/Export rules
+      'sort-imports': [
+        'error', {
+          ignoreCase: true,
+          ignoreDeclarationSort: true,
+          ignoreMemberSort: false,
+          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        }
+      ]
     },
   },
 

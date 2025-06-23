@@ -1,4 +1,4 @@
-import { type Ref, computed, ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 import type { FamilyRelation, Participant } from '@/types';
 
 // Define relation types as a union

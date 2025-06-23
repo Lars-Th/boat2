@@ -1,9 +1,9 @@
 import { ref } from 'vue';
 import type { UseValidationReturn, ValidationResult, ValidationRule } from '@/types';
 import {
-  type ValidationSchema,
   customValidationRules,
   validateNestedProperty,
+  type ValidationSchema,
 } from '@/schemas/validationSchemas';
 
 // Global state för validering

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type HTMLAttributes, computed } from 'vue';
+import { computed, type HTMLAttributes } from 'vue';
 import { reactiveOmit } from '@vueuse/core';
 import { ChevronLeft } from 'lucide-vue-next';
 import { CalendarPrev, type CalendarPrevProps, useForwardProps } from 'reka-ui';

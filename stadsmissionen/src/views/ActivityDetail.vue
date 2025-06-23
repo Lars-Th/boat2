@@ -37,8 +37,8 @@ import {
   Save,
   Trash2,
   UserCheck,
-  UserX,
   Users,
+  UserX,
   X,
 } from 'lucide-vue-next';
 

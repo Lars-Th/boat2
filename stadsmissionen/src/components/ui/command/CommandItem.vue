@@ -7,7 +7,7 @@ import {
   useForwardPropsEmits,
   useId,
 } from 'reka-ui';
-import { type HTMLAttributes, computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, type HTMLAttributes, onMounted, onUnmounted, ref } from 'vue';
 import { cn } from '@/utils/libraryHelper';
 import { useCommand, useCommandGroup } from '.';
 

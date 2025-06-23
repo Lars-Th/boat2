@@ -1,4 +1,4 @@
-import { type Ref, computed, ref, shallowRef } from 'vue';
+import { computed, ref, type Ref, shallowRef } from 'vue';
 import type { ApiError, ApiResponse } from '@/api/client/types';
 
 export interface UseApiOptions {
