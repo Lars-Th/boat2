@@ -244,7 +244,7 @@ const formatValue = (value: any, type?: string) => {
                 <component :is="table.icon" class="h-4 w-4" />
                 {{ table.title }}
                 <span class="text-xs text-gray-500 font-normal">
-                  ({{ table.data?.length || 0 }})
+                  ({{ table.data?.length ?? 0 }})
                 </span>
               </h3>
               <Button

@@ -45,7 +45,7 @@ const {
   data: users,
   loading: usersLoading,
   error: usersError,
-  refetch: refetchUsers,
+  refresh: refetchUsers,
 } = useApi(() => api.users?.getAll() ?? Promise.resolve({ data: [], success: true }), {
   immediate: true,
 });
@@ -54,11 +54,10 @@ const {
   data: organizationSettings,
   loading: organizationsLoading,
   error: organizationsError,
-  refetch: refetchOrganizations,
+  refresh: refetchOrganizations,
 } = useApi(
   () =>
-    api.organizationSettings?.getAll() ??
-    Promise.resolve({ data: { organizations: [] }, success: true }),
+    api.organizations?.getAll() ?? Promise.resolve({ data: { organizations: [] }, success: true }),
   { immediate: true }
 );
 
@@ -118,7 +117,7 @@ const router = useRouter();
 
 // Get organizations from API data
 const organizations = computed(() => {
-  return organizationSettings.value?.organizations ?? [];
+  return organizationSettings.value ?? [];
 });
 
 // Reactive data
@@ -502,7 +501,7 @@ const getBadgeVariant = (
         <AlertCircle class="h-12 w-12 mx-auto mb-2" />
         <p class="text-lg font-semibold">Kunde inte ladda användare</p>
         <p class="text-sm text-muted-foreground mt-1">
-          {{ usersError?.message || organizationsError?.message }}
+          {{ usersError?.message ?? organizationsError?.message }}
         </p>
       </div>
       <Button variant="outline" @click="handleRetry">Försök igen</Button>
@@ -710,7 +709,7 @@ const getBadgeVariant = (
               :variant="getBadgeVariant(role?.color ?? 'outline')"
               class="text-xs"
             >
-              {{ role?.namn || 'Okänd roll' }}
+              {{ role?.namn ?? 'Okänd roll' }}
             </Badge>
           </div>
         </template>

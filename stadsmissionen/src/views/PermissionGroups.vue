@@ -83,7 +83,7 @@ const stats = computed(() => {
 });
 
 // Table data
-const tableData = computed(() => permissionGroups.value || []);
+const tableData = computed(() => permissionGroups.value ?? []);
 
 // Action methods
 function addNewGroup() {

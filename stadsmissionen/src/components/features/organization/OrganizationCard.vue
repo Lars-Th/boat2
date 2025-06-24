@@ -58,10 +58,10 @@ defineEmits<Emits>();
         <div class="space-y-1">
           <div class="flex items-center gap-2 text-sm">
             <Phone class="h-3 w-3 text-muted-foreground" />
-            <span>{{ organization.kontaktuppgifter?.telefon || 'Ingen telefon' }}</span>
+            <span>{{ organization.kontaktuppgifter?.telefon ?? 'Ingen telefon' }}</span>
           </div>
           <div class="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{{ organization.kontaktuppgifter?.ort || 'Ingen ort' }}</span>
+            <span>{{ organization.kontaktuppgifter?.ort ?? 'Ingen ort' }}</span>
           </div>
         </div>
 

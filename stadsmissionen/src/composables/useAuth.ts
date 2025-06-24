@@ -21,7 +21,7 @@ export function useAuth() {
       if (!response.success || !response.data) {
         return {
           success: false,
-          error: response.error?.message || 'Felaktigt användarnamn eller lösenord',
+          error: response.error?.message ?? 'Felaktigt användarnamn eller lösenord',
         };
       }
 

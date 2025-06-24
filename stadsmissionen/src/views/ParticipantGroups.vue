@@ -125,7 +125,7 @@ const enhancedGroups = computed(() => {
     const activityCount = group.activities ? group.activities.length : 0;
     const recentActivityCount = group.activities
       ? group.activities.filter(activity => {
-          const activityDate = new Date(activity.Datum || activity.CreatedDate);
+          const activityDate = new Date(activity.Datum ?? activity.CreatedDate);
           const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
           return activityDate >= thirtyDaysAgo;
         }).length
@@ -138,7 +138,7 @@ const enhancedGroups = computed(() => {
       activityCount,
       recentActivityCount,
       isAutomatic: !!group.automatiskregel,
-      enheterText: (group.enheter || []).join(', '),
+      enheterText: (group.enheter ?? []).join(', '),
     };
   });
 });
@@ -315,7 +315,7 @@ const handleParticipantChange = (participantId: string, checked: boolean) => {
 
 // Available participants for selection
 const availableParticipants = computed(() => {
-  return participants.value || [];
+  return participants.value ?? [];
 });
 
 // Event handlers

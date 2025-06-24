@@ -69,7 +69,7 @@ const enhancedActivityTypes = computed((): EnhancedActivityType[] => {
   if (!activityTypesWithRelations.value) return [];
 
   return activityTypesWithRelations.value.map((type: any) => {
-    const usageCount = (type.activities || []).length;
+    const usageCount = (type.activities ?? []).length;
     return {
       ...type,
       usageCount,

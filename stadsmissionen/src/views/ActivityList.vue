@@ -183,7 +183,7 @@ const addActions = computed(() => [
 const filters = computed(() => {
   const typeOptions = [
     { key: 'all', label: 'Alla typer', value: 'all' },
-    ...(activityTypes.value || []).map((type: any) => ({
+    ...(activityTypes.value ?? []).map((type: any) => ({
       key: type.Typnamn,
       label: type.Typnamn,
       value: type.Typnamn,
@@ -208,7 +208,7 @@ const formatDateTime = (dateTime: string) => {
 };
 
 const getActivityTypeName = (activity: any) => {
-  return activity.activityType?.Typnamn || 'Okänd typ';
+  return activity.activityType?.Typnamn ?? 'Okänd typ';
 };
 
 // Event handlers
@@ -241,7 +241,7 @@ const confirmDelete = async () => {
       success('Aktivitet borttagen', 'Aktiviteten har tagits bort framgångsrikt.');
       await refreshActivities();
     } else {
-      showError('Fel vid borttagning', result.error?.message || 'Kunde inte ta bort aktiviteten.');
+      showError('Fel vid borttagning', result.error?.message ?? 'Kunde inte ta bort aktiviteten.');
     }
   } catch (err) {
     showError('Fel vid borttagning', 'Ett oväntat fel inträffade. Försök igen.');

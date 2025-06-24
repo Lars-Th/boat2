@@ -109,7 +109,7 @@ const customerOptions = computed(() => {
   if (!customers.value) return [];
   return customers.value.map((customer: any) => ({
     value: customer.CustomerID.toString(),
-    label: customer.CompanyName || 'Okänt företag',
+    label: customer.CompanyName ?? 'Okänt företag',
   }));
 });
 
@@ -117,7 +117,7 @@ const customerOptions = computed(() => {
 const getSelectedCustomerName = (customerId: string | number | null) => {
   if (!customerId) return '';
   const customer = customerOptions.value.find(opt => opt.value === customerId.toString());
-  return customer ? customer.label || '' : '';
+  return customer ? (customer.label ?? '') : '';
 };
 
 // Field definitions for DetailPage (excluding CustomerID which will be custom)
@@ -149,7 +149,7 @@ const sidebarFields = computed(() => [
 const stats = computed(() => {
   if (!contact.value) return [];
 
-  const workOrders = contact.value.workOrders || [];
+  const workOrders = contact.value.workOrders ?? [];
   const { customer } = contact.value;
 
   return [

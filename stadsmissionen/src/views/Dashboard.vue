@@ -64,8 +64,8 @@ const {
 });
 
 // Extract data from relational responses
-const participants = computed(() => participantsWithActivities.value || []);
-const activities = computed(() => activitiesWithTypes.value || []);
+const participants = computed(() => participantsWithActivities.value ?? []);
+const activities = computed(() => activitiesWithTypes.value ?? []);
 
 // Loading and error states
 const isLoading = computed(
@@ -97,9 +97,9 @@ const handleRetry = async () => {
 const router = useRouter();
 
 // Calculate statistics from API data
-const totalParticipants = computed(() => participants.value?.length || 0);
-const totalActivities = computed(() => activities.value?.length || 0);
-const totalAttendances = computed(() => attendances.value?.length || 0);
+const totalParticipants = computed(() => participants.value?.length ?? 0);
+const totalActivities = computed(() => activities.value?.length ?? 0);
+const totalAttendances = computed(() => attendances.value?.length ?? 0);
 const attendanceRate = computed(() => {
   if (!attendances.value || attendances.value.length === 0) return 0;
   const present = attendances.value.filter(a => a.Närvaro).length;
@@ -245,9 +245,9 @@ const navigationShortcuts = [
           <p class="text-lg font-semibold">Kunde inte ladda dashboard</p>
           <p class="text-sm text-muted-foreground mt-1">
             {{
-              participantsError?.message ||
-              activitiesError?.message ||
-              attendancesError?.message ||
+              participantsError?.message ??
+              activitiesError?.message ??
+              attendancesError?.message ??
               activityTypesError?.message
             }}
           </p>

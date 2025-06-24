@@ -103,7 +103,7 @@ const stats = computed(() => {
 const getCustomerName = (customerID: number) => {
   // Get customer name from included relation data
   const machine = machinesWithRelations.value?.find((m: any) => m.CustomerID === customerID);
-  return machine?.customer?.CompanyName || 'Okänd kund';
+  return machine?.customer?.CompanyName ?? 'Okänd kund';
 };
 
 const formatDate = (dateString: string) => {

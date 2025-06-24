@@ -90,8 +90,8 @@ const isUpdatingPassword = ref(false);
 const updateUserProfile = () => {
   if (user.value) {
     userProfile.value = {
-      name: user.value.name || '',
-      email: user.value.email || '',
+      name: user.value.name ?? '',
+      email: user.value.email ?? '',
       adminGroup: userPermissionGroup.value,
     };
     originalProfile.value = { ...userProfile.value };
@@ -119,7 +119,7 @@ const createPassword = async () => {
       info('Lösenord uppdaterat framgångsrikt');
       passwordData.value.newPassword = '';
     } else {
-      showError(response.error?.message || 'Ett fel uppstod vid uppdatering av lösenord');
+      showError(response.error?.message ?? 'Ett fel uppstod vid uppdatering av lösenord');
     }
   } catch (error) {
     showError('Ett oväntat fel uppstod vid uppdatering av lösenord');
@@ -133,7 +133,7 @@ const saveChanges = async () => {
 
   // For regular users, we need user.value to get permissionID
   // For "My Account", we can use currentUser as fallback
-  const sourceUser = user.value || (isMyAccount.value ? currentUser.value : null);
+  const sourceUser = user.value ?? (isMyAccount.value ? currentUser.value : null);
   if (!sourceUser) return;
 
   isSaving.value = true;
@@ -141,7 +141,7 @@ const saveChanges = async () => {
   const updateData = {
     name: userProfile.value.name,
     email: userProfile.value.email,
-    permissionID: sourceUser.permissionID || sourceUser.permissionGroup?.id, // Keep existing permission
+    permissionID: sourceUser.permissionID ?? sourceUser.permissionGroup?.id, // Keep existing permission
   };
 
   try {
@@ -174,7 +174,7 @@ const saveChanges = async () => {
       // Update original values
       originalProfile.value = { ...userProfile.value };
     } else {
-      showError(response.error?.message || 'Ett fel uppstod vid sparande');
+      showError(response.error?.message ?? 'Ett fel uppstod vid sparande');
     }
   } catch (error) {
     showError('Ett oväntat fel uppstod vid sparande');

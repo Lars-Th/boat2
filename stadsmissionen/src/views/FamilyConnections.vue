@@ -77,7 +77,7 @@ const familyRelations = computed<FamilyRelation[]>(() => {
         relations.push({
           ParticipantID: participant.ParticipantID,
           RelatedParticipantID: familyMember.ParticipantID,
-          RelationType: familyMember.RelationType || 'Family',
+          RelationType: familyMember.RelationType ?? 'Family',
         });
       });
     }

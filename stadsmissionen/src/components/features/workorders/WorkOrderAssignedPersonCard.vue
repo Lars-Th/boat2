@@ -82,7 +82,7 @@ const props = defineProps<Props>();
     <div v-else class="text-center py-8 text-muted-foreground">
       <Users class="h-12 w-12 mx-auto mb-2" />
       <p>Ingen person tilldelad</p>
-      <p class="text-sm mt-1">{{ workOrder?.AssignedTo || 'Ej specificerat' }}</p>
+      <p class="text-sm mt-1">{{ workOrder?.AssignedTo ?? 'Ej specificerat' }}</p>
     </div>
   </div>
 </template>

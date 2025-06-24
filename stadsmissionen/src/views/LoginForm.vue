@@ -45,7 +45,7 @@ const handleSubmit = async () => {
     const result = await login(email.value, password.value);
 
     if (!result.success) {
-      error.value = result.error || 'Inloggning misslyckades';
+      error.value = result.error ?? 'Inloggning misslyckades';
     }
   } catch (err) {
     error.value = 'Ett oväntat fel uppstod';
@@ -88,7 +88,7 @@ const fillDemoCredentials = (user: (typeof demoUsers.value)[0]) => {
     'lisa.medarbetare@ostergotlandsstadsmission.se': 'lisa123',
     'karin.admin@stadsmissionen.se': 'karin123',
   };
-  password.value = passwordMap[user.email] || 'demo123';
+  password.value = passwordMap[user.email] ?? 'demo123';
 };
 
 // Initialize demo users on component mount

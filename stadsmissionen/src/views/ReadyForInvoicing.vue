@@ -64,7 +64,7 @@ const getEmployeeName = (employeeId: number | string) => {
   if (typeof employeeId === 'string') return employeeId;
 
   const employee = employees.value.find((emp: any) => emp.id === employeeId);
-  return employee?.name || 'Okänd användare';
+  return employee?.name ?? 'Okänd användare';
 };
 
 // Filter work orders ready for invoicing from relational data
@@ -76,7 +76,7 @@ const approvedForInvoicingOrders = computed(() => {
     .filter(order => order.Status === 'invoicable')
     .map(order => ({
       ...order,
-      CustomerName: order.customer?.CompanyName || 'Okänd kund',
+      CustomerName: order.customer?.CompanyName ?? 'Okänd kund',
     }));
 });
 
@@ -96,8 +96,8 @@ const invoicingStats = computed(() => {
   // Calculate total value from tasks and hourly rates
   const totalValue = readyOrders.reduce((sum: number, order: any) => {
     const registeredHours = order.tasks
-      ? order.tasks.reduce((hourSum: number, task: any) => hourSum + (task.Hours || 0), 0)
-      : order.ActualHours || 0;
+      ? order.tasks.reduce((hourSum: number, task: any) => hourSum + (task.Hours ?? 0), 0)
+      : (order.ActualHours ?? 0);
     return sum + registeredHours * (order.HourlyRate || 0);
   }, 0);
 

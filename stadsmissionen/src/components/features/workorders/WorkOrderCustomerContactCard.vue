@@ -39,7 +39,7 @@ const props = defineProps<Props>();
     <div class="space-y-4">
       <div>
         <span class="text-muted-foreground block">Kund:</span>
-        <span class="font-medium">{{ customerInfo?.CompanyName || 'Okänd kund' }}</span>
+        <span class="font-medium">{{ customerInfo?.CompanyName ?? 'Okänd kund' }}</span>
       </div>
       <div v-if="customerInfo?.OrganizationNumber">
         <span class="text-muted-foreground block">Org.nummer:</span>

@@ -43,8 +43,8 @@ const {
 });
 
 // Extract data from relational responses
-const participants = computed(() => participantsWithActivities.value || []);
-const activities = computed(() => activitiesWithTypes.value || []);
+const participants = computed(() => participantsWithActivities.value ?? []);
+const activities = computed(() => activitiesWithTypes.value ?? []);
 const activityTypes = computed(() => {
   // Extract unique activity types from activities
   if (!activitiesWithTypes.value) return [];
@@ -75,9 +75,9 @@ const handleRetry = async () => {
 };
 
 // Calculate statistics from API data
-const totalParticipants = computed(() => participants.value?.length || 0);
-const totalActivities = computed(() => activities.value?.length || 0);
-const totalAttendances = computed(() => attendances.value?.length || 0);
+const totalParticipants = computed(() => participants.value?.length ?? 0);
+const totalActivities = computed(() => activities.value?.length ?? 0);
+const totalAttendances = computed(() => attendances.value?.length ?? 0);
 const attendanceRate = computed(() => {
   if (!attendances.value || attendances.value.length === 0) return 0;
   const present = attendances.value.filter(a => a.Närvaro).length;

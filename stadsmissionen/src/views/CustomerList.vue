@@ -206,7 +206,7 @@ const getPrimaryContactName = (customer: CustomerWithRelations): string => {
   // Use the computed field from the enhanced type
   if (customer.primaryContact) {
     return (
-      customer.primaryContact.fullName ||
+      customer.primaryContact.fullName ??
       `${customer.primaryContact.FirstName} ${customer.primaryContact.LastName}`
     );
   }
@@ -215,7 +215,7 @@ const getPrimaryContactName = (customer: CustomerWithRelations): string => {
   if (customer.contacts && customer.contacts.length > 0) {
     const primary = customer.contacts.find(c => c.IsPrimary === true);
     if (primary) {
-      return primary.fullName || `${primary.FirstName} ${primary.LastName}`;
+      return primary.fullName ?? `${primary.FirstName} ${primary.LastName}`;
     }
   }
 
@@ -257,7 +257,7 @@ const getPrimaryContactEmail = (customer: CustomerWithRelations): string => {
 };
 
 const getContactCount = (customer: CustomerWithRelations): number => {
-  return customer.contacts?.length || 0;
+  return customer.contacts?.length ?? 0;
 };
 
 const hasPrimaryContact = (customer: CustomerWithRelations): boolean => {

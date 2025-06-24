@@ -69,17 +69,17 @@ const enhancedParticipants = computed(() => {
   if (!participantsWithRelations.value) return [];
 
   return participantsWithRelations.value.map(participant => {
-    const guardianNames = participant.guardians?.map(g => `${g.Fornamn} ${g.Efternamn}`) || [];
-    const siblingNames = participant.siblings?.map(s => `${s.Fornamn} ${s.Efternamn}`) || [];
-    const childrenNames = participant.children?.map(c => `${c.Fornamn} ${c.Efternamn}`) || [];
+    const guardianNames = participant.guardians?.map(g => `${g.Fornamn} ${g.Efternamn}`) ?? [];
+    const siblingNames = participant.siblings?.map(s => `${s.Fornamn} ${s.Efternamn}`) ?? [];
+    const childrenNames = participant.children?.map(c => `${c.Fornamn} ${c.Efternamn}`) ?? [];
 
     return {
       ...participant,
       fullName: `${participant.Fornamn} ${participant.Efternamn}`,
       age: calculateAge(participant.Personnummer),
-      hasGuardian: (participant.guardians?.length || 0) > 0,
-      hasSiblings: (participant.siblings?.length || 0) > 0,
-      hasChildren: (participant.children?.length || 0) > 0,
+      hasGuardian: (participant.guardians?.length ?? 0) > 0,
+      hasSiblings: (participant.siblings?.length ?? 0) > 0,
+      hasChildren: (participant.children?.length ?? 0) > 0,
       guardianNames,
       siblingNames,
       childrenNames,

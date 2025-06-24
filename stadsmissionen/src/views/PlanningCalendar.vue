@@ -284,7 +284,7 @@ const formatDate = (date: Date | string, format: string = 'YYYY-MM-DD') => {
     ddd: d.toLocaleDateString('sv-SE', { weekday: 'short' }),
   };
 
-  return formats[format] || d.toLocaleDateString('sv-SE');
+  return formats[format] ?? d.toLocaleDateString('sv-SE');
 };
 
 const formatDateRange = (start: Date, end: Date) => {
@@ -303,7 +303,7 @@ const isToday = (dateString: string) => {
 };
 
 const getDayWorkOrders = (date: string) => {
-  const orderIds = workOrderSchedule.value[date] || [];
+  const orderIds = workOrderSchedule.value[date] ?? [];
   return orderIds
     .map((id: number) => workOrders.value.find((wo: any) => wo.WorkOrderID === id))
     .filter(Boolean);
@@ -315,11 +315,11 @@ const getSortedDayWorkOrders = (date: string) => {
   return dayOrders.sort((a, b) => {
     // Sort by scheduled start time, then by priority
     if (a.ScheduledStartTime !== b.ScheduledStartTime) {
-      return (a.ScheduledStartTime || 0) - (b.ScheduledStartTime || 0);
+      return (a.ScheduledStartTime ?? 0) - (b.ScheduledStartTime ?? 0);
     }
 
     const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
-    return (priorityOrder[a.Priority] || 3) - (priorityOrder[b.Priority] || 3);
+    return (priorityOrder[a.Priority] ?? 3) - (priorityOrder[b.Priority] ?? 3);
   });
 };
 
@@ -328,14 +328,14 @@ const getDayWorkloadHours = (date: string) => {
   return dayOrders.reduce((total, wo) => {
     const assignedEmployees = getAssignedEmployees(wo.WorkOrderID);
     const effectiveHours = calculateEffectiveDuration(wo.EstimatedHours, assignedEmployees.length);
-    return total + (effectiveHours || 0);
+    return total + (effectiveHours ?? 0);
   }, 0);
 };
 
 const getTotalDayCapacity = (date: string) => {
   // Calculate total capacity based on employees' weekly capacity
   if (!employees.value) return 32; // fallback
-  return employees.value.reduce((total, emp) => total + (emp.weeklyCapacity || 40) / 5, 0); // daily capacity
+  return employees.value.reduce((total, emp) => total + (emp.weeklyCapacity ?? 40) / 5, 0); // daily capacity
 };
 
 const getDayCapacityPercentage = (date: string) => {
@@ -365,7 +365,7 @@ const getEmployeeWeekHours = (employeeId: number) => {
     const dayOrders = getDayWorkOrders(day.date);
     dayOrders.forEach(wo => {
       if (wo.AssignedEmployeeID === employeeId) {
-        totalHours += wo.EstimatedHours || 0;
+        totalHours += wo.EstimatedHours ?? 0;
       }
     });
   });
@@ -376,7 +376,7 @@ const getEmployeeWeekHours = (employeeId: number) => {
 const getTotalWeekUtilization = () => {
   if (!employees.value) return 0;
   const totalPlanned = employees.value.reduce((sum, emp) => sum + getEmployeeWeekHours(emp.id), 0);
-  const totalCapacity = employees.value.reduce((sum, emp) => sum + (emp.weeklyCapacity || 40), 0);
+  const totalCapacity = employees.value.reduce((sum, emp) => sum + (emp.weeklyCapacity ?? 40), 0);
   return totalCapacity > 0 ? (totalPlanned / totalCapacity) * 100 : 0;
 };
 
@@ -390,17 +390,17 @@ const getScheduledCount = () => {
 
 const getEmployeeName = (employeeId: number) => {
   const employee = employees.value.find((e: any) => e.id === employeeId);
-  return employee?.name || '';
+  return employee?.name ?? '';
 };
 
 const getEmployeeInitials = (employeeId: number) => {
   const employee = employees.value.find((e: any) => e.id === employeeId);
-  return employee?.initials || '';
+  return employee?.initials ?? '';
 };
 
 const getCustomerName = (customerId: number) => {
   const customer = customers.value.find((c: any) => c.CustomerID === customerId);
-  return customer?.CompanyName || 'Okänd kund';
+  return customer?.CompanyName ?? 'Okänd kund';
 };
 
 // Updated function to handle multiple employees
@@ -1044,7 +1044,7 @@ const cancelCopy = () => {
                     <span>Denna vecka:</span>
                     <span class="font-medium">
                       {{ getEmployeeWeekHours(employee.id) }}h /
-                      {{ employee.weeklyCapacity || 40 }}h
+                      {{ employee.weeklyCapacity ?? 40 }}h
                     </span>
                   </div>
                   <div class="w-full bg-muted rounded-full h-1 mt-1">

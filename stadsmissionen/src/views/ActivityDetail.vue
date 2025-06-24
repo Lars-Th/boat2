@@ -103,8 +103,8 @@ const {
 // Extract data from the combined response
 const activity = computed(() => activityWithRelations.value);
 const activityType = computed(() => activityWithRelations.value?.activityType);
-const attendances = computed(() => activityWithRelations.value?.attendances || []);
-const activityParticipants = computed(() => activityWithRelations.value?.participants || []);
+const attendances = computed(() => activityWithRelations.value?.attendances ?? []);
+const activityParticipants = computed(() => activityWithRelations.value?.participants ?? []);
 
 // Fetch activity types for editing dropdown
 const {
@@ -285,7 +285,7 @@ const saveChanges = () => {
         success('Aktivitet uppdaterad', 'Ändringarna har sparats framgångsrikt');
       } else {
         console.error('Failed to save changes:', response.error);
-        showError('Kunde inte spara', response.error?.message || 'Ett fel uppstod vid sparande');
+        showError('Kunde inte spara', response.error?.message ?? 'Ett fel uppstod vid sparande');
       }
     })
     .catch(error => {
@@ -335,7 +335,7 @@ const deleteActivity = () => {
         console.error('Failed to delete activity:', response.error);
         showError(
           'Kunde inte ta bort',
-          response.error?.message || 'Ett fel uppstod vid borttagning'
+          response.error?.message ?? 'Ett fel uppstod vid borttagning'
         );
       }
     })

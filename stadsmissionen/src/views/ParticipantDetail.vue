@@ -61,9 +61,9 @@ const {
 
 // Extract data from relational response
 const participant = computed(() => participantWithRelations.value);
-const activities = computed(() => participantWithRelations.value?.activities || []);
-const attendances = computed(() => participantWithRelations.value?.attendances || []);
-const familyMembers = computed(() => participantWithRelations.value?.familyMembers || []);
+const activities = computed(() => participantWithRelations.value?.activities ?? []);
+const attendances = computed(() => participantWithRelations.value?.attendances ?? []);
+const familyMembers = computed(() => participantWithRelations.value?.familyMembers ?? []);
 
 // Mock family relations data (since API endpoint doesn't exist)
 interface FamilyRelation {

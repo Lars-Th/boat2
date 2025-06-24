@@ -189,7 +189,7 @@ const getEmployeeName = (employeeId: number | string) => {
   if (typeof employeeId === 'string') return employeeId;
 
   const employee = employees.value.find((emp: any) => emp.id === employeeId);
-  return employee?.name || 'Okänd användare';
+  return employee?.name ?? 'Okänd användare';
 };
 
 // Filter work orders that are attestable with related data already included
@@ -200,9 +200,9 @@ const pendingAttestationOrders = computed(() => {
     .filter((wo: any) => wo.Status === 'attestable')
     .map((workOrder: any) => {
       // Calculate registered hours from included tasks
-      const registeredHours = (workOrder.tasks || [])
+      const registeredHours = (workOrder.tasks ?? [])
         .filter((task: any) => task.Status === 'approved')
-        .reduce((total: number, task: any) => total + (task.Hours || 0), 0);
+        .reduce((total: number, task: any) => total + (task.Hours ?? 0), 0);
 
       return {
         ...workOrder,

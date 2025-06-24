@@ -304,7 +304,7 @@ const editBoat = (boat: any, event: MouseEvent) => {
 const deleteBoat = async (boat: any, event: MouseEvent): Promise<void> => {
   event.stopPropagation();
 
-  const boatName = `${boat.boatType} (${boat.customer?.CompanyName || 'Okänd kund'})`;
+  const boatName = `${boat.boatType} (${boat.customer?.CompanyName ?? 'Okänd kund'})`;
 
   confirm(
     'Radera båt?',
@@ -364,7 +364,7 @@ const handleViewModeChange = (mode: 'list' | 'grid') => {
   >
     <!-- Custom cell templates -->
     <template #cell-customer="{ value, row }">
-      <span>{{ row?.customer?.CompanyName || 'Okänd kund' }}</span>
+      <span>{{ row?.customer?.CompanyName ?? 'Okänd kund' }}</span>
     </template>
 
     <template #row-actions="{ row }">

@@ -33,10 +33,10 @@ const getDisplayValue = (item: Record<string, unknown>, key: string) => {
     if (key === 'customer') {
       const customer = value as any;
       return (
-        customer.CompanyName ||
-        customer.name ||
-        customer.contactFirstName ||
-        customer.contactLastName ||
+        customer.CompanyName ??
+        customer.name ??
+        customer.contactFirstName ??
+        customer.contactLastName ??
         '[Kund]'
       );
     }

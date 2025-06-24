@@ -61,16 +61,16 @@ watch(
   newBoat => {
     if (newBoat && !isNew.value) {
       form.value = {
-        boatType: newBoat.boatType || '',
-        customerId: newBoat.customerId?.toString() || '',
-        length: newBoat.length || undefined,
-        width: newBoat.width || undefined,
-        safetyMargin: newBoat.safetyMargin || undefined,
-        launchDate: newBoat.launchDate || '',
-        haul_outDate: newBoat.haul_outDate || '',
-        status: newBoat.status || 'unplaced',
-        location: newBoat.location || 'lager',
-        comments: newBoat.comments || '',
+        boatType: newBoat.boatType ?? '',
+        customerId: newBoat.customerId?.toString() ?? '',
+        length: newBoat.length ?? undefined,
+        width: newBoat.width ?? undefined,
+        safetyMargin: newBoat.safetyMargin ?? undefined,
+        launchDate: newBoat.launchDate ?? '',
+        haul_outDate: newBoat.haul_outDate ?? '',
+        status: newBoat.status ?? 'unplaced',
+        location: newBoat.location ?? 'lager',
+        comments: newBoat.comments ?? '',
       };
     }
   },
@@ -148,7 +148,7 @@ const totalArea = computed(() => {
 // Setup breadcrumbs
 const breadcrumbs = computed(() => {
   if (isNew.value) return 'Dashboard / Båtar / Ny Båt';
-  return `Dashboard / Båtar / ${boat.value?.boatType || 'Båtdetaljer'}`;
+  return `Dashboard / Båtar / ${boat.value?.boatType ?? 'Båtdetaljer'}`;
 });
 
 const pageTitle = computed(() => {
@@ -158,7 +158,7 @@ const pageTitle = computed(() => {
 
 const pageDescription = computed(() => {
   if (isNew.value) return 'Fyll i båtinformation nedan';
-  return `Redigera information för ${boat.value?.boatType || 'båt'}`;
+  return `Redigera information för ${boat.value?.boatType ?? 'båt'}`;
 });
 
 const goBack = () => {
@@ -177,11 +177,11 @@ const saveBoat = async () => {
     const boatData = {
       boatType: form.value.boatType,
       customerId: parseInt(form.value.customerId),
-      length: form.value.length || 0,
-      width: form.value.width || 0,
-      safetyMargin: form.value.safetyMargin || 0,
-      launchDate: form.value.launchDate || null,
-      haul_outDate: form.value.haul_outDate || null,
+      length: form.value.length ?? 0,
+      width: form.value.width ?? 0,
+      safetyMargin: form.value.safetyMargin ?? 0,
+      launchDate: form.value.launchDate ?? null,
+      haul_outDate: form.value.haul_outDate ?? null,
       status: form.value.status,
       location: form.value.location,
       comments: form.value.comments || '',

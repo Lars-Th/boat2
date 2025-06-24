@@ -1345,7 +1345,7 @@ const componentCount = computed(() => {
 const pageCount = computed(() => {
   if (!fileTree || !Array.isArray(fileTree)) return 0;
   const pagesNode = fileTree.find(node => node.name === 'pages');
-  return pagesNode?.children?.length || 0;
+  return pagesNode?.children?.length ?? 0;
 });
 
 const uiComponentCount = computed(() => {

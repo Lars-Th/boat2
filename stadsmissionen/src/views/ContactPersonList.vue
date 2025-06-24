@@ -118,12 +118,12 @@ const filteredContacts = computed(() => {
   if (searchQuery.value.trim()) {
     const query = searchQuery.value.toLowerCase().trim();
     filtered = filtered.filter((contact: any) => {
-      const fullName = `${contact.FirstName || ''} ${contact.LastName || ''}`.toLowerCase();
-      const title = (contact.Title || '').toLowerCase();
-      const email = (contact.Email || '').toLowerCase();
-      const phone = (contact.Phone || '').toLowerCase();
-      const department = (contact.Department || '').toLowerCase();
-      const customerName = (contact.customer?.CompanyName || '').toLowerCase();
+      const fullName = `${contact.FirstName ?? ''} ${contact.LastName ?? ''}`.toLowerCase();
+      const title = (contact.Title ?? '').toLowerCase();
+      const email = (contact.Email ?? '').toLowerCase();
+      const phone = (contact.Phone ?? '').toLowerCase();
+      const department = (contact.Department ?? '').toLowerCase();
+      const customerName = (contact.customer?.CompanyName ?? '').toLowerCase();
 
       return (
         fullName.includes(query) ||
@@ -194,7 +194,7 @@ const getContactTypeVariant = (isPrimary: boolean) => {
 };
 
 const getCustomerName = (contact: ContactWithRelations): string => {
-  return contact.customer?.CompanyName || 'Okänd kund';
+  return contact.customer?.CompanyName ?? 'Okänd kund';
 };
 
 const getFullName = (contact: ContactWithRelations): string => {
@@ -221,7 +221,7 @@ const handleEditContact = (contact: any) => {
 
 const handleCallContact = (contact: any, event: Event) => {
   event.stopPropagation();
-  const phone = contact.Phone || contact.Mobile;
+  const phone = contact.Phone ?? contact.Mobile;
   if (phone) {
     // Use tel: protocol to initiate call
     const telLink = document.createElement('a');
@@ -252,7 +252,7 @@ const handleDeleteContact = async (contact: any, event: Event) => {
       } else {
         error(
           'Fel vid borttagning',
-          result.error?.message || 'Kunde inte ta bort kontaktpersonen.'
+          result.error?.message ?? 'Kunde inte ta bort kontaktpersonen.'
         );
       }
     } catch (err) {
@@ -310,7 +310,7 @@ const handleDeleteContact = async (contact: any, event: Event) => {
     <!-- DataTable -->
     <div v-else>
       <DataTable
-        :data="paginatedContacts || []"
+        :data="paginatedContacts ?? []"
         :columns="columns"
         :search-fields="['FirstName', 'LastName', 'Title', 'Email', 'Phone', 'Department']"
         :loading="isLoading"

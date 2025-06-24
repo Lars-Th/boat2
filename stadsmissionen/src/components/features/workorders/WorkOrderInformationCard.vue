@@ -135,7 +135,7 @@ const getPriorityText = (priority: string) => {
       </div>
       <div class="flex justify-between">
         <span class="text-muted-foreground">Ansvarig:</span>
-        <span class="font-medium">{{ assignedEmployee?.name || 'Ej tilldelad' }}</span>
+        <span class="font-medium">{{ assignedEmployee?.name ?? 'Ej tilldelad' }}</span>
       </div>
     </div>
     <div v-else class="text-center py-4 text-muted-foreground">

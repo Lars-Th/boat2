@@ -76,7 +76,7 @@ const usageStatistics = computed(() => {
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   const recentActivities = activities.filter(
-    activity => new Date(activity.CreatedDate || activity.Datum) >= thirtyDaysAgo
+    activity => new Date(activity.CreatedDate ?? activity.Datum) >= thirtyDaysAgo
   );
 
   const totalParticipants = activities.reduce(
@@ -92,8 +92,8 @@ const usageStatistics = computed(() => {
     activities.length > 0
       ? activities.sort(
           (a, b) =>
-            new Date(b.CreatedDate || b.Datum).getTime() -
-            new Date(a.CreatedDate || a.Datum).getTime()
+            new Date(b.CreatedDate ?? b.Datum).getTime() -
+            new Date(a.CreatedDate ?? a.Datum).getTime()
         )[0]
       : null;
 
@@ -102,7 +102,7 @@ const usageStatistics = computed(() => {
     recentActivities: recentActivities.length,
     averageParticipants:
       activities.length > 0 ? Math.round(totalParticipants / activities.length) : 0,
-    lastUsed: lastActivity ? new Date(lastActivity.CreatedDate || lastActivity.Datum) : null,
+    lastUsed: lastActivity ? new Date(lastActivity.CreatedDate ?? lastActivity.Datum) : null,
     successRate:
       activities.length > 0
         ? Math.round((completedActivities.length / activities.length) * 100)
@@ -450,7 +450,7 @@ const handleCreateActivity = () => {
 
                   <!-- Question-specific details -->
                   <div v-if="question.typ === 'Skala'" class="mt-2 text-sm text-muted-foreground">
-                    Skala: {{ question.skalaMin || 1 }} - {{ question.skalaMax || 5 }}
+                    Skala: {{ question.skalaMin ?? 1 }} - {{ question.skalaMax ?? 5 }}
                     <span v-if="question.skalaKommentar">(med kommentarsfält)</span>
                   </div>
                   <div

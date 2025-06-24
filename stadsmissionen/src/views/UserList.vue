@@ -111,8 +111,8 @@ const loginAccounts = computed(() => {
       id: user.id,
       username: user.email.split('@')[0], // Extract username from email
       email: user.email,
-      firstName: user.name.split(' ')[0] || '',
-      lastName: user.name.split(' ').slice(1).join(' ') || '',
+      firstName: user.name.split(' ')[0] ?? '',
+      lastName: user.name.split(' ').slice(1).join(' ') ?? '',
       role: user.permissionGroup ? user.permissionGroup.name : 'Okänd grupp',
       status: 'Aktiv' as const,
       lastLogin: 'Aldrig',
@@ -298,7 +298,7 @@ function addUser() {
   // Create new user account
   const newUserAccount: LoginAccount = {
     id: Math.max(...loginAccounts.value.map(acc => acc.id)) + 1,
-    username: newUser.value.username || newUser.value.email.split('@')[0],
+    username: newUser.value.username ?? newUser.value.email.split('@')[0],
     email: newUser.value.email,
     firstName: newUser.value.firstName,
     lastName: newUser.value.lastName,

@@ -76,7 +76,7 @@ watch(
         Address: newCustomer.Address || '',
         PostalCode: newCustomer.PostalCode || '',
         City: newCustomer.City || '',
-        Country: newCustomer.Country || 'Sverige',
+        Country: newCustomer.Country ?? 'Sverige',
         InvoiceAddress: {
           Address: newCustomer.InvoiceAddress?.Address || '',
           PostalCode: newCustomer.InvoiceAddress?.PostalCode || '',
@@ -132,8 +132,8 @@ const sidebarFields = computed(() => [
 const subTables = computed(() => {
   if (!customer.value) return [];
 
-  const contacts = customer.value.contacts || [];
-  const workOrders = customer.value.workOrders || [];
+  const contacts = customer.value.contacts ?? [];
+  const workOrders = customer.value.workOrders ?? [];
 
   return [
     {
@@ -178,8 +178,8 @@ const subTables = computed(() => {
 const stats = computed(() => {
   if (!customer.value) return [];
 
-  const contacts = customer.value.contacts || [];
-  const workOrders = customer.value.workOrders || [];
+  const contacts = customer.value.contacts ?? [];
+  const workOrders = customer.value.workOrders ?? [];
 
   return [
     {

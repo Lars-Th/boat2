@@ -80,7 +80,10 @@ const enhancedTemplates = computed(() => {
 
   return activityTemplates.value.map(template => {
     const types = getActivityTypeDetails(template.aktivitetstyper);
-    const primaryPurpose = types.length > 0 && types[0] ? types[0].Syfte : 'Inget syfte angivet';
+    const primaryPurpose =
+      types.length > 0 && types[0]
+        ? (types[0].Syfte ?? 'Inget syfte angivet')
+        : 'Inget syfte angivet';
 
     // Calculate usage statistics from included activities relation
     const usageCount = template.activities ? template.activities.length : 0;
@@ -277,7 +280,7 @@ const handleViewTemplate = (template: any, event: MouseEvent) => {
         <AlertCircle class="h-12 w-12 mx-auto mb-2" />
         <p class="text-lg font-semibold">Kunde inte ladda aktivitetsmallar</p>
         <p class="text-sm text-muted-foreground mt-1">
-          {{ templatesError?.message || typesError?.message }}
+          {{ templatesError?.message ?? typesError?.message }}
         </p>
       </div>
       <Button variant="outline" @click="handleRefresh">Försök igen</Button>

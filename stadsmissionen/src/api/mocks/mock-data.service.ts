@@ -746,7 +746,7 @@ export class MockDataService {
           const nameParts = assignedEmployee.name.split(' ');
           const enhancedEmployee = {
             ...assignedEmployee,
-            FirstName: nameParts[0] || '',
+            FirstName: nameParts.length > 0 ? nameParts[0] : '',
             LastName: nameParts.slice(1).join(' ') || '',
           };
           assignedUsers.push(enhancedEmployee);
@@ -1250,7 +1250,7 @@ export class MockDataService {
     id: string
   ): Promise<ApiResponse<(typeof permissionGroupsData)[0] | null>> {
     const group = permissionGroupsData.find(g => g.id === parseInt(id));
-    return this.mockRequest(group || null);
+    return this.mockRequest(group ?? null);
   }
 
   async createPermissionGroup(
