@@ -229,29 +229,39 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
 
       <template #cell-Hours="{ row }">
         <div class="text-sm">
-          <div>
-            {{ (row as Record<string, any>)['RegisteredHours'] ?? 0 }}h / {{ (row as Record<string, any>
-            )['EstimatedHours'] ?? 0 }}h
-          </div>
+          <div>{{ row.RegisteredHours ?? 0 }}h / {{ row.EstimatedHours ?? 0 }}h</div>
           <div class="text-muted-foreground text-xs">
-            {{ (row as Record<string, any>)['EstimatedHours'] ? Math.round((((row as Record<string, any>
-            )['RegisteredHours'] ?? 0) / (row as Record<string, any>)['EstimatedHours']) * 100) : 0 }}% registrerat
+            {{
+              row.EstimatedHours
+                ? Math.round(((row.RegisteredHours ?? 0) / row.EstimatedHours) * 100)
+                : 0
+            }}% registrerat
           </div>
-          <div class="text-muted-foreground text-xs">
-            Faktisk: {{ (row as Record<string, any>)['ActualHours'] ?? 0 }}h
-          </div>
+          <div class="text-muted-foreground text-xs">Faktisk: {{ row.ActualHours ?? 0 }}h</div>
         </div>
       </template>
 
       <template #cell-actions="{ row }">
         <div class="flex">
-          <Button size="sm" variant="outline" @click="handleViewOrder(row as unknown as WorkOrderWithRelations)">
+          <Button
+            size="sm"
+            variant="outline"
+            @click="handleViewOrder(row as unknown as WorkOrderWithRelations)"
+          >
             Visa
           </Button>
-          <Button size="sm" variant="outline" @click="handleEditOrder(row as unknown as WorkOrderWithRelations)">
+          <Button
+            size="sm"
+            variant="outline"
+            @click="handleEditOrder(row as unknown as WorkOrderWithRelations)"
+          >
             Redigera
           </Button>
-          <Button size="sm" variant="outline" @click="handleAddTime(row as unknown as WorkOrderWithRelations)">
+          <Button
+            size="sm"
+            variant="outline"
+            @click="handleAddTime(row as unknown as WorkOrderWithRelations)"
+          >
             Tid
           </Button>
         </div>
