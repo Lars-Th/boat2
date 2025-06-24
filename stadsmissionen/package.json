@@ -14,8 +14,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "vue-tsc --noEmit",
-    "check": "yarn lint && yarn type-check && yarn format:check",
-    "check:fix": "yarn lint:fix && yarn format && yarn type-check",
+    "quality": "yarn lint && yarn type-check && yarn format:check",
+    "quality:fix": "yarn lint:fix && yarn format && yarn type-check",
     "depcheck": "depcheck --json",
     "prepare": "yarn check:fix"
   },

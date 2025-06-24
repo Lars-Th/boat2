@@ -46,9 +46,9 @@ const workOrdersWithCustomers = computed(() => {
       // Calculate registered hours from included tasks
       const registeredHours = workOrder.Tasks
         ? workOrder.Tasks.filter((task: any) => task.Status === 'approved').reduce(
-          (total: number, task: any) => total + (task.Hours ?? 0),
-          0
-        )
+            (total: number, task: any) => total + (task.Hours ?? 0),
+            0
+          )
         : 0;
 
       return {
@@ -182,9 +182,12 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
         <p class="text-destructive mb-2">Ett fel uppstod vid laddning av arbetsordrar</p>
         <Button
           variant="outline"
-          @click="() => {
-            /* Add refresh logic */
-          }">
+          @click="
+            () => {
+              /* Add refresh logic */
+            }
+          "
+        >
           Försök igen
         </Button>
       </div>
@@ -196,7 +199,8 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
       :data="workOrdersWithCustomers"
       :columns="columns"
       :search-fields="['WorkOrderNumber', 'Title', 'Description', 'AssignedTo', 'CustomerName']"
-      @row-click="handleRowClick">
+      @row-click="handleRowClick"
+    >
       <template #cell-Type="{ value }">
         <Badge variant="default">
           {{ value }}
@@ -213,11 +217,11 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
 
       <template #cell-AssignedTo="{ row }">
         <div>
-          <span v-if="(row as Record<string, any>)['assignedUsers'] && (row as Record<string, any>)['assignedUsers'].length > 0">
-            {{ (row as Record<string, any>)['assignedUsers'][0].name }}
+          <span v-if="row.assignedUsers?.length > 0">
+            {{ row.assignedUsers[0].name }}
           </span>
-          <span v-else-if="(row as Record<string, any>)['AssignedTo']">
-            {{ getEmployeeName((row as Record<string, any>)['AssignedTo']) }}
+          <span v-else-if="row.AssignedTo">
+            {{ getEmployeeName(row.AssignedTo) }}
           </span>
           <span v-else class="text-muted-foreground text-xs">Ej tilldelad</span>
         </div>
@@ -226,10 +230,12 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
       <template #cell-Hours="{ row }">
         <div class="text-sm">
           <div>
-            {{ (row as Record<string, any>)['RegisteredHours'] ?? 0 }}h / {{ (row as Record<string, any>)['EstimatedHours'] ?? 0 }}h
+            {{ (row as Record<string, any>)['RegisteredHours'] ?? 0 }}h / {{ (row as Record<string, any>
+            )['EstimatedHours'] ?? 0 }}h
           </div>
           <div class="text-muted-foreground text-xs">
-            {{ (row as Record<string, any>)['EstimatedHours'] ? Math.round((((row as Record<string, any>)['RegisteredHours'] ?? 0) / (row as Record<string, any>)['EstimatedHours']) * 100) : 0 }}% registrerat
+            {{ (row as Record<string, any>)['EstimatedHours'] ? Math.round((((row as Record<string, any>
+            )['RegisteredHours'] ?? 0) / (row as Record<string, any>)['EstimatedHours']) * 100) : 0 }}% registrerat
           </div>
           <div class="text-muted-foreground text-xs">
             Faktisk: {{ (row as Record<string, any>)['ActualHours'] ?? 0 }}h

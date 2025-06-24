@@ -1,5 +1,5 @@
 # Treat everything as text and ensure CRLF line endings
-* text eol=crlf
+* text=auto eol=lf
 
 # (Optional) Explicitly mark common binary file types to avoid any accidental normalization
 *.png binary
