@@ -70,7 +70,7 @@ watch(
         CustomerNumber: newCustomer.CustomerNumber || '',
         CompanyName: newCustomer.CompanyName || '',
         OrganizationNumber: newCustomer.OrganizationNumber || '',
-        ContactPerson: newCustomer.ContactPerson || '',
+        ContactPerson: newCustomer.ContactPerson ?? '',
         Phone: newCustomer.Phone || '',
         Email: newCustomer.Email || '',
         Address: newCustomer.Address || '',
@@ -212,14 +212,14 @@ const breadcrumbs = computed(() => {
   return [
     { label: 'Dashboard', to: '/' },
     { label: 'Kunder', to: '/customers' },
-    { label: customer.value?.CompanyName || 'Kunddetaljer', to: '', isCurrentPage: true },
+    { label: customer.value?.CompanyName ?? 'Kunddetaljer', to: '', isCurrentPage: true },
   ];
 });
 
 // Page title
 const pageTitle = computed(() => {
   if (isNew.value) return 'Lägg till ny kund';
-  return customer.value?.CompanyName || 'Kunddetaljer';
+  return customer.value?.CompanyName ?? 'Kunddetaljer';
 });
 
 // Event handlers
@@ -248,7 +248,7 @@ const handleSave = async () => {
         success('Kund skapad', 'Den nya kunden har skapats framgångsrikt.');
         router.push(`/customers/${result.data.CustomerID}`);
       } else {
-        error('Fel vid skapande', result.error?.message || 'Kunde inte skapa kunden.');
+        error('Fel vid skapande', result.error?.message ?? 'Kunde inte skapa kunden.');
       }
     } else {
       // Update existing customer
@@ -258,7 +258,7 @@ const handleSave = async () => {
         hasUnsavedChanges.value = false;
         await refreshCustomer();
       } else {
-        error('Fel vid uppdatering', result.error?.message || 'Kunde inte uppdatera kunden.');
+        error('Fel vid uppdatering', result.error?.message ?? 'Kunde inte uppdatera kunden.');
       }
     }
   } catch (err) {
@@ -275,7 +275,7 @@ const handleDelete = async () => {
       success('Kund borttagen', 'Kunden har tagits bort framgångsrikt.');
       router.push('/customers');
     } else {
-      error('Fel vid borttagning', result.error?.message || 'Kunde inte ta bort kunden.');
+      error('Fel vid borttagning', result.error?.message ?? 'Kunde inte ta bort kunden.');
     }
   } catch (err) {
     error('Fel vid borttagning', 'Ett oväntat fel inträffade. Försök igen.');
@@ -294,7 +294,7 @@ const handleDiscardChanges = () => {
       CustomerNumber: customer.value.CustomerNumber || '',
       CompanyName: customer.value.CompanyName || '',
       OrganizationNumber: customer.value.OrganizationNumber || '',
-      ContactPerson: customer.value.ContactPerson || '',
+      ContactPerson: customer.value.ContactPerson ?? '',
       Phone: customer.value.Phone || '',
       Email: customer.value.Email || '',
       Address: customer.value.Address || '',

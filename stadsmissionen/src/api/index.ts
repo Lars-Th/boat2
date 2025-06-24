@@ -236,58 +236,6 @@ export const api = {
         : Promise.reject(new Error('Activity templates not implemented in real API yet')),
   },
 
-  // Work Orders
-  workOrders: {
-    getAll: (params?: RequestParams & RelationalParams) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getWorkOrders(params)
-        : Promise.reject(new Error('Work orders not implemented in real API yet')),
-
-    getById: (id: string, params?: RelationalParams) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getWorkOrder(id, params)
-        : Promise.reject(new Error('Work orders not implemented in real API yet')),
-
-    create: (_data: Record<string, unknown>) =>
-      USE_MOCK_API
-        ? Promise.reject(new Error('Not implemented in mock'))
-        : Promise.reject(new Error('Work orders not implemented in real API yet')),
-
-    update: (id: string, data: Record<string, unknown>) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).updateWorkOrder(id, data)
-        : Promise.reject(new Error('Work orders not implemented in real API yet')),
-  },
-
-  // Customers
-  // Backend Implementation Notes for customers endpoints:
-  //
-  // GET /api/customers
-  // - Support query parameters: ?include=contacts,workOrders&page=1&limit=25&search=term
-  // - Return: { data: Customer[] | CustomerWithRelations[], success: boolean, message?: string }
-  // - When include=contacts: resolve Customer.contacts[] relationship and compute primaryContact
-  // - When include=workOrders: resolve Customer.workOrders[] relationship and compute totalWorkOrders, activeWorkOrders
-  //
-  // GET /api/customers/:id
-  // - Support query parameters: ?include=contacts,workOrders
-  // - Return: { data: Customer | CustomerWithRelations | null, success: boolean, message?: string }
-  // - Return null if customer not found
-  //
-  // POST /api/customers
-  // - Accept: Omit<Customer, 'CustomerID' | 'CreatedDate'>
-  // - Auto-generate: CustomerID (increment), CreatedDate (current timestamp)
-  // - Validate: All required fields present, email format, organization number format
-  // - Return: { data: Customer, success: boolean, message?: string }
-  //
-  // PUT /api/customers/:id
-  // - Accept: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>
-  // - Preserve: CustomerID, CreatedDate (never update these)
-  // - Validate: Same as POST for provided fields
-  // - Return: { data: Customer, success: boolean, message?: string }
-  //
-  // DELETE /api/customers/:id
-  // - Check: No dependent records (contacts, work orders) or handle cascade
-  // - Return: { data: boolean, success: boolean, message?: string }
   customers: {
     // Specify exact return types for each method
     getAll: (
@@ -390,74 +338,12 @@ export const api = {
         : (apiService as ApiConfiguration).contacts.delete(id),
   },
 
-  // Machines
-  machines: {
-    getAll: (params?: RequestParams & RelationalParams) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getMachines(params)
-        : Promise.reject(new Error('Machines not implemented in real API yet')),
-
-    getById: (_id: string) =>
-      USE_MOCK_API
-        ? Promise.reject(new Error('Not implemented in mock'))
-        : Promise.reject(new Error('Machines not implemented in real API yet')),
-  },
-
-  // Tasks
-  tasks: {
-    getAll: (params?: RequestParams & RelationalParams) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getTasks(params)
-        : Promise.reject(new Error('Tasks not implemented in real API yet')),
-
-    getById: (_id: string) =>
-      USE_MOCK_API
-        ? Promise.reject(new Error('Not implemented in mock'))
-        : Promise.reject(new Error('Tasks not implemented in real API yet')),
-  },
-
-  // Tools
-  tools: {
-    getAll: () =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getTools()
-        : Promise.reject(new Error('Tools not implemented in real API yet')),
-  },
-
   // Employees
   employees: {
     getAll: () =>
       USE_MOCK_API
         ? (apiService as MockDataService).getEmployees()
         : Promise.reject(new Error('Employees not implemented in real API yet')),
-  },
-
-  // Boats
-  boats: {
-    getAll: (params?: RequestParams & RelationalParams) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getBoats(params)
-        : Promise.reject(new Error('Boats not implemented in real API yet')),
-
-    getById: (id: string, params?: RelationalParams) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getBoat(id, params)
-        : Promise.reject(new Error('Boats not implemented in real API yet')),
-
-    create: (data: Record<string, unknown>) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).createBoat(data as never)
-        : Promise.reject(new Error('Boats not implemented in real API yet')),
-
-    update: (id: string, data: Record<string, unknown>) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).updateBoat(id, data as never)
-        : Promise.reject(new Error('Boats not implemented in real API yet')),
-
-    delete: (id: string) =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).deleteBoat(id)
-        : Promise.reject(new Error('Boats not implemented in real API yet')),
   },
 
   // PermissionGroups

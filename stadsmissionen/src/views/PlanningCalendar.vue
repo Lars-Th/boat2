@@ -1052,7 +1052,7 @@ const cancelCopy = () => {
                       class="h-1 rounded-full transition-all"
                       :class="getWorkloadColor(getEmployeeWeekHours(employee.id))"
                       :style="{
-                        width: `${Math.min((getEmployeeWeekHours(employee.id) / (employee.weeklyCapacity || 40)) * 100, 100)}%`,
+                        width: `${Math.min((getEmployeeWeekHours(employee.id) / (employee.weeklyCapacity ?? 40)) * 100, 100)}%`,
                       }"
                     ></div>
                   </div>
@@ -1382,14 +1382,14 @@ const cancelCopy = () => {
                 </div>
                 <div class="flex justify-between text-xs">
                   <span>Kapacitet:</span>
-                  <span class="text-muted-foreground">{{ employee.weeklyCapacity || 40 }}h</span>
+                  <span class="text-muted-foreground">{{ employee.weeklyCapacity ?? 40 }}h</span>
                 </div>
                 <div class="flex justify-between text-xs">
                   <span>Utnyttjande:</span>
                   <span :class="getUtilizationColor(getEmployeeWeekHours(employee.id))">
                     {{
                       Math.round(
-                        (getEmployeeWeekHours(employee.id) / (employee.weeklyCapacity || 40)) * 100
+                        (getEmployeeWeekHours(employee.id) / (employee.weeklyCapacity ?? 40)) * 100
                       )
                     }}%
                   </span>
@@ -1399,7 +1399,7 @@ const cancelCopy = () => {
                     class="h-1.5 rounded-full transition-all"
                     :class="getWorkloadColor(getEmployeeWeekHours(employee.id))"
                     :style="{
-                      width: `${Math.min((getEmployeeWeekHours(employee.id) / (employee.weeklyCapacity || 40)) * 100, 100)}%`,
+                      width: `${Math.min((getEmployeeWeekHours(employee.id) / (employee.weeklyCapacity ?? 40)) * 100, 100)}%`,
                     }"
                   ></div>
                 </div>

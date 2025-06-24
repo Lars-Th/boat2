@@ -5,7 +5,6 @@ export { BaseService } from '@/api/services/base.service';
 export { ActivityService } from '@/api/services/activity.service';
 export { ActivityTypeService } from '@/api/services/activity-type.service';
 export { AttendanceService } from '@/api/services/attendance.service';
-export { FamilyRelationsService } from '@/api/services/family-relations.service';
 export { OrganizationService } from '@/api/services/organization.service';
 export { ParticipantService } from '@/api/services/participant.service';
 export { AuthService } from '@/api/services/auth.service';

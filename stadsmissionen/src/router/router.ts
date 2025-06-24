@@ -13,7 +13,6 @@ import {
   LayoutDashboard,
   List,
   Package,
-  Palette,
   PieChart,
   Plus,
   Settings,
@@ -34,6 +33,11 @@ const Dashboard = () => import('@/views/Dashboard.vue');
 const UserList = () => import('@/views/UserList.vue');
 const PermissionGroups = () => import('@/views/PermissionGroups.vue');
 
+const CustomerList = () => import('@/views/CustomerList.vue');
+const CustomerDetail = () => import('@/views/CustomerDetail.vue');
+const ContactPersonList = () => import('@/views/ContactPersonList.vue');
+const ContactPersonDetail = () => import('@/views/ContactPersonDetail.vue');
+
 // Existing views (activity management system)
 const ActivityList = () => import('@/views/ActivityList.vue');
 const ActivityDetail = () => import('@/views/ActivityDetail.vue');
@@ -42,7 +46,6 @@ const AttendanceRegistration = () => import('@/views/AttendanceRegistration.vue'
 const ParticipantList = () => import('@/views/ParticipantList.vue');
 const ParticipantDetail = () => import('@/views/ParticipantDetail.vue');
 const NewParticipant = () => import('@/views/NewParticipant.vue');
-const FamilyConnections = () => import('@/views/FamilyConnections.vue');
 const Statistics = () => import('@/views/Statistics.vue');
 const Export = () => import('@/views/Export.vue');
 const ActivityTypes = () => import('@/views/ActivityTypes.vue');
@@ -51,30 +54,8 @@ const NewActivityTemplate = () => import('@/views/NewActivityTemplate.vue');
 const ActivityTemplateDetail = () => import('@/views/ActivityTemplateDetail.vue');
 const ParticipantGroups = () => import('@/views/ParticipantGroups.vue');
 
-// New views from migrated project (work order management system)
-const CustomerList = () => import('@/views/CustomerList.vue');
-const CustomerDetail = () => import('@/views/CustomerDetail.vue');
-const ContactPersonList = () => import('@/views/ContactPersonList.vue');
-const ContactPersonDetail = () => import('@/views/ContactPersonDetail.vue');
-const WorkOrderList = () => import('@/views/WorkOrderList.vue');
-const WorkOrderDetail = () => import('@/views/WorkOrderDetail.vue');
-const ReadyForAttestation = () => import('@/views/ReadyForAttestation.vue');
-const ReadyForInvoicing = () => import('@/views/ReadyForInvoicing.vue');
-const WorkOrderReport = () => import('@/views/WorkOrderReport.vue');
-const MachineList = () => import('@/views/MachineList.vue');
-const MachineDetail = () => import('@/views/MachineDetail.vue');
-const ToolList = () => import('@/views/ToolList.vue');
-const ToolDetail = () => import('@/views/ToolDetail.vue');
-const MachineSummary = () => import('@/views/MachineSummary.vue');
 const PlanningCalendar = () => import('@/views/PlanningCalendar.vue');
-const TimeReporting = () => import('@/views/TimeReporting.vue');
-const TimeSummary = () => import('@/views/TimeSummary.vue');
 const UserDetail = () => import('@/views/UserDetail.vue');
-
-// Boat views
-const BoatCustomers = () => import('@/views/BoatCustomers.vue');
-const BoatList = () => import('@/views/BoatList.vue');
-const BoatDetail = () => import('@/views/BoatDetail.vue');
 
 // Development/Demo views
 const CustomComponents = () => import('@/views/CustomComponents.vue');
@@ -222,11 +203,6 @@ const routeDefinitions = [
     component: NewParticipant,
   },
   {
-    path: '/family-connections',
-    name: 'family-connections',
-    component: FamilyConnections,
-  },
-  {
     path: '/participant-groups',
     name: 'participant-groups',
     component: ParticipantGroups,
@@ -267,33 +243,6 @@ const routeDefinitions = [
     name: 'export',
     component: Export,
   },
-  // Båtar section (moved to Development folder)
-  {
-    path: '/boats',
-    name: 'boats',
-    component: BoatList,
-  },
-  {
-    path: '/boats/customers',
-    name: 'boat-customers',
-    component: BoatCustomers,
-  },
-  {
-    path: '/boats/list',
-    name: 'boat-list',
-    component: BoatList,
-  },
-  {
-    path: '/boats/list/new',
-    name: 'boat-new',
-    component: BoatDetail,
-  },
-  {
-    path: '/boats/list/:id',
-    name: 'boat-detail',
-    component: BoatDetail,
-  },
-
   // NEW SECTIONS FROM MIGRATED PROJECT
 
   // Kund section with dropdown
@@ -337,162 +286,6 @@ const routeDefinitions = [
     component: ContactPersonDetail,
   },
 
-  // Temporis section with all work management tools
-  {
-    path: '/work-orders',
-    name: 'work-orders',
-    component: WorkOrderList,
-    navigation: {
-      name: 'Temporis',
-      icon: FolderOpen,
-      section: 'main',
-      permissions: ['H', 'A', 'SA'],
-      dropdown: [
-        {
-          name: 'Arbetsordrar',
-          icon: ClipboardList,
-          children: [
-            {
-              name: 'Arbetsordrar',
-              path: '/work-orders',
-              icon: ClipboardList,
-              permissions: ['H', 'A', 'SA'],
-            },
-            {
-              name: 'Klara för attestering',
-              path: '/ready-attestation',
-              icon: CheckCircle,
-              permissions: ['A', 'SA'],
-            },
-            {
-              name: 'Klara för Fakturering',
-              path: '/ready-invoicing',
-              icon: FileText,
-              permissions: ['A', 'SA'],
-            },
-            {
-              name: 'Rapport',
-              path: '/work-order-report',
-              icon: BarChart3,
-              permissions: ['A', 'SA'],
-            },
-          ],
-        },
-        {
-          name: 'Maskiner',
-          icon: Wrench,
-          children: [
-            { name: 'Maskiner', path: '/machines', icon: Wrench, permissions: ['H', 'A', 'SA'] },
-            { name: 'Redskap', path: '/tools', icon: Settings, permissions: ['H', 'A', 'SA'] },
-            {
-              name: 'Sammanställning',
-              path: '/machine-summary',
-              icon: PieChart,
-              permissions: ['A', 'SA'],
-            },
-          ],
-        },
-        {
-          name: 'Tid',
-          icon: Clock,
-          children: [
-            {
-              name: 'Tidredovisning',
-              path: '/time-reporting',
-              icon: Clock,
-              permissions: ['H', 'A', 'SA'],
-            },
-            {
-              name: 'Sammanställning',
-              path: '/time-summary',
-              icon: PieChart,
-              permissions: ['A', 'SA'],
-            },
-          ],
-        },
-        {
-          name: 'Planering',
-          icon: Calendar,
-          children: [
-            {
-              name: 'Planeringskalender',
-              path: '/planning-calendar',
-              icon: Calendar,
-              permissions: ['H', 'A', 'SA'],
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    path: '/work-orders/:id',
-    name: 'work-order-detail',
-    component: WorkOrderDetail,
-  },
-  {
-    path: '/ready-attestation',
-    name: 'ready-attestation',
-    component: ReadyForAttestation,
-  },
-  {
-    path: '/ready-invoicing',
-    name: 'ready-invoicing',
-    component: ReadyForInvoicing,
-  },
-  {
-    path: '/work-order-report',
-    name: 'work-order-report',
-    component: WorkOrderReport,
-  },
-
-  // Machine routes (now part of Temporis)
-  {
-    path: '/machines',
-    name: 'machines',
-    component: MachineList,
-  },
-  {
-    path: '/machines/:id',
-    name: 'machine-detail',
-    component: MachineDetail,
-  },
-  {
-    path: '/tools',
-    name: 'tools',
-    component: ToolList,
-  },
-  {
-    path: '/tools/:id',
-    name: 'tool-detail',
-    component: ToolDetail,
-  },
-  {
-    path: '/machine-summary',
-    name: 'machine-summary',
-    component: MachineSummary,
-  },
-
-  // Planning Calendar route (now part of Temporis)
-  {
-    path: '/planning-calendar',
-    name: 'planning-calendar',
-    component: PlanningCalendar,
-  },
-
-  // Time reporting routes (now part of Temporis)
-  {
-    path: '/time-reporting',
-    name: 'time-reporting',
-    component: TimeReporting,
-  },
-
-  {
-    path: '/time-summary',
-    name: 'time-summary',
-    component: TimeSummary,
-  },
-
   // BOTTOM NAVIGATION - Updated structure from migrated project
 
   // Development folder (bottom navigation)
@@ -514,24 +307,6 @@ const routeDefinitions = [
               name: 'Komponenter',
               path: '/custom-components',
               icon: Package,
-              permissions: ['H', 'A', 'SA'],
-            },
-          ],
-        },
-        {
-          name: 'Båtar',
-          icon: Anchor,
-          children: [
-            {
-              name: 'Kunder',
-              path: '/boats/customers',
-              icon: Users,
-              permissions: ['H', 'A', 'SA'],
-            },
-            {
-              name: 'Båtar',
-              path: '/boats/list',
-              icon: Anchor,
               permissions: ['H', 'A', 'SA'],
             },
           ],

@@ -30,20 +30,8 @@ import CustomerDetailCard from '@/components/shared/CustomerDetailCard.vue';
 import ComplexDetailPage from '@/components/shared/ComplexDetailPage.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ErrorBoundary from '@/components/common/ErrorBoundary.vue';
-import StandardHeaderComponent from '@/components/layout/StandardHeader.vue';
 import PageLayout from '@/components/layout/PageLayout.vue';
 import NavigationSidebar from '@/components/layout/NavigationSidebar.vue';
-
-// WorkOrder components
-import {
-  WorkOrderAssignedPersonCard,
-  WorkOrderCustomerContactCard,
-  WorkOrderDescriptionCard,
-  WorkOrderInformationCard,
-  WorkOrderLocationCard,
-  WorkOrderTasksCard,
-  WorkOrderTimeProgressCard,
-} from '@/components/features/workorders';
 
 // Activity components
 import ActivityForm from '@/components/features/activity/ActivityForm.vue';
@@ -63,10 +51,6 @@ import OrganizationManager from '@/components/features/organization/Organization
 import OrganizationCard from '@/components/features/organization/OrganizationCard.vue';
 import NewOrganizationForm from '@/components/features/organization/NewOrganizationForm.vue';
 
-// Page components
-import BoatList from '@/views/BoatList.vue';
-import BoatDetail from '@/views/BoatDetail.vue';
-
 // Toast Example component
 import ToastExample from '@/components/features/development/ToastExample.vue';
 
@@ -85,26 +69,7 @@ const fileTree: TreeNode[] = [
     name: 'pages',
     path: 'pages',
     type: 'folder',
-    children: [
-      {
-        name: 'BoatList.vue',
-        path: 'pages/BoatList.vue',
-        type: 'file',
-        component: BoatList,
-        props: {
-          // Mock data for BoatList - it uses API composables so we'll provide empty initial state
-        },
-      },
-      {
-        name: 'BoatDetail.vue',
-        path: 'pages/BoatDetail.vue',
-        type: 'file',
-        component: BoatDetail,
-        props: {
-          // Mock data for BoatDetail - it uses route params and API composables
-        },
-      },
-    ],
+    children: [],
   },
   {
     name: 'common',
@@ -322,122 +287,6 @@ const fileTree: TreeNode[] = [
           },
         ],
       },
-      {
-        name: 'workorders',
-        path: 'features/workorders',
-        type: 'folder',
-        children: [
-          {
-            name: 'WorkOrderAssignedPersonCard.vue',
-            path: 'features/workorders/WorkOrderAssignedPersonCard.vue',
-            type: 'file',
-            component: WorkOrderAssignedPersonCard,
-            props: {
-              assignedEmployee: {
-                name: 'Anna Andersson',
-                role: 'Senior Developer',
-                email: 'anna@company.se',
-                skills: ['Vue.js', 'TypeScript'],
-              },
-              workOrder: { WorkOrderNumber: 'WO-2024-001' },
-            },
-          },
-          {
-            name: 'WorkOrderCustomerContactCard.vue',
-            path: 'features/workorders/WorkOrderCustomerContactCard.vue',
-            type: 'file',
-            component: WorkOrderCustomerContactCard,
-            props: {
-              customerInfo: {
-                CompanyName: 'Demo Company AB',
-                OrganizationNumber: '556123-4567',
-                Address: 'Demo Street 1',
-                City: 'Stockholm',
-              },
-              customerContacts: [],
-              mainContact: null,
-              otherContacts: [],
-            },
-          },
-          {
-            name: 'WorkOrderDescriptionCard.vue',
-            path: 'features/workorders/WorkOrderDescriptionCard.vue',
-            type: 'file',
-            component: WorkOrderDescriptionCard,
-            props: {
-              workOrder: {
-                Description: 'This is a demo work order description',
-                Notes: 'Important notes about the work order',
-              },
-            },
-          },
-          {
-            name: 'WorkOrderInformationCard.vue',
-            path: 'features/workorders/WorkOrderInformationCard.vue',
-            type: 'file',
-            component: WorkOrderInformationCard,
-            props: {
-              workOrder: {
-                WorkOrderNumber: 'WO-2024-001',
-                Type: 'Standard',
-                Status: 'Active',
-                Priority: 'High',
-              },
-              assignedEmployee: { name: 'Anna Andersson' },
-            },
-          },
-          {
-            name: 'WorkOrderLocationCard.vue',
-            path: 'features/workorders/WorkOrderLocationCard.vue',
-            type: 'file',
-            component: WorkOrderLocationCard,
-            props: {
-              workOrder: {
-                Location: {
-                  Address: 'Demo Street 123',
-                  City: 'Stockholm',
-                  PostalCode: '11122',
-                  Country: 'Sweden',
-                },
-              },
-            },
-          },
-          {
-            name: 'WorkOrderTasksCard.vue',
-            path: 'features/workorders/WorkOrderTasksCard.vue',
-            type: 'file',
-            component: WorkOrderTasksCard,
-            props: {
-              tasks: [
-                {
-                  TaskID: 1,
-                  Description: 'Demo task',
-                  Hours: 8,
-                  Status: 'approved',
-                  employee: { name: 'Anna Andersson' },
-                },
-              ],
-              workOrder: { WorkOrderNumber: 'WO-2024-001' },
-            },
-          },
-          {
-            name: 'WorkOrderTimeProgressCard.vue',
-            path: 'features/workorders/WorkOrderTimeProgressCard.vue',
-            type: 'file',
-            component: WorkOrderTimeProgressCard,
-            props: {
-              workOrder: {
-                EstimatedHours: 40,
-                ActualHours: 25,
-                StartDate: '2024-01-20',
-                DueDate: '2024-02-15',
-              },
-              createdByUser: { namn: 'System Admin' },
-              registeredHours: 12,
-            },
-          },
-        ],
-      },
     ],
   },
   {
@@ -468,7 +317,7 @@ const fileTree: TreeNode[] = [
         name: 'StandardHeader.vue',
         path: 'layout/StandardHeader.vue',
         type: 'file',
-        component: StandardHeaderComponent,
+        component: StandardHeader,
         props: {
           title: 'Demo Header Titel',
           breadcrumbs: [
@@ -1266,15 +1115,6 @@ const viewportStyles = computed(() => {
       };
   }
 });
-
-// Initialize with BoatList selected
-const boatListPage = fileTree
-  .find((f: any) => f.name === 'pages')
-  ?.children?.find((f: any) => f.name === 'BoatList.vue');
-
-if (boatListPage) {
-  selectedComponent.value = boatListPage;
-}
 
 // Event handlers for ComplexDetailPage
 const handleFieldChange = (key: string, value: any) => {

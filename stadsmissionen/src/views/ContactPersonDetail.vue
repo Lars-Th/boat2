@@ -170,7 +170,7 @@ const stats = computed(() => {
     },
     {
       label: 'Kundföretag',
-      value: customer?.CompanyName || 'Ingen',
+      value: customer?.CompanyName ?? 'Ingen',
       variant: 'secondary' as const,
     },
   ];
