@@ -1,6 +1,9 @@
 # AI Details Page Creation Guide
 
-This guide provides a comprehensive checklist for creating detail pages for objects from list pages, following the established patterns in the codebase. This guide is based on the `ActivityDetail.vue` implementation and can be adapted for any entity type.
+This guide provides a comprehensive checklist for creating detail pages for
+objects from list pages, following the established patterns in the codebase.
+This guide is based on the `ActivityDetail.vue` implementation and can be
+adapted for any entity type.
 
 ## 📋 Prerequisites Checklist
 
@@ -12,9 +15,11 @@ This guide provides a comprehensive checklist for creating detail pages for obje
 ## 🏗️ Architecture Overview
 
 Detail pages follow this structure:
+
 1. **Data Layer**: API calls via composables
 2. **State Management**: Reactive data with loading/error states
-3. **UI Components**: Reusable components from `components/shared/`, `components/common/`, and `components/ui/`
+3. **UI Components**: Reusable components from `components/shared/`,
+   `components/common/`, and `components/ui/`
 4. **Actions**: Edit, delete, and navigation functionality
 
 ## 📁 File Structure
@@ -47,28 +52,42 @@ src/
 ### 1. Setup and Imports
 
 - [ ] **Import Vue Composition API**
+
   ```typescript
   import { computed, onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   ```
 
 - [ ] **Import Layout Components**
+
   ```typescript
   import PageLayout from '@/components/layout/PageLayout.vue';
   ```
 
 - [ ] **Import Shared Components**
+
   ```typescript
   import DataTable from '@/components/shared/DataTable.vue';
   // Optional: ViewControls for complex data
   ```
 
 - [ ] **Import UI Components**
+
   ```typescript
   import { Button } from '@/components/ui/button';
   import { Badge } from '@/components/ui/badge';
-  import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-  import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  } from '@/components/ui/card';
+  import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from '@/components/ui/tabs';
   import {
     Dialog,
     DialogContent,
@@ -91,6 +110,7 @@ src/
   ```
 
 - [ ] **Import Icons**
+
   ```typescript
   import {
     ArrowLeft,
@@ -119,6 +139,7 @@ src/
 ### 2. Data Management Setup
 
 - [ ] **Define Local Interfaces** (if needed for complex related data)
+
   ```typescript
   interface RelatedData {
     id: number;
@@ -128,6 +149,7 @@ src/
   ```
 
 - [ ] **Setup Route and Router**
+
   ```typescript
   const route = useRoute();
   const router = useRouter();
@@ -135,11 +157,13 @@ src/
   ```
 
 - [ ] **Get Entity ID from Route**
+
   ```typescript
   const entityId = computed(() => route.params['id'] as string);
   ```
 
 - [ ] **Fetch Main Entity with Relations**
+
   ```typescript
   const {
     data: entityWithRelations,
@@ -147,9 +171,10 @@ src/
     error: entityError,
     refresh: refreshEntity,
   } = useApiItem(
-    () => api.yourEntities.getById(entityId.value, {
-      include: ['relatedData1', 'relatedData2']
-    }),
+    () =>
+      api.yourEntities.getById(entityId.value, {
+        include: ['relatedData1', 'relatedData2'],
+      }),
     {
       cacheKey: `entity-with-relations-${entityId.value}`,
     }
@@ -157,13 +182,19 @@ src/
   ```
 
 - [ ] **Extract Related Data**
+
   ```typescript
   const entity = computed(() => entityWithRelations.value);
-  const relatedData1 = computed(() => entityWithRelations.value?.relatedData1 || []);
-  const relatedData2 = computed(() => entityWithRelations.value?.relatedData2 || []);
+  const relatedData1 = computed(
+    () => entityWithRelations.value?.relatedData1 || []
+  );
+  const relatedData2 = computed(
+    () => entityWithRelations.value?.relatedData2 || []
+  );
   ```
 
 - [ ] **Fetch Additional Reference Data** (if needed)
+
   ```typescript
   const {
     data: referenceData,
@@ -176,14 +207,15 @@ src/
 
 - [ ] **Setup Error Handling**
   ```typescript
-  const hasError = computed(() =>
-    entityError.value !== null || referenceError.value !== null
+  const hasError = computed(
+    () => entityError.value !== null || referenceError.value !== null
   );
   ```
 
 ### 3. Statistics and Computed Data
 
 - [ ] **Calculate Statistics**
+
   ```typescript
   const stats = computed(() => {
     if (!entity.value || !relatedData1.value) {
@@ -212,6 +244,7 @@ src/
 ### 4. Edit Functionality
 
 - [ ] **Setup Edit State**
+
   ```typescript
   const isEditing = ref(false);
   const isSaving = ref(false);
@@ -223,6 +256,7 @@ src/
   ```
 
 - [ ] **Date Formatting Helper** (if needed)
+
   ```typescript
   const formatDateForInput = (dateString: string): string => {
     const date = new Date(dateString);
@@ -236,6 +270,7 @@ src/
   ```
 
 - [ ] **Initialize Edit Form**
+
   ```typescript
   const initEditForm = () => {
     if (entity.value) {
@@ -249,13 +284,15 @@ src/
   ```
 
 - [ ] **Save Changes Function**
+
   ```typescript
   const saveChanges = () => {
     if (!entity.value) return;
 
     isSaving.value = true;
 
-    api.yourEntities.update(entityId.value, editForm.value)
+    api.yourEntities
+      .update(entityId.value, editForm.value)
       .then(response => {
         if (response.success && response.data) {
           // Update local data immediately
@@ -268,7 +305,10 @@ src/
           isEditing.value = false;
           success('Entity Updated', 'Changes saved successfully');
         } else {
-          showError('Save Failed', response.error?.message || 'An error occurred');
+          showError(
+            'Save Failed',
+            response.error?.message || 'An error occurred'
+          );
         }
       })
       .catch(error => {
@@ -282,6 +322,7 @@ src/
   ```
 
 - [ ] **Edit Mode Controls**
+
   ```typescript
   const startEdit = () => {
     initEditForm();
@@ -297,25 +338,31 @@ src/
 ### 5. Delete Functionality
 
 - [ ] **Setup Delete State**
+
   ```typescript
   const isDeleting = ref(false);
   const showDeleteDialog = ref(false);
   ```
 
 - [ ] **Delete Function**
+
   ```typescript
   const deleteEntity = () => {
     if (!entity.value) return;
 
     isDeleting.value = true;
 
-    api.yourEntities.delete(entityId.value)
+    api.yourEntities
+      .delete(entityId.value)
       .then(response => {
         if (response.success) {
           success('Entity Deleted', 'Entity has been deleted successfully');
           router.push('/your-entities'); // Navigate back to list
         } else {
-          showError('Delete Failed', response.error?.message || 'An error occurred');
+          showError(
+            'Delete Failed',
+            response.error?.message || 'An error occurred'
+          );
         }
       })
       .catch(error => {
@@ -332,6 +379,7 @@ src/
 ### 6. Navigation and Utility Functions
 
 - [ ] **Navigation Functions**
+
   ```typescript
   const goBack = () => {
     router.push('/your-entities');
@@ -339,6 +387,7 @@ src/
   ```
 
 - [ ] **Date Formatting**
+
   ```typescript
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('sv-SE', {
@@ -361,6 +410,7 @@ src/
 ### 7. Data Table Configuration (for related data)
 
 - [ ] **Define Table Columns**
+
   ```typescript
   const relatedDataColumns = [
     { key: 'name', label: 'Name' },
@@ -371,11 +421,12 @@ src/
   ```
 
 - [ ] **Prepare Table Data**
+
   ```typescript
   const relatedTableData = computed(() => {
     if (!relatedData1.value) return [];
 
-    return relatedData1.value.map((item) => ({
+    return relatedData1.value.map(item => ({
       id: item.id,
       name: item.name,
       status: item.isActive,
@@ -388,6 +439,7 @@ src/
 ### 8. Component Lifecycle
 
 - [ ] **Initialize on Mount**
+
   ```typescript
   onMounted(() => {
     initEditForm();
@@ -413,12 +465,13 @@ src/
     :breadcrumbs="breadcrumbs"
     show-stats
     :stats="stats"
-  >
+  ></PageLayout>
   ```
 
 ### 2. Loading and Error States
 
 - [ ] **Loading State**
+
   ```vue
   <div v-if="isLoading" class="flex items-center justify-center py-12">
     <div class="text-center">
@@ -429,6 +482,7 @@ src/
   ```
 
 - [ ] **Error State**
+
   ```vue
   <div v-else-if="hasError" class="flex items-center justify-center py-12">
     <div class="text-center">
@@ -457,6 +511,7 @@ src/
 ### 3. Header Actions
 
 - [ ] **Action Buttons**
+
   ```vue
   <div class="flex items-center justify-between">
     <Button variant="outline" @click="goBack">
@@ -519,6 +574,7 @@ src/
 ### 5. Tabbed Content (if applicable)
 
 - [ ] **Tabs Component**
+
   ```vue
   <Tabs default-value="related-data" class="w-full">
     <TabsList class="grid w-full grid-cols-3">
@@ -535,7 +591,7 @@ src/
         Statistics
       </TabsTrigger>
     </TabsList>
-
+  
     <TabsContent value="related-data">
       <!-- DataTable or related content -->
     </TabsContent>
@@ -600,11 +656,13 @@ src/
 ### Shared Components Priority
 
 1. **`DataTable`** - For any tabular data display
+
    - Supports sorting, filtering, pagination
    - Custom cell templates via slots
    - Row click handling
 
 2. **`ViewControls`** - For search and filter controls
+
    - Search input with debouncing
    - Filter dropdowns
    - Action buttons
@@ -617,6 +675,7 @@ src/
 ### Common Components
 
 1. **`LoadingSpinner`** - For loading states
+
    - Different sizes and variants
    - Optional text display
    - Full-screen option
@@ -628,6 +687,7 @@ src/
 ### UI Components
 
 Use components from `@/components/ui/` for all basic UI elements:
+
 - Forms: `Input`, `Textarea`, `Select`, `Label`
 - Layout: `Card`, `Tabs`, `Dialog`
 - Actions: `Button`, `Badge`
@@ -667,4 +727,5 @@ Use components from `@/components/ui/` for all basic UI elements:
 - See `src/api/README.md` for API usage patterns
 - Check component documentation in respective files
 
-This guide ensures consistency across all detail pages while maintaining flexibility for entity-specific requirements.
+This guide ensures consistency across all detail pages while maintaining
+flexibility for entity-specific requirements.

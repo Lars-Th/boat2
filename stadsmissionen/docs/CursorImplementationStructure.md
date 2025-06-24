@@ -2,7 +2,10 @@
 
 ## 📋 Overview
 
-This guide provides a systematic approach for analyzing feature requests and creating structured implementation plans in a .md format. It helps developers across different specializations (backend, frontend, UI/UX, integration) to quickly deconstruct requests into actionable, well-documented plans.
+This guide provides a systematic approach for analyzing feature requests and
+creating structured implementation plans in a .md format. It helps developers
+across different specializations (backend, frontend, UI/UX, integration) to
+quickly deconstruct requests into actionable, well-documented plans.
 
 ## 🎯 Core Principles
 
@@ -38,9 +41,9 @@ This guide provides a systematic approach for analyzing feature requests and cre
 #### 1.1 Extract Core Requirements
 
 ```markdown
-**Primary Goal:** [What is the main objective?]
-**User Story:** As a [role], I want [functionality] so that [benefit]
-**Acceptance Criteria:**
+**Primary Goal:** [What is the main objective?] **User Story:** As a [role], I
+want [functionality] so that [benefit] **Acceptance Criteria:**
+
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] Criterion 3
@@ -105,16 +108,19 @@ grep -r "useApi" src/
 ## Current State ✅/❌
 
 ### Data Structures
+
 - ✅ Entity X exists with fields: [list]
 - ✅ Foreign key relationship: X.foreignKey → Y.primaryKey
 - ❌ Missing computed field for [requirement]
 
 ### API Services
+
 - ✅ Basic CRUD operations available
 - ✅ Mock implementation supports relationships
 - ❌ Missing aggregation/calculation methods
 
 ### UI Components
+
 - ✅ Similar pattern exists in ComponentX
 - ✅ DataTable supports custom columns
 - ❌ No existing pattern for [specific UI need]
@@ -128,41 +134,51 @@ grep -r "useApi" src/
 # [Feature Name] Implementation Plan
 
 ## 📋 Overview
+
 [Brief description and context]
 
 ## 🔍 Current State Analysis
+
 [Document what exists vs what's needed]
 
 ## 🎯 Implementation Plan
 
 ### Phase 1: [Layer Name]
+
 #### 1.1 [Specific Task]
-**File:** `path/to/file.ts`
-[Code example or specific changes]
+
+**File:** `path/to/file.ts` [Code example or specific changes]
 
 #### 1.2 [Next Task]
-**File:** `path/to/other/file.ts`
-[Code example or specific changes]
+
+**File:** `path/to/other/file.ts` [Code example or specific changes]
 
 ### Phase 2: [Next Layer]
+
 [Continue pattern...]
 
 ## 🚀 Implementation Steps
+
 [Step-by-step checklist]
 
 ## 📊 Expected Outcome
+
 [Visual representation of end result]
 
 ## 🔧 Code Examples
+
 [Concrete examples of usage]
 
 ## 🔗 Related Files to Modify
+
 [Complete list of files that need changes]
 
 ## 🎯 Success Criteria
+
 [Measurable criteria for completion]
 
 ## 🔄 Future Enhancements
+
 [Related improvements for later consideration]
 ```
 
@@ -186,15 +202,19 @@ grep -r "useApi" src/
 
 **Plan Structure:**
 
-```markdown
+````markdown
 ### Phase 1: Data Model Changes
+
 #### 1.1 Entity Modifications
+
 **File:** `src/types/entities.ts`
+
 ```typescript
 interface EntityName {
   // Show exact changes needed
 }
 ```
+````
 
 #### 1.2 Relationship Configuration
 
@@ -203,7 +223,7 @@ interface EntityName {
 ```typescript
 export const entityRelationships = {
   // Show relationship setup
-}
+};
 ```
 
 #### 1.3 Migration Script
@@ -214,7 +234,7 @@ export const entityRelationships = {
 // Show migration logic
 ```
 
-```
+````
 
 ### API/Service Layer Plans
 
@@ -239,7 +259,7 @@ export const entityRelationships = {
 async newMethod(): Promise<ApiResponse<Type>> {
   // Show implementation with dictionary building
 }
-```
+````
 
 #### 1.2 Real API Implementation
 
@@ -264,7 +284,7 @@ export const api = {
 }
 ```
 
-```
+````
 
 ### Frontend/UI Layer Plans
 
@@ -290,7 +310,7 @@ export const api = {
 1. **Update data fetching:**
 ```typescript
 const { data } = useApiList(() => api.entity.newMethod())
-```
+````
 
 2. **Add new column:**
 
@@ -298,7 +318,7 @@ const { data } = useApiList(() => api.entity.newMethod())
 const columns = [
   // existing columns
   { key: 'newField', label: 'New Label', sortable: true }, // NEW
-]
+];
 ```
 
 3. **Add template for new field:**
@@ -309,7 +329,7 @@ const columns = [
 </template>
 ```
 
-```
+````
 
 ### Integration Layer Plans
 
@@ -334,7 +354,7 @@ const columns = [
 export class ExternalService {
   // Show client implementation
 }
-```
+````
 
 #### 1.2 Data Mapping
 
@@ -354,7 +374,7 @@ export class ExternalMapper {
 // Show error handling strategy
 ```
 
-```
+````
 
 ```markdown
 ## 🚀 Implementation Steps
@@ -378,7 +398,7 @@ export class ExternalMapper {
 1. ⏳ **Code documentation**
 2. ⏳ **User documentation**
 3. ⏳ **Performance review**
-```
+````
 
 ## 🎯 Success Criteria Framework
 
@@ -491,20 +511,24 @@ export class ExternalMapper {
 When you receive a new request:
 
 1. **🔍 Understand**
+
    - [ ] Read request carefully
    - [ ] Identify primary goal and user story
    - [ ] Categorize request type
 
 2. **📊 Analyze**
+
    - [ ] Explore existing codebase
    - [ ] Document current state
    - [ ] Identify gaps and requirements
 
 3. **📝 Plan**
+
    - [ ] Choose appropriate plan template
    - [ ] Break into logical phases
 
 4. **✅ Validate**
+
    - [ ] Review for completeness
    - [ ] Check for missing dependencies
 

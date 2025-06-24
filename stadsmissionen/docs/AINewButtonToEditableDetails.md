@@ -2,11 +2,15 @@
 
 ## Overview
 
-This guide explains how to implement a "New" button functionality that allows users to create new entities by navigating to an existing detail page in creation mode. The detail page will show empty, editable fields instead of fetching existing data.
+This guide explains how to implement a "New" button functionality that allows
+users to create new entities by navigating to an existing detail page in
+creation mode. The detail page will show empty, editable fields instead of
+fetching existing data.
 
 ## Pattern Summary
 
-Instead of creating separate "New" and "Edit" pages, we reuse the existing detail page component and make it context-aware:
+Instead of creating separate "New" and "Edit" pages, we reuse the existing
+detail page component and make it context-aware:
 
 - **View Mode**: Display existing entity data (read-only)
 - **Edit Mode**: Edit existing entity data
@@ -109,7 +113,10 @@ const {
   loading: isLoading,
   error: entityError,
   refresh: refreshEntity,
-} = useApiItem<Entity>(() => api.entities.getById(entityId.value), {
+} = useApiItem <
+Entity >
+(() => api.entities.getById(entityId.value),
+{
   cacheKey: `entity-${entityId.value}`,
   immediate: !isCreating.value, // Only fetch if not creating
 });
@@ -229,7 +236,10 @@ const saveChanges = () => {
       if (response.success && response.data) {
         if (isCreating.value) {
           // Navigate to the newly created entity's detail page
-          success('Entity created', 'The new entity has been created successfully');
+          success(
+            'Entity created',
+            'The new entity has been created successfully'
+          );
           router.push(`/entities/list/${response.data.id}`);
         } else {
           // Handle update success
@@ -240,7 +250,10 @@ const saveChanges = () => {
       } else {
         // Handle API errors
         const action = isCreating.value ? 'create' : 'save';
-        showError(`Could not ${action}`, response.error?.message || `An error occurred while ${action}ing`);
+        showError(
+          `Could not ${action}`,
+          response.error?.message || `An error occurred while ${action}ing`
+        );
       }
     })
     .catch(error => {
@@ -482,4 +495,5 @@ const { data: boat, loading, error } = useApiItem(
 );
 ```
 
-This pattern provides a clean, maintainable way to handle entity creation while reusing existing detail page components.
+This pattern provides a clean, maintainable way to handle entity creation while
+reusing existing detail page components.

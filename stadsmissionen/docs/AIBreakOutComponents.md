@@ -2,7 +2,10 @@
 
 ## Overview
 
-This guide explains how to identify, extract, and organize components from large monolithic view files (like `ActivityDetail.vue`) into smaller, maintainable, and reusable components following the established patterns seen in `BoatDetail.vue`.
+This guide explains how to identify, extract, and organize components from large
+monolithic view files (like `ActivityDetail.vue`) into smaller, maintainable,
+and reusable components following the established patterns seen in
+`BoatDetail.vue`.
 
 ## Folder Structure Convention
 
@@ -24,21 +27,25 @@ src/components/
 ### ✅ **Identify Components to Extract**
 
 **Large Card Sections:**
+
 - [ ] Information cards with multiple fields (e.g., main entity information)
 - [ ] Cards with both view and edit modes
 - [ ] Cards with complex validation or formatting logic
 
 **Tab Content:**
+
 - [ ] Each tab content area should become its own component
 - [ ] Tabs with forms or complex data display
 - [ ] Tabs with specific business logic
 
 **Repeated Patterns:**
+
 - [ ] Similar data display patterns used elsewhere
 - [ ] Form sections that could be reused
 - [ ] Data tables with custom formatting
 
 **Complex Template Logic:**
+
 - [ ] Template sections with multiple v-if/v-else conditions
 - [ ] Areas with complex computed properties
 - [ ] Sections with local state management
@@ -48,6 +55,7 @@ src/components/
 **Format:** `{Domain}{Purpose}{Type}.vue`
 
 **Examples:**
+
 - `ActivityInformationCard.vue` - Main information display
 - `ActivityAttendanceTab.vue` - Tab content for attendance
 - `ActivityParticipantsTab.vue` - Tab content for participants
@@ -56,6 +64,7 @@ src/components/
 ### ✅ **Data Structure Analysis**
 
 **Before Extraction:**
+
 - [ ] List all data used in the section
 - [ ] Identify computed properties specific to the section
 - [ ] Note any local reactive state
@@ -63,6 +72,7 @@ src/components/
 - [ ] Identify any methods/functions used only in that section
 
 **API Data Requirements:**
+
 - [ ] Determine if API data structure needs changes
 - [ ] Check if relational data loading is needed
 - [ ] Verify if additional endpoints are required
@@ -83,6 +93,7 @@ touch src/components/features/activities/index.ts
 ### 2. **Extract Component Template**
 
 **From:** Large view file
+
 ```vue
 <!-- Extract this section -->
 <Card>
@@ -96,9 +107,10 @@ touch src/components/features/activities/index.ts
 ```
 
 **To:** New component file
+
 ```vue
 <script setup lang="ts">
-// Component-specific logic here
+  // Component-specific logic here
 </script>
 
 <template>
@@ -119,6 +131,7 @@ touch src/components/features/activities/index.ts
 ### 3. **Define Props Interface**
 
 **Template for component props:**
+
 ```typescript
 interface Props {
   // Main entity data (optional for creation mode)
@@ -153,6 +166,7 @@ interface Emits {
 ### 4. **Handle Data Binding**
 
 **Two-way binding pattern:**
+
 ```typescript
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
@@ -172,6 +186,7 @@ const updateField = <K extends keyof Props['editForm']>(
 ### 5. **Update Parent Component**
 
 **Import the new components:**
+
 ```typescript
 // Feature Components
 import {
@@ -183,6 +198,7 @@ import {
 ```
 
 **Replace template sections:**
+
 ```vue
 <!-- Replace large inline section with component -->
 <ActivityInformationCard
@@ -196,19 +212,22 @@ import {
     ActivityTypeID: editForm.ActivityTypeID,
   }"
   :activity-types="activityTypes"
-  @update:edit-form="newForm => {
-    editForm.Namn = newForm.Namn;
-    editForm.Beskrivning = newForm.Beskrivning;
-    editForm.Plats = newForm.Plats;
-    editForm.DatumTid = newForm.DatumTid;
-    editForm.ActivityTypeID = newForm.ActivityTypeID;
-  }"
+  @update:edit-form="
+    newForm => {
+      editForm.Namn = newForm.Namn;
+      editForm.Beskrivning = newForm.Beskrivning;
+      editForm.Plats = newForm.Plats;
+      editForm.DatumTid = newForm.DatumTid;
+      editForm.ActivityTypeID = newForm.ActivityTypeID;
+    }
+  "
 />
 ```
 
 ### 6. **Create Index File**
 
 **In `src/components/features/activities/index.ts`:**
+
 ```typescript
 export { default as ActivityInformationCard } from './ActivityInformationCard.vue';
 export { default as ActivityAttendanceTab } from './ActivityAttendanceTab.vue';
@@ -221,7 +240,9 @@ export { default as ActivityStatisticsTab } from './ActivityStatisticsTab.vue';
 ### ✅ **Before Component Extraction**
 
 **Current API Pattern (ActivityDetail.vue):**
-- [ ] Single API call with include relations: `{ include: ['types', 'participants', 'attendances'] }`
+
+- [ ] Single API call with include relations:
+      `{ include: ['types', 'participants', 'attendances'] }`
 - [ ] All data loaded at parent level
 - [ ] Complex computed properties for data transformation
 - [ ] Direct data mutation in parent
@@ -229,12 +250,14 @@ export { default as ActivityStatisticsTab } from './ActivityStatisticsTab.vue';
 ### ✅ **After Component Extraction**
 
 **Optimized API Pattern:**
+
 - [ ] Keep relational data loading at parent level
 - [ ] Pass specific data subsets to child components
 - [ ] Move data transformations to appropriate child components
 - [ ] Use proper prop drilling for deep data access
 
 **Data Flow Pattern:**
+
 ```typescript
 // Parent component (ActivityDetail.vue)
 const {
@@ -243,16 +266,21 @@ const {
   error: activityError,
   refresh: refreshActivity,
 } = useApiItem(
-  () => api.activities.getById(activityId.value, {
-    include: ['types', 'participants', 'attendances']
-  }),
+  () =>
+    api.activities.getById(activityId.value, {
+      include: ['types', 'participants', 'attendances'],
+    }),
   { cacheKey: `activity-with-relations-${activityId.value}` }
 );
 
 // Extract specific data for child components
 const activity = computed(() => activityWithRelations.value);
-const attendances = computed(() => activityWithRelations.value?.attendances || []);
-const participants = computed(() => activityWithRelations.value?.participants || []);
+const attendances = computed(
+  () => activityWithRelations.value?.attendances || []
+);
+const participants = computed(
+  () => activityWithRelations.value?.participants || []
+);
 ```
 
 ## Common Pitfalls and Solutions
@@ -278,6 +306,7 @@ const participants = computed(() => activityWithRelations.value?.participants ||
 ### ✅ **After Component Extraction**
 
 **Functionality Testing:**
+
 - [ ] All features work the same as before extraction
 - [ ] Edit mode works correctly
 - [ ] Form validation still functions
@@ -285,12 +314,14 @@ const participants = computed(() => activityWithRelations.value?.participants ||
 - [ ] Navigation and routing remain intact
 
 **Component Testing:**
+
 - [ ] Component renders correctly with minimum required props
 - [ ] Component handles missing/undefined data gracefully
 - [ ] Component emits events correctly
 - [ ] Component updates parent state properly
 
 **Integration Testing:**
+
 - [ ] Parent component imports work correctly
 - [ ] Props are passed correctly
 - [ ] Event handling works as expected
@@ -302,14 +333,17 @@ const participants = computed(() => activityWithRelations.value?.participants ||
 ### Components to Extract:
 
 1. **ActivityInformationCard.vue**
+
    - Main activity information display/edit
    - Props: `activity`, `isEditing`, `editForm`, `activityTypes`
 
 2. **ActivityAttendanceTab.vue**
+
    - Attendance table and statistics
    - Props: `attendances`, `participants`
 
 3. **ActivityParticipantsTab.vue**
+
    - Participants list with attendance status
    - Props: `participants`, `attendances`
 
@@ -318,6 +352,7 @@ const participants = computed(() => activityWithRelations.value?.participants ||
    - Props: `stats`, `activity`, `attendances`, `participants`
 
 ### Data Requirements:
+
 - No API changes needed (current relational loading is sufficient)
 - Move computed properties to appropriate child components
 - Keep form state management at parent level
@@ -325,12 +360,14 @@ const participants = computed(() => activityWithRelations.value?.participants ||
 ## Completion Checklist
 
 ### ✅ **Component Creation**
+
 - [ ] Created feature directory: `src/components/features/{domain}/`
 - [ ] Created individual component files with proper naming
 - [ ] Created index.ts export file
 - [ ] Added proper TypeScript interfaces for props and emits
 
 ### ✅ **Component Implementation**
+
 - [ ] Extracted template sections correctly
 - [ ] Implemented proper prop handling
 - [ ] Added event emission for data updates
@@ -338,6 +375,7 @@ const participants = computed(() => activityWithRelations.value?.participants ||
 - [ ] Added proper imports and dependencies
 
 ### ✅ **Parent Component Updates**
+
 - [ ] Added component imports
 - [ ] Replaced template sections with new components
 - [ ] Updated prop binding
@@ -345,6 +383,7 @@ const participants = computed(() => activityWithRelations.value?.participants ||
 - [ ] Removed unused code and imports
 
 ### ✅ **Quality Assurance**
+
 - [ ] No TypeScript errors
 - [ ] No linting errors
 - [ ] All functionality works as before
@@ -354,4 +393,6 @@ const participants = computed(() => activityWithRelations.value?.participants ||
 
 ---
 
-**Remember:** The goal is to make code more maintainable and reusable while preserving all existing functionality. Take it step by step and test thoroughly after each extraction.
+**Remember:** The goal is to make code more maintainable and reusable while
+preserving all existing functionality. Take it step by step and test thoroughly
+after each extraction.

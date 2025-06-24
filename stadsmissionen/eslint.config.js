@@ -25,7 +25,6 @@ export default [
     ],
   },
 
-
   // Base ESLint recommended rules
   js.configs.recommended,
 
@@ -124,7 +123,8 @@ export default [
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/consistent-type-imports': [
-        'error', {prefer: 'type-imports', fixStyle: 'inline-type-imports'}
+        'error',
+        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
 
       // General JavaScript/TypeScript rules
@@ -152,13 +152,14 @@ export default [
 
       // Import/Export rules
       'sort-imports': [
-        'error', {
+        'error',
+        {
           ignoreCase: true,
           ignoreDeclarationSort: true,
           ignoreMemberSort: false,
           memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-        }
-      ]
+        },
+      ],
     },
   },
 

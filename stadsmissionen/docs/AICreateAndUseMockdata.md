@@ -1,18 +1,22 @@
 # AI Mock Data Implementation Checklist
 
-This document outlines the complete process for converting views with static data to use the mock API system, providing a consistent data layer that can later be replaced with real API calls.
+This document outlines the complete process for converting views with static
+data to use the mock API system, providing a consistent data layer that can
+later be replaced with real API calls.
 
 ## 📋 **Complete Checklist**
 
 ### **Phase 1: Planning & Data Structure**
 
 - [ ] **Analyze Existing Static Data**
+
   - [ ] Identify the current data structure and fields
   - [ ] Determine what additional fields would be relevant
   - [ ] Plan for future relationships (even if not implementing them yet)
   - [ ] Consider real-world data requirements
 
 - [ ] **Design JSON Structure**
+
   - [ ] Choose appropriate field names (follow existing naming conventions)
   - [ ] Add unique ID field (e.g., `EntityID`, `BoatID`, `ToolID`)
   - [ ] Include timestamps (`CreatedDate`, `LastModified`)
@@ -27,11 +31,13 @@ This document outlines the complete process for converting views with static dat
 ### **Phase 2: Create JSON Data File**
 
 - [ ] **Create Data File**
+
   - [ ] Create `src/assets/data/[entityName].json`
   - [ ] Use plural naming (e.g., `boats.json`, `vehicles.json`)
   - [ ] Include 4-6 sample records for variety
 
 - [ ] **JSON Structure Template**
+
   ```json
   [
     {
@@ -66,17 +72,21 @@ This document outlines the complete process for converting views with static dat
 ### **Phase 3: Update MockDataService**
 
 - [ ] **Add Data Import**
+
   - [ ] Open `src/api/mocks/mock-data.service.ts`
   - [ ] Add import statement in the imports section
+
   ```typescript
   import entityNameData from '@/assets/data/entityName.json';
   ```
 
 - [ ] **Add CRUD Methods**
+
   - [ ] Add methods at the end of the MockDataService class
   - [ ] Follow the established pattern for consistency
 
 - [ ] **Method Template**
+
   ```typescript
   // EntityName
   async getEntityNames(): Promise<ApiResponse<typeof entityNameData>> {
@@ -140,10 +150,12 @@ This document outlines the complete process for converting views with static dat
 ### **Phase 4: Update Main API Configuration**
 
 - [ ] **Add API Endpoints**
+
   - [ ] Open `src/api/index.ts`
   - [ ] Add new entity section before the closing brace of the `api` object
 
 - [ ] **API Template**
+
   ```typescript
   // EntityName
   entityNames: {
@@ -177,7 +189,9 @@ This document outlines the complete process for converting views with static dat
 ### **Phase 5: Update View Component**
 
 - [ ] **Update Imports**
+
   - [ ] Replace static data imports with API composable
+
   ```typescript
   // Remove static data
   // const mockData = ref([...]);
@@ -188,6 +202,7 @@ This document outlines the complete process for converting views with static dat
   ```
 
 - [ ] **Replace Static Data with API Call**
+
   ```typescript
   // Fetch data using the API service
   const {
@@ -200,8 +215,10 @@ This document outlines the complete process for converting views with static dat
   ```
 
 - [ ] **Update Computed Properties**
+
   - [ ] Replace references to static data with API data
   - [ ] Add null checks for loading states
+
   ```typescript
   // Loading state
   const isLoading = computed(() => entityNamesLoading.value);
@@ -218,7 +235,9 @@ This document outlines the complete process for converting views with static dat
       ];
     }
 
-    const activeEntities = entityNames.value.filter((e: any) => e.Status === 'active').length;
+    const activeEntities = entityNames.value.filter(
+      (e: any) => e.Status === 'active'
+    ).length;
     // ... compute other statistics
 
     return [
@@ -236,6 +255,7 @@ This document outlines the complete process for converting views with static dat
 ### **Phase 6: Update Template**
 
 - [ ] **Add Error State**
+
   ```vue
   <!-- Error State -->
   <div v-else-if="hasError" class="flex items-center justify-center py-12">
@@ -252,6 +272,7 @@ This document outlines the complete process for converting views with static dat
   ```
 
 - [ ] **Update DataTable Reference**
+
   ```vue
   <!-- DataTable -->
   <DataTable
@@ -260,7 +281,7 @@ This document outlines the complete process for converting views with static dat
     :columns="columns"
     :search-fields="['Name', 'Type', 'EntityNumber', 'Status']"
     @row-click="handleRowClick"
-  >
+  ></DataTable>
   ```
 
 - [ ] **Update Loading Condition**
@@ -277,12 +298,14 @@ This document outlines the complete process for converting views with static dat
 ### **Phase 7: Testing & Validation**
 
 - [ ] **Test API Functionality**
+
   - [ ] Verify data loads correctly
   - [ ] Test loading states
   - [ ] Test error handling
   - [ ] Verify search functionality works with new data structure
 
 - [ ] **Test Data Completeness**
+
   - [ ] Ensure all required fields are present
   - [ ] Verify computed statistics work correctly
   - [ ] Test sorting and filtering
@@ -295,6 +318,7 @@ This document outlines the complete process for converting views with static dat
 ### **Phase 8: Documentation & Cleanup**
 
 - [ ] **Update View Comments**
+
   - [ ] Remove old static data comments
   - [ ] Add comments about API usage
   - [ ] Document any specific data processing
@@ -307,6 +331,7 @@ This document outlines the complete process for converting views with static dat
 ## 🎯 **Quick Reference**
 
 ### **Common Data Fields**
+
 - **IDs**: `EntityID`, `EntityNumber` (for display)
 - **Names**: `Name`, `Title`, `Description`
 - **Status**: `Status` (active, inactive, maintenance, etc.)
@@ -315,12 +340,14 @@ This document outlines the complete process for converting views with static dat
 - **Location**: `Location`, `HarbourLocation`, `Address`
 
 ### **Naming Conventions**
+
 - **JSON Files**: kebab-case, plural (e.g., `work-orders.json`)
 - **Import Names**: camelCase + Data (e.g., `workOrdersData`)
 - **Method Names**: camelCase, match entity name (e.g., `getWorkOrders`)
 - **API Properties**: camelCase, plural (e.g., `workOrders`)
 
 ### **File Locations**
+
 - **JSON Files**: `src/assets/data/entityName.json`
 - **Mock Service**: `src/api/mocks/mock-data.service.ts`
 - **API Index**: `src/api/index.ts`
@@ -329,30 +356,35 @@ This document outlines the complete process for converting views with static dat
 ## ⚠️ **Common Issues & Solutions**
 
 ### **TypeScript Errors on Data Access**
+
 ```typescript
 // Problem: Property access errors
-entityNames.value.filter(e => e.Status === 'active')
+entityNames.value.filter(e => e.Status === 'active');
 
 // Solution: Add type assertion
-entityNames.value.filter((e: any) => e.Status === 'active')
+entityNames.value.filter((e: any) => e.Status === 'active');
 ```
 
 ### **Loading State Not Working**
+
 - Ensure `isLoading` computed property is properly defined
 - Check that `v-if="isLoading"` comes before other conditions
 - Verify API call is actually being made
 
 ### **Data Not Displaying**
+
 - Check browser console for import errors
 - Verify JSON file is valid (use JSON validator)
 - Ensure data structure matches what the component expects
 
 ### **Search Not Working**
+
 - Update `:search-fields` array with correct field names
 - Ensure field names match those in the JSON data
 - Check for nested object fields (may need flattening)
 
 ### **Statistics Not Calculating**
+
 - Add null checks in computed properties
 - Ensure data is available before calculation
 - Use type assertions for TypeScript compatibility
@@ -360,6 +392,7 @@ entityNames.value.filter((e: any) => e.Status === 'active')
 ## 🚀 **Example Implementation Pattern**
 
 ### **Before (Static Data)**
+
 ```typescript
 const mockData = ref([
   { id: 1, name: 'Item 1', status: 'active' },
@@ -374,6 +407,7 @@ const stats = computed(() => ({
 ```
 
 ### **After (Mock API)**
+
 ```typescript
 const {
   data: items,
@@ -402,8 +436,11 @@ const stats = computed(() => {
 
 - **API Architecture**: See `docs/StructureAPI.md` for detailed API patterns
 - **Mock vs Real API**: Understanding the dual implementation system
-- **Data Relations**: How to add relationships between entities (future enhancement)
+- **Data Relations**: How to add relationships between entities (future
+  enhancement)
 
 ---
 
-**💡 Pro Tip**: Always start with simple CRUD operations and add complexity gradually. The mock system is designed to be easily replaceable with real API calls later!
+**💡 Pro Tip**: Always start with simple CRUD operations and add complexity
+gradually. The mock system is designed to be easily replaceable with real API
+calls later!

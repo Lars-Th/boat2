@@ -4,7 +4,8 @@
 
 ### 1. Router Guard Authentication
 
-**Problem**: The router guard was using dynamic imports and circular dependencies, causing authentication to fail on page refresh.
+**Problem**: The router guard was using dynamic imports and circular
+dependencies, causing authentication to fail on page refresh.
 
 **Solution**:
 
@@ -14,7 +15,8 @@
 
 ### 2. Permission Group Mapping
 
-**Problem**: Permission group names in JSON didn't match expected role names in router guard.
+**Problem**: Permission group names in JSON didn't match expected role names in
+router guard.
 
 **Solution**:
 
@@ -26,7 +28,8 @@
 
 ### 3. Default User Setup
 
-**Problem**: System didn't automatically log in as Lars Thomas (user 1) in development mode.
+**Problem**: System didn't automatically log in as Lars Thomas (user 1) in
+development mode.
 
 **Solution**:
 
@@ -45,14 +48,14 @@
 
 ### Available Test Users
 
-| Name | Email | Password | Permission Group | Mapped Role |
-|------|-------|----------|------------------|-------------|
-| Lars Thomas | <lars.thomas@ostergotlandsstadsmission.se> | admin123 | Administratör | Administratör |
-| Erik Enhetschef | <erik.enhetschef@ostergotlandsstadsmission.se> | erik123 | Full tillgång till dokument | Enhetsansvarig |
-| Maria Koordinator | <maria.koordinator@ostergotlandsstadsmission.se> | maria123 | Tillgång till dokument | Handläggare |
-| Johan Tölp | <johan.handlaggare@ostergotlandsstadsmission.se> | johan123 | Tillgång till dokument | Handläggare |
-| Lisa Medarbetare | <lisa.medarbetare@ostergotlandsstadsmission.se> | lisa123 | Tillgång till dokument | Handläggare |
-| Karin Stockholmsadmin | <karin.admin@stadsmissionen.se> | karin123 | Versamhetsanvändare | Handläggare |
+| Name                  | Email                                            | Password | Permission Group            | Mapped Role    |
+| --------------------- | ------------------------------------------------ | -------- | --------------------------- | -------------- |
+| Lars Thomas           | <lars.thomas@ostergotlandsstadsmission.se>       | admin123 | Administratör               | Administratör  |
+| Erik Enhetschef       | <erik.enhetschef@ostergotlandsstadsmission.se>   | erik123  | Full tillgång till dokument | Enhetsansvarig |
+| Maria Koordinator     | <maria.koordinator@ostergotlandsstadsmission.se> | maria123 | Tillgång till dokument      | Handläggare    |
+| Johan Tölp            | <johan.handlaggare@ostergotlandsstadsmission.se> | johan123 | Tillgång till dokument      | Handläggare    |
+| Lisa Medarbetare      | <lisa.medarbetare@ostergotlandsstadsmission.se>  | lisa123  | Tillgång till dokument      | Handläggare    |
+| Karin Stockholmsadmin | <karin.admin@stadsmissionen.se>                  | karin123 | Versamhetsanvändare         | Handläggare    |
 
 ## Testing Instructions
 
@@ -102,8 +105,8 @@ All authentication endpoints now include full permission group data:
       id: number;
       name: string;
       // ... all permission flags
-    };
-  };
+    }
+  }
   token: string;
 }
 ```
@@ -127,4 +130,5 @@ The authentication system is now fully functional with:
 - ✅ Role-based access control
 - ✅ Enhanced API responses
 
-You can now test the system by running `npm run dev` and verifying all the functionality described above.
+You can now test the system by running `npm run dev` and verifying all the
+functionality described above.

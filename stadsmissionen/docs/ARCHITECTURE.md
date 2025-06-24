@@ -2,7 +2,9 @@
 
 ## Project Structure & Separation of Concerns
 
-This Vue 3 + TypeScript application follows a clean architecture pattern with clear separation of functionality. This guide explains how each layer works and how to properly implement new views.
+This Vue 3 + TypeScript application follows a clean architecture pattern with
+clear separation of functionality. This guide explains how each layer works and
+how to properly implement new views.
 
 ## 📁 Directory Structure
 
@@ -83,8 +85,7 @@ src/
 
 ## 🔄 Data Flow Pattern
 
-Views → Composables → API Services → External APIs
-      ↘ Validation Schemas ↗
+Views → Composables → API Services → External APIs ↘ Validation Schemas ↗
 
 ## 📋 How to Create a New View
 
@@ -93,8 +94,8 @@ Views → Composables → API Services → External APIs
 ```typescript
 // src/types/index.ts
 export interface MyEntity {
-  id: string
-  name: string
+  id: string;
+  name: string;
   // ... other properties
 }
 ```
@@ -106,10 +107,10 @@ export interface MyEntity {
 export const myEntityValidationSchema = {
   name: {
     rules: ['required'],
-    displayName: 'Entity Name'
+    displayName: 'Entity Name',
   },
   // ... other fields
-}
+};
 ```
 
 ### Step 3: Add API Methods
@@ -135,40 +136,40 @@ export const api = {
     getAll: () => apiService.getMyEntities(),
     create: (data: Partial<MyEntity>) => apiService.createMyEntity(data),
   },
-}
+};
 ```
 
 ### Step 5: Create Composable (if needed)
 
 ```typescript
 // src/composables/useMyEntity.ts
-import { ref } from 'vue'
-import { useApi } from './useApi'
-import { useValidation } from './useValidation'
-import { myEntityValidationSchema } from '@/schemas/validationSchemas'
-import { api } from '@/services/api'
+import { ref } from 'vue';
+import { useApi } from './useApi';
+import { useValidation } from './useValidation';
+import { myEntityValidationSchema } from '@/schemas/validationSchemas';
+import { api } from '@/services/api';
 
 export function useMyEntity() {
-  const entities = ref<MyEntity[]>([])
+  const entities = ref<MyEntity[]>([]);
 
   // Fetch data
-  const { data, loading, error, execute } = useApi(
-    () => api.myEntities.getAll()
-  )
+  const { data, loading, error, execute } = useApi(() =>
+    api.myEntities.getAll()
+  );
 
   // Validation
-  const { validateWithSchema, errors } = useValidation()
+  const { validateWithSchema, errors } = useValidation();
 
   const createEntity = async (formData: Partial<MyEntity>) => {
-    const isValid = validateWithSchema(formData, myEntityValidationSchema)
-    if (!isValid) return false
+    const isValid = validateWithSchema(formData, myEntityValidationSchema);
+    if (!isValid) return false;
 
-    const result = await api.myEntities.create(formData)
+    const result = await api.myEntities.create(formData);
     if (result.success) {
-      entities.value.push(result.data)
+      entities.value.push(result.data);
     }
-    return result.success
-  }
+    return result.success;
+  };
 
   return {
     entities,
@@ -176,8 +177,8 @@ export function useMyEntity() {
     error,
     createEntity,
     errors,
-    fetchEntities: execute
-  }
+    fetchEntities: execute,
+  };
 }
 ```
 
@@ -186,27 +187,22 @@ export function useMyEntity() {
 ```vue
 <!-- src/views/MyEntityView.vue -->
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useMyEntity } from '@/composables/useMyEntity'
+  import { onMounted } from 'vue';
+  import { useMyEntity } from '@/composables/useMyEntity';
 
-const {
-  entities,
-  loading,
-  error,
-  createEntity,
-  fetchEntities
-} = useMyEntity()
+  const { entities, loading, error, createEntity, fetchEntities } =
+    useMyEntity();
 
-onMounted(() => {
-  fetchEntities()
-})
+  onMounted(() => {
+    fetchEntities();
+  });
 
-const handleCreate = async (formData: Partial<MyEntity>) => {
-  const success = await createEntity(formData)
-  if (success) {
-    // Handle success (show toast, redirect, etc.)
-  }
-}
+  const handleCreate = async (formData: Partial<MyEntity>) => {
+    const success = await createEntity(formData);
+    if (success) {
+      // Handle success (show toast, redirect, etc.)
+    }
+  };
 </script>
 
 <template>
@@ -229,26 +225,26 @@ const handleCreate = async (formData: Partial<MyEntity>) => {
 
 ```typescript
 // Views should import composables
-import { useMyEntity } from '@/composables/useMyEntity'
+import { useMyEntity } from '@/composables/useMyEntity';
 
 // Composables should import API services
-import { api } from '@/services/api'
+import { api } from '@/services/api';
 
 // Composables should import validation schemas
-import { myEntityValidationSchema } from '@/schemas/validationSchemas'
+import { myEntityValidationSchema } from '@/schemas/validationSchemas';
 
 // Components should import utilities
-import { cn } from '@/utils/libraryHelper'
+import { cn } from '@/utils/libraryHelper';
 ```
 
 ### ❌ Avoid These Patterns
 
 ```typescript
 // ❌ Don't import API services directly in views
-import { api } from '@/services/api' // Use composables instead
+import { api } from '@/services/api'; // Use composables instead
 
 // ❌ Don't import validation schemas directly in views
-import { myEntityValidationSchema } from '@/schemas/validationSchemas' // Use composables
+import { myEntityValidationSchema } from '@/schemas/validationSchemas'; // Use composables
 
 // ❌ Don't put business logic in views
 // Keep views focused on presentation only
@@ -260,17 +256,17 @@ import { myEntityValidationSchema } from '@/schemas/validationSchemas' // Use co
 
 ```typescript
 // In your composable
-const { validateForApi } = useValidation()
+const { validateForApi } = useValidation();
 
 const submitForm = async (formData: Record<string, unknown>) => {
   const result = await validateForApi(
     formData,
     myEntityValidationSchema,
-    (data) => api.myEntities.create(data)
-  )
+    data => api.myEntities.create(data)
+  );
 
-  return result
-}
+  return result;
+};
 ```
 
 ### Loading States
@@ -280,7 +276,7 @@ const submitForm = async (formData: Record<string, unknown>) => {
 const { data, loading, error, execute } = useApi(
   () => api.myEntities.getAll(),
   { immediate: true } // Auto-fetch on mount
-)
+);
 ```
 
 ### Error Handling
@@ -314,7 +310,7 @@ const { error } = useMyEntity()
 
 ```typescript
 // Lazy load views
-const MyView = () => import('@/views/MyView.vue')
+const MyView = () => import('@/views/MyView.vue');
 ```
 
 ### Computed Properties
@@ -323,17 +319,17 @@ const MyView = () => import('@/views/MyView.vue')
 // Use computed for derived state
 const filteredEntities = computed(() =>
   entities.value.filter(entity => entity.active)
-)
+);
 ```
 
 ### Caching
 
 ```typescript
 // Use caching in API calls
-const { data } = useApi(
-  () => api.myEntities.getAll(),
-  { cache: true, cacheKey: 'my-entities' }
-)
+const { data } = useApi(() => api.myEntities.getAll(), {
+  cache: true,
+  cacheKey: 'my-entities',
+});
 ```
 
 ## 📝 Best Practices
@@ -353,4 +349,5 @@ const { data } = useApi(
 3. **Console Logs**: Added automatically in development mode
 4. **Error Boundaries**: Check error objects for detailed information
 
-This architecture ensures maintainable, scalable, and testable code while following Vue 3 and TypeScript best practices.
+This architecture ensures maintainable, scalable, and testable code while
+following Vue 3 and TypeScript best practices.

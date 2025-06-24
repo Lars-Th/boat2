@@ -1,6 +1,8 @@
 # AI Data API Instructions
 
-This document provides comprehensive instructions for managing API data, types, relationships, and data pipelines when updating views in the Stadsmissionen application. It covers both mock and backend API implementations.
+This document provides comprehensive instructions for managing API data, types,
+relationships, and data pipelines when updating views in the Stadsmissionen
+application. It covers both mock and backend API implementations.
 
 ## Table of Contents
 
@@ -41,19 +43,22 @@ JSON Data Files (for mock) OR HTTP Client (for backend)
 
 ### Core API Service (`src/api/index.ts`)
 
-The main API service provides a unified interface for both mock and real backend:
+The main API service provides a unified interface for both mock and real
+backend:
 
 ```typescript
 export const api = {
   // Entity CRUD operations
   entityName: {
     getAll: (params?: RelationalParams) => Promise<ApiResponse<Entity[]>>,
-    getById: (id: string, params?: RelationalParams) => Promise<ApiResponse<Entity | null>>,
+    getById: (id: string, params?: RelationalParams) =>
+      Promise<ApiResponse<Entity | null>>,
     create: (data: Record<string, unknown>) => Promise<ApiResponse<Entity>>,
-    update: (id: string, data: Record<string, unknown>) => Promise<ApiResponse<Entity>>,
+    update: (id: string, data: Record<string, unknown>) =>
+      Promise<ApiResponse<Entity>>,
     delete: (id: string) => Promise<ApiResponse<boolean>>,
-  }
-}
+  },
+};
 ```
 
 ### Mock Data Service (`src/api/mocks/mock-data.service.ts`)
@@ -63,11 +68,17 @@ Handles all mock data operations with relationship resolution:
 ```typescript
 class MockDataService {
   // Standard CRUD with relationship support
-  async getEntities(params?: RelationalParams): Promise<ApiResponse<Entity[]>>
-  async getEntity(id: string, params?: RelationalParams): Promise<ApiResponse<Entity | null>>
+  async getEntities(params?: RelationalParams): Promise<ApiResponse<Entity[]>>;
+  async getEntity(
+    id: string,
+    params?: RelationalParams
+  ): Promise<ApiResponse<Entity | null>>;
 
   // Relationship resolution logic
-  private enhanceWithRelations(entity: Entity, params: RelationalParams): EnhancedEntity
+  private enhanceWithRelations(
+    entity: Entity,
+    params: RelationalParams
+  ): EnhancedEntity;
 }
 ```
 
@@ -125,10 +136,13 @@ export interface EntityWithRelations {
 Define how entities relate to each other:
 
 ```typescript
-export const entityRelationships: RelationshipConfig<Entity, {
-  customer: CustomerWithRelations;
-  contacts: ContactWithRelations[];
-}> = {
+export const entityRelationships: RelationshipConfig<
+  Entity,
+  {
+    customer: CustomerWithRelations;
+    contacts: ContactWithRelations[];
+  }
+> = {
   relationships: {
     customer: {
       type: 'belongsTo',
@@ -194,9 +208,10 @@ const {
   error: hasError,
   refresh: refreshEntity,
 } = useApiItem(
-  () => api.entities.getById(entityId.value, {
-    include: ['customer', 'contacts', 'assignedUsers']
-  }),
+  () =>
+    api.entities.getById(entityId.value, {
+      include: ['customer', 'contacts', 'assignedUsers'],
+    }),
   {
     cacheKey: `entity-with-relations-${entityId.value}`,
   }
@@ -214,21 +229,18 @@ For complex views requiring multiple separate API calls:
 
 ```typescript
 // Primary entity
-const {
-  data: primaryEntity,
-  loading: primaryLoading,
-} = useApiItem(() => api.entities.getById(entityId.value));
+const { data: primaryEntity, loading: primaryLoading } = useApiItem(() =>
+  api.entities.getById(entityId.value)
+);
 
 // Related entities (dependent on primary)
-const {
-  data: relatedEntities,
-  loading: relatedLoading,
-} = useApiList(
-  () => primaryEntity.value?.customerId
-    ? api.customers.getById(primaryEntity.value.customerId.toString(), {
-        include: ['contacts']
-      })
-    : null,
+const { data: relatedEntities, loading: relatedLoading } = useApiList(
+  () =>
+    primaryEntity.value?.customerId
+      ? api.customers.getById(primaryEntity.value.customerId.toString(), {
+          include: ['contacts'],
+        })
+      : null,
   {
     cacheKey: `customer-${primaryEntity.value?.customerId}-with-contacts`,
     enabled: computed(() => !!primaryEntity.value?.customerId),
@@ -259,6 +271,7 @@ const progress = computed(() => {
 ### Phase 1: Analysis and Planning
 
 **Checklist:**
+
 - [ ] Identify all entities involved in the view
 - [ ] Map relationships between entities
 - [ ] Determine which relationships need eager/lazy loading
@@ -268,6 +281,7 @@ const progress = computed(() => {
 ### Phase 2: Type Definitions
 
 **Checklist:**
+
 - [ ] Define base entity interfaces in `src/types/index.ts`
 - [ ] Create enhanced types with relationships in `src/types/enhanced.ts`
 - [ ] Add relationship-specific types in `src/types/relationships.ts`
@@ -276,6 +290,7 @@ const progress = computed(() => {
 ### Phase 3: Mock Data Enhancement
 
 **Checklist:**
+
 - [ ] Verify JSON data files exist in `src/assets/data/`
 - [ ] Implement relationship resolution in MockDataService
 - [ ] Add support for `include` parameters
@@ -283,6 +298,7 @@ const progress = computed(() => {
 - [ ] Test relationship resolution logic
 
 **Mock Service Implementation Pattern:**
+
 ```typescript
 async getEntity(id: string, params?: RelationalParams): Promise<ApiResponse<any | null>> {
   const entity = entityData.find(e => e.id === parseInt(id));
@@ -311,12 +327,14 @@ async getEntity(id: string, params?: RelationalParams): Promise<ApiResponse<any 
 ### Phase 4: API Service Integration
 
 **Checklist:**
+
 - [ ] Add entity endpoints to `src/api/index.ts`
 - [ ] Implement both mock and real API branches
 - [ ] Add proper TypeScript return types
 - [ ] Test API service methods
 
 **API Service Pattern:**
+
 ```typescript
 entityName: {
   getAll: (params?: RelationalParams) =>
@@ -334,6 +352,7 @@ entityName: {
 ### Phase 5: View Component Implementation
 
 **Checklist:**
+
 - [ ] Import required composables (`useApiItem`, `useApiList`)
 - [ ] Set up data fetching with proper relationships
 - [ ] Implement loading and error states
@@ -342,6 +361,7 @@ entityName: {
 - [ ] Test component with mock data
 
 **Component Implementation Pattern:**
+
 ```typescript
 // Get entity ID from route
 const entityId = computed(() => route.params['id'] as string);
@@ -353,9 +373,10 @@ const {
   error: hasError,
   refresh: refreshEntity,
 } = useApiItem(
-  () => api.entities.getById(entityId.value, {
-    include: ['customer', 'contacts', 'tasks']
-  }),
+  () =>
+    api.entities.getById(entityId.value, {
+      include: ['customer', 'contacts', 'tasks'],
+    }),
   {
     cacheKey: `entity-with-relations-${entityId.value}`,
   }
@@ -376,6 +397,7 @@ const totalHours = computed(() => {
 ### Phase 6: Testing and Validation
 
 **Checklist:**
+
 - [ ] Test all relationship loading scenarios
 - [ ] Verify caching behavior
 - [ ] Test error handling
@@ -388,11 +410,13 @@ const totalHours = computed(() => {
 ### Data Fetching
 
 1. **Use Appropriate Composables**
+
    - `useApiList()` for collections
    - `useApiItem()` for single entities
    - `useApiMutation()` for create/update/delete operations
 
 2. **Implement Proper Caching**
+
    ```typescript
    {
      cacheKey: `entity-${entityId.value}`,
@@ -410,10 +434,12 @@ const totalHours = computed(() => {
 ### Relationship Management
 
 1. **Use Eager Loading Sparingly**
+
    - Only for critical relationships needed immediately
    - Prefer lazy loading for optional data
 
 2. **Implement Computed Fields in Mock Service**
+
    ```typescript
    // Compute ActualHours from related tasks
    enhanced.ActualHours = tasks.reduce((total, task) => total + task.Hours, 0);
@@ -427,9 +453,10 @@ const totalHours = computed(() => {
 ### Error Handling
 
 1. **Combine Error States**
+
    ```typescript
-   const hasError = computed(() =>
-     entityError.value !== null || relatedError.value !== null
+   const hasError = computed(
+     () => entityError.value !== null || relatedError.value !== null
    );
    ```
 
@@ -445,6 +472,7 @@ const totalHours = computed(() => {
 ### Performance Optimization
 
 1. **Use Computed Properties for Derived Data**
+
    ```typescript
    const statistics = computed(() => ({
      total: items.value.length,
@@ -454,7 +482,7 @@ const totalHours = computed(() => {
 
 2. **Implement Proper Cache Keys**
    ```typescript
-   cacheKey: `entity-${entityId.value}-with-${params.include?.join('-')}`
+   cacheKey: `entity-${entityId.value}-with-${params.include?.join('-')}`;
    ```
 
 ## Troubleshooting
@@ -462,16 +490,19 @@ const totalHours = computed(() => {
 ### Common Issues
 
 1. **Relationships Not Loading**
+
    - Check `include` parameter is correctly specified
    - Verify relationship exists in mock data
    - Ensure foreign keys match between entities
 
 2. **Caching Issues**
+
    - Use unique cache keys for different parameter combinations
    - Call `refresh()` to clear cache when needed
    - Check cache duration settings
 
 3. **Type Errors**
+
    - Ensure enhanced types include optional relationship properties
    - Use proper null checks for optional relationships
    - Verify RelationalParams interface matches usage
@@ -484,11 +515,13 @@ const totalHours = computed(() => {
 ### Debugging Tips
 
 1. **Log API Responses**
+
    ```typescript
-   onSuccess: (data) => console.log('API Response:', data)
+   onSuccess: data => console.log('API Response:', data);
    ```
 
 2. **Check Network Tab**
+
    - Verify API calls are being made
    - Check response structure matches expected types
 
@@ -501,8 +534,11 @@ const totalHours = computed(() => {
 
 Refer to these existing implementations as examples:
 
-- **ActivityDetail.vue**: Simple relationship loading with types and participants
-- **WorkOrderDetail.vue**: Complex relationships with customers, contacts, tasks, and employees
+- **ActivityDetail.vue**: Simple relationship loading with types and
+  participants
+- **WorkOrderDetail.vue**: Complex relationships with customers, contacts,
+  tasks, and employees
 - **UserDetail.vue**: Handling current user context and permissions
 
-These examples demonstrate the patterns and best practices outlined in this document.
+These examples demonstrate the patterns and best practices outlined in this
+document.

@@ -2,22 +2,32 @@
 
 ## Overview
 
-This document provides a standardized approach for implementing API entities with proper type definitions, relationship management, and backend preparation. This guide ensures consistency across all entity implementations while maintaining current functionality and preparing for smooth backend transitions.
+This document provides a standardized approach for implementing API entities
+with proper type definitions, relationship management, and backend preparation.
+This guide ensures consistency across all entity implementations while
+maintaining current functionality and preparing for smooth backend transitions.
 
 ## Core Principles
 
-1. **Type-JSON Alignment**: TypeScript interfaces must exactly match JSON data structure
-2. **Relationship Consistency**: All entity relationships follow the same patterns and conventions
-3. **Mock-to-Backend Transition**: Mock implementations provide clear specifications for backend development
-4. **Functionality Preservation**: All improvements maintain existing user functionality
-5. **Documentation Clarity**: Clear specifications enable easy debugging and backend implementation
-6. **Service Architecture**: Consistent service layer patterns using BaseService and proper HTTP client integration
+1. **Type-JSON Alignment**: TypeScript interfaces must exactly match JSON data
+   structure
+2. **Relationship Consistency**: All entity relationships follow the same
+   patterns and conventions
+3. **Mock-to-Backend Transition**: Mock implementations provide clear
+   specifications for backend development
+4. **Functionality Preservation**: All improvements maintain existing user
+   functionality
+5. **Documentation Clarity**: Clear specifications enable easy debugging and
+   backend implementation
+6. **Service Architecture**: Consistent service layer patterns using BaseService
+   and proper HTTP client integration
 
 ## Service and Controller Architecture
 
 ### Service Layer Structure
 
-Our API architecture follows a layered approach with clear separation of concerns:
+Our API architecture follows a layered approach with clear separation of
+concerns:
 
 ```
 src/api/
@@ -44,15 +54,21 @@ export abstract class BaseService<T> {
   }
 
   // Standard CRUD operations
-  async getAll(params?: RequestParams): Promise<ApiResponse<T[]>>
-  async getById(id: string): Promise<ApiResponse<T | null>>
-  async create(data: Partial<T>): Promise<ApiResponse<T>>
-  async update(id: string, data: Partial<T>): Promise<ApiResponse<T>>
-  async delete(id: string): Promise<ApiResponse<boolean>>
+  async getAll(params?: RequestParams): Promise<ApiResponse<T[]>>;
+  async getById(id: string): Promise<ApiResponse<T | null>>;
+  async create(data: Partial<T>): Promise<ApiResponse<T>>;
+  async update(id: string, data: Partial<T>): Promise<ApiResponse<T>>;
+  async delete(id: string): Promise<ApiResponse<boolean>>;
 
   // Protected helper methods for custom endpoints
-  protected async get<TResult>(endpoint: string, params?: QueryParams): Promise<ApiResponse<TResult>>
-  protected async post<TResult>(endpoint: string, data?: unknown): Promise<ApiResponse<TResult>>
+  protected async get<TResult>(
+    endpoint: string,
+    params?: QueryParams
+  ): Promise<ApiResponse<TResult>>;
+  protected async post<TResult>(
+    endpoint: string,
+    data?: unknown
+  ): Promise<ApiResponse<TResult>>;
   // ... other HTTP methods
 }
 ```
@@ -77,7 +93,9 @@ export class CustomerService extends BaseService<Customer> {
   }
 
   // Override getAll to support relationship loading
-  async getAll(params?: RequestParams & RelationalParams): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> {
+  async getAll(
+    params?: RequestParams & RelationalParams
+  ): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> {
     const queryParams: QueryParams = {};
 
     // Handle relationship includes
@@ -93,26 +111,40 @@ export class CustomerService extends BaseService<Customer> {
     if (params?.order) queryParams['order'] = params.order;
     if (params?.filters) Object.assign(queryParams, params.filters);
 
-    return this.httpClient.get<Customer[] | CustomerWithRelations[]>(this.endpoint, queryParams);
+    return this.httpClient.get<Customer[] | CustomerWithRelations[]>(
+      this.endpoint,
+      queryParams
+    );
   }
 
   // Override getById to support relationship loading
-  async getById(id: string, params?: RelationalParams): Promise<ApiResponse<Customer | CustomerWithRelations | null>> {
+  async getById(
+    id: string,
+    params?: RelationalParams
+  ): Promise<ApiResponse<Customer | CustomerWithRelations | null>> {
     const queryParams: QueryParams = {};
 
     if (params?.include && params.include.length > 0) {
       queryParams['include'] = params.include.join(',');
     }
 
-    return this.httpClient.get<Customer | CustomerWithRelations | null>(`${this.endpoint}/${id}`, queryParams);
+    return this.httpClient.get<Customer | CustomerWithRelations | null>(
+      `${this.endpoint}/${id}`,
+      queryParams
+    );
   }
 
   // Use inherited create, update, delete methods or override if needed
-  async create(data: Omit<Customer, 'CustomerID' | 'CreatedDate'>): Promise<ApiResponse<Customer>> {
+  async create(
+    data: Omit<Customer, 'CustomerID' | 'CreatedDate'>
+  ): Promise<ApiResponse<Customer>> {
     return this.httpClient.post<Customer>(this.endpoint, data);
   }
 
-  async update(id: string, data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>): Promise<ApiResponse<Customer>> {
+  async update(
+    id: string,
+    data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>
+  ): Promise<ApiResponse<Customer>> {
     return this.httpClient.put<Customer>(`${this.endpoint}/${id}`, data);
   }
 
@@ -135,8 +167,8 @@ import {
   AttendanceService,
   AuthService,
   ParticipantService,
-  CustomerService,    // Add new services here
-  ContactService,     // Add new services here
+  CustomerService, // Add new services here
+  ContactService, // Add new services here
 } from '../services';
 
 export class ApiConfiguration {
@@ -148,12 +180,13 @@ export class ApiConfiguration {
   public readonly attendances: AttendanceService;
   public readonly participants: ParticipantService;
   public readonly auth: AuthService;
-  public readonly customers: CustomerService;     // Add new services here
-  public readonly contacts: ContactService;       // Add new services here
+  public readonly customers: CustomerService; // Add new services here
+  public readonly contacts: ContactService; // Add new services here
 
   constructor(baseURL?: string) {
     this.httpClient = new HttpClient({
-      baseURL: baseURL ?? (import.meta.env['VITE_API_BASE_URL'] as string) ?? '/api',
+      baseURL:
+        baseURL ?? (import.meta.env['VITE_API_BASE_URL'] as string) ?? '/api',
     });
 
     // Initialize all services with shared HTTP client
@@ -162,8 +195,8 @@ export class ApiConfiguration {
     this.attendances = new AttendanceService(this.httpClient);
     this.participants = new ParticipantService(this.httpClient);
     this.auth = new AuthService(this.httpClient);
-    this.customers = new CustomerService(this.httpClient);    // Add new services here
-    this.contacts = new ContactService(this.httpClient);      // Add new services here
+    this.customers = new CustomerService(this.httpClient); // Add new services here
+    this.contacts = new ContactService(this.httpClient); // Add new services here
   }
 
   // Configuration methods
@@ -200,41 +233,55 @@ export { ActivityTypeService } from '@/api/services/activity-type.service';
 export { AttendanceService } from '@/api/services/attendance.service';
 export { ParticipantService } from '@/api/services/participant.service';
 export { AuthService } from '@/api/services/auth.service';
-export { CustomerService } from '@/api/services/customer.service';    // Add new services here
-export { ContactService } from '@/api/services/contact.service';      // Add new services here
+export { CustomerService } from '@/api/services/customer.service'; // Add new services here
+export { ContactService } from '@/api/services/contact.service'; // Add new services here
 ```
 
 ### Main API Controller Pattern
 
-The main API controller (`src/api/index.ts`) provides environment-based switching between mock and real APIs:
+The main API controller (`src/api/index.ts`) provides environment-based
+switching between mock and real APIs:
 
 ```typescript
 // Environment-based API service selection
-const USE_MOCK_API = import.meta.env['VITE_USE_MOCK_API'] === 'true' || import.meta.env.DEV;
+const USE_MOCK_API =
+  import.meta.env['VITE_USE_MOCK_API'] === 'true' || import.meta.env.DEV;
 
 // Create the main API service instance
-const apiService = USE_MOCK_API ? new MockDataService() : new ApiConfiguration();
+const apiService = USE_MOCK_API
+  ? new MockDataService()
+  : new ApiConfiguration();
 
 // Clean, domain-focused API interface
 export const api = {
   customers: {
     // Specify exact return types for each method
-    getAll: (params?: RequestParams & RelationalParams): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> =>
+    getAll: (
+      params?: RequestParams & RelationalParams
+    ): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).getCustomers(params)
         : (apiService as ApiConfiguration).customers.getAll(params),
 
-    getById: (id: string, params?: RelationalParams): Promise<ApiResponse<Customer | CustomerWithRelations | null>> =>
+    getById: (
+      id: string,
+      params?: RelationalParams
+    ): Promise<ApiResponse<Customer | CustomerWithRelations | null>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).getCustomer(id, params)
         : (apiService as ApiConfiguration).customers.getById(id, params),
 
-    create: (data: Omit<Customer, 'CustomerID' | 'CreatedDate'>): Promise<ApiResponse<Customer>> =>
+    create: (
+      data: Omit<Customer, 'CustomerID' | 'CreatedDate'>
+    ): Promise<ApiResponse<Customer>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).createCustomer(data)
         : (apiService as ApiConfiguration).customers.create(data),
 
-    update: (id: string, data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>): Promise<ApiResponse<Customer>> =>
+    update: (
+      id: string,
+      data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>
+    ): Promise<ApiResponse<Customer>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).updateCustomer(id, data)
         : (apiService as ApiConfiguration).customers.update(id, data),
@@ -296,12 +343,18 @@ Each service should include comprehensive backend documentation:
 
 ### Typical Issues Found
 
-- **Type Misalignment**: TypeScript interfaces use different naming conventions than JSON data
-- **Missing Relationship Types**: Enhanced types with relationships are incomplete or missing
-- **Generic Return Types**: Mock services return `any[]` instead of properly typed responses
-- **Unclear Backend Requirements**: Real API implementation lacks clear specifications
-- **Service Architecture Inconsistency**: Services don't follow standardized patterns
-- **Missing Controller Integration**: Services not properly integrated into main API controller
+- **Type Misalignment**: TypeScript interfaces use different naming conventions
+  than JSON data
+- **Missing Relationship Types**: Enhanced types with relationships are
+  incomplete or missing
+- **Generic Return Types**: Mock services return `any[]` instead of properly
+  typed responses
+- **Unclear Backend Requirements**: Real API implementation lacks clear
+  specifications
+- **Service Architecture Inconsistency**: Services don't follow standardized
+  patterns
+- **Missing Controller Integration**: Services not properly integrated into main
+  API controller
 
 ## Standardization Process
 
@@ -309,7 +362,8 @@ Each service should include comprehensive backend documentation:
 
 ### Objective
 
-Ensure TypeScript interfaces exactly match the JSON data structure for all entities.
+Ensure TypeScript interfaces exactly match the JSON data structure for all
+entities.
 
 ### Core Entity Type Definition
 
@@ -334,26 +388,27 @@ Update `src/types/index.ts` to match JSON exactly:
 
 ```typescript
 export interface Customer {
-  CustomerID: number;           // Matches JSON: "CustomerID"
-  CustomerNumber: string;       // Matches JSON: "CustomerNumber"
-  CompanyName: string;          // Matches JSON: "CompanyName"
-  OrganizationNumber: string;   // Required field
-  Phone: string;                // Required field
-  Email: string;                // Required field
-  Address: string;              // Required field
-  PostalCode: string;           // Required field
-  City: string;                 // Required field
-  Country: string;              // Required field
-  InvoiceAddress: {             // Nested object structure
+  CustomerID: number; // Matches JSON: "CustomerID"
+  CustomerNumber: string; // Matches JSON: "CustomerNumber"
+  CompanyName: string; // Matches JSON: "CompanyName"
+  OrganizationNumber: string; // Required field
+  Phone: string; // Required field
+  Email: string; // Required field
+  Address: string; // Required field
+  PostalCode: string; // Required field
+  City: string; // Required field
+  Country: string; // Required field
+  InvoiceAddress: {
+    // Nested object structure
     Address: string;
     PostalCode: string;
     City: string;
   };
-  PaymentTerms: number;         // Required field
-  VATNumber: string;            // Required field
+  PaymentTerms: number; // Required field
+  VATNumber: string; // Required field
   Status: 'active' | 'inactive'; // Enum type for validation
-  CreatedDate: string;          // Required field
-  Notes: string;                // Required field
+  CreatedDate: string; // Required field
+  Notes: string; // Required field
 }
 ```
 
@@ -428,19 +483,19 @@ export const customerRelationships: RelationshipConfig<
   relationships: {
     contacts: {
       type: 'hasMany',
-      foreignKey: 'CustomerID',        // Field in contacts table
-      targetEntity: 'contacts',        // Target data source
-      targetKey: 'CustomerID',         // Matching field in target
+      foreignKey: 'CustomerID', // Field in contacts table
+      targetEntity: 'contacts', // Target data source
+      targetKey: 'CustomerID', // Matching field in target
       cache: true,
-      eager: true,                     // Load by default
+      eager: true, // Load by default
     },
     workOrders: {
       type: 'hasMany',
       foreignKey: 'CustomerID',
       targetEntity: 'workOrders',
       targetKey: 'CustomerID',
-      cache: false,                    // Don't cache (changes frequently)
-      eager: false,                    // Load only when requested
+      cache: false, // Don't cache (changes frequently)
+      eager: false, // Load only when requested
     },
   },
 };
@@ -452,11 +507,13 @@ export const customerRelationships: RelationshipConfig<
 
 ### Objective
 
-Update mock services to return properly typed data and handle relationships correctly.
+Update mock services to return properly typed data and handle relationships
+correctly.
 
 #### Step 2.1: Update Method Signatures
 
-Replace generic types with specific entity types in `src/api/mocks/mock-data.service.ts`:
+Replace generic types with specific entity types in
+`src/api/mocks/mock-data.service.ts`:
 
 ```typescript
 // Before: Generic and unclear
@@ -584,7 +641,8 @@ private addComputedFields(entity: CustomerWithRelations): CustomerWithRelations 
 
 ### Objective
 
-Create real HTTP-based services that extend BaseService and integrate with the ApiConfiguration.
+Create real HTTP-based services that extend BaseService and integrate with the
+ApiConfiguration.
 
 #### Step 3.1: Create Individual Service Class
 
@@ -605,7 +663,9 @@ export class CustomerService extends BaseService<Customer> {
     super(httpClient, '/customers');
   }
 
-  async getAll(params?: RequestParams & RelationalParams): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> {
+  async getAll(
+    params?: RequestParams & RelationalParams
+  ): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> {
     const queryParams: QueryParams = {};
 
     if (params?.include && params.include.length > 0) {
@@ -619,24 +679,38 @@ export class CustomerService extends BaseService<Customer> {
     if (params?.order) queryParams['order'] = params.order;
     if (params?.filters) Object.assign(queryParams, params.filters);
 
-    return this.httpClient.get<Customer[] | CustomerWithRelations[]>(this.endpoint, queryParams);
+    return this.httpClient.get<Customer[] | CustomerWithRelations[]>(
+      this.endpoint,
+      queryParams
+    );
   }
 
-  async getById(id: string, params?: RelationalParams): Promise<ApiResponse<Customer | CustomerWithRelations | null>> {
+  async getById(
+    id: string,
+    params?: RelationalParams
+  ): Promise<ApiResponse<Customer | CustomerWithRelations | null>> {
     const queryParams: QueryParams = {};
 
     if (params?.include && params.include.length > 0) {
       queryParams['include'] = params.include.join(',');
     }
 
-    return this.httpClient.get<Customer | CustomerWithRelations | null>(`${this.endpoint}/${id}`, queryParams);
+    return this.httpClient.get<Customer | CustomerWithRelations | null>(
+      `${this.endpoint}/${id}`,
+      queryParams
+    );
   }
 
-  async create(data: Omit<Customer, 'CustomerID' | 'CreatedDate'>): Promise<ApiResponse<Customer>> {
+  async create(
+    data: Omit<Customer, 'CustomerID' | 'CreatedDate'>
+  ): Promise<ApiResponse<Customer>> {
     return this.httpClient.post<Customer>(this.endpoint, data);
   }
 
-  async update(id: string, data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>): Promise<ApiResponse<Customer>> {
+  async update(
+    id: string,
+    data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>
+  ): Promise<ApiResponse<Customer>> {
     return this.httpClient.put<Customer>(`${this.endpoint}/${id}`, data);
   }
 
@@ -682,12 +756,17 @@ Update `src/api/index.ts` to use the real service:
 ```typescript
 export const api = {
   customers: {
-    getAll: (params?: RequestParams & RelationalParams): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> =>
+    getAll: (
+      params?: RequestParams & RelationalParams
+    ): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).getCustomers(params)
         : (apiService as ApiConfiguration).customers.getAll(params),
 
-    getById: (id: string, params?: RelationalParams): Promise<ApiResponse<Customer | CustomerWithRelations | null>> =>
+    getById: (
+      id: string,
+      params?: RelationalParams
+    ): Promise<ApiResponse<Customer | CustomerWithRelations | null>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).getCustomer(id, params)
         : (apiService as ApiConfiguration).customers.getById(id, params),
@@ -703,7 +782,8 @@ export const api = {
 
 ### Objective
 
-Update the main API service to use proper types and prepare for backend transition.
+Update the main API service to use proper types and prepare for backend
+transition.
 
 #### Step 4.1: Update API Service Types
 
@@ -712,28 +792,41 @@ In `src/api/index.ts`, replace generic types with specific entity types:
 ```typescript
 // Import proper types
 import type { Customer, Contact } from '@/types';
-import type { CustomerWithRelations, ContactWithRelations } from '@/types/relationships';
+import type {
+  CustomerWithRelations,
+  ContactWithRelations,
+} from '@/types/relationships';
 import type { RelationalParams } from '@/types/enhanced';
 
 export const api = {
   customers: {
     // Specify exact return types for each method
-    getAll: (params?: RequestParams & RelationalParams): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> =>
+    getAll: (
+      params?: RequestParams & RelationalParams
+    ): Promise<ApiResponse<Customer[] | CustomerWithRelations[]>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).getCustomers(params)
         : (apiService as ApiConfiguration).customers.getAll(params),
 
-    getById: (id: string, params?: RelationalParams): Promise<ApiResponse<Customer | CustomerWithRelations | null>> =>
+    getById: (
+      id: string,
+      params?: RelationalParams
+    ): Promise<ApiResponse<Customer | CustomerWithRelations | null>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).getCustomer(id, params)
         : (apiService as ApiConfiguration).customers.getById(id, params),
 
-    create: (data: Omit<Customer, 'CustomerID' | 'CreatedDate'>): Promise<ApiResponse<Customer>> =>
+    create: (
+      data: Omit<Customer, 'CustomerID' | 'CreatedDate'>
+    ): Promise<ApiResponse<Customer>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).createCustomer(data)
         : (apiService as ApiConfiguration).customers.create(data),
 
-    update: (id: string, data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>): Promise<ApiResponse<Customer>> =>
+    update: (
+      id: string,
+      data: Partial<Omit<Customer, 'CustomerID' | 'CreatedDate'>>
+    ): Promise<ApiResponse<Customer>> =>
       USE_MOCK_API
         ? (apiService as MockDataService).updateCustomer(id, data)
         : (apiService as ApiConfiguration).customers.update(id, data),
@@ -787,7 +880,8 @@ For each entity, clearly document what the real backend needs to implement:
 
 ### Objective
 
-Update view components to use the new typed APIs while maintaining all existing functionality.
+Update view components to use the new typed APIs while maintaining all existing
+functionality.
 
 #### Step 5.1: Update API Calls with Proper Types
 
@@ -799,7 +893,9 @@ const {
   data: customers,
   loading: customersLoading,
   error: customersError,
-} = useApiList(() => api.customers.getAll({ include: ['contacts', 'workOrders'] }));
+} = useApiList(() =>
+  api.customers.getAll({ include: ['contacts', 'workOrders'] })
+);
 
 // After: Properly typed
 const {
@@ -816,8 +912,8 @@ const {
 // Use computed properties to access typed data safely
 const customerList = computed(() => customers.value || []);
 const totalCustomers = computed(() => customerList.value.length);
-const activeCustomers = computed(() =>
-  customerList.value.filter(c => c.Status === 'active').length
+const activeCustomers = computed(
+  () => customerList.value.filter(c => c.Status === 'active').length
 );
 ```
 
@@ -830,8 +926,10 @@ Use the computed fields provided by the enhanced types:
 const getPrimaryContactName = (customer: CustomerWithRelations): string => {
   // Use the computed field from the enhanced type
   if (customer.primaryContact) {
-    return customer.primaryContact.fullName ||
-           `${customer.primaryContact.FirstName} ${customer.primaryContact.LastName}`;
+    return (
+      customer.primaryContact.fullName ||
+      `${customer.primaryContact.FirstName} ${customer.primaryContact.LastName}`
+    );
   }
 
   // Fallback to manual search if computed field not available
@@ -856,19 +954,22 @@ const getContactCount = (customer: CustomerWithRelations): number => {
 
 ### Objective
 
-Create comprehensive documentation for backend developers to implement the real API.
+Create comprehensive documentation for backend developers to implement the real
+API.
 
 #### Step 6.1: Create Backend API Specification
 
 Create `docs/BackendAPISpecification.md` with detailed requirements:
 
-```markdown
+````markdown
 # Backend API Specification
 
 ## Customer Management Endpoints
 
 ### Data Model
+
 The Customer entity must match this exact structure:
+
 ```json
 {
   "CustomerID": 1,
@@ -893,6 +994,7 @@ The Customer entity must match this exact structure:
   "Notes": "Stor kund med regelbundna uppdrag"
 }
 ```
+````
 
 ### Required Fields Validation
 
@@ -930,7 +1032,7 @@ All endpoints must return consistent error format:
 }
 ```
 
-```
+````
 
 #### Step 6.2: Add Comprehensive Service Documentation
 Include detailed backend specifications in each service file as comments.
@@ -992,7 +1094,7 @@ Include detailed backend specifications in each service file as comments.
 ```bash
 # Create new service file
 touch src/api/services/[entity].service.ts
-```
+````
 
 ### 2. Implement Service
 
@@ -1051,7 +1153,10 @@ touch src/api/services/[entity].service.ts
 4. **Backend Transition**: Clear specifications for backend developers
 5. **Consistency**: Standardized patterns across all entities
 6. **Maintainability**: Easier to modify and extend functionality
-7. **Service Architecture**: Clean separation of concerns with BaseService pattern
+7. **Service Architecture**: Clean separation of concerns with BaseService
+   pattern
 8. **Environment Flexibility**: Seamless switching between mock and real APIs
 
-This standardization process ensures that all entity implementations follow consistent patterns while maintaining existing functionality and preparing for smooth backend transitions.
+This standardization process ensures that all entity implementations follow
+consistent patterns while maintaining existing functionality and preparing for
+smooth backend transitions.

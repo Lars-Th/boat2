@@ -1,6 +1,8 @@
 # API Architecture & Relational Data Management
 
-This document provides a comprehensive overview of how the API layer handles both mock and real API implementations, with special focus on relational data management and dictionary building computations.
+This document provides a comprehensive overview of how the API layer handles
+both mock and real API implementations, with special focus on relational data
+management and dictionary building computations.
 
 ## 📋 Table of Contents
 
@@ -16,16 +18,22 @@ This document provides a comprehensive overview of how the API layer handles bot
 
 ## Overview
 
-The API layer is designed with a dual-mode architecture that seamlessly switches between mock data (for development) and real API endpoints (for production). The system is built to handle complex relational data structures and provides efficient methods for building dictionaries and performing computations across related entities.
+The API layer is designed with a dual-mode architecture that seamlessly switches
+between mock data (for development) and real API endpoints (for production). The
+system is built to handle complex relational data structures and provides
+efficient methods for building dictionaries and performing computations across
+related entities.
 
 ## Dual API Architecture
 
 ### Environment-Based Switching
 
-The API automatically determines which implementation to use based on environment variables:
+The API automatically determines which implementation to use based on
+environment variables:
 
 ```typescript
-const USE_MOCK_API = import.meta.env['VITE_USE_MOCK_API'] === 'true' || import.meta.env.DEV;
+const USE_MOCK_API =
+  import.meta.env['VITE_USE_MOCK_API'] === 'true' || import.meta.env.DEV;
 ```
 
 ### Implementation Pattern
@@ -38,14 +46,17 @@ export const api = {
         ? (apiService as MockDataService).getActivities()
         : (apiService as ApiConfiguration).activities.getAll(params),
     // ... other methods
-  }
+  },
 };
 ```
 
 This pattern ensures:
+
 - **Consistent Interface**: Same API surface regardless of implementation
-- **Feature Parity**: Mock supports core operations, real API supports advanced features
-- **Graceful Degradation**: Mock methods that aren't implemented return meaningful errors
+- **Feature Parity**: Mock supports core operations, real API supports advanced
+  features
+- **Graceful Degradation**: Mock methods that aren't implemented return
+  meaningful errors
 
 ## Relational Data Structure
 
@@ -59,7 +70,7 @@ erDiagram
     PARTICIPANT }o--o{ PARTICIPANT_GROUP : belongs_to
     ATTENDANCE }o--|| ACTIVITY : for_activity
     ATTENDANCE }o--|| PARTICIPANT : by_participant
-    
+
     ACTIVITY {
         int ActivityID PK
         string Namn
@@ -68,7 +79,7 @@ erDiagram
         datetime DatumTid
         int ActivityTypeID FK
     }
-    
+
     PARTICIPANT {
         int ParticipantID PK
         string Fornamn
@@ -78,7 +89,7 @@ erDiagram
         array Enheter
         object Kartkoordinater
     }
-    
+
     ATTENDANCE {
         int AttendanceID PK
         int ActivityID FK
@@ -87,7 +98,7 @@ erDiagram
         boolean Närvaro
         string Anteckningar
     }
-    
+
     ACTIVITY_TYPE {
         int ActivityTypeID PK
         string Typnamn
@@ -99,6 +110,7 @@ erDiagram
 ### Data Examples
 
 **Activity Structure:**
+
 ```json
 {
   "ActivityID": 1,
@@ -111,6 +123,7 @@ erDiagram
 ```
 
 **Attendance Structure (Linking Activities & Participants):**
+
 ```json
 {
   "AttendanceID": 1,
@@ -126,22 +139,23 @@ erDiagram
 
 ### 1. Activity-Participant Relations
 
-The mock service provides methods to build dictionaries and perform computations across relations:
+The mock service provides methods to build dictionaries and perform computations
+across relations:
 
 ```typescript
 // Get participants for a specific activity
 async getParticipantsByActivityId(activityId: string): Promise<ApiResponse<Participant[]>> {
   // 1. Find all attendances for the activity
   const activityAttendances = attendancesData.filter(a => a.ActivityID.toString() === activityId);
-  
+
   // 2. Extract unique participant IDs
   const participantIds = [...new Set(activityAttendances.map(a => a.ParticipantID))];
-  
+
   // 3. Build participant dictionary/lookup
-  const participants = participantsData.filter(p => 
+  const participants = participantsData.filter(p =>
     participantIds.includes(p.ParticipantID)
   );
-  
+
   return this.mockRequest(participants as Participant[]);
 }
 ```
@@ -149,10 +163,11 @@ async getParticipantsByActivityId(activityId: string): Promise<ApiResponse<Parti
 ### 2. Attendance Computations
 
 **Mock Implementation:**
+
 ```typescript
 // Build attendance records by activity
 async getAttendancesByActivityId(activityId: string): Promise<ApiResponse<Attendance[]>> {
-  const activityAttendances = attendancesData.filter(a => 
+  const activityAttendances = attendancesData.filter(a =>
     a.ActivityID.toString() === activityId
   );
   return this.mockRequest(activityAttendances as Attendance[]);
@@ -160,6 +175,7 @@ async getAttendancesByActivityId(activityId: string): Promise<ApiResponse<Attend
 ```
 
 **Real API Implementation:**
+
 ```typescript
 // AttendanceService provides advanced computations
 async getStatistics(activityId?: string): Promise<ApiResponse<{
@@ -182,13 +198,13 @@ Example of building comprehensive dictionaries across entities:
 async buildActivityDictionary() {
   const activities = await api.activities.getAll();
   const activityTypes = await api.activityTypes.getAll();
-  
+
   // Create lookup dictionary for activity types
   const typeDict = activityTypes.data.reduce((dict, type) => {
     dict[type.ActivityTypeID] = type;
     return dict;
   }, {} as Record<number, ActivityType>);
-  
+
   // Enrich activities with type information
   const enrichedActivities = activities.data.map(activity => ({
     ...activity,
@@ -197,7 +213,7 @@ async buildActivityDictionary() {
     displayName: `${activity.Namn} (${typeDict[activity.ActivityTypeID]?.Typnamn})`,
     dateFormatted: new Date(activity.DatumTid).toLocaleDateString('sv-SE')
   }));
-  
+
   return enrichedActivities;
 }
 ```
@@ -207,6 +223,7 @@ async buildActivityDictionary() {
 ### Mock Data Service Features
 
 **Strengths:**
+
 - ✅ Fast development iteration
 - ✅ Realistic data relationships
 - ✅ Network delay simulation
@@ -216,24 +233,26 @@ async buildActivityDictionary() {
 - ✅ Memory-based data (resets on reload)
 
 **Limitations:**
+
 - ❌ Limited advanced filtering
 
 **Mock Implementation Pattern:**
+
 ```typescript
 async getParticipantsByActivityId(activityId: string): Promise<ApiResponse<Participant[]>> {
   // Step 1: Find attendance records
-  const activityAttendances = attendancesData.filter(a => 
+  const activityAttendances = attendancesData.filter(a =>
     a.ActivityID.toString() === activityId
   );
-  
+
   // Step 2: Build participant ID set
   const participantIds = [...new Set(activityAttendances.map(a => a.ParticipantID))];
-  
+
   // Step 3: Fetch participants using dictionary lookup
-  const participants = participantsData.filter(p => 
+  const participants = participantsData.filter(p =>
     participantIds.includes(p.ParticipantID)
   );
-  
+
   return this.mockRequest(participants as Participant[]);
 }
 ```
@@ -241,6 +260,7 @@ async getParticipantsByActivityId(activityId: string): Promise<ApiResponse<Parti
 ### Real API Service Features
 
 **Strengths:**
+
 - ✅ Server-side filtering and sorting
 - ✅ Advanced queries and aggregations
 - ✅ Real-time data updates
@@ -249,6 +269,7 @@ async getParticipantsByActivityId(activityId: string): Promise<ApiResponse<Parti
 - ✅ Advanced statistics and computations
 
 **Real API Implementation Pattern:**
+
 ```typescript
 async getByActivityId(activityId: string): Promise<ApiResponse<Attendance[]>> {
   // Delegate to server with optimized query
@@ -276,10 +297,12 @@ async bulkMarkAttendance(
 ### Primary Relations
 
 1. **Activity ↔ Attendance ↔ Participant**
+
    - Many-to-many relationship through attendance records
    - Enables tracking who attended which activities
 
 2. **Activity ↔ ActivityType**
+
    - One-to-many relationship
    - Categorizes activities by type/purpose
 
@@ -290,20 +313,24 @@ async bulkMarkAttendance(
 ### Relationship Handling Patterns
 
 **1. Foreign Key Resolution:**
+
 ```typescript
 // Mock: Manual FK resolution
 const activity = activitiesData.find(a => a.ActivityID.toString() === id);
-const activityType = activityTypesData.find(at => at.ActivityTypeID === activity.ActivityTypeID);
+const activityType = activityTypesData.find(
+  at => at.ActivityTypeID === activity.ActivityTypeID
+);
 
 // Real API: Server-side joins
 return this.get<Activity>(`${this.endpoint}/${id}?include=activityType`);
 ```
 
 **2. Cross-Entity Queries:**
+
 ```typescript
 // Mock: Multi-step filtering
 const getParticipantActivities = (participantId: string) => {
-  const userAttendances = attendancesData.filter(a => 
+  const userAttendances = attendancesData.filter(a =>
     a.ParticipantID.toString() === participantId
   );
   const activityIds = userAttendances.map(a => a.ActivityID);
@@ -328,15 +355,15 @@ abstract class BaseService<T> {
   protected endpoint: string;
 
   // Standard CRUD operations
-  async getAll(params?: RequestParams): Promise<ApiResponse<T[]>>
-  async getById(id: string): Promise<ApiResponse<T | null>>
-  async create(data: Partial<T>): Promise<ApiResponse<T>>
-  async update(id: string, data: Partial<T>): Promise<ApiResponse<T>>
-  async delete(id: string): Promise<ApiResponse<boolean>>
-  
+  async getAll(params?: RequestParams): Promise<ApiResponse<T[]>>;
+  async getById(id: string): Promise<ApiResponse<T | null>>;
+  async create(data: Partial<T>): Promise<ApiResponse<T>>;
+  async update(id: string, data: Partial<T>): Promise<ApiResponse<T>>;
+  async delete(id: string): Promise<ApiResponse<boolean>>;
+
   // Protected helpers for custom endpoints
-  protected async get<TResult>(endpoint: string, params?: QueryParams)
-  protected async post<TResult>(endpoint: string, data?: unknown)
+  protected async get<TResult>(endpoint: string, params?: QueryParams);
+  protected async post<TResult>(endpoint: string, data?: unknown);
   // ... other HTTP methods
 }
 ```
@@ -348,14 +375,21 @@ Services add domain-specific methods:
 ```typescript
 export class AttendanceService extends BaseService<Attendance> {
   // Relational queries
-  async getByActivityId(activityId: string): Promise<ApiResponse<Attendance[]>>
-  async getByParticipantId(participantId: string): Promise<ApiResponse<Attendance[]>>
-  
+  async getByActivityId(activityId: string): Promise<ApiResponse<Attendance[]>>;
+  async getByParticipantId(
+    participantId: string
+  ): Promise<ApiResponse<Attendance[]>>;
+
   // Bulk operations
-  async bulkMarkAttendance(activityId: string, attendances: BulkAttendanceData[])
-  
+  async bulkMarkAttendance(
+    activityId: string,
+    attendances: BulkAttendanceData[]
+  );
+
   // Computations
-  async getStatistics(activityId?: string): Promise<ApiResponse<AttendanceStats>>
+  async getStatistics(
+    activityId?: string
+  ): Promise<ApiResponse<AttendanceStats>>;
 }
 ```
 
@@ -369,32 +403,36 @@ async function buildActivityDashboard(activityId: string) {
   const [activity, attendances, activityTypes] = await Promise.all([
     api.activities.getById(activityId),
     api.attendances.getByActivityId(activityId),
-    api.activityTypes.getAll()
+    api.activityTypes.getAll(),
   ]);
-  
+
   // Build type dictionary
-  const typeDict = activityTypes.data.reduce((dict, type) => {
-    dict[type.ActivityTypeID] = type;
-    return dict;
-  }, {} as Record<number, ActivityType>);
-  
+  const typeDict = activityTypes.data.reduce(
+    (dict, type) => {
+      dict[type.ActivityTypeID] = type;
+      return dict;
+    },
+    {} as Record<number, ActivityType>
+  );
+
   // Compute attendance statistics
   const totalAttendees = attendances.data.length;
   const presentCount = attendances.data.filter(a => a.Närvaro).length;
-  const attendanceRate = totalAttendees > 0 ? (presentCount / totalAttendees) * 100 : 0;
-  
+  const attendanceRate =
+    totalAttendees > 0 ? (presentCount / totalAttendees) * 100 : 0;
+
   return {
     activity: {
       ...activity.data,
-      type: typeDict[activity.data.ActivityTypeID]
+      type: typeDict[activity.data.ActivityTypeID],
     },
     statistics: {
       totalAttendees,
       presentCount,
       absentCount: totalAttendees - presentCount,
-      attendanceRate: Math.round(attendanceRate * 100) / 100
+      attendanceRate: Math.round(attendanceRate * 100) / 100,
     },
-    attendances: attendances.data
+    attendances: attendances.data,
   };
 }
 ```
@@ -404,33 +442,38 @@ async function buildActivityDashboard(activityId: string) {
 ```typescript
 async function getParticipantHistory(participantId: string) {
   const participant = await api.participants.getById(participantId);
-  
+
   if (USE_MOCK_API) {
     // Mock: Manual relationship building
     const userAttendances = await api.attendances.getAll();
-    const participantAttendances = userAttendances.data.filter(a => 
-      a.ParticipantID.toString() === participantId
+    const participantAttendances = userAttendances.data.filter(
+      a => a.ParticipantID.toString() === participantId
     );
-    
-    const activityIds = [...new Set(participantAttendances.map(a => a.ActivityID))];
+
+    const activityIds = [
+      ...new Set(participantAttendances.map(a => a.ActivityID)),
+    ];
     const activities = await api.activities.getAll();
-    const participantActivities = activities.data.filter(a => 
+    const participantActivities = activities.data.filter(a =>
       activityIds.includes(a.ActivityID)
     );
-    
+
     return {
       participant: participant.data,
       activities: participantActivities,
       attendances: participantAttendances,
       totalActivities: participantActivities.length,
-      attendanceRate: participantAttendances.filter(a => a.Närvaro).length / participantAttendances.length * 100
+      attendanceRate:
+        (participantAttendances.filter(a => a.Närvaro).length /
+          participantAttendances.length) *
+        100,
     };
   } else {
     // Real API: Server-optimized queries
     const [attendances] = await Promise.all([
-      api.attendances.getByParticipantId(participantId)
+      api.attendances.getByParticipantId(participantId),
     ]);
-    
+
     return {
       participant: participant.data,
       attendances: attendances.data,
@@ -447,19 +490,25 @@ async function getParticipantHistory(participantId: string) {
 ```typescript
 // Normalize related data into lookup dictionaries
 class DataNormalizer {
-  static normalizeActivitiesWithTypes(activities: Activity[], types: ActivityType[]) {
-    const typeDict = types.reduce((dict, type) => {
-      dict[type.ActivityTypeID] = type;
-      return dict;
-    }, {} as Record<number, ActivityType>);
-    
+  static normalizeActivitiesWithTypes(
+    activities: Activity[],
+    types: ActivityType[]
+  ) {
+    const typeDict = types.reduce(
+      (dict, type) => {
+        dict[type.ActivityTypeID] = type;
+        return dict;
+      },
+      {} as Record<number, ActivityType>
+    );
+
     return activities.map(activity => ({
       ...activity,
       _type: typeDict[activity.ActivityTypeID], // Denormalized type data
       _computed: {
         displayName: `${activity.Namn} - ${typeDict[activity.ActivityTypeID]?.Typnamn}`,
-        category: typeDict[activity.ActivityTypeID]?.Syfte
-      }
+        category: typeDict[activity.ActivityTypeID]?.Syfte,
+      },
     }));
   }
 }
@@ -471,13 +520,17 @@ class DataNormalizer {
 // Add caching for expensive computations
 class CachedApiService {
   private cache = new Map<string, { data: any; timestamp: number }>();
-  
-  async getWithCache<T>(key: string, fetcher: () => Promise<T>, ttl = 300000): Promise<T> {
+
+  async getWithCache<T>(
+    key: string,
+    fetcher: () => Promise<T>,
+    ttl = 300000
+  ): Promise<T> {
     const cached = this.cache.get(key);
     if (cached && Date.now() - cached.timestamp < ttl) {
       return cached.data;
     }
-    
+
     const data = await fetcher();
     this.cache.set(key, { data, timestamp: Date.now() });
     return data;
@@ -494,60 +547,64 @@ export function useActivityWithRelations(activityId: Ref<string>) {
   const attendances = ref<Attendance[]>([]);
   const participants = ref<Participant[]>([]);
   const loading = ref(false);
-  
+
   const loadData = async () => {
     loading.value = true;
     try {
       const [activityRes, attendancesRes] = await Promise.all([
         api.activities.getById(activityId.value),
-        api.attendances.getByActivityId(activityId.value)
+        api.attendances.getByActivityId(activityId.value),
       ]);
-      
+
       activity.value = activityRes.data;
       attendances.value = attendancesRes.data;
-      
+
       // Build participant dictionary from attendances
-      const participantIds = [...new Set(attendances.value.map(a => a.ParticipantID))];
-      const participantPromises = participantIds.map(id => 
+      const participantIds = [
+        ...new Set(attendances.value.map(a => a.ParticipantID)),
+      ];
+      const participantPromises = participantIds.map(id =>
         api.participants.getById(id.toString())
       );
-      
+
       const participantResults = await Promise.all(participantPromises);
       participants.value = participantResults
         .map(result => result.data)
         .filter(Boolean) as Participant[];
-        
     } finally {
       loading.value = false;
     }
   };
-  
+
   // Computed relationships
   const enrichedAttendances = computed(() => {
-    const participantDict = participants.value.reduce((dict, p) => {
-      dict[p.ParticipantID] = p;
-      return dict;
-    }, {} as Record<number, Participant>);
-    
+    const participantDict = participants.value.reduce(
+      (dict, p) => {
+        dict[p.ParticipantID] = p;
+        return dict;
+      },
+      {} as Record<number, Participant>
+    );
+
     return attendances.value.map(attendance => ({
       ...attendance,
-      _participant: participantDict[attendance.ParticipantID]
+      _participant: participantDict[attendance.ParticipantID],
     }));
   });
-  
+
   watchEffect(() => {
     if (activityId.value) {
       loadData();
     }
   });
-  
+
   return {
     activity: readonly(activity),
     attendances: readonly(attendances),
     participants: readonly(participants),
     enrichedAttendances: readonly(enrichedAttendances),
     loading: readonly(loading),
-    reload: loadData
+    reload: loadData,
   };
 }
 ```
@@ -555,6 +612,7 @@ export function useActivityWithRelations(activityId: Ref<string>) {
 ## Best Practices
 
 ### 1. Always Handle Both Implementations
+
 ```typescript
 // ✅ Good: Feature detection
 const supportsAdvancedFiltering = !USE_MOCK_API;
@@ -571,12 +629,13 @@ return api.activities.getByDateRange(start, end); // May not exist in mock
 ```
 
 ### 2. Optimize for Relations
+
 ```typescript
 // ✅ Good: Batch related queries
 const [activities, types, attendances] = await Promise.all([
   api.activities.getAll(),
   api.activityTypes.getAll(),
-  api.attendances.getAll()
+  api.attendances.getAll(),
 ]);
 
 // ❌ Bad: Sequential queries
@@ -586,18 +645,24 @@ const attendances = await api.attendances.getAll();
 ```
 
 ### 3. Build Dictionaries Efficiently
+
 ```typescript
 // ✅ Good: Single pass dictionary building
-const typeDict = types.reduce((dict, type) => {
-  dict[type.ActivityTypeID] = type;
-  return dict;
-}, {} as Record<number, ActivityType>);
+const typeDict = types.reduce(
+  (dict, type) => {
+    dict[type.ActivityTypeID] = type;
+    return dict;
+  },
+  {} as Record<number, ActivityType>
+);
 
 // ❌ Bad: Repeated searches
 activities.map(activity => ({
   ...activity,
-  type: types.find(t => t.ActivityTypeID === activity.ActivityTypeID) // O(n²) complexity
+  type: types.find(t => t.ActivityTypeID === activity.ActivityTypeID), // O(n²) complexity
 }));
 ```
 
-This architecture provides a robust foundation for handling complex relational data while maintaining flexibility between development and production environments.
+This architecture provides a robust foundation for handling complex relational
+data while maintaining flexibility between development and production
+environments.
