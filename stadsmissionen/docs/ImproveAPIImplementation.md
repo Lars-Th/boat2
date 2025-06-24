@@ -295,6 +295,7 @@ Each service should include comprehensive backend documentation:
 ## Current Implementation Patterns
 
 ### Typical Issues Found
+
 - **Type Misalignment**: TypeScript interfaces use different naming conventions than JSON data
 - **Missing Relationship Types**: Enhanced types with relationships are incomplete or missing
 - **Generic Return Types**: Mock services return `any[]` instead of properly typed responses
@@ -307,11 +308,13 @@ Each service should include comprehensive backend documentation:
 ## Phase 1: Type System Alignment
 
 ### Objective
+
 Ensure TypeScript interfaces exactly match the JSON data structure for all entities.
 
 ### Core Entity Type Definition
 
 #### Step 1.1: Analyze JSON Structure
+
 For each entity, examine the actual JSON data files in `src/assets/data/`:
 
 ```json
@@ -326,6 +329,7 @@ For each entity, examine the actual JSON data files in `src/assets/data/`:
 ```
 
 #### Step 1.2: Create Matching TypeScript Interface
+
 Update `src/types/index.ts` to match JSON exactly:
 
 ```typescript
@@ -354,6 +358,7 @@ export interface Customer {
 ```
 
 #### Step 1.3: Handle Required vs Optional Fields
+
 Analyze the JSON data to determine which fields are consistently present:
 
 ```typescript
@@ -381,6 +386,7 @@ export interface Customer {
 ### Enhanced Relationship Types
 
 #### Step 1.4: Define Relationship-Enhanced Interfaces
+
 Update `src/types/enhanced.ts` or `src/types/relationships.ts`:
 
 ```typescript
@@ -408,6 +414,7 @@ export interface ContactWithRelations extends Contact {
 ```
 
 #### Step 1.5: Update Relationship Configuration
+
 Ensure `src/config/relationships.ts` matches the enhanced types:
 
 ```typescript
@@ -444,9 +451,11 @@ export const customerRelationships: RelationshipConfig<
 ## Phase 2: Mock API Service Updates
 
 ### Objective
+
 Update mock services to return properly typed data and handle relationships correctly.
 
 #### Step 2.1: Update Method Signatures
+
 Replace generic types with specific entity types in `src/api/mocks/mock-data.service.ts`:
 
 ```typescript
@@ -496,6 +505,7 @@ async getCustomers(
 ```
 
 #### Step 2.2: Implement Consistent Relationship Loading
+
 Create a standardized pattern for relationship resolution:
 
 ```typescript
@@ -542,6 +552,7 @@ private enhanceEntityWithRelations<T, R>(
 ```
 
 #### Step 2.3: Add Computed Field Generation
+
 Implement consistent computed field patterns:
 
 ```typescript
@@ -572,9 +583,11 @@ private addComputedFields(entity: CustomerWithRelations): CustomerWithRelations 
 ## Phase 3: Real Backend Service Implementation
 
 ### Objective
+
 Create real HTTP-based services that extend BaseService and integrate with the ApiConfiguration.
 
 #### Step 3.1: Create Individual Service Class
+
 Create a new service file in `src/api/services/`:
 
 ```typescript
@@ -634,6 +647,7 @@ export class CustomerService extends BaseService<Customer> {
 ```
 
 #### Step 3.2: Register Service in Index
+
 Add the service export to `src/api/services/index.ts`:
 
 ```typescript
@@ -641,6 +655,7 @@ export { CustomerService } from '@/api/services/customer.service';
 ```
 
 #### Step 3.3: Add Service to ApiConfiguration
+
 Update `src/api/config/api-config.ts`:
 
 ```typescript
@@ -661,6 +676,7 @@ export class ApiConfiguration {
 ```
 
 #### Step 3.4: Update Main API Controller
+
 Update `src/api/index.ts` to use the real service:
 
 ```typescript
@@ -686,9 +702,11 @@ export const api = {
 ## Phase 4: API Service Layer Updates
 
 ### Objective
+
 Update the main API service to use proper types and prepare for backend transition.
 
 #### Step 4.1: Update API Service Types
+
 In `src/api/index.ts`, replace generic types with specific entity types:
 
 ```typescript
@@ -729,6 +747,7 @@ export const api = {
 ```
 
 #### Step 4.2: Document Backend Requirements
+
 For each entity, clearly document what the real backend needs to implement:
 
 ```typescript
@@ -767,9 +786,11 @@ For each entity, clearly document what the real backend needs to implement:
 ## Phase 5: View Component Updates
 
 ### Objective
+
 Update view components to use the new typed APIs while maintaining all existing functionality.
 
 #### Step 5.1: Update API Calls with Proper Types
+
 In view components, specify the expected types:
 
 ```typescript
@@ -801,6 +822,7 @@ const activeCustomers = computed(() =>
 ```
 
 #### Step 5.2: Handle Computed Fields Consistently
+
 Use the computed fields provided by the enhanced types:
 
 ```typescript
@@ -833,9 +855,11 @@ const getContactCount = (customer: CustomerWithRelations): number => {
 ## Phase 6: Backend Specification Documentation
 
 ### Objective
+
 Create comprehensive documentation for backend developers to implement the real API.
 
 #### Step 6.1: Create Backend API Specification
+
 Create `docs/BackendAPISpecification.md` with detailed requirements:
 
 ```markdown
@@ -871,24 +895,30 @@ The Customer entity must match this exact structure:
 ```
 
 ### Required Fields Validation
+
 - CustomerID: Auto-generated integer, never null
 - CompanyName: Required string, max 255 characters
 - Status: Must be either "active" or "inactive"
 - CreatedDate: Auto-generated ISO date string
 
 ### Optional Fields
+
 - Phone, Email: Can be empty string or null
 - Notes: Can be empty string or null
 - InvoiceAddress: Can be null if same as main address
 
 ### Relationship Loading
+
 When `include=contacts` parameter is provided:
+
 - Load all Contact records where Contact.CustomerID = Customer.CustomerID
 - Include as "contacts" array in response
 - Compute "primaryContact" as the contact where IsPrimary = true
 
 ### Error Handling
+
 All endpoints must return consistent error format:
+
 ```json
 {
   "data": null,
@@ -899,6 +929,7 @@ All endpoints must return consistent error format:
   }
 }
 ```
+
 ```
 
 #### Step 6.2: Add Comprehensive Service Documentation
@@ -964,21 +995,25 @@ touch src/api/services/[entity].service.ts
 ```
 
 ### 2. Implement Service
+
 - Extend BaseService<EntityType>
 - Override methods that need relationship loading
 - Add comprehensive backend documentation
 
 ### 3. Register Service
+
 - Export from `src/api/services/index.ts`
 - Add to `ApiConfiguration` class
 - Initialize in constructor
 
 ### 4. Update Controller
+
 - Add entity section to main API controller
 - Implement environment switching
 - Add proper type signatures
 
 ### 5. Test Integration
+
 - Run type check: `npm run type-check`
 - Test mock functionality
 - Prepare for real API testing
@@ -986,12 +1021,14 @@ touch src/api/services/[entity].service.ts
 ## Validation and Testing
 
 ### Type Safety Verification
+
 - [ ] No TypeScript compilation errors
 - [ ] No `any` types in entity-related code
 - [ ] IntelliSense provides accurate autocompletion
 - [ ] Type errors caught at compile time
 
 ### Functionality Verification
+
 - [ ] All existing features work unchanged
 - [ ] Relationship loading works as before
 - [ ] Search and filtering maintain functionality
@@ -999,6 +1036,7 @@ touch src/api/services/[entity].service.ts
 - [ ] Error handling behaves consistently
 
 ### Backend Preparation
+
 - [ ] Mock API provides clear specification for real implementation
 - [ ] Service classes ready for HTTP implementation
 - [ ] Data models match exactly between mock and expected backend

@@ -7,22 +7,26 @@ This guide provides a systematic approach for analyzing feature requests and cre
 ## 🎯 Core Principles
 
 ### 1. **Analyze Before Building**
+
 - Understand the current system thoroughly
 - Identify existing patterns and infrastructure
 - Verify assumptions with code exploration
 
 ### 2. **Think in Layers**
+
 - Data/Backend layer
-- API/Service layer  
+- API/Service layer
 - Business logic layer
 - UI/Frontend layer
 - Integration layer
 
 ### 3. **Plan in Phases**
+
 - Break complex requests into logical phases
 - Identify dependencies between phases
 
 ### 4. **Document Concretely**
+
 - Include actual code examples
 - Specify exact file paths
 - Show expected outcomes
@@ -32,16 +36,18 @@ This guide provides a systematic approach for analyzing feature requests and cre
 ### Phase 1: Request Deconstruction
 
 #### 1.1 Extract Core Requirements
+
 ```markdown
 **Primary Goal:** [What is the main objective?]
 **User Story:** As a [role], I want [functionality] so that [benefit]
-**Acceptance Criteria:** 
+**Acceptance Criteria:**
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] Criterion 3
 ```
 
 #### 1.2 Identify Affected Systems
+
 - [ ] **Data Layer** - New entities, relationships, migrations
 - [ ] **API Layer** - New endpoints, service methods
 - [ ] **Business Logic** - Calculations, validations, rules
@@ -49,6 +55,7 @@ This guide provides a systematic approach for analyzing feature requests and cre
 - [ ] **Integration** - External APIs, third-party services
 
 #### 1.3 Categorize Request Type
+
 - **🔍 Data Analysis** - Requires data exploration and calculations
 - **🔗 Integration** - Connects systems or external services
 - **🎨 UI Enhancement** - Primarily visual/interaction improvements
@@ -58,6 +65,7 @@ This guide provides a systematic approach for analyzing feature requests and cre
 ### Phase 2: Current State Analysis
 
 #### 2.1 Data Structure Investigation
+
 ```bash
 # Search for existing entities
 grep -r "entityName" src/
@@ -69,6 +77,7 @@ find src/ -name "*types*"
 ```
 
 #### 2.2 API Service Analysis
+
 ```bash
 # Find existing API methods
 grep -r "apiService\." src/
@@ -79,6 +88,7 @@ ls src/services/api/
 ```
 
 #### 2.3 UI Component Analysis
+
 ```bash
 # Find similar existing components
 find src/components -name "*List*"
@@ -90,6 +100,7 @@ grep -r "useApi" src/
 ```
 
 #### 2.4 Document Current State
+
 ```markdown
 ## Current State ✅/❌
 
@@ -160,18 +171,21 @@ grep -r "useApi" src/
 ### Backend/Data Layer Plans
 
 **Focus Areas:**
+
 - Database schema changes
 - Data relationships and foreign keys
 - Business logic and calculations
 - Data migration strategies
 
 **Key Questions:**
+
 - What new entities or fields are needed?
 - How do relationships need to change?
 - What calculations or aggregations are required?
 - How will existing data be migrated?
 
 **Plan Structure:**
+
 ```markdown
 ### Phase 1: Data Model Changes
 #### 1.1 Entity Modifications
@@ -183,7 +197,9 @@ interface EntityName {
 ```
 
 #### 1.2 Relationship Configuration
+
 **File:** `src/config/relationships.ts`
+
 ```typescript
 export const entityRelationships = {
   // Show relationship setup
@@ -191,10 +207,13 @@ export const entityRelationships = {
 ```
 
 #### 1.3 Migration Script
+
 **File:** `scripts/migrate-data.ts`
+
 ```typescript
 // Show migration logic
 ```
+
 ```
 
 ### API/Service Layer Plans
@@ -223,7 +242,9 @@ async newMethod(): Promise<ApiResponse<Type>> {
 ```
 
 #### 1.2 Real API Implementation
+
 **File:** `src/services/api/real.ts`
+
 ```typescript
 async newMethod(): Promise<ApiResponse<Type>> {
   // Show server-side optimization approach
@@ -231,7 +252,9 @@ async newMethod(): Promise<ApiResponse<Type>> {
 ```
 
 #### 1.3 Interface Update
+
 **File:** `src/services/api/index.ts`
+
 ```typescript
 export const api = {
   entity: {
@@ -240,6 +263,7 @@ export const api = {
   }
 }
 ```
+
 ```
 
 ### Frontend/UI Layer Plans
@@ -269,6 +293,7 @@ const { data } = useApiList(() => api.entity.newMethod())
 ```
 
 2. **Add new column:**
+
 ```typescript
 const columns = [
   // existing columns
@@ -277,11 +302,13 @@ const columns = [
 ```
 
 3. **Add template for new field:**
+
 ```vue
 <template #cell-newField="{ value }">
   <Badge>{{ value }}</Badge>
 </template>
 ```
+
 ```
 
 ### Integration Layer Plans
@@ -310,7 +337,9 @@ export class ExternalService {
 ```
 
 #### 1.2 Data Mapping
+
 **File:** `src/services/mappers/ExternalMapper.ts`
+
 ```typescript
 export class ExternalMapper {
   // Show data transformation logic
@@ -318,28 +347,31 @@ export class ExternalMapper {
 ```
 
 #### 1.3 Error Handling
+
 **File:** `src/services/external/ErrorHandler.ts`
+
 ```typescript
 // Show error handling strategy
 ```
+
 ```
 
 ```markdown
 ## 🚀 Implementation Steps
 
 ### Step 1: [Layer] Implementation
-1. ✅ **Task completed** 
-2. 🔄 **Task in progress** 
-3. ⏳ **Task planned** 
+1. ✅ **Task completed**
+2. 🔄 **Task in progress**
+3. ⏳ **Task planned**
 4. ❌ **Task blocked** - [reason]
 
 ### Step 2: [Next Layer]
-1. ⏳ **Dependent on Step 1** 
+1. ⏳ **Dependent on Step 1**
 2. ⏳ **Task planned**
 
 ### Step 3: Testing & Integration
 1. ⏳ **Unit tests**
-2. ⏳ **Integration tests** 
+2. ⏳ **Integration tests**
 3. ⏳ **User acceptance testing**
 
 ### Step 4: Documentation & Polish
@@ -351,18 +383,21 @@ export class ExternalMapper {
 ## 🎯 Success Criteria Framework
 
 ### Technical Criteria
+
 - ✅ **Functionality** - Feature works as specified
 - ✅ **Performance** - Meets acceptable performance standards
 - ✅ **Compatibility** - Works with existing systems
 - ✅ **Security** - Follows security best practices
 
 ### User Experience Criteria
+
 - ✅ **Usability** - Intuitive and easy to use
 - ✅ **Accessibility** - Meets accessibility standards
 - ✅ **Responsiveness** - Works across devices
 - ✅ **Error Handling** - Graceful error states
 
 ### Code Quality Criteria
+
 - ✅ **Maintainability** - Code is clean and documented
 - ✅ **Testability** - Adequate test coverage
 - ✅ **Reusability** - Components can be reused
@@ -371,17 +406,20 @@ export class ExternalMapper {
 ## 🔄 Plan Review Process
 
 ### Before Implementation
+
 1. **Stakeholder Review** - Confirm requirements understood
 2. **Technical Review** - Verify approach is sound
 3. **Risk Assessment** - Identify potential blockers
 
 ### During Implementation
+
 1. **Daily Check-ins** - Track progress against plan
 2. **Blocker Resolution** - Address issues quickly
 3. **Scope Management** - Handle requirement changes
 4. **Quality Gates** - Review at each phase completion
 
 ### After Implementation
+
 1. **Success Criteria Validation** - Confirm all criteria met
 2. **Performance Testing** - Verify performance standards
 3. **User Acceptance** - Get stakeholder sign-off
@@ -390,28 +428,34 @@ export class ExternalMapper {
 ## 📚 Example Implementation Plans
 
 ### 1. Data Analysis Request
+
 **Example:** "Show average order value per customer in the customer list"
 
 **Quick Analysis:**
+
 - Type: 🔍 Data Analysis
 - Layers: Backend (calculation), API (aggregation), Frontend (display)
 - Existing: Customer entity, Order entity with foreign keys
 - Missing: Aggregation calculation, API method, UI column
 
-### 2. Integration Request  
+### 2. Integration Request
+
 **Example:** "Sync customer data with external CRM system"
 
 **Quick Analysis:**
+
 - Type: 🔗 Integration
 - Layers: Integration (API client), Backend (mapping), API (sync methods)
 - Existing: Customer entity
 - Missing: External API client, data mapping, sync logic
 
 ### 3. UI Enhancement Request
+
 **Example:** "Add bulk actions to the user list"
 
 **Quick Analysis:**
-- Type: 🎨 UI Enhancement  
+
+- Type: 🎨 UI Enhancement
 - Layers: Frontend (UI components), API (bulk methods)
 - Existing: User list component, individual actions
 - Missing: Bulk selection UI, bulk API methods
@@ -419,18 +463,21 @@ export class ExternalMapper {
 ## 🎨 Documentation Best Practices
 
 ### Visual Elements
+
 - **✅ ❌ ⏳ 🔄** - Use status indicators
 - **📋 🎯 🔍 🚀** - Use section icons for quick navigation
 - **Code blocks** - Always syntax highlight
 - **Tables** - For comparing options or showing data structure
 
 ### Writing Style
+
 - **Be Specific** - Include exact file paths and method names
 - **Show Examples** - Provide concrete code samples
 - **Think Forward** - Consider future maintenance and extensions
 - **Stay Practical** - Focus on actionable steps
 
 ### Structure Consistency
+
 - **Overview** - Brief context and goals
 - **Analysis** - Current state and gaps
 - **Plan** - Phased implementation approach
@@ -461,9 +508,9 @@ When you receive a new request:
    - [ ] Review for completeness
    - [ ] Check for missing dependencies
 
-5. **🚀 Execute** 
+5. **🚀 Execute**
    - [ ] Follow plan step by step
    - [ ] Update progress regularly
    - [ ] Adapt plan as needed
 
-**Result: Clear, actionable implementation roadmap** 
+**Result: Clear, actionable implementation roadmap**

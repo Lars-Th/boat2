@@ -46,9 +46,9 @@ const workOrdersWithCustomers = computed(() => {
       // Calculate registered hours from included tasks
       const registeredHours = workOrder.Tasks
         ? workOrder.Tasks.filter((task: any) => task.Status === 'approved').reduce(
-            (total: number, task: any) => total + (task.Hours ?? 0),
-            0
-          )
+          (total: number, task: any) => total + (task.Hours ?? 0),
+          0
+        )
         : 0;
 
       return {
@@ -182,12 +182,9 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
         <p class="text-destructive mb-2">Ett fel uppstod vid laddning av arbetsordrar</p>
         <Button
           variant="outline"
-          @click="
-            () => {
-              /* Add refresh logic */
-            }
-          "
-        >
+          @click="() => {
+            /* Add refresh logic */
+          }">
           Försök igen
         </Button>
       </div>
@@ -199,8 +196,7 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
       :data="workOrdersWithCustomers"
       :columns="columns"
       :search-fields="['WorkOrderNumber', 'Title', 'Description', 'AssignedTo', 'CustomerName']"
-      @row-click="handleRowClick"
-    >
+      @row-click="handleRowClick">
       <template #cell-Type="{ value }">
         <Badge variant="default">
           {{ value }}
@@ -233,13 +229,7 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
             {{ (row as Record<string, any>)['RegisteredHours'] ?? 0 }}h / {{ (row as Record<string, any>)['EstimatedHours'] ?? 0 }}h
           </div>
           <div class="text-muted-foreground text-xs">
-            {{
-              (row as Record<string, any>)['EstimatedHours']
-                ? Math.round(
-                    (((row as Record<string, any>)['RegisteredHours'] ?? 0) / (row as Record<string, any>)['EstimatedHours']) * 100
-                  )
-                : 0
-            }}% registrerat
+            {{ (row as Record<string, any>)['EstimatedHours'] ? Math.round((((row as Record<string, any>)['RegisteredHours'] ?? 0) / (row as Record<string, any>)['EstimatedHours']) * 100) : 0 }}% registrerat
           </div>
           <div class="text-muted-foreground text-xs">
             Faktisk: {{ (row as Record<string, any>)['ActualHours'] ?? 0 }}h
@@ -249,25 +239,13 @@ const handleAddTime = (workOrder: WorkOrderWithRelations) => {
 
       <template #cell-actions="{ row }">
         <div class="flex">
-          <Button
-            size="sm"
-            variant="outline"
-            @click="handleViewOrder(row as unknown as WorkOrderWithRelations)"
-          >
+          <Button size="sm" variant="outline" @click="handleViewOrder(row as unknown as WorkOrderWithRelations)">
             Visa
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            @click="handleEditOrder(row as unknown as WorkOrderWithRelations)"
-          >
+          <Button size="sm" variant="outline" @click="handleEditOrder(row as unknown as WorkOrderWithRelations)">
             Redigera
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            @click="handleAddTime(row as unknown as WorkOrderWithRelations)"
-          >
+          <Button size="sm" variant="outline" @click="handleAddTime(row as unknown as WorkOrderWithRelations)">
             Tid
           </Button>
         </div>

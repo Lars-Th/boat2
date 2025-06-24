@@ -188,7 +188,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style lang="sass" scoped>
 /* Ensure proper positioning for progress bar */
 .relative {
   position: relative;

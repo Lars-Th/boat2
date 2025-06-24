@@ -9,7 +9,6 @@ import {
   BarChart3,
   Calendar,
   CheckCircle,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ClipboardList,
@@ -1413,7 +1412,7 @@ const cancelCopy = () => {
   </div>
 </template>
 
-<style scoped>
+<style lang="sass" scoped>
 .drop-zone {
   transition: all 0.2s ease;
 }

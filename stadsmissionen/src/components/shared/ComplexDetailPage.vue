@@ -321,7 +321,7 @@ const formatValue = (value: any, type?: string) => {
   </div>
 </template>
 
-<style scoped>
+<style lang="sass" scoped>
 .toast-enter-active,
 .toast-leave-active {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

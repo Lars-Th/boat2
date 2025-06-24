@@ -104,7 +104,6 @@ export default [
 
       // TypeScript rules
       'no-unused-vars': 'off',
-      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -130,6 +129,7 @@ export default [
 
       // General JavaScript/TypeScript rules
       'no-undef': 'off', // TypeScript handles this
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       // 'no-console': 'warn',
       'no-debugger': 'warn',
       'prefer-const': 'error',

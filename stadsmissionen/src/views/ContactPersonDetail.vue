@@ -189,7 +189,10 @@ const breadcrumbs = computed(() => {
     { label: 'Dashboard', to: '/' },
     { label: 'Kontaktpersoner', to: '/contacts' },
     {
-      label: `${contact.value?.FirstName} ${contact.value?.LastName}` || 'Kontaktperson',
+      label:
+        contact.value?.FirstName && contact.value?.LastName
+          ? `${contact.value.FirstName} ${contact.value.LastName}`
+          : 'Kontaktperson',
       to: '',
       isCurrentPage: true,
     },
@@ -199,7 +202,9 @@ const breadcrumbs = computed(() => {
 // Page title
 const pageTitle = computed(() => {
   if (isNew.value) return 'Lägg till ny kontaktperson';
-  return `${contact.value?.FirstName} ${contact.value?.LastName}` || 'Kontaktperson';
+  return contact.value?.FirstName && contact.value?.LastName
+    ? `${contact.value.FirstName} ${contact.value.LastName}`
+    : 'Kontaktperson';
 });
 
 // Event handlers

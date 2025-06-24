@@ -1,15 +1,19 @@
 # AI New Button to Editable Details Implementation Guide
 
 ## Overview
+
 This guide explains how to implement a "New" button functionality that allows users to create new entities by navigating to an existing detail page in creation mode. The detail page will show empty, editable fields instead of fetching existing data.
 
 ## Pattern Summary
+
 Instead of creating separate "New" and "Edit" pages, we reuse the existing detail page component and make it context-aware:
+
 - **View Mode**: Display existing entity data (read-only)
 - **Edit Mode**: Edit existing entity data
 - **Creation Mode**: Show empty form fields for creating new entities
 
 ## Prerequisites
+
 - Existing detail page component (e.g., `EntityDetail.vue`)
 - Existing list page with a "New" button
 - API endpoints for CRUD operations
@@ -19,6 +23,7 @@ Instead of creating separate "New" and "Edit" pages, we reuse the existing detai
 ## Implementation Checklist
 
 ### 1. Router Configuration
+
 - [ ] Add a new route for creation mode
 - [ ] Ensure the creation route comes BEFORE the dynamic `:id` route
 - [ ] Use a descriptive route name (e.g., `entity-new`)
@@ -38,6 +43,7 @@ Instead of creating separate "New" and "Edit" pages, we reuse the existing detai
 ```
 
 ### 2. List Page "New" Button
+
 - [ ] Update the "New" button to navigate to the creation route
 - [ ] Ensure the button uses the correct route path
 
@@ -51,6 +57,7 @@ const handleNewEntity = () => {
 ### 3. Detail Page Component Updates
 
 #### 3.1 Creation Mode Detection
+
 - [ ] Add creation mode detection based on route name
 - [ ] Add logging for debugging route parameters
 - [ ] Move creation detection before other computed properties
@@ -70,6 +77,7 @@ const isCreating = computed(() => {
 ```
 
 #### 3.2 Entity ID Handling
+
 - [ ] Update entity ID computation to handle undefined values
 - [ ] Add logging for route parameter debugging
 
@@ -90,6 +98,7 @@ const entityId = computed(() => {
 ```
 
 #### 3.3 API Data Fetching
+
 - [ ] Modify API call to skip fetching when in creation mode
 - [ ] Use the `immediate` option to control when API calls execute
 
@@ -107,6 +116,7 @@ const {
 ```
 
 #### 3.4 Error Handling
+
 - [ ] Add comprehensive error logging
 - [ ] Include creation mode context in error logs
 
@@ -126,6 +136,7 @@ const hasError = computed(() => {
 ```
 
 #### 3.5 Form Initialization
+
 - [ ] Update form initialization to handle creation mode
 - [ ] Set appropriate default values for new entities
 - [ ] Handle both creation and edit scenarios
@@ -155,6 +166,7 @@ const initEditForm = () => {
 ```
 
 #### 3.6 Edit Mode Management
+
 - [ ] Initialize edit mode state
 - [ ] Set edit mode to true when creating
 - [ ] Handle edit mode in component lifecycle
@@ -182,6 +194,7 @@ onMounted(() => {
 ```
 
 #### 3.7 Save Operation
+
 - [ ] Update save function to handle both creation and updates
 - [ ] Use different API endpoints for create vs update
 - [ ] Handle navigation after successful creation
@@ -249,6 +262,7 @@ const saveChanges = () => {
 ```
 
 #### 3.8 Cancel Operation
+
 - [ ] Update cancel function to handle creation mode
 - [ ] Navigate back to list when canceling creation
 - [ ] Reset form when canceling edit
@@ -269,6 +283,7 @@ const cancelEdit = () => {
 ### 4. UI/Template Updates
 
 #### 4.1 Page Title and Breadcrumbs
+
 - [ ] Update page title to reflect creation mode
 - [ ] Update breadcrumbs for creation context
 
@@ -288,6 +303,7 @@ const pageTitle = computed(() => {
 ```
 
 #### 4.2 Conditional UI Elements
+
 - [ ] Hide delete button when creating
 - [ ] Update save button text for creation
 - [ ] Hide tabs/sections that don't apply to new entities
@@ -311,6 +327,7 @@ const pageTitle = computed(() => {
 ```
 
 #### 4.3 Data Display
+
 - [ ] Handle undefined/null entity data in templates
 - [ ] Use optional chaining for entity properties
 - [ ] Provide fallback values where appropriate
@@ -326,6 +343,7 @@ const pageTitle = computed(() => {
 ### 5. API Integration
 
 #### 5.1 Create Endpoint
+
 - [ ] Ensure API has a create endpoint
 - [ ] Verify create endpoint returns the created entity with ID
 - [ ] Test create endpoint with mock data
@@ -341,6 +359,7 @@ entities: {
 ```
 
 #### 5.2 Mock Service Implementation
+
 - [ ] Implement create method in mock service
 - [ ] Generate appropriate ID for new entities
 - [ ] Return proper API response format
@@ -361,29 +380,34 @@ async createEntity(data: Partial<Entity>): Promise<ApiResponse<Entity>> {
 ### 6. Testing Checklist
 
 #### 6.1 Navigation Testing
+
 - [ ] "New" button navigates to correct URL
 - [ ] URL shows `/entities/list/new`
 - [ ] Route name is `entity-new`
 - [ ] No API calls made on creation route
 
 #### 6.2 Form Testing
+
 - [ ] Form appears in edit mode when creating
 - [ ] All fields are empty/have default values
 - [ ] Form validation works for creation
 - [ ] Save button shows "Create" text
 
 #### 6.3 Save Testing
+
 - [ ] Create operation calls correct API endpoint
 - [ ] Success redirects to new entity detail page
 - [ ] Error handling works for creation failures
 - [ ] Loading states work correctly
 
 #### 6.4 Cancel Testing
+
 - [ ] Cancel button navigates back to list
 - [ ] No data is saved when canceling
 - [ ] Form resets properly
 
 #### 6.5 Console Logging
+
 - [ ] Creation mode detection logs correctly
 - [ ] Route parameter logs show expected values
 - [ ] API operation logs include creation context
@@ -402,7 +426,9 @@ async createEntity(data: Partial<Entity>): Promise<ApiResponse<Entity>> {
 ### 8. Debugging Tips
 
 #### 8.1 Console Logging
+
 Add comprehensive logging to track:
+
 - Route parameters and navigation
 - Creation mode detection
 - API call execution
@@ -410,6 +436,7 @@ Add comprehensive logging to track:
 - Save operations
 
 #### 8.2 Common Issues
+
 - **Route not matching**: Check route order and path syntax
 - **API errors**: Verify creation mode detection prevents unnecessary calls
 - **Form not in edit mode**: Ensure edit mode is set in onMounted for creation
@@ -418,6 +445,7 @@ Add comprehensive logging to track:
 ## Example Implementation Files
 
 ### Router Configuration
+
 ```javascript
 // router/router.ts
 {
@@ -433,6 +461,7 @@ Add comprehensive logging to track:
 ```
 
 ### List Component
+
 ```javascript
 // BoatList.vue
 const handleNewBoat = () => {
@@ -441,6 +470,7 @@ const handleNewBoat = () => {
 ```
 
 ### Detail Component Key Sections
+
 ```javascript
 // BoatDetail.vue
 const isCreating = computed(() => route.name === 'boat-new');

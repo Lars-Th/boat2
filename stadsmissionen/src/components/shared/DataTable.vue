@@ -232,7 +232,7 @@ defineExpose({
     <div class="w-full overflow-x-auto">
       <Table class="w-full">
         <TableHeader class="bg-gray-100">
-          <TableRow class="border-t border-gray-300 border-b border-gray-300">
+          <TableRow class="border-t border-gray-300 border-b">
             <TableHead
               v-for="(column, index) in columns"
               :key="column.key"
@@ -281,7 +281,6 @@ defineExpose({
                   : '',
                 column.align === 'right' ? 'text-right' : '',
                 column.align === 'center' ? 'text-center' : '',
-                column.class || '',
                 getResponsiveClasses(column, colIndex),
               ]"
             >

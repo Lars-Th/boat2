@@ -414,6 +414,6 @@ const navigationShortcuts = [
   </div>
 </template>
 
-<style scoped>
+<style lang="sass" scoped>
 /* Component-specific styles if needed */
 </style>

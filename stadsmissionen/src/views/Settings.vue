@@ -95,6 +95,6 @@ const autoSave = ref(true);
   </div>
 </template>
 
-<style scoped>
+<style lang="sass" scoped>
 /* Component-specific styles if needed */
 </style>
