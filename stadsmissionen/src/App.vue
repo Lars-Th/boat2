@@ -54,7 +54,7 @@ const handleUserAction = async (action: 'profile' | 'settings' | 'logout') => {
   </ErrorBoundary>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .logo {
   height: 6em;
   padding: 1.5em;

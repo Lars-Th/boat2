@@ -454,7 +454,7 @@ const handleNewActivityType = () => {
   </PageLayout>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

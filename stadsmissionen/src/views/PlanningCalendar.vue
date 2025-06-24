@@ -1412,7 +1412,7 @@ const cancelCopy = () => {
   </div>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .drop-zone {
   transition: all 0.2s ease;
 }

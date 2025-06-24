@@ -122,7 +122,7 @@ const handleRemoveUnit = async (unitName: string) => {
 };
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .list-enter-active,
 .list-leave-active {
   transition: all 0.3s ease;

@@ -1,0 +1,670 @@
+yarn run v1.22.22
+$ yarn lint && yarn type-check && yarn format:check
+$ eslint .
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/api/mocks/mock-data.service.ts
+    92:13  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+    92:43  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+    98:18  warning  Unsafe member access .activityType on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   109:18  warning  Unsafe member access .participants on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   116:18  warning  Unsafe member access .attendances on an `any` value                                                                                                                                                         @typescript-eslint/no-unsafe-member-access
+   119:7   warning  Unsafe return of a value of type `any`                                                                                                                                                                      @typescript-eslint/no-unsafe-return
+   142:11  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   142:41  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   148:16  warning  Unsafe member access .activityType on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   157:16  warning  Unsafe member access .participants on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   162:16  warning  Unsafe member access .attendances on an `any` value                                                                                                                                                         @typescript-eslint/no-unsafe-member-access
+   165:5   warning  Unsafe return of type `Promise<ApiResponse<any>>` from function with return type `Promise<ApiResponse<Activity | ActivityWithTypes | ActivityWithParticipants | ActivityWithRelations | null>>`             @typescript-eslint/no-unsafe-return
+   191:30  warning  Forbidden non-null assertion                                                                                                                                                                                @typescript-eslint/no-non-null-assertion
+   201:24  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   201:29  warning  Unsafe member access [existingActivityIndex] on an `any` value                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   286:66  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   287:32  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   294:13  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   294:23  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   297:80  warning  Unsafe member access .permissionID on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   298:18  warning  Unsafe member access .permissionGroup on an `any` value                                                                                                                                                     @typescript-eslint/no-unsafe-member-access
+   301:7   warning  Unsafe return of a value of type `any`                                                                                                                                                                      @typescript-eslint/no-unsafe-return
+   307:77  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   317:21  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   321:16  warning  Unsafe member access .permissionGroup on an `any` value                                                                                                                                                     @typescript-eslint/no-unsafe-member-access
+   354:26  warning  Forbidden non-null assertion                                                                                                                                                                                @typescript-eslint/no-non-null-assertion
+   400:5   warning  Forbidden non-null assertion                                                                                                                                                                                @typescript-eslint/no-non-null-assertion
+   423:23  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   433:18  warning  Unsafe member access .activities on an `any` value                                                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   438:15  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   438:44  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   438:64  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   440:22  warning  Unsafe member access .ParticipantID on an `any` value                                                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   441:22  warning  Unsafe member access .RelatedParticipantID on an `any` value                                                                                                                                                @typescript-eslint/no-unsafe-member-access
+   444:15  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   444:31  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   444:31  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   445:12  warning  Unsafe member access .map on an `error` typed value                                                                                                                                                         @typescript-eslint/no-unsafe-member-access
+   446:19  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   447:24  warning  Unsafe member access .ParticipantID on an `any` value                                                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   448:28  warning  Unsafe member access .RelatedParticipantID on an `any` value                                                                                                                                                @typescript-eslint/no-unsafe-member-access
+   449:28  warning  Unsafe member access .ParticipantID on an `any` value                                                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   458:17  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   458:40  warning  Unsafe member access .RelationType on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   459:17  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   459:38  warning  Unsafe member access .RelationID on an `any` value                                                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   464:12  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   466:9   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   466:18  warning  Unsafe member access .family on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   473:18  warning  Unsafe member access .attendances on an `any` value                                                                                                                                                         @typescript-eslint/no-unsafe-member-access
+   476:7   warning  Unsafe return of a value of type `any`                                                                                                                                                                      @typescript-eslint/no-unsafe-return
+   503:21  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   513:16  warning  Unsafe member access .activities on an `any` value                                                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   518:13  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   518:42  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   518:62  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   520:20  warning  Unsafe member access .ParticipantID on an `any` value                                                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   521:20  warning  Unsafe member access .RelatedParticipantID on an `any` value                                                                                                                                                @typescript-eslint/no-unsafe-member-access
+   524:13  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   524:29  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   524:29  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   525:10  warning  Unsafe member access .map on an `error` typed value                                                                                                                                                         @typescript-eslint/no-unsafe-member-access
+   526:17  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   527:22  warning  Unsafe member access .ParticipantID on an `any` value                                                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   528:26  warning  Unsafe member access .RelatedParticipantID on an `any` value                                                                                                                                                @typescript-eslint/no-unsafe-member-access
+   529:26  warning  Unsafe member access .ParticipantID on an `any` value                                                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   538:15  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   538:38  warning  Unsafe member access .RelationType on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   539:15  warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   539:36  warning  Unsafe member access .RelationID on an `any` value                                                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   544:10  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   546:7   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   546:16  warning  Unsafe member access .family on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   553:16  warning  Unsafe member access .attendances on an `any` value                                                                                                                                                         @typescript-eslint/no-unsafe-member-access
+   556:5   warning  Unsafe return of type `Promise<ApiResponse<any>>` from function with return type `Promise<ApiResponse<Participant | ParticipantWithActivities | ParticipantWithFamily | ParticipantWithRelations | null>>`  @typescript-eslint/no-unsafe-return
+   632:15  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   632:36  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   632:51  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   633:20  warning  Unsafe member access .CustomerID on an `any` value                                                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   638:9   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   638:55  warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   639:9   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   639:37  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   639:56  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   640:20  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   640:46  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   640:77  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   641:11  warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   678:13  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   678:34  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   678:49  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   678:65  warning  Unsafe member access .CustomerID on an `any` value                                                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   682:7   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   682:53  warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   683:7   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   683:35  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   683:54  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   684:18  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   684:44  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   684:75  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   685:9   warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   772:15  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   772:36  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   772:51  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   773:20  warning  Unsafe member access .ContactPersonID on an `any` value                                                                                                                                                     @typescript-eslint/no-unsafe-member-access
+   775:53  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   778:9   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   778:55  warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   779:9   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   779:37  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   779:56  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   780:20  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   780:51  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   781:11  warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   814:13  warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   814:34  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   814:49  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   815:18  warning  Unsafe member access .ContactPersonID on an `any` value                                                                                                                                                     @typescript-eslint/no-unsafe-member-access
+   817:51  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   820:7   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   820:53  warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   821:7   warning  Unsafe assignment of an error typed value                                                                                                                                                                   @typescript-eslint/no-unsafe-assignment
+   821:35  warning  Unsafe call of a(n) `error` type typed value                                                                                                                                                                @typescript-eslint/no-unsafe-call
+   821:54  warning  Unsafe member access .filter on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   822:18  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   822:49  warning  Unsafe member access .Status on an `any` value                                                                                                                                                              @typescript-eslint/no-unsafe-member-access
+   823:9   warning  Unsafe member access .length on an `error` typed value                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   965:27  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   971:37  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+   971:47  warning  Unsafe member access .email on an `any` value                                                                                                                                                               @typescript-eslint/no-unsafe-member-access
+   971:68  warning  Unsafe member access .password on an `any` value                                                                                                                                                            @typescript-eslint/no-unsafe-member-access
+   975:9   warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+   975:23  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  1012:25  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  1032:37  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  1032:47  warning  Unsafe member access .id on an `any` value                                                                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  1065:25  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  1068:37  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  1068:47  warning  Unsafe member access .id on an `any` value                                                                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  1121:44  warning  Unexpected any. Specify a different type                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  1122:7   warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+  1122:16  warning  Unsafe member access .id on an `any` value                                                                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  1123:7   warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+  1123:18  warning  Unsafe member access .name on an `any` value                                                                                                                                                                @typescript-eslint/no-unsafe-member-access
+  1124:7   warning  Unsafe assignment of an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-assignment
+  1124:19  warning  Unsafe member access .email on an `any` value                                                                                                                                                               @typescript-eslint/no-unsafe-member-access
+  1125:41  warning  Unsafe member access .permissionID on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+  1126:30  warning  Unsafe member access .permissionID on an `any` value                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/api/services/auth.service.ts
+  28:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/features/development/ToastExample.vue
+  223:7  warning  'selectedPosition' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  224:7  warning  'duration' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  335:7  warning  Unsafe call of a(n) `error` type typed value                                                 @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/ComplexDetailPage.vue
+   2:10  warning  'computed' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  16:43  warning  'List' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  28:10  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  29:9   warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  30:12  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  38:24  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  41:17  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  43:11  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  65:40  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  67:45  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  68:47  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  69:46  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  72:42  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+  78:29  warning  Unexpected any. Specify a different type                                    @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/CustomerDetailCard.vue
+  83:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/DataTable.vue
+    2:25  warning  'watch' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   14:3   warning  'Select' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   15:3   warning  'SelectContent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   16:3   warning  'SelectItem' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   17:3   warning  'SelectTrigger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   18:3   warning  'SelectValue' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   73:5   warning  Unsafe return of a value of type error                                           @typescript-eslint/no-unsafe-return
+  116:43  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+  116:64  warning  Unsafe return of a value of type `any`                                           @typescript-eslint/no-unsafe-return
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/DetailPage.vue
+  41:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/GridView.vue
+   8:13  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  13:7   warning  'props' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  34:33  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+  35:7   warning  Unsafe return of a value of type `any`                                            @typescript-eslint/no-unsafe-return
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/ListPage.vue
+   24:10  warning  Unexpected any. Specify a different type                                                         @typescript-eslint/no-explicit-any
+   47:9   warning  Unexpected any. Specify a different type                                                         @typescript-eslint/no-explicit-any
+   48:12  warning  Unexpected any. Specify a different type                                                         @typescript-eslint/no-explicit-any
+   58:25  warning  Unexpected any. Specify a different type                                                         @typescript-eslint/no-explicit-any
+   83:19  warning  Unexpected any. Specify a different type                                                         @typescript-eslint/no-explicit-any
+  127:3   warning  Unsafe return of a value of type `any[]`                                                         @typescript-eslint/no-unsafe-return
+  133:5   warning  Unsafe return of a value of type `any[]`                                                         @typescript-eslint/no-unsafe-return
+  138:3   warning  Unsafe return of a value of type `any[]`                                                         @typescript-eslint/no-unsafe-return
+  142:7   warning  'handleViewModeUpdate' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/PaginationControls.vue
+  81:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/components/shared/ViewControls.vue
+  3:1  warning  'vue' import is duplicated  no-duplicate-imports
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/composables/useAuth.ts
+  74:9  warning  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/composables/useFamilyRelations.ts
+  64:13  warning  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/composables/useNotifications.ts
+  17:9   warning  Unsafe assignment of an `any` value                         @typescript-eslint/no-unsafe-assignment
+  22:5   warning  Unsafe assignment of an error typed value                   @typescript-eslint/no-unsafe-assignment
+  22:22  warning  Unsafe member access .actions on an `error` typed value     @typescript-eslint/no-unsafe-member-access
+  23:5   warning  Unsafe assignment of an error typed value                   @typescript-eslint/no-unsafe-assignment
+  23:22  warning  Unsafe member access .variant on an `error` typed value     @typescript-eslint/no-unsafe-member-access
+  24:5   warning  Unsafe assignment of an error typed value                   @typescript-eslint/no-unsafe-assignment
+  24:19  warning  Unsafe member access .type on an `error` typed value        @typescript-eslint/no-unsafe-member-access
+  25:5   warning  Unsafe assignment of an error typed value                   @typescript-eslint/no-unsafe-assignment
+  25:23  warning  Unsafe member access .duration on an `error` typed value    @typescript-eslint/no-unsafe-member-access
+  25:44  warning  Unsafe member access .type on an `error` typed value        @typescript-eslint/no-unsafe-member-access
+  26:5   warning  Unsafe assignment of an error typed value                   @typescript-eslint/no-unsafe-assignment
+  26:25  warning  Unsafe member access .persistent on an `error` typed value  @typescript-eslint/no-unsafe-member-access
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/config/relationships.ts
+    2:1  warning  '@/types' import is duplicated            no-duplicate-imports
+   16:3  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  118:3  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:3  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  174:3  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  223:3  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/router/router.ts
+    3:3   warning  'Anchor' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+    6:3   warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+    8:3   warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+   11:3   warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+   12:3   warning  'FolderOpen' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   16:3   warning  'PieChart' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+   25:3   warning  'Wrench' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   57:7   warning  'PlanningCalendar' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  416:11  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  418:11  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  419:15  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  420:18  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  426:11  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  428:11  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  429:15  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  430:18  warning  Forbidden non-null assertion                                                                 @typescript-eslint/no-non-null-assertion
+  472:9   warning  Unsafe assignment of an `any` value                                                          @typescript-eslint/no-unsafe-assignment
+  517:59  warning  Unsafe member access .role on an `any` value                                                 @typescript-eslint/no-unsafe-member-access
+  521:57  warning  Unsafe member access .role on an `any` value                                                 @typescript-eslint/no-unsafe-member-access
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/store/authStore.ts
+  30:17  warning  Unsafe assignment of an `any` value                      @typescript-eslint/no-unsafe-assignment
+  31:46  warning  Unsafe member access .isAuthenticated on an `any` value  @typescript-eslint/no-unsafe-member-access
+  32:37  warning  Unsafe member access .user on an `any` value             @typescript-eslint/no-unsafe-member-access
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/types/relationships.ts
+    9:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:9   warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ActivityDetail.vue
+   49:15  warning  'Activity' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+  105:37  warning  Unsafe return of a value of type error                                                           @typescript-eslint/no-unsafe-return
+  106:36  warning  Unsafe return of a value of type error                                                           @typescript-eslint/no-unsafe-return
+  107:45  warning  Unsafe return of a value of type error                                                           @typescript-eslint/no-unsafe-return
+  112:12  warning  'activityTypesLoading' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  133:24  warning  Unsafe call of a(n) `error` type typed value                                                     @typescript-eslint/no-unsafe-call
+  232:3   warning  Unsafe return of a value of type error                                                           @typescript-eslint/no-unsafe-return
+  232:10  warning  Unsafe call of a(n) `error` type typed value                                                     @typescript-eslint/no-unsafe-call
+  233:25  warning  Unsafe call of a(n) `error` type typed value                                                     @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ActivityList.vue
+   14:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   23:10  warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   23:26  warning  'MapPin' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+   23:48  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   39:30  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  138:54  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  147:18  warning  Unsafe call of a(n) `any` typed value                                           @typescript-eslint/no-unsafe-call
+  147:18  warning  Unsafe call of a(n) `any` typed value                                           @typescript-eslint/no-unsafe-call
+  147:18  warning  Unsafe call of a(n) `any` typed value                                           @typescript-eslint/no-unsafe-call
+  186:47  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  210:40  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  211:3   warning  Unsafe return of a value of type `any`                                          @typescript-eslint/no-unsafe-return
+  219:35  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  223:39  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  227:41  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  239:48  warning  Unsafe call of a(n) `any` typed value                                           @typescript-eslint/no-unsafe-call
+  246:12  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  263:7   warning  Boolean prop with 'true' value should be written in shorthand form              vue/prefer-true-attribute-shorthand
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ActivityTemplateDetail.vue
+  26:33  warning  'ActivityType' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  59:3   warning  Unsafe return of a value of type error                                          @typescript-eslint/no-unsafe-return
+  78:28  warning  Unsafe call of a(n) `error` type typed value                                    @typescript-eslint/no-unsafe-call
+  82:29  warning  Unsafe call of a(n) `error` type typed value                                    @typescript-eslint/no-unsafe-call
+  83:24  warning  Unsafe return of a value of type `any`                                          @typescript-eslint/no-unsafe-return
+  87:31  warning  Unsafe call of a(n) `error` type typed value                                    @typescript-eslint/no-unsafe-call
+  93:9   warning  Unsafe call of a(n) `error` type typed value                                    @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ActivityTemplates.vue
+  239:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  243:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  248:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  256:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ActivityTypes.vue
+   41:12  warning  'isLoading' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   42:10  warning  'hasError' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   43:12  warning  'handleRetry' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   71:3   warning  Unsafe return of a value of type `any[]`                                                @typescript-eslint/no-unsafe-return
+   71:54  warning  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   73:5   warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  163:29  warning  Unsafe call of a(n) `error` type typed value                                            @typescript-eslint/no-unsafe-call
+  163:58  warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  171:3   warning  Unsafe call of a(n) `error` type typed value                                            @typescript-eslint/no-unsafe-call
+  195:17  warning  Unsafe call of a(n) `error` type typed value                                            @typescript-eslint/no-unsafe-call
+  224:19  warning  Unsafe call of a(n) `error` type typed value                                            @typescript-eslint/no-unsafe-call
+  225:33  warning  Forbidden non-null assertion                                                            @typescript-eslint/no-non-null-assertion
+  228:7   warning  Unsafe call of a(n) `error` type typed value                                            @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/AttendanceRegistration.vue
+   27:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   30:7   warning  Unsafe call of a(n) `any` typed value     @typescript-eslint/no-unsafe-call
+   30:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   42:3   warning  Unsafe return of a value of type `any[]`  @typescript-eslint/no-unsafe-return
+   50:3   warning  Unsafe return of a value of type `any[]`  @typescript-eslint/no-unsafe-return
+  119:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:28  warning  Unsafe call of a(n) `any` typed value     @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ContactPersonDetail.vue
+   25:10  warning  'ArrowLeft' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+   37:12  warning  'contactLoading' is assigned a value but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   38:10  warning  'contactError' is assigned a value but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   55:12  warning  'customersLoading' is assigned a value but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   56:10  warning  'customersError' is assigned a value but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  110:41  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  111:12  warning  Unsafe call of a(n) `any` typed value                                                               @typescript-eslint/no-unsafe-call
+  117:7   warning  'getSelectedCustomerName' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  120:3   warning  Unsafe return of a value of type `any`                                                              @typescript-eslint/no-unsafe-return
+  163:37  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  168:37  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  211:48  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  222:18  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ContactPersonList.vue
+   74:53  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   75:55  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   76:58  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   76:66  warning  Unsafe return of a value of type `any`                                                                     @typescript-eslint/no-unsafe-return
+  110:42  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  120:42  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  122:21  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  123:21  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  124:21  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  125:26  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  126:28  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  130:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  130:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  131:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  131:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  132:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  132:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  133:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  133:36  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  134:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  200:7   warning  'getFullName' is assigned a value but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+  214:34  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  218:37  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  222:37  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  233:35  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  240:45  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  258:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  272:7   warning  Boolean prop with 'true' value should be written in shorthand form                                         vue/prefer-true-attribute-shorthand
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/CustomComponents.vue
+    63:15  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+    64:11  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+  1120:48  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+  1153:52  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+  1158:54  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+  1163:53  warning  Unexpected any. Specify a different type                            @typescript-eslint/no-explicit-any
+  1218:7   warning  Boolean prop with 'true' value should be written in shorthand form  vue/prefer-true-attribute-shorthand
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/CustomerDetail.vue
+   10:10  warning  'ArrowLeft' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   10:31  warning  'Save' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   10:37  warning  'Trash2' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  197:14  warning  Unsafe call of a(n) `error` type typed value                                    @typescript-eslint/no-unsafe-call
+  197:37  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  226:48  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  237:20  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  264:12  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  280:12  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  330:52  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  341:30  warning  'tableKey' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  341:48  warning  'item' is defined but never used. Allowed unused args must match /^_/u          @typescript-eslint/no-unused-vars
+  341:54  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  346:53  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/CustomerList.vue
+   17:3   warning  'Building' is defined but never used. Allowed unused vars must match /^_/u                                 @typescript-eslint/no-unused-vars
+   20:3   warning  'MapPin' is defined but never used. Allowed unused vars must match /^_/u                                   @typescript-eslint/no-unused-vars
+  277:7   warning  'handleViewCustomer' is assigned a value but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  325:60  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  327:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  341:7   warning  Boolean prop with 'true' value should be written in shorthand form                                         vue/prefer-true-attribute-shorthand
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/Dashboard.vue
+  90:5  warning  Unsafe call of a(n) `error` type typed value  @typescript-eslint/no-unsafe-call
+  91:5  warning  Unsafe call of a(n) `error` type typed value  @typescript-eslint/no-unsafe-call
+  92:5  warning  Unsafe call of a(n) `error` type typed value  @typescript-eslint/no-unsafe-call
+  93:5  warning  Unsafe call of a(n) `error` type typed value  @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/NewActivity.vue
+   48:9   warning  'activityTypes' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  249:19  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+  274:17  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/NewParticipant.vue
+  40:9  warning  'participantsWithFamily' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ParticipantDetail.vue
+   26:15  warning  'Activity' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   26:39  warning  'Attendance' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   26:51  warning  'Participant' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   64:35  warning  Unsafe return of a value of type error                                                    @typescript-eslint/no-unsafe-return
+   65:36  warning  Unsafe return of a value of type error                                                    @typescript-eslint/no-unsafe-return
+   66:7   warning  'familyMembers' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   66:38  warning  Unsafe return of a value of type error                                                    @typescript-eslint/no-unsafe-return
+   78:3   warning  Unsafe return of a value of type error                                                    @typescript-eslint/no-unsafe-return
+  109:34  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+  123:3   warning  Unsafe return of a value of type error                                                    @typescript-eslint/no-unsafe-return
+  123:10  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+  123:10  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+  123:10  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+  126:24  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+  131:7   warning  Unsafe return of a value of type `any`                                                    @typescript-eslint/no-unsafe-return
+  149:24  warning  Unsafe call of a(n) `error` type typed value                                              @typescript-eslint/no-unsafe-call
+  149:65  warning  Unsafe return of a value of type `any`                                                    @typescript-eslint/no-unsafe-return
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ParticipantGroups.vue
+   15:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   15:16  warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   15:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+   15:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   21:3   warning  'DialogTrigger' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   29:3   warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   31:3   warning  'Eye' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+   32:3   warning  'Loader2' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   35:3   warning  'UserPlus' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   36:3   warning  'Users' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   37:3   warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+   43:18  warning  'warning' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  121:9   warning  Unsafe call of a(n) `error` type typed value                                        @typescript-eslint/no-unsafe-call
+  127:9   warning  Unsafe call of a(n) `error` type typed value                                        @typescript-eslint/no-unsafe-call
+  183:7   warning  Unsafe call of a(n) `error` type typed value                                        @typescript-eslint/no-unsafe-call
+  230:18  warning  Unsafe call of a(n) `error` type typed value                                        @typescript-eslint/no-unsafe-call
+  230:18  warning  Unsafe call of a(n) `error` type typed value                                        @typescript-eslint/no-unsafe-call
+  230:18  warning  Unsafe call of a(n) `error` type typed value                                        @typescript-eslint/no-unsafe-call
+  326:32  warning  Unexpected any. Specify a different type                                            @typescript-eslint/no-explicit-any
+  330:33  warning  Unexpected any. Specify a different type                                            @typescript-eslint/no-explicit-any
+  334:41  warning  Unexpected any. Specify a different type                                            @typescript-eslint/no-explicit-any
+  345:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u      @typescript-eslint/no-unused-vars
+  388:7   warning  Boolean prop with 'true' value should be written in shorthand form                  vue/prefer-true-attribute-shorthand
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/ParticipantList.vue
+   15:30  warning  'UserPlus' is defined but never used. Allowed unused vars must match /^_/u                                 @typescript-eslint/no-unused-vars
+   15:40  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u                                    @typescript-eslint/no-unused-vars
+   72:27  warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+   73:26  warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+   74:27  warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+   86:59  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  259:38  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  263:45  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  267:53  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  278:14  warning  'err' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  292:7   warning  Boolean prop with 'true' value should be written in shorthand form                                         vue/prefer-true-attribute-shorthand
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/PermissionGroups.vue
+  134:29  warning  'searchQuery' is defined but never used        vue/no-unused-vars
+  134:42  warning  'updateSearchQuery' is defined but never used  vue/no-unused-vars
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/PlanningCalendar.vue
+   34:22  warning  Unsafe return of a value of type error                                                                          @typescript-eslint/no-unsafe-return
+   34:22  warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  135:5   warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  136:52  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  156:48  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  158:5   warning  Unsafe return of a value of type `any[]`                                                                        @typescript-eslint/no-unsafe-return
+  160:3   warning  Unsafe return of a value of type error                                                                          @typescript-eslint/no-unsafe-return
+  172:7   warning  'addDaysToDate' is assigned a value but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+  225:61  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  226:5   warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  230:10  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  294:45  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  298:13  warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  298:13  warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  298:57  warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  298:57  warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  307:3   warning  Unsafe return of a value of type error                                                                          @typescript-eslint/no-unsafe-return
+  307:10  warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  307:10  warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  308:53  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  315:3   warning  Unsafe return of a value of type error                                                                          @typescript-eslint/no-unsafe-return
+  315:10  warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  328:3   warning  Unsafe return of a value of type error                                                                          @typescript-eslint/no-unsafe-return
+  328:10  warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  331:5   warning  Unsafe return of a value of type `any`                                                                          @typescript-eslint/no-unsafe-return
+  335:30  warning  'date' is defined but never used. Allowed unused args must match /^_/u                                          @typescript-eslint/no-unused-vars
+  366:5   warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  385:61  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  386:5   warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  392:45  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  397:45  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  402:45  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  407:49  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  412:21  warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  412:21  warning  Unsafe call of a(n) `any` typed value                                                                           @typescript-eslint/no-unsafe-call
+  424:46  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  438:40  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  450:3   warning  Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read  @typescript-eslint/prefer-nullish-coalescing
+  455:7   warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  460:3   warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  478:47  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  541:7   warning  'previousWeek' is assigned a value but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+  547:7   warning  'nextWeek' is assigned a value but never used. Allowed unused vars must match /^_/u                             @typescript-eslint/no-unused-vars
+  558:46  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  563:54  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator       @typescript-eslint/prefer-nullish-coalescing
+  567:39  warning  'date' is defined but never used. Allowed unused args must match /^_/u                                          @typescript-eslint/no-unused-vars
+  619:5   warning  Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read  @typescript-eslint/prefer-nullish-coalescing
+  623:5   warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  631:54  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  646:19  warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  648:7   warning  Unsafe call of a(n) `error` type typed value                                                                    @typescript-eslint/no-unsafe-call
+  656:48  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  664:7   warning  'viewWorkOrder' is assigned a value but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+  717:3   warning  Unsafe return of a value of type error                                                                          @typescript-eslint/no-unsafe-return
+  717:37  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator       @typescript-eslint/prefer-nullish-coalescing
+  765:39  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  782:31  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/Settings.vue
+  17:7  warning  'otifications' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/Statistics.vue
+  52:15  warning  Unsafe return of a value of type error        @typescript-eslint/no-unsafe-return
+  57:3   warning  Unsafe return of a value of type `any[]`      @typescript-eslint/no-unsafe-return
+  74:22  warning  Unsafe call of a(n) `error` type typed value  @typescript-eslint/no-unsafe-call
+  74:45  warning  Unsafe call of a(n) `error` type typed value  @typescript-eslint/no-unsafe-call
+  74:66  warning  Unsafe call of a(n) `error` type typed value  @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/SystemSettings.vue
+  53:28  warning  Unsafe return of type `Promise<ApiResponse<any[]>>` from function with return type `Promise<ApiResponse<User[]>>`  @typescript-eslint/no-unsafe-return
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/TimeReporting.vue
+   16:9   warning  'tasks' is assigned a value but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   19:12  warning  'refetchTasks' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   20:18  warning  Unsafe return of a value of type error                                                   @typescript-eslint/no-unsafe-return
+   20:18  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+   27:18  warning  Unsafe return of a value of type error                                                   @typescript-eslint/no-unsafe-return
+   27:18  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+   51:22  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+   51:44  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+   51:65  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  108:16  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  113:16  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  116:3   warning  Unsafe return of a value of type error                                                   @typescript-eslint/no-unsafe-return
+  116:10  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  122:3   warning  'newEntries' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
+  139:24  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  140:25  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  141:25  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  186:21  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  187:3   warning  Unsafe return of a value of type error                                                   @typescript-eslint/no-unsafe-return
+  192:21  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  242:5   warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  259:27  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+  270:21  warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  272:9   warning  Unsafe call of a(n) `error` type typed value                                             @typescript-eslint/no-unsafe-call
+  449:35  warning  'value' is defined but never used                                                        vue/no-unused-vars
+  453:46  warning  'value' is defined but never used                                                        vue/no-unused-vars
+  457:43  warning  'value' is defined but never used                                                        vue/no-unused-vars
+  461:36  warning  'value' is defined but never used                                                        vue/no-unused-vars
+  465:42  warning  'value' is defined but never used                                                        vue/no-unused-vars
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/UserDetail.vue
+    7:22  warning  'useApiList' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   62:5   warning  Unsafe return of a value of type `any`                                                   @typescript-eslint/no-unsafe-return
+  124:12  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u         @typescript-eslint/no-unused-vars
+  165:18  warning  'storageError' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  179:12  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u         @typescript-eslint/no-unused-vars
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/UserList.vue
+   21:3   warning  'DialogTrigger' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+  109:53  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  112:17  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  114:18  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  115:17  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  115:17  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  115:17  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  245:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  245:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  245:53  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  246:56  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  247:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  247:9   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  294:5   warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+  300:52  warning  Unsafe return of a value of type `any`                                                                     @typescript-eslint/no-unsafe-return
+  315:3   warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+  328:5   warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+
+/mnt/c/_development_/_git_/mox.stadsmissionen.se/frontend/stadsmissionen/src/views/UserManagement.vue
+  197:22  warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+  197:35  warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+  204:3   warning  Unsafe return of a value of type `any[]`                                                                   @typescript-eslint/no-unsafe-return
+  206:19  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  206:19  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  210:5   warning  Unsafe return of a value of type `any`                                                                     @typescript-eslint/no-unsafe-return
+  222:27  warning  Unsafe return of a value of type `any[]`                                                                   @typescript-eslint/no-unsafe-return
+  225:3   warning  Unsafe return of a value of type `any[]`                                                                   @typescript-eslint/no-unsafe-return
+  227:7   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  227:7   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  227:48  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  228:7   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  228:7   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  228:49  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  229:7   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  229:7   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  229:60  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  230:7   warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  230:31  warning  Unsafe return of a value of type `any`                                                                     @typescript-eslint/no-unsafe-return
+  230:31  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  230:31  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  260:38  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  266:38  warning  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  326:5   warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+  398:5   warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+  403:5   warning  Unsafe call of a(n) `error` type typed value                                                               @typescript-eslint/no-unsafe-call
+
+✖ 571 problems (0 errors, 571 warnings)
+
+$ vue-tsc --noEmit
+$ prettier --check .
+Checking formatting...
+All matched files use Prettier code style!
+Done in 74.26s.

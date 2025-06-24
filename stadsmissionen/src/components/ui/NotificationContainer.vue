@@ -141,7 +141,7 @@ const getIcon = (type?: string) => {
   </div>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 .notification-container {
   @apply fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm;
 }

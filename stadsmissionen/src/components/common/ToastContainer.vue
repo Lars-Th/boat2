@@ -121,7 +121,7 @@ onUnmounted(() => {
   </Teleport>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 /* Toast animations */
 .toast-enter-active,
 .toast-leave-active {

@@ -220,8 +220,6 @@ const {
 } = useToast();
 
 // Configuration state
-const selectedPosition = ref<ToastPosition>(config.position ?? 'top-right');
-const duration = ref(config.duration ?? 5000);
 const pauseOnHover = ref(config.pauseOnHover ?? true);
 const preventDuplicates = ref(config.preventDuplicates ?? false);
 const clickToClose = ref(config.closeOnClick ?? false);

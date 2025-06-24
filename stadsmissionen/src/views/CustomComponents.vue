@@ -1547,6 +1547,6 @@ const uiComponentCount = computed(() => {
   </div>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 /* Custom styles if needed */
 </style>

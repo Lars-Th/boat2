@@ -757,7 +757,7 @@ loadSavedTheme();
   </PageLayout>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 /* Custom styles for theme preview */
 .theme-preview {
   transition: all 0.2s ease-in-out;

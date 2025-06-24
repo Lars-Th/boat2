@@ -20,7 +20,7 @@ const emit = defineEmits<{
 
 // Progress bar for duration
 const progress = ref(100);
-const progressInterval = ref<NodeJS.Timeout | undefined>();
+const progressInterval = ref<ReturnType<typeof setInterval> | undefined>();
 
 // Toast type to classes mapping
 const getToastClasses = (toast: ToastType): string => {
@@ -188,7 +188,7 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 /* Ensure proper positioning for progress bar */
 .relative {
   position: relative;

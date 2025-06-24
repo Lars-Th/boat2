@@ -138,12 +138,6 @@ const paginatedData = computed(() => {
   return filteredData.value.slice(start, end);
 });
 
-// Handle view mode updates
-const handleViewModeUpdate = (mode: 'list' | 'grid') => {
-  currentViewMode.value = mode;
-  emit('update:viewMode', mode);
-};
-
 // Handle pagination updates
 const handlePageUpdate = (page: number) => {
   currentPage.value = page;

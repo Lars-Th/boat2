@@ -1,19 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import {
-  Anchor,
   BarChart3,
   Calendar,
-  CheckCircle,
   ClipboardList,
-  Clock,
   Code,
   Download,
-  FileText,
-  FolderOpen,
   LayoutDashboard,
   List,
   Package,
-  PieChart,
   Plus,
   Settings,
   Shield,
@@ -22,7 +16,6 @@ import {
   UserPlus,
   Users,
   Users2,
-  Wrench,
 } from 'lucide-vue-next';
 
 // Import existing views - all as dynamic imports for consistency

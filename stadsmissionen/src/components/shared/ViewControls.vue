@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { Component } from 'vue';
+import { type Component, computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {

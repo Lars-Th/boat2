@@ -1,5 +1,4 @@
-import type { Contact } from '@/types';
-import type { Customer } from '@/types';
+import type { Contact, Customer } from '@/types';
 import type {
   ContactWithRelations,
   CustomerWithRelations,
