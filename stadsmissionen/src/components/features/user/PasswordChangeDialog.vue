@@ -1,5 +1,5 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog :open="open" @update:open="emit('update:open', $event)">
     <DialogContent class="max-w-md">
       <DialogHeader>
         <DialogTitle>Ändra lösenord</DialogTitle>
@@ -55,7 +55,7 @@
         </div>
 
         <div class="flex gap-4 justify-end pt-4">
-          <Button variant="outline" @click="$emit('update:open', false)">Avbryt</Button>
+          <Button variant="outline" @click="emit('update:open', false)">Avbryt</Button>
           <Button
             :disabled="!passwordForm.newPassword || !passwordForm.confirmPassword"
             @click="handleSave"

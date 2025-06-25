@@ -64,7 +64,7 @@ const emit = defineEmits<{
   'field-change': [key: string, value: any];
 }>();
 
-const activeTab = ref(props.defaultTab || props.tabs[0]?.key || '');
+const activeTab = ref((props.defaultTab || props.tabs[0]?.key) ?? '');
 
 const updateField = (key: string, value: any) => {
   if (!props.readonly) {
@@ -119,16 +119,16 @@ const formatValue = (value: any, type?: string) => {
             variant="primary"
             size="sm"
             class="gap-2"
-            @click="$emit('save')"
+            @click="emit('save')"
           >
             <Save class="h-4 w-4" />
             Spara
           </Button>
-          <Button variant="secondary" size="sm" class="gap-2" @click="$emit('delete')">
+          <Button variant="secondary" size="sm" class="gap-2" @click="emit('delete')">
             <Trash2 class="h-4 w-4" />
             Radera
           </Button>
-          <Button variant="secondary" size="sm" class="gap-2" @click="$emit('back')">
+          <Button variant="secondary" size="sm" class="gap-2" @click="emit('back')">
             <ArrowLeft class="h-4 w-4" />
             Tillbaka
           </Button>
@@ -139,7 +139,7 @@ const formatValue = (value: any, type?: string) => {
     <!-- Action Buttons Row -->
     <div class="flex items-center gap-2 mx-4 mb-4">
       <!-- Back Button (always visible) -->
-      <Button variant="secondary" size="sm" @click="$emit('back')">
+      <Button variant="secondary" size="sm" @click="emit('back')">
         <ArrowLeft class="w-4 h-4 mr-2" />
         Tillbaka
       </Button>
@@ -149,7 +149,7 @@ const formatValue = (value: any, type?: string) => {
         v-if="!readonly && hasUnsavedChanges"
         variant="primary"
         size="sm"
-        @click="$emit('save')"
+        @click="emit('save')"
       >
         <Save class="h-4 w-4 mr-2" />
         Spara
@@ -160,7 +160,7 @@ const formatValue = (value: any, type?: string) => {
         v-if="!readonly && hasUnsavedChanges"
         variant="secondary"
         size="sm"
-        @click="$emit('discard-changes')"
+        @click="emit('discard-changes')"
       >
         <Undo2 class="h-4 w-4 mr-2" />
         Ångra

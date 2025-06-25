@@ -26,7 +26,7 @@ defineEmits<Emits>();
       'ring-2 ring-primary bg-primary/5': isSelected,
       'hover:bg-muted/30': !isSelected,
     }"
-    @click="$emit('select', organization.id)"
+    @click="emit('select', organization.id)"
   >
     <CardHeader class="pb-3">
       <div class="flex items-start justify-between">
@@ -45,7 +45,7 @@ defineEmits<Emits>();
             variant="ghost"
             size="sm"
             class="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
-            @click.stop="$emit('delete', organization.id, $event)"
+            @click.stop="emit('delete', organization.id, $event)"
           >
             <Trash2 class="h-4 w-4" />
           </Button>

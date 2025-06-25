@@ -125,7 +125,7 @@ const formatValue = (value: unknown, type?: string) => {
             v-if="!readonly && hasUnsavedChanges"
             variant="primary"
             class="gap-2 h-8 text-xs"
-            @click="$emit('save')"
+            @click="emit('save')"
           >
             <Save class="h-3 w-3" />
             Spara
@@ -133,12 +133,12 @@ const formatValue = (value: unknown, type?: string) => {
           <Button
             variant="secondary"
             class="gap-2 h-8 text-xs text-red-600"
-            @click="$emit('delete')"
+            @click="emit('delete')"
           >
             <Trash2 class="h-3 w-3" />
             Radera
           </Button>
-          <Button variant="secondary" class="gap-2 h-8 text-xs" @click="$emit('back')">
+          <Button variant="secondary" class="gap-2 h-8 text-xs" @click="emit('back')">
             <ArrowLeft class="h-3 w-3" />
             Tillbaka
           </Button>
@@ -149,7 +149,7 @@ const formatValue = (value: unknown, type?: string) => {
     <!-- Back Button and Save Button -->
     <div class="flex items-center gap-2 mx-4">
       <!-- Back Button (always visible) -->
-      <Button variant="secondary" size="sm" @click="$emit('back')">
+      <Button variant="secondary" size="sm" @click="emit('back')">
         <ArrowLeft class="w-3 h-3" />
         Tillbaka
       </Button>
@@ -159,7 +159,7 @@ const formatValue = (value: unknown, type?: string) => {
         v-if="!readonly && hasUnsavedChanges"
         variant="primary"
         size="sm"
-        @click="$emit('save')"
+        @click="emit('save')"
       >
         <Save class="h-3 w-3" />
         Spara
@@ -170,7 +170,7 @@ const formatValue = (value: unknown, type?: string) => {
         v-if="!readonly && hasUnsavedChanges"
         variant="secondary"
         size="sm"
-        @click="$emit('discard-changes')"
+        @click="emit('discard-changes')"
       >
         <Undo2 class="h-3 w-3" />
         Ångra
@@ -263,7 +263,7 @@ const formatValue = (value: unknown, type?: string) => {
                 variant="primary"
                 size="sm"
                 class="h-6 text-xs"
-                @click="$emit('add-sub-item', table.key)"
+                @click="emit('add-sub-item', table.key)"
               >
                 <Plus class="h-3 w-3 mr-1" />
                 Lägg till
@@ -277,7 +277,7 @@ const formatValue = (value: unknown, type?: string) => {
               :columns="table.columns"
               :loading="false"
               class="text-xs border-0"
-              @row-click="row => $emit('sub-item-click', table.key, row)"
+              @row-click="row => emit('sub-item-click', table.key, row)"
             >
               <template #actions="{ row }">
                 <div class="flex items-center gap-0.5">
@@ -287,7 +287,7 @@ const formatValue = (value: unknown, type?: string) => {
                     size="sm"
                     title="Redigera"
                     class="h-6 w-6 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-                    @click="$emit('edit-sub-item', table.key, row)"
+                    @click="emit('edit-sub-item', table.key, row)"
                   >
                     <Edit class="h-3.5 w-3.5" />
                   </Button>
@@ -297,7 +297,7 @@ const formatValue = (value: unknown, type?: string) => {
                     size="sm"
                     title="Radera"
                     class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                    @click="$emit('delete-sub-item', table.key, row)"
+                    @click="emit('delete-sub-item', table.key, row)"
                   >
                     <Trash2 class="h-3.5 w-3.5" />
                   </Button>

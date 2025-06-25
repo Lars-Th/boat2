@@ -50,7 +50,6 @@ const NewActivityTemplate = () => import('@/views/NewActivityTemplate.vue');
 const ActivityTemplateDetail = () => import('@/views/ActivityTemplateDetail.vue');
 const ParticipantGroups = () => import('@/views/ParticipantGroups.vue');
 
-const PlanningCalendar = () => import('@/views/PlanningCalendar.vue');
 const UserDetail = () => import('@/views/UserDetail.vue');
 
 // Development/Demo views

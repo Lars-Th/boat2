@@ -317,7 +317,7 @@ defineExpose({
                     size="sm"
                     class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                     title="Redigera"
-                    @click="$emit('edit', item)"
+                    @click="emit('edit', item)"
                   >
                     <Edit class="h-3.5 w-3.5" />
                   </Button>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { Component } from 'vue';
+import { type Component, computed } from 'vue';
 import Button from '@/components/common/Button.vue';
 import { Input } from '@/components/ui/input';
 import {
@@ -10,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { LayoutGrid, List } from 'lucide-vue-next';
 
 interface ActionButton {
   label: string;
@@ -99,12 +97,12 @@ const updateSearchQuery = (value: string | number) => {
 };
 
 const updateStatusFilter = (value: unknown) => {
-  const stringValue = String(value || '');
+  const stringValue = String(value ?? '');
   emit('update:statusFilter', stringValue);
 };
 
 const updateSecondaryFilter = (value: unknown) => {
-  const stringValue = String(value || '');
+  const stringValue = String(value ?? '');
   emit('update:secondaryFilter', stringValue);
 };
 
@@ -115,7 +113,7 @@ const updateViewMode = (mode: 'list' | 'grid') => {
 // Helper function to handle filter changes
 const handleFilterChange = (filter: Filter) => {
   return (value: unknown) => {
-    const stringValue = String(value || '');
+    const stringValue = String(value ?? '');
     filter.onChange(stringValue);
   };
 };

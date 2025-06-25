@@ -122,7 +122,7 @@ const isLoadingState = computed(() => props.loading);
     <div v-else-if="hasError" class="flex items-center justify-center py-12">
       <div class="text-center">
         <p class="text-destructive mb-2">{{ errorMessage }}</p>
-        <Button variant="outline" @click="$emit('refresh')">Försök igen</Button>
+        <Button variant="outline" @click="emit('refresh')">Försök igen</Button>
       </div>
     </div>
 
@@ -134,7 +134,7 @@ const isLoadingState = computed(() => props.loading);
         :columns="columns"
         :search-fields="searchFields"
         :loading="loading"
-        @row-click="$emit('row-click', $event)"
+        @row-click="emit('row-click', $event)"
       >
         <!-- Pass through all slots -->
         <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">

@@ -132,9 +132,9 @@ onUnmounted(() => {
     :class="getToastClasses(toast)"
     role="alert"
     :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"
-    @mouseenter="$emit('mouseenter')"
-    @mouseleave="$emit('mouseleave')"
-    @click="$emit('click')"
+    @mouseenter="emit('mouseenter')"
+    @mouseleave="emit('mouseleave')"
+    @click="emit('click')"
   >
     <!-- Progress bar -->
     <div

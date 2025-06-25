@@ -107,7 +107,7 @@ groups
 
 ## Query Examples
 
-### Get all participants in a specific office:
+### Get all participants in a specific office
 
 ```sql
 SELECT p.* FROM participants p
@@ -115,7 +115,7 @@ JOIN enheterParticipantsGroups j ON p.ParticipantID = j.ParticipantID
 WHERE j.OfficeID = 1  -- Barn och unga
 ```
 
-### Get all participants in a specific group:
+### Get all participants in a specific group
 
 ```sql
 SELECT p.* FROM participants p
@@ -123,7 +123,7 @@ JOIN enheterParticipantsGroups j ON p.ParticipantID = j.ParticipantID
 WHERE j.ParticipantGroupID = 'group-1'
 ```
 
-### Get all offices for a participant:
+### Get all offices for a participant
 
 ```sql
 SELECT o.* FROM offices o
@@ -131,7 +131,7 @@ JOIN enheterParticipantsGroups j ON o.OfficeID = j.OfficeID
 WHERE j.ParticipantID = 1
 ```
 
-### Get all groups for a participant:
+### Get all groups for a participant
 
 ```sql
 SELECT pg.* FROM participantGroups pg
@@ -141,21 +141,21 @@ WHERE j.ParticipantID = 1 AND j.ParticipantGroupID IS NOT NULL
 
 ## Migration Notes
 
-### What Changed:
+### What Changed
 
 1. **Created** `offices.json` with 8 office records
 2. **Created** `enheterParticipantsGroups.json` with 39 junction records
 3. **Updated** `participantGroups.json` by removing `deltagare` arrays
 4. **Preserved** existing `participants.json` structure
 
-### Data Integrity:
+### Data Integrity
 
 - All existing participant-group relationships have been preserved in the
   junction table
 - All office associations have been maintained
 - No data loss occurred during normalization
 
-### Benefits:
+### Benefits
 
 - ✅ Proper normalized database structure
 - ✅ Eliminates data duplication
@@ -164,7 +164,7 @@ WHERE j.ParticipantID = 1 AND j.ParticipantGroupID IS NOT NULL
 - ✅ Easier to maintain and update
 - ✅ Better performance for large datasets
 
-### API Integration:
+### API Integration
 
 The mock data service and API endpoints will need to be updated to:
 

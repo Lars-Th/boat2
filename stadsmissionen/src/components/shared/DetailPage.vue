@@ -102,7 +102,7 @@ const formatValue = (value: any, type?: string) => {
             v-if="!readonly && hasUnsavedChanges"
             variant="primary"
             class="gap-2 h-8 text-xs"
-            @click="$emit('save')"
+            @click="emit('save')"
           >
             <Save class="h-3 w-3" />
             Spara
@@ -110,12 +110,12 @@ const formatValue = (value: any, type?: string) => {
           <Button
             variant="secondary"
             class="gap-2 h-8 text-xs text-red-600"
-            @click="$emit('delete')"
+            @click="emit('delete')"
           >
             <Trash2 class="h-3 w-3" />
             Radera
           </Button>
-          <Button variant="secondary" class="gap-2 h-8 text-xs" @click="$emit('back')">
+          <Button variant="secondary" class="gap-2 h-8 text-xs" @click="emit('back')">
             <ArrowLeft class="h-3 w-3" />
             Tillbaka
           </Button>
@@ -126,7 +126,7 @@ const formatValue = (value: any, type?: string) => {
     <!-- Back Button and Save Button -->
     <div class="flex items-center gap-2 mx-4">
       <!-- Back Button (always visible) -->
-      <Button variant="secondary" size="sm" @click="$emit('back')">
+      <Button variant="secondary" size="sm" @click="emit('back')">
         <ArrowLeft class="w-3 h-3" />
         Tillbaka
       </Button>
@@ -136,7 +136,7 @@ const formatValue = (value: any, type?: string) => {
         v-if="!readonly && hasUnsavedChanges"
         variant="primary"
         size="sm"
-        @click="$emit('save')"
+        @click="emit('save')"
       >
         <Save class="h-3 w-3" />
         Spara
@@ -147,7 +147,7 @@ const formatValue = (value: any, type?: string) => {
         v-if="!readonly && hasUnsavedChanges"
         variant="secondary"
         size="sm"
-        @click="$emit('discard-changes')"
+        @click="emit('discard-changes')"
       >
         <Undo2 class="h-3 w-3" />
         Ångra
