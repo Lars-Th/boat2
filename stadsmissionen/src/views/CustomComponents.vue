@@ -28,7 +28,6 @@ import ComplexDetailPage from '@/components/shared/ComplexDetailPage.vue';
 import ListPage from '@/components/shared/ListPage.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ErrorBoundary from '@/components/common/ErrorBoundary.vue';
-import PageLayout from '@/components/layout/PageLayout.vue';
 import NavigationSidebar from '@/components/layout/NavigationSidebar.vue';
 
 // Activity components
@@ -995,6 +994,17 @@ interface SpacingVariable {
 
 type SpacingTarget = 'all' | 'margin' | 'padding' | 'gap';
 
+// Text Size Variables Management
+interface TextSizeVariable {
+  name: string;
+  variable: string;
+  baseValue: number; // The base mathematical relationship (in rem)
+  computedValue: number; // Current computed value
+  pixelValue: number; // Pixel equivalent for display
+}
+
+type TextSizeTarget = 'all' | 'text' | 'leading' | 'tracking';
+
 // Base mathematical relationships for spacing (in rem)
 // These define the algebraic function: f(x) = baseValue * multiplier
 const spacingVariables = ref<SpacingVariable[]>([
@@ -1015,6 +1025,30 @@ const spacingVariables = ref<SpacingVariable[]>([
 
 // Global spacing multiplier - the single control that affects all spacing
 const spacingMultiplier = ref<number>(1);
+
+// Text size variables with base mathematical relationships (in rem)
+const textSizeVariables = ref<TextSizeVariable[]>([
+  { name: 'Text XS', variable: '--text-xs', baseValue: 0.75, computedValue: 0.75, pixelValue: 12 },
+  { name: 'Text SM', variable: '--text-sm', baseValue: 0.875, computedValue: 0.875, pixelValue: 14 },
+  { name: 'Text Base', variable: '--text-base', baseValue: 1, computedValue: 1, pixelValue: 16 },
+  { name: 'Text LG', variable: '--text-lg', baseValue: 1.125, computedValue: 1.125, pixelValue: 18 },
+  { name: 'Text XL', variable: '--text-xl', baseValue: 1.25, computedValue: 1.25, pixelValue: 20 },
+  { name: 'Text 2XL', variable: '--text-2xl', baseValue: 1.5, computedValue: 1.5, pixelValue: 24 },
+  { name: 'Text 3XL', variable: '--text-3xl', baseValue: 1.875, computedValue: 1.875, pixelValue: 30 },
+  { name: 'Text 4XL', variable: '--text-4xl', baseValue: 2.25, computedValue: 2.25, pixelValue: 36 },
+  { name: 'Text 5XL', variable: '--text-5xl', baseValue: 3, computedValue: 3, pixelValue: 48 },
+  { name: 'Text 6XL', variable: '--text-6xl', baseValue: 3.75, computedValue: 3.75, pixelValue: 60 },
+]);
+
+// Global text size multiplier
+const textSizeMultiplier = ref<number>(1);
+
+// Text size target selection
+const textSizeTarget = ref<TextSizeTarget>('all');
+
+// Variable editor view selector
+type VariableEditorView = 'spacing' | 'text';
+const currentVariableEditor = ref<VariableEditorView>('spacing');
 
 // Usage examples for margins and paddings
 const marginExamples = [
@@ -1039,6 +1073,32 @@ const gapExamples = [
   { class: 'gap-4', description: 'gap: 1rem' },
   { class: 'gap-x-6', description: 'column-gap: 1.5rem' },
   { class: 'gap-y-8', description: 'row-gap: 2rem' },
+];
+
+// Text size examples
+const textSizeExamples = [
+  { class: 'text-xs', description: 'font-size: 0.75rem' },
+  { class: 'text-sm', description: 'font-size: 0.875rem' },
+  { class: 'text-base', description: 'font-size: 1rem' },
+  { class: 'text-lg', description: 'font-size: 1.125rem' },
+  { class: 'text-xl', description: 'font-size: 1.25rem' },
+  { class: 'text-2xl', description: 'font-size: 1.5rem' },
+];
+
+const lineHeightExamples = [
+  { class: 'leading-3', description: 'line-height: 0.75rem' },
+  { class: 'leading-4', description: 'line-height: 1rem' },
+  { class: 'leading-5', description: 'line-height: 1.25rem' },
+  { class: 'leading-6', description: 'line-height: 1.5rem' },
+  { class: 'leading-7', description: 'line-height: 1.75rem' },
+];
+
+const letterSpacingExamples = [
+  { class: 'tracking-tighter', description: 'letter-spacing: -0.05em' },
+  { class: 'tracking-tight', description: 'letter-spacing: -0.025em' },
+  { class: 'tracking-normal', description: 'letter-spacing: 0em' },
+  { class: 'tracking-wide', description: 'letter-spacing: 0.025em' },
+  { class: 'tracking-wider', description: 'letter-spacing: 0.05em' },
 ];
 
 // Variable mapping for spacing numbers to match main.css variables
@@ -1124,12 +1184,84 @@ const onSpacingTargetChange = () => {
   updateAllSpacingVariables();
 };
 
-// Initialize spacing variables when component mounts
+// Text Size Functions
+// Compute all text size values using algebraic function: f(x) = baseValue * multiplier
+const computeTextSizeValues = () => {
+  textSizeVariables.value.forEach(textSize => {
+    textSize.computedValue = textSize.baseValue * textSizeMultiplier.value;
+    textSize.pixelValue = Math.round(textSize.computedValue * 16); // Convert rem to px (16px = 1rem)
+  });
+};
+
+// Update CSS custom properties for all text size variables
+const updateAllTextSizeVariables = () => {
+  if (componentPreview.value) {
+    textSizeVariables.value.forEach(textSize => {
+      const remValue = `${textSize.computedValue}rem`;
+
+      // Apply to the base text size variable
+      componentPreview.value.style.setProperty(textSize.variable, remValue);
+
+      // Apply to actual CSS variables based on selection
+      const sizeClass = textSize.variable.replace('--text-', '');
+
+      if (textSizeTarget.value === 'text' || textSizeTarget.value === 'all') {
+        componentPreview.value.style.setProperty(`--font-size-${sizeClass}`, remValue);
+      }
+
+      if (textSizeTarget.value === 'leading' || textSizeTarget.value === 'all') {
+        // Line height typically 1.2-1.5x the font size
+        const lineHeightValue = `${textSize.computedValue * 1.4}rem`;
+        componentPreview.value.style.setProperty(`--line-height-${sizeClass}`, lineHeightValue);
+      }
+
+      if (textSizeTarget.value === 'tracking' || textSizeTarget.value === 'all') {
+        // Letter spacing typically small values in em
+        const letterSpacingValue = `${textSize.computedValue * 0.02}em`;
+        componentPreview.value.style.setProperty(`--letter-spacing-${sizeClass}`, letterSpacingValue);
+      }
+    });
+  }
+};
+
+// Update individual text size variable
+const updateIndividualTextSize = (index: number, value: number) => {
+  textSizeVariables.value[index].computedValue = value;
+  textSizeVariables.value[index].pixelValue = Math.round(value * 16);
+  updateAllTextSizeVariables();
+};
+
+// Handle text size multiplier change
+const onTextSizeMultiplierChange = () => {
+  computeTextSizeValues();
+  updateAllTextSizeVariables();
+};
+
+// Reset text size multiplier to default
+const resetTextSizeMultiplier = () => {
+  textSizeMultiplier.value = 1;
+  onTextSizeMultiplierChange();
+};
+
+// Reset all individual text size values to computed values
+const resetTextSizesToComputedValues = () => {
+  computeTextSizeValues();
+  updateAllTextSizeVariables();
+};
+
+// Update all text size variables when target changes
+const onTextSizeTargetChange = () => {
+  updateAllTextSizeVariables();
+};
+
+// Initialize spacing and text size variables when component mounts
 onMounted(() => {
   // Wait for next tick to ensure component preview is rendered
   nextTick(() => {
     computeSpacingValues();
     updateAllSpacingVariables();
+    computeTextSizeValues();
+    updateAllTextSizeVariables();
   });
 });
 </script>
@@ -1152,7 +1284,7 @@ onMounted(() => {
       ]"
     />
 
-    <div class="px-6 pb-6">
+    <div class="pb-6">
       <!-- Toggle Section -->
       <div class="mb-6 bg-white rounded-lg border p-4">
         <div class="flex gap-2">
@@ -1175,7 +1307,7 @@ onMounted(() => {
       </div>
 
       <!-- Content Area -->
-      <ToastExample v-if="currentView === 'toasts'" />
+      <ToastExample class="m-4" v-if="currentView === 'toasts'" />
       <div v-else class="flex h-[calc(100vh-200px)]">
         <!-- File Tree Sidebar -->
         <div class="w-80 bg-white border-r border-gray-200 overflow-y-auto">
@@ -1527,12 +1659,43 @@ onMounted(() => {
               </div>
             </div>
 
-            <!-- Spacing Variables Editor -->
+            <!-- Variables Editor -->
             <div class="mt-8 bg-white border border-gray-300 rounded-lg shadow-sm">
               <div class="border-b border-gray-200 px-6 py-4">
+                <!-- Editor Type Selector -->
+                <div class="flex items-center justify-center mb-4">
+                  <div class="flex bg-gray-100 rounded-lg p-1">
+                    <button
+                      :class="[
+                        'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                        currentVariableEditor === 'spacing'
+                          ? 'bg-white text-blue-700 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                      ]"
+                      @click="currentVariableEditor = 'spacing'"
+                    >
+                      Spacing Variables
+                    </button>
+                    <button
+                      :class="[
+                        'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                        currentVariableEditor === 'text'
+                          ? 'bg-white text-purple-700 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                      ]"
+                      @click="currentVariableEditor = 'text'"
+                    >
+                      Text Size Variables
+                    </button>
+                  </div>
+                </div>
+
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <h3 class="text-lg font-semibold text-gray-900">Spacing Variables Editor</h3>
-                  <div class="flex items-center gap-2">
+                  <h3 class="text-lg font-semibold text-gray-900">
+                    {{ currentVariableEditor === 'spacing' ? 'Spacing Variables Editor' : 'Text Size Variables Editor' }}
+                  </h3>
+                  <!-- Spacing Controls -->
+                  <div v-if="currentVariableEditor === 'spacing'" class="flex items-center gap-2">
                     <h3 class="text-m font-semibold text-blue-900 mb-2">Spacing Multiplier</h3>
                     <input
                       v-model="spacingMultiplier"
@@ -1544,8 +1707,23 @@ onMounted(() => {
                       @input="onMultiplierChange"
                     />
                   </div>
+
+                  <!-- Text Size Controls -->
+                  <div v-if="currentVariableEditor === 'text'" class="flex items-center gap-2">
+                    <h3 class="text-m font-semibold text-purple-900 mb-2">Text Size Multiplier</h3>
+                    <input
+                      v-model="textSizeMultiplier"
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="3"
+                      class="w-20 px-3 py-2 border border-purple-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                      @input="onTextSizeMultiplierChange"
+                    />
+                  </div>
+
                   <!-- Spacing Target Selector -->
-                  <div class="mt-4 sm:mt-0">
+                  <div v-if="currentVariableEditor === 'spacing'" class="mt-4 sm:mt-0">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Apply to:</label>
                     <select
                       v-model="spacingTarget"
@@ -1558,12 +1736,27 @@ onMounted(() => {
                       <option value="gap">Gap Only</option>
                     </select>
                   </div>
+
+                  <!-- Text Size Target Selector -->
+                  <div v-if="currentVariableEditor === 'text'" class="mt-4 sm:mt-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Apply to:</label>
+                    <select
+                      v-model="textSizeTarget"
+                      class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                      @change="onTextSizeTargetChange"
+                    >
+                      <option value="all">All (Text, Line Height & Letter Spacing)</option>
+                      <option value="text">Text Size Only</option>
+                      <option value="leading">Line Height Only</option>
+                      <option value="tracking">Letter Spacing Only</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               <div class="p-6">
-                <!-- Individual Controls Section -->
-                <div class="border-t border-gray-200 pt-6">
+                <!-- Spacing Individual Controls Section -->
+                <div v-if="currentVariableEditor === 'spacing'" class="border-t border-gray-200 pt-6">
                   <div class="flex items-center justify-between mb-4">
                     <div>
                       <h4 class="text-md font-semibold text-gray-900">
@@ -1627,8 +1820,80 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <!-- Usage Examples -->
-                <div class="mt-8 border-t border-gray-200 pt-6">
+                <!-- Text Size Individual Controls Section -->
+                <div v-if="currentVariableEditor === 'text'" class="border-t border-gray-200 pt-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 class="text-md font-semibold text-gray-900">
+                        Individual Text Size Controls
+                      </h4>
+                      <p class="text-sm text-gray-600 mt-1">
+                        Fine-tune individual text size values. Changes override the algebraic
+                        multiplier for specific values.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      class="flex items-center gap-2"
+                      @click="resetTextSizesToComputedValues"
+                    >
+                      <Settings class="h-3 w-3" />
+                      Reset to Computed
+                    </Button>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div
+                      v-for="(textSize, index) in textSizeVariables"
+                      :key="textSize.name"
+                      class="space-y-2"
+                    >
+                      <label class="block text-sm font-medium text-gray-700">
+                        {{ textSize.name }} ({{ textSize.variable }})
+                      </label>
+                      <div class="flex items-center space-x-2">
+                        <input
+                          :value="textSize.computedValue"
+                          type="number"
+                          step="0.125"
+                          min="0"
+                          max="10"
+                          class="w-20 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                          @input="
+                            updateIndividualTextSize(index, parseFloat($event.target.value) || 0)
+                          "
+                        />
+                        <span class="text-sm text-gray-500">rem</span>
+                        <div class="flex-1">
+                          <div
+                            class="h-4 bg-purple-500 rounded"
+                            :style="{
+                              width: `${textSize.computedValue * 25 > 100 ? 100 : textSize.computedValue * 25}%`,
+                            }"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="text-xs text-gray-500">
+                        {{ textSize.pixelValue }}px
+                      </div>
+                      <div class="text-xs text-purple-600">
+                        Base: {{ textSize.baseValue }}rem × {{ textSizeMultiplier }} =
+                        {{ (textSize.baseValue * textSizeMultiplier).toFixed(3) }}rem
+                      </div>
+                      <!-- Preview text -->
+                      <div
+                        class="text-gray-700 border border-gray-200 rounded p-2 bg-gray-50"
+                        :style="{ fontSize: `${textSize.computedValue}rem` }"
+                      >
+                        Sample Text
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Spacing Usage Examples -->
+                <div v-if="currentVariableEditor === 'spacing'" class="mt-8 border-t border-gray-200 pt-6">
                   <h4 class="text-md font-semibold text-gray-900 mb-4">Usage Examples</h4>
                   <div class="mb-4 p-3 bg-blue-50 rounded-lg">
                     <p class="text-sm text-blue-800">
@@ -1723,9 +1988,104 @@ onMounted(() => {
                   </div>
                 </div>
 
+                <!-- Text Size Usage Examples -->
+                <div v-if="currentVariableEditor === 'text'" class="mt-8 border-t border-gray-200 pt-6">
+                  <h4 class="text-md font-semibold text-gray-900 mb-4">Usage Examples</h4>
+                  <div class="mb-4 p-3 bg-purple-50 rounded-lg">
+                    <p class="text-sm text-purple-800">
+                      <strong>Current Target:</strong>
+                      <span v-if="textSizeTarget === 'all'">
+                        All text size, line height, and letter spacing utilities will be affected
+                      </span>
+                      <span v-else-if="textSizeTarget === 'text'">
+                        Only text size utilities (text-xs, text-sm, text-base, etc.) will be affected
+                      </span>
+                      <span v-else-if="textSizeTarget === 'leading'">
+                        Only line height utilities (leading-3, leading-4, etc.) will be affected
+                      </span>
+                      <span v-else>Only letter spacing utilities (tracking-tight, tracking-wide, etc.) will be affected</span>
+                    </p>
+                  </div>
+
+                  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Text Size Examples -->
+                    <div
+                      v-if="textSizeTarget === 'all' || textSizeTarget === 'text'"
+                      class="space-y-4"
+                    >
+                      <h5 class="text-sm font-medium text-gray-700">Text Size Examples</h5>
+                      <div class="space-y-3">
+                        <div
+                          v-for="example in textSizeExamples"
+                          :key="example.class"
+                          class="flex items-center space-x-3"
+                        >
+                          <code class="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                            {{ example.class }}
+                          </code>
+                          <div class="flex-1">
+                            <div :class="example.class" class="text-gray-700">
+                              Sample text with {{ example.class }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Line Height Examples -->
+                    <div
+                      v-if="textSizeTarget === 'all' || textSizeTarget === 'leading'"
+                      class="space-y-4"
+                    >
+                      <h5 class="text-sm font-medium text-gray-700">Line Height Examples</h5>
+                      <div class="space-y-3">
+                        <div
+                          v-for="example in lineHeightExamples"
+                          :key="example.class"
+                          class="flex items-center space-x-3"
+                        >
+                          <code class="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                            {{ example.class }}
+                          </code>
+                          <div class="flex-1">
+                            <div :class="example.class" class="text-gray-700 text-sm">
+                              Multiple lines of text<br>to show line height<br>spacing effect
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Letter Spacing Examples -->
+                    <div
+                      v-if="textSizeTarget === 'all' || textSizeTarget === 'tracking'"
+                      class="space-y-4"
+                    >
+                      <h5 class="text-sm font-medium text-gray-700">Letter Spacing Examples</h5>
+                      <div class="space-y-3">
+                        <div
+                          v-for="example in letterSpacingExamples"
+                          :key="example.class"
+                          class="flex items-center space-x-3"
+                        >
+                          <code class="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                            {{ example.class }}
+                          </code>
+                          <div class="flex-1">
+                            <div :class="example.class" class="text-gray-700 text-sm">
+                              Letter spacing sample
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Reset Button -->
                 <div class="mt-6 flex justify-end">
                   <Button
+                    v-if="currentVariableEditor === 'spacing'"
                     variant="outline"
                     class="flex items-center gap-2"
                     @click="resetSpacingMultiplier"
@@ -1733,9 +2093,18 @@ onMounted(() => {
                     <Settings class="h-4 w-4" />
                     Reset Multiplier (1×)
                   </Button>
+                  <Button
+                    v-if="currentVariableEditor === 'text'"
+                    variant="outline"
+                    class="flex items-center gap-2"
+                    @click="resetTextSizeMultiplier"
+                  >
+                    <Settings class="h-4 w-4" />
+                    Reset Multiplier (1×)
+                  </Button>
                 </div>
               </div>
-            </div>
+                        </div>
           </div>
 
           <div v-else class="flex items-center justify-center h-full">

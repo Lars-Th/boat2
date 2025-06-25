@@ -70,11 +70,6 @@ const themes = [
   { name: 'Stadsmissionen', value: 'stadsmissionen', class: 'theme_stadsmissionen' },
   { name: 'Default', value: 'default', class: 'theme_default' },
   { name: 'Dark', value: 'dark', class: 'dark' },
-  { name: 'Fuchsia', value: 'fuchsia', class: 'theme_fuchsia' },
-  { name: 'Purple', value: 'purple', class: 'theme_purple' },
-  { name: 'Amber', value: 'amber', class: 'theme_amber' },
-  { name: 'Sky', value: 'sky', class: 'theme_sky' },
-  { name: 'Pink', value: 'pink', class: 'theme_pink' },
 ];
 
 const currentTheme = ref('stadsmissionen');
