@@ -162,11 +162,11 @@ watch(
     if (newActivity) {
       form.value = {
         ActivityID: newActivity.ActivityID,
-        Namn: newActivity.Namn || '',
+        Namn: newActivity.Namn ?? '',
         Beskrivning: newActivity.Beskrivning ?? '',
         Plats: newActivity.Plats ?? '',
         DatumTid: formatDateForInput(newActivity.DatumTid),
-        ActivityTypeID: newActivity.ActivityTypeID || 0,
+        ActivityTypeID: newActivity.ActivityTypeID ?? 0,
       };
       hasUnsavedChanges.value = false;
     }
@@ -259,7 +259,7 @@ const attendanceTableData = computed(() => {
       participant: participant
         ? `${participant.Fornamn} ${participant.Efternamn}`
         : 'Okänd deltagare',
-      phone: participant?.Telefon || '-',
+      phone: participant?.Telefon ?? '-',
       offices: participantOffices,
       attendance: attendance.Närvaro,
       datetime: attendance.DatumTid,

@@ -894,7 +894,7 @@ export class MockDataService {
 
     // Extract user ID from mock token
     const tokenParts = token.split('-');
-    const userId = parseInt(tokenParts[2] || '0');
+    const userId = parseInt(tokenParts[2] ?? '0');
 
     const user = usersData.find((u: any) => u.id === userId);
     if (!user) {
@@ -1003,7 +1003,7 @@ export class MockDataService {
 
   async getOfficeById(id: string): Promise<ApiResponse<(typeof officesData)[0] | null>> {
     const office = officesData.find(o => o.OfficeID === parseInt(id));
-    return this.mockRequest(office || null);
+    return this.mockRequest(office ?? null);
   }
 
   // Junction table methods - Enheter Participants Groups

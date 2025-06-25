@@ -31,7 +31,7 @@ const labelClasses = computed(() => {
 
 // Computed för att bestämma om vi ska visa tooltip
 const showTooltip = computed(() => {
-  return props.tooltip || props.description;
+  return props.tooltip ?? props.description;
 });
 
 // Computed för tooltip-innehåll

@@ -16,11 +16,10 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Edit, Plus, Trash2, UserPlus } from 'lucide-vue-next';
-import type { BreadcrumbItem, TableColumn } from '@/types';
+import type { BreadcrumbItem, LoginAccount, TableColumn, User } from '@/types';
 import { useToast } from '@/composables/useToast';
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
-import type { LoginAccount, User } from '@/types';
 
 const { showToast } = useToast();
 const router = useRouter();

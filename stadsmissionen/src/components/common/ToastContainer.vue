@@ -16,7 +16,7 @@ const getPositionClasses = (position: ToastPosition): string => {
     'top-center': 'top-4 left-1/2 transform -translate-x-1/2',
     'bottom-center': 'bottom-4 left-1/2 transform -translate-x-1/2',
   };
-  return positions[position] || positions['top-right'];
+  return positions[position] ?? positions['top-right'];
 };
 
 // Group toasts by position
