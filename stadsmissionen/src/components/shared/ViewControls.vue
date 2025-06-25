@@ -106,10 +106,6 @@ const updateSecondaryFilter = (value: unknown) => {
   emit('update:secondaryFilter', stringValue);
 };
 
-const updateViewMode = (mode: 'list' | 'grid') => {
-  emit('update:viewMode', mode);
-};
-
 // Helper function to handle filter changes
 const handleFilterChange = (filter: Filter) => {
   return (value: unknown) => {

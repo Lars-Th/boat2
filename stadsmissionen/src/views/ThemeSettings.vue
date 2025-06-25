@@ -25,13 +25,7 @@ import { useToast } from '@/composables/useToast';
 // Use API service and composables (prepared for future theme API integration)
 import { useApiList } from '@/composables/useApi';
 import _api from '@/api';
-
-// Define theme type for API integration
-interface Theme {
-  id: string;
-  name: string;
-  colors: Record<string, string>;
-}
+import type { ColorDefinition, Theme } from '@/types/system';
 
 // Fetch themes using API services (mock implementation for now)
 // TODO: Replace with actual theme API when available
@@ -150,12 +144,6 @@ const customColors = ref({
 });
 
 // Color definitions with descriptions
-interface ColorDefinition {
-  key: keyof typeof customColors.value;
-  label: string;
-  description: string;
-  category: 'brand' | 'layout' | 'content' | 'status';
-}
 
 const colorDefinitions: ColorDefinition[] = [
   {

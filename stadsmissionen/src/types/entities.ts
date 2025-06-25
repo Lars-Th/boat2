@@ -83,14 +83,17 @@ export interface Organization {
 }
 
 export interface LoginAccount {
-  id: string;
+  id: number;
   username: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
   role: string;
-  department: string;
-  status: string;
+  status: 'Aktiv' | 'Inaktiv' | 'Låst';
   lastLogin: string;
-  fullName?: string;
+  createdAt: string;
+  department: string;
+  permissionGroup?: {
+    name: string;
+  };
 }

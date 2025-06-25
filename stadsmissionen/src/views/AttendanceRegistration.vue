@@ -86,7 +86,7 @@ const columns = [
       if (typeof value === 'string') {
         return new Date(value).toLocaleString('sv-SE');
       }
-      return String(value || '');
+      return String(value ?? '');
     },
   },
   {

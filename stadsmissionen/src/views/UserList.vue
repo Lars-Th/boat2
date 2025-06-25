@@ -20,31 +20,10 @@ import type { BreadcrumbItem, TableColumn } from '@/types';
 import { useToast } from '@/composables/useToast';
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
+import type { LoginAccount, User } from '@/types';
 
 const { showToast } = useToast();
 const router = useRouter();
-
-interface LoginAccount {
-  id: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  status: 'Aktiv' | 'Inaktiv' | 'Låst';
-  lastLogin: string;
-  createdAt: string;
-  department: string;
-}
-
-interface User {
-  id: number;
-  email: string;
-  name: string;
-  permissionGroup?: {
-    name: string;
-  };
-}
 
 // const router = useRouter()
 

@@ -1,57 +1,38 @@
-// Vue-specific imports for types
-import type { Ref } from 'vue';
-
-// Import types from other organized files
-import type { Notification, Toast, ToastConfig, ToastOptions } from './ui';
-
 // Composable return type interfaces
+export interface UseApiOptions<T = unknown> {
+  immediate?: boolean;
+  cache?: boolean;
+  cacheKey?: string;
+  onSuccess?: (data: T) => void;
+  onError?: (error: any) => void;
+}
+
+export interface UseApiReturn<T> {
+  data: any;
+  loading: any;
+  error: any;
+  execute: () => Promise<void>;
+  refresh: () => Promise<void>;
+  reset: () => void;
+  isSuccess: any;
+  isError: any;
+}
 
 export interface UseToastReturn {
-  toasts: Ref<Toast[]>;
-  addToast: (options: ToastOptions) => string;
-  removeToast: (id: string) => void;
-  clearToasts: () => void;
-  updateToast: (id: string, options: Partial<ToastOptions>) => void;
-  success: (
-    title: string,
-    description?: string,
-    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
-  error: (
-    title: string,
-    description?: string,
-    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
-  warning: (
-    title: string,
-    description?: string,
-    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
-  info: (
-    title: string,
-    description?: string,
-    options?: Omit<ToastOptions, 'type' | 'title' | 'description'>
-  ) => string;
-  confirm: (
-    title: string,
-    description?: string,
-    onConfirm?: () => void,
-    onCancel?: () => void
-  ) => string;
-  promise: <T>(
-    promise: Promise<T>,
-    options: { loading: string; success: string; error: string }
-  ) => Promise<T>;
-  unsavedChanges: (onSave: () => void, onDiscard: () => void) => string;
-  config: ToastConfig;
-  setConfig: (newConfig: Partial<ToastConfig>) => void;
+  toast: (message: string, options?: any) => void;
+  success: (message: string, options?: any) => void;
+  error: (message: string, options?: any) => void;
+  warning: (message: string, options?: any) => void;
+  info: (message: string, options?: any) => void;
+  dismiss: (id?: string) => void;
+  dismissAll: () => void;
 }
 
 export interface UseNotificationsReturn {
-  notifications: Ref<Notification[]>;
-  unreadCount: Ref<number>;
-  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  notifications: any;
+  addNotification: (notification: any) => void;
   removeNotification: (id: string) => void;
+  clearNotifications: () => void;
   markAsRead: (id: string) => void;
-  clearAll: () => void;
+  markAllAsRead: () => void;
 }

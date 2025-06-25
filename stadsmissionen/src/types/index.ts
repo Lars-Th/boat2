@@ -1,30 +1,34 @@
 // Organized type re-exports
 
-// Core business entities
+// Core entities
 export * from './entities';
-
-// Enums
-export * from './enums';
-
-// UI components and related types
-export * from './ui';
-
-// Authentication and user types
-export * from './auth';
-
-// Activities, participants, and attendance
 export * from './activities';
+export * from './enhanced';
+export * from './relationships';
 
-// Validation types
+// API & Client
+export * from './api';
+
+// UI & Components
+export * from './ui';
+export * from './components';
+export * from './navigation';
+
+// Forms & Validation
+export * from './forms';
 export * from './validation';
 
-// Composable return types
-export * from './composables';
+// System & Configuration
+export * from './system';
+export * from './organization';
+export * from './activity';
 
-// Specialized types (keep existing organization)
-export * from './relationships';
-export * from './enhanced';
-export * from './api';
+// Auth & Permissions
+export * from './auth';
+export * from './enums';
+
+// Composables
+export * from './composables';
 
 // Import API types from the API client for backward compatibility
 import type { ApiError, ApiResponse } from '../api/client/types';

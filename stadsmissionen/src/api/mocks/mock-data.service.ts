@@ -1,13 +1,19 @@
 import type { ApiResponse } from '../client/types';
-import type { Activity, ActivityType, Attendance, Contact, Customer, Participant } from '@/types';
 import type {
+  Activity,
+  ActivityType,
   ActivityWithParticipants,
   ActivityWithTypes,
+  Attendance,
+  Contact,
+  ContactWithRelations,
+  Customer,
+  CustomerWithRelations,
+  Participant,
   ParticipantWithActivities,
   ParticipantWithRelations,
   RelationalParams,
-} from '@/types/enhanced';
-import type { ContactWithRelations, CustomerWithRelations } from '@/types/relationships';
+} from '@/types';
 
 // Import JSON data
 import activitiesData from '@/assets/data/activities.json';
