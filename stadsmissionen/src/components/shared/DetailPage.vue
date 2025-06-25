@@ -5,13 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { ArrowLeft, FileText, Info, Save, Trash2, Undo2 } from 'lucide-vue-next';
+  Combobox,
+  ComboboxAnchor,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxItemIndicator,
+  ComboboxList,
+  ComboboxTrigger,
+} from '@/components/ui/combobox';
+import { ArrowLeft, FileText, Info, Save, Trash2, Undo2, Check, ChevronsUpDown } from 'lucide-vue-next';
 
 interface Field {
   key: string;
@@ -73,6 +77,19 @@ const formatValue = (value: any, type?: string) => {
     default:
       return `${value}`;
   }
+};
+
+// Helper function to get selected option for combobox
+const getSelectedOption = (field: Field, value: any) => {
+  if (!field.options || !value) return null;
+  const stringValue = value?.toString() || '';
+  return field.options.find((option: { value: string; label: string }) => option.value === stringValue) || null;
+};
+
+// Helper function to handle combobox selection
+const handleComboboxChange = (field: Field, selectedOption: { value: string; label: string } | null) => {
+  const value = selectedOption ? selectedOption.value : '';
+  updateField(field.key, value);
 };
 </script>
 
@@ -155,7 +172,7 @@ const formatValue = (value: any, type?: string) => {
     </div>
 
     <!-- Form Content -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 m-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 m-4">
       <!-- Main Content (2/3 width) -->
       <div class="lg:col-span-2">
         <slot name="main-content" :data="data" :readonly="readonly">
@@ -166,14 +183,14 @@ const formatValue = (value: any, type?: string) => {
               Grundläggande information
             </h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 gap-x-4">
               <div v-for="field in mainFields" :key="field.key" class="space-y-1">
-                <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
+                <Label class="text-[0.625rem] font-medium text-gray-500">{{ field.label }}</Label>
                 <Input
                   v-if="field.type === 'text'"
-                  :model-value="String(data[field.key] ?? '')"
+                  :model-value="(data[field.key] ?? '').toString()"
                   :readonly="readonly"
-                  class="h-8 text-xs"
+                  class="h-8 md:text-xs"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Input
@@ -186,7 +203,7 @@ const formatValue = (value: any, type?: string) => {
                 />
                 <Input
                   v-else-if="field.type === 'date'"
-                  :model-value="String(data[field.key] ?? '')"
+                  :model-value="(data[field.key] ?? '').toString()"
                   :readonly="readonly"
                   type="date"
                   class="h-8 text-xs"
@@ -194,31 +211,55 @@ const formatValue = (value: any, type?: string) => {
                 />
                 <Textarea
                   v-else-if="field.type === 'textarea'"
-                  :model-value="String(data[field.key] ?? '')"
+                  :model-value="(data[field.key] ?? '').toString()"
                   :readonly="readonly"
                   rows="3"
                   class="text-xs resize-none"
                   @update:model-value="updateField(field.key, $event)"
                 />
-                <Select
+                <Combobox
                   v-else-if="field.type === 'select'"
-                  :model-value="String(data[field.key] ?? '')"
+                  :model-value="getSelectedOption(field, data[field.key])"
                   :disabled="readonly"
-                  @update:model-value="updateField(field.key, $event)"
+                  by="value"
+                  @update:model-value="handleComboboxChange(field, $event)"
                 >
-                  <SelectTrigger size="sm" class="text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem
-                      v-for="option in field.options"
-                      :key="option.value"
-                      :value="option.value"
-                    >
-                      {{ option.label }}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  <ComboboxAnchor as-child>
+                    <ComboboxTrigger as-child>
+                      <Button variant="outline" class="text-xs">
+                        {{ getSelectedOption(field, data[field.key])?.label ?? 'Välj alternativ...' }}
+                        <ChevronsUpDown class="" />
+                      </Button>
+                    </ComboboxTrigger>
+                  </ComboboxAnchor>
+
+                  <ComboboxList class="">
+                    <div class="">
+                      <ComboboxInput
+                        class=""
+                        :placeholder="`Sök ${field.label.toLowerCase()}...`"
+                      />
+                    </div>
+
+                    <ComboboxEmpty class="text-xs">
+                      Inga alternativ hittades.
+                    </ComboboxEmpty>
+
+                    <ComboboxGroup>
+                      <ComboboxItem
+                        v-for="option in field.options"
+                        :key="option.value"
+                        :value="option"
+                        class="text-xs"
+                      >
+                        {{ option.label }}
+                        <ComboboxItemIndicator>
+                          <Check class="" />
+                        </ComboboxItemIndicator>
+                      </ComboboxItem>
+                    </ComboboxGroup>
+                  </ComboboxList>
+                </Combobox>
               </div>
             </div>
           </div>

@@ -41,6 +41,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Padding variables */
   --padding-0: var(--padding-0);
   --padding-1: var(--padding-1);
   --padding-2: var(--padding-2);
@@ -54,6 +56,8 @@
   --padding-16: var(--padding-16);
   --padding-20: var(--padding-20);
   --padding-24: var(--padding-24);
+
+  /* Margin variables */
   --margin-0: var(--margin-0);
   --margin-1: var(--margin-1);
   --margin-2: var(--margin-2);
@@ -67,6 +71,8 @@
   --margin-16: var(--margin-16);
   --margin-20: var(--margin-20);
   --margin-24: var(--margin-24);
+
+  /* Gap variables */
   --gap-0: var(--gap-0);
   --gap-1: var(--gap-1);
   --gap-2: var(--gap-2);
@@ -80,6 +86,34 @@
   --gap-16: var(--gap-16);
   --gap-20: var(--gap-20);
   --gap-24: var(--gap-24);
+
+  /* Font size variables */
+  --text-xs: var(--text-xs);
+  --text-xs--line-height: var(--text-xs--line-height);
+  --text-sm: var(--text-sm);
+  --text-sm--line-height: var(--text-sm--line-height);
+  --text-base: var(--text-base);
+  --text-base--line-height: var(--text-base--line-height);
+  --text-lg: var(--text-lg);
+  --text-lg--line-height: var(--text-lg--line-height);
+  --text-xl: var(--text-xl);
+  --text-xl--line-height: var(--text-xl--line-height);
+  --text-2xl: var(--text-2xl);
+  --text-2xl--line-height: var(--text-2xl--line-height);
+  --text-3xl: var(--text-3xl);
+  --text-3xl--line-height: var(--text-3xl--line-height);
+  --text-4xl: var(--text-4xl);
+  --text-4xl--line-height: var(--text-4xl--line-height);
+  --text-5xl: var(--text-5xl);
+  --text-5xl--line-height: var(--text-5xl--line-height);
+  --text-6xl: var(--text-6xl);
+  --text-6xl--line-height: var(--text-6xl--line-height);
+  --text-7xl: var(--text-7xl);
+  --text-7xl--line-height: var(--text-7xl--line-height);
+  --text-8xl: var(--text-8xl);
+  --text-8xl--line-height: var(--text-8xl--line-height);
+  --text-9xl: var(--text-9xl);
+  --text-9xl--line-height: var(--text-9xl--line-height);
 }
 
 :root {
@@ -129,6 +163,55 @@
   --gap-16: 4rem;
   --gap-20: 5rem;
   --gap-24: 6rem;
+
+  /* Font size variables */
+  --text-xs: 0.75rem;
+  /* 12px */
+  --text-xs--line-height: 1rem;
+  /* 16px */
+  --text-sm: 0.875rem;
+  /* 14px */
+  --text-sm--line-height: 1.25rem;
+  /* 20px */
+  --text-base: 1rem;
+  /* 16px */
+  --text-base--line-height: 1.5rem;
+  /* 24px */
+  --text-lg: 1.125rem;
+  /* 18px */
+  --text-lg--line-height: 1.75rem;
+  /* 28px */
+  --text-xl: 1.25rem;
+  /* 20px */
+  --text-xl--line-height: 1.75rem;
+  /* 28px */
+  --text-2xl: 1.5rem;
+  /* 24px */
+  --text-2xl--line-height: 2rem;
+  /* 32px */
+  --text-3xl: 1.875rem;
+  /* 30px */
+  --text-3xl--line-height: 2.25rem;
+  /* 36px */
+  --text-4xl: 2.25rem;
+  /* 36px */
+  --text-4xl--line-height: 2.5rem;
+  /* 40px */
+  --text-5xl: 3rem;
+  /* 48px */
+  --text-5xl--line-height: 1;
+  --text-6xl: 3.75rem;
+  /* 60px */
+  --text-6xl--line-height: 1;
+  --text-7xl: 4.5rem;
+  /* 72px */
+  --text-7xl--line-height: 1;
+  --text-8xl: 6rem;
+  /* 96px */
+  --text-8xl--line-height: 1;
+  --text-9xl: 8rem;
+  /* 128px */
+  --text-9xl--line-height: 1;
 
   /* Background variables */
   --background: oklch(1 0 0);
