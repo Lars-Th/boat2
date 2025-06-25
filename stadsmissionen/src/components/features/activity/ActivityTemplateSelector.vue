@@ -137,19 +137,19 @@ const handleTemplateChange = (templateId: string | null) => {
                 :value="template.id"
               >
                 <div class="flex items-center gap-2">
-                                  <Badge
-                  :variant="
-                    template.templateType === 'Standard'
-                      ? 'default'
-                      : template.templateType === 'Samtal'
-                        ? 'secondary'
-                        : 'outline'
-                  "
-                  class="text-xs"
-                >
-                  {{ getTemplateTypeInfo(template.templateType).label }}
-                </Badge>
-                <span>{{ template.name }}</span>
+                  <Badge
+                    :variant="
+                      template.templateType === 'Standard'
+                        ? 'default'
+                        : template.templateType === 'Samtal'
+                          ? 'secondary'
+                          : 'outline'
+                    "
+                    class="text-xs"
+                  >
+                    {{ getTemplateTypeInfo(template.templateType).label }}
+                  </Badge>
+                  <span>{{ template.name }}</span>
                 </div>
               </SelectItem>
             </SelectContent>

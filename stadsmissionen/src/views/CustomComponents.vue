@@ -25,6 +25,7 @@ import DataTable from '@/components/shared/DataTable.vue';
 import ViewControls from '@/components/shared/ViewControls.vue';
 import DetailPage from '@/components/shared/DetailPage.vue';
 import ComplexDetailPage from '@/components/shared/ComplexDetailPage.vue';
+import ExtendedDetailPage from '@/components/shared/ExtendedDetailPage.vue';
 import ListPage from '@/components/shared/ListPage.vue';
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ErrorBoundary from '@/components/common/ErrorBoundary.vue';
@@ -833,6 +834,103 @@ const fileTree: TreeNode[] = [
           ],
           readonly: false,
           hasUnsavedChanges: true,
+        },
+      },
+
+      {
+        name: 'ExtendedDetailPage.vue',
+        path: 'shared/ExtendedDetailPage.vue',
+        type: 'file',
+        component: ExtendedDetailPage,
+        props: {
+          title: 'Extended Demo Sida',
+          description: 'En demonstration av ExtendedDetailPage-komponenten med flikar',
+          breadcrumbs: [
+            { label: 'Dashboard', to: '/overview' },
+            { label: 'Demo', to: '/demo' },
+            { label: 'Extended', isCurrentPage: true },
+          ],
+          showStats: true,
+          stats: [
+            { label: 'Totalt', value: 156, color: 'text-blue-600' },
+            { label: 'Aktiva', value: 89, color: 'text-green-600' },
+            { label: 'Väntande', value: 23, color: 'text-orange-600' },
+            { label: 'Avslutade', value: 44, color: 'text-gray-600' },
+          ],
+          data: {
+            name: 'Demo Extended Project',
+            description: 'Ett omfattande projekt som demonstrerar ExtendedDetailPage med flera flikar och komplex data',
+            manager: 'Anna Svensson',
+            department: 'utveckling',
+            status: 'active',
+            budget: 500000,
+            startDate: '2024-01-01',
+            endDate: '2024-12-31',
+            progress: 75,
+            priority: 'high',
+            lastUpdated: '2024-01-21',
+          },
+          mainFields: [
+            { key: 'name', label: 'Projektnamn', type: 'text' },
+            { key: 'description', label: 'Beskrivning', type: 'textarea' },
+            { key: 'manager', label: 'Projektledare', type: 'text' },
+            {
+              key: 'department',
+              label: 'Avdelning',
+              type: 'select',
+              options: [
+                { value: 'utveckling', label: 'Utveckling' },
+                { value: 'design', label: 'Design' },
+                { value: 'marknadsföring', label: 'Marknadsföring' },
+              ],
+            },
+            { key: 'budget', label: 'Budget (SEK)', type: 'number' },
+          ],
+          sidebarFields: [
+            {
+              key: 'status',
+              label: 'Status',
+              type: 'select',
+              options: [
+                { value: 'active', label: 'Aktiv' },
+                { value: 'inactive', label: 'Inaktiv' },
+                { value: 'completed', label: 'Avslutad' },
+              ],
+            },
+            {
+              key: 'priority',
+              label: 'Prioritet',
+              type: 'select',
+              options: [
+                { value: 'low', label: 'Låg' },
+                { value: 'medium', label: 'Medel' },
+                { value: 'high', label: 'Hög' },
+              ],
+            },
+            { key: 'startDate', label: 'Startdatum', type: 'date' },
+            { key: 'endDate', label: 'Slutdatum', type: 'date' },
+            { key: 'progress', label: 'Framsteg (%)', type: 'number' },
+            { key: 'lastUpdated', label: 'Senast uppdaterad', type: 'date' },
+          ],
+          tabs: [
+            {
+              key: 'overview',
+              title: 'Översikt',
+              icon: FileText,
+            },
+            {
+              key: 'team',
+              title: 'Team',
+              icon: User,
+            },
+            {
+              key: 'tasks',
+              title: 'Uppgifter',
+              icon: Settings,
+            },
+          ],
+          readonly: false,
+          hasUnsavedChanges: false,
         },
       },
     ],

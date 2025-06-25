@@ -155,10 +155,10 @@ watch(
   newTemplateId => {
     if (newTemplateId && selectedTemplate.value) {
       const template = selectedTemplate.value;
-        form.value.namn = template.name;
-  form.value.beskrivning = template.description;
-  form.value.plats = template.standardLocation || '';
-  form.value.varaktighet = template.standardDuration;
+      form.value.namn = template.name;
+      form.value.beskrivning = template.description;
+      form.value.plats = template.standardLocation || '';
+      form.value.varaktighet = template.standardDuration;
 
       // Reset series if template doesn't support it
       if (!templateTypeInfo.value?.allowsSeries) {

@@ -455,7 +455,10 @@ const breadcrumbs = computed(() => [
                     <p class="font-medium">{{ question.question }}</p>
 
                     <!-- Question-specific details -->
-                    <div v-if="question.type === 'Skala'" class="mt-2 text-sm text-muted-foreground">
+                    <div
+                      v-if="question.type === 'Skala'"
+                      class="mt-2 text-sm text-muted-foreground"
+                    >
                       Skala: {{ question.scaleMin ?? 1 }} - {{ question.scaleMax ?? 5 }}
                       <span v-if="question.scaleComment">(med kommentarsfält)</span>
                     </div>

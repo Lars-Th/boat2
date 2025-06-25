@@ -55,8 +55,12 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || typesLoading.value || activitiesLoading.value);
-const hasError = computed(() => templatesError.value !== null || typesError.value !== null || activitiesError.value !== null);
+const isLoading = computed(
+  () => templatesLoading.value || typesLoading.value || activitiesLoading.value
+);
+const hasError = computed(
+  () => templatesError.value !== null || typesError.value !== null || activitiesError.value !== null
+);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
@@ -97,8 +101,8 @@ const enhancedTemplates = computed(() => {
       types,
       primaryPurpose,
       questionCount: template.resultForm.length,
-          durationHours: Math.floor(template.standardDuration / 60),
-    durationMinutes: template.standardDuration % 60,
+      durationHours: Math.floor(template.standardDuration / 60),
+      durationMinutes: template.standardDuration % 60,
       usageCount,
     };
   });
@@ -115,9 +119,9 @@ const filteredTemplates = computed(() => {
     const search = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       template =>
-            template.name.toLowerCase().includes(search) ||
-    template.description.toLowerCase().includes(search) ||
-    template.templateType.toLowerCase().includes(search) ||
+        template.name.toLowerCase().includes(search) ||
+        template.description.toLowerCase().includes(search) ||
+        template.templateType.toLowerCase().includes(search) ||
         template.types.some(type => type.Typnamn.toLowerCase().includes(search))
     );
   }
@@ -346,10 +350,7 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
 
       <template #cell-usageCount="{ row }">
         <div>
-          <Badge
-            :variant="(row as any).usageCount > 0 ? 'outline' : ''"
-            class="text-xs"
-          >
+          <Badge :variant="(row as any).usageCount > 0 ? 'outline' : ''" class="text-xs">
             {{ (row as any).usageCount }}
             {{ (row as any).usageCount === 1 ? 'aktivitet' : 'aktiviteter' }}
           </Badge>

@@ -93,8 +93,8 @@ const enhancedTemplates = computed(() => {
       types,
       primaryPurpose,
       questionCount: template.resultForm.length,
-          durationHours: Math.floor(template.standardDuration / 60),
-    durationMinutes: template.standardDuration % 60,
+      durationHours: Math.floor(template.standardDuration / 60),
+      durationMinutes: template.standardDuration % 60,
       usageCount, // New: Usage statistics from relations
     };
   });
@@ -108,9 +108,9 @@ const filteredTemplates = computed(() => {
   const search = searchTerm.value.toLowerCase();
   return enhancedTemplates.value.filter(
     template =>
-          template.name.toLowerCase().includes(search) ||
-    template.description.toLowerCase().includes(search) ||
-    template.templateType.toLowerCase().includes(search) ||
+      template.name.toLowerCase().includes(search) ||
+      template.description.toLowerCase().includes(search) ||
+      template.templateType.toLowerCase().includes(search) ||
       template.types.some(type => type.Typnamn.toLowerCase().includes(search))
   );
 });

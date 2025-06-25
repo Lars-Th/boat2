@@ -169,7 +169,7 @@ defineExpose({
         </div>
 
         <div v-if="selectedTemplate" class="mt-4 p-3 bg-muted rounded-md">
-                        <p class="text-sm text-muted-foreground">{{ selectedTemplate.description }}</p>
+          <p class="text-sm text-muted-foreground">{{ selectedTemplate.description }}</p>
         </div>
       </CardContent>
     </Card>
