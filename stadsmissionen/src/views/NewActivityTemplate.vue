@@ -221,13 +221,13 @@ const loadTemplate = () => {
     const existingTemplate = activityTemplates.value.find(t => t.id === templateId.value);
     if (existingTemplate) {
       form.value = {
-        namn: existingTemplate.namn,
-        beskrivning: existingTemplate.beskrivning,
-        malltyp: existingTemplate.malltyp,
-        aktivitetstyper: [...existingTemplate.aktivitetstyper],
-        standardPlats: existingTemplate.standardPlats || '',
-        standardVaraktighet: existingTemplate.standardVaraktighet || 60,
-        resultatformular: [...existingTemplate.resultatformular],
+        namn: existingTemplate.name,
+        beskrivning: existingTemplate.description,
+        malltyp: existingTemplate.templateType,
+        aktivitetstyper: [...existingTemplate.activityTypes],
+        standardPlats: existingTemplate.standardLocation || '',
+        standardVaraktighet: existingTemplate.standardDuration || 60,
+        resultatformular: [...existingTemplate.resultForm],
       };
     }
   }

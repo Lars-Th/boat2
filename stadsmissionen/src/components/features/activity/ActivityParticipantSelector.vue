@@ -57,7 +57,7 @@ const participantsFromGroups = computed(() => {
 
   const groupParticipants = props.selectedGroups.flatMap(groupId => {
     const group = participantGroups.value?.find(g => g.id === groupId);
-    return group ? group.deltagare : [];
+    return group?.deltagare ? group.deltagare : [];
   });
   return [...new Set(groupParticipants)]; // Remove duplicates
 });
@@ -136,7 +136,7 @@ const displayParticipants = computed(() => {
 
           <TabsContent value="groups" class="space-y-4">
             <div
-              v-if="!participantGroups ?? participantGroups.length === 0"
+              v-if="!participantGroups || participantGroups.length === 0"
               class="text-center py-8 text-muted-foreground"
             >
               <p class="text-sm">Inga deltagargrupper tillgängliga</p>
@@ -161,10 +161,10 @@ const displayParticipants = computed(() => {
                   </p>
                   <div class="flex items-center gap-2 mt-1">
                     <Badge variant="outline" class="text-xs">
-                      {{ group.deltagare.length }} deltagare
+                      {{ (group.deltagare || []).length }} deltagare
                     </Badge>
                     <Badge
-                      v-for="enhet in group.enheter"
+                      v-for="enhet in group.enheter || []"
                       :key="enhet"
                       variant="secondary"
                       class="text-xs"
@@ -179,7 +179,7 @@ const displayParticipants = computed(() => {
 
           <TabsContent value="individual" class="space-y-4">
             <div
-              v-if="!participants ?? participants.length === 0"
+              v-if="!participants || participants.length === 0"
               class="text-center py-8 text-muted-foreground"
             >
               <p class="text-sm">Inga deltagare tillgängliga</p>

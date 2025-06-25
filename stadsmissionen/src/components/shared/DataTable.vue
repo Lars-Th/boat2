@@ -269,7 +269,7 @@ defineExpose({
               v-for="(column, colIndex) in columns"
               :key="column.key"
               :class="[
-                'text-xs first:pl-6 last:pr-4',
+                'text-xs first:pl-6 last:pr-4 text-left',
                 column.key === 'company' || column.key === 'name' || column.key === 'companyName'
                   ? 'font-bold'
                   : '',

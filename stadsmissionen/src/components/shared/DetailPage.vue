@@ -111,16 +111,13 @@ const handleComboboxChange = (
 
 <template>
   <div class="relative">
-
-
     <!-- Header -->
     <StandardHeader
       :title="props.title"
       :breadcrumbs="props.breadcrumbs"
       :show-stats="props.showStats"
       :stats="props.stats"
-    >
-    </StandardHeader>
+    ></StandardHeader>
 
     <!-- Back Button and Save Button -->
     <div class="flex items-center gap-2 mx-4">
@@ -174,7 +171,7 @@ const handleComboboxChange = (
         <slot name="main-content" :data="data" :readonly="readonly">
           <!-- Default form fields -->
           <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold flex items-center text-gray-600 mb-2">
+            <h3 class="text-sm font-semibold flex items-center text-gray-600 mb-2 gap-2">
               <FileText class="h-4 w-4" />
               Grundläggande information
             </h3>
@@ -233,9 +230,7 @@ const handleComboboxChange = (
 
                   <ComboboxList class="">
                     <div class="">
-                      <ComboboxInput
-                        :placeholder="`Sök ${field.label.toLowerCase()}...`"
-                      />
+                      <ComboboxInput :placeholder="`Sök ${field.label.toLowerCase()}...`" />
                     </div>
 
                     <ComboboxEmpty class="text-xs">Inga alternativ hittades.</ComboboxEmpty>

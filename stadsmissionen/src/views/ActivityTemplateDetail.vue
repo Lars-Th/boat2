@@ -256,7 +256,7 @@ const breadcrumbs = computed(() => [
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'Aktiviteter', to: '/activities' },
   { label: 'Lista Mallar', to: '/activity-templates' },
-  { label: template.value?.namn || 'Mall', isCurrentPage: true },
+  { label: template.value?.name || 'Mall', isCurrentPage: true },
 ]);
 </script>
 
@@ -300,7 +300,7 @@ const breadcrumbs = computed(() => [
   <div v-else class="flex flex-col h-full">
     <!-- Header -->
     <StandardHeader
-      :title="template.namn"
+      :title="template.name"
       :breadcrumbs="breadcrumbs"
       :stats="templateStats"
       show-stats
@@ -332,9 +332,9 @@ const breadcrumbs = computed(() => [
               <CardHeader>
                 <CardTitle class="flex items-center gap-2">
                   <component
-                    :is="getTemplateTypeInfo(template.malltyp).icon"
+                    :is="getTemplateTypeInfo(template.templateType).icon"
                     class="h-5 w-5"
-                    :class="`text-${getTemplateTypeInfo(template.malltyp).color}-600`"
+                    :class="`text-${getTemplateTypeInfo(template.templateType).color}-600`"
                   />
                   Mallinformation
                 </CardTitle>
@@ -346,18 +346,18 @@ const breadcrumbs = computed(() => [
                     <div class="flex items-center gap-2 mt-1">
                       <Badge
                         :variant="
-                          template.malltyp === 'Standard'
+                          template.templateType === 'Standard'
                             ? 'default'
-                            : template.malltyp === 'Samtal'
+                            : template.templateType === 'Samtal'
                               ? 'secondary'
                               : 'outline'
                         "
                       >
-                        {{ getTemplateTypeInfo(template.malltyp).label }}
+                        {{ getTemplateTypeInfo(template.templateType).label }}
                       </Badge>
                     </div>
                     <p class="text-xs text-muted-foreground mt-1">
-                      {{ getTemplateTypeInfo(template.malltyp).description }}
+                      {{ getTemplateTypeInfo(template.templateType).description }}
                     </p>
                   </div>
 
@@ -365,22 +365,22 @@ const breadcrumbs = computed(() => [
                     <label class="text-sm font-medium text-muted-foreground">Varaktighet</label>
                     <div class="flex items-center gap-2 mt-1">
                       <Clock class="h-4 w-4 text-muted-foreground" />
-                      <span>{{ formatDuration(template.standardVaraktighet) }}</span>
+                      <span>{{ formatDuration(template.standardDuration) }}</span>
                     </div>
                   </div>
 
-                  <div v-if="template.standardPlats" class="md:col-span-2">
+                  <div v-if="template.standardLocation" class="md:col-span-2">
                     <label class="text-sm font-medium text-muted-foreground">Standardplats</label>
                     <div class="flex items-center gap-2 mt-1">
                       <MapPin class="h-4 w-4 text-muted-foreground" />
-                      <span>{{ template.standardPlats }}</span>
+                      <span>{{ template.standardLocation }}</span>
                     </div>
                   </div>
                 </div>
 
                 <div>
                   <label class="text-sm font-medium text-muted-foreground">Beskrivning</label>
-                  <p class="mt-1">{{ template.beskrivning }}</p>
+                  <p class="mt-1">{{ template.description }}</p>
                 </div>
               </CardContent>
             </Card>
@@ -427,17 +427,17 @@ const breadcrumbs = computed(() => [
         </div>
 
         <!-- Result Form Questions -->
-        <Card v-if="template.resultatformular && template.resultatformular.length > 0">
+        <Card v-if="template.resultForm && template.resultForm.length > 0">
           <CardHeader>
             <CardTitle class="flex items-center gap-2">
               <HelpCircle class="h-5 w-5" />
-              Resultatformulär ({{ template.resultatformular.length }} frågor)
+              Resultatformulär ({{ template.resultForm.length }} frågor)
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div class="space-y-4">
               <div
-                v-for="(question, index) in template.resultatformular"
+                v-for="(question, index) in template.resultForm"
                 :key="question.id || index"
                 class="border rounded-lg p-4"
               >
@@ -445,22 +445,22 @@ const breadcrumbs = computed(() => [
                   <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
                       <Badge variant="outline" class="text-xs flex items-center gap-1">
-                        <component :is="getQuestionTypeInfo(question.typ).icon" class="h-3 w-3" />
-                        {{ getQuestionTypeInfo(question.typ).label }}
+                        <component :is="getQuestionTypeInfo(question.type).icon" class="h-3 w-3" />
+                        {{ getQuestionTypeInfo(question.type).label }}
                       </Badge>
-                      <Badge v-if="question.obligatorisk" variant="secondary" class="text-xs">
+                      <Badge v-if="question.required" variant="secondary" class="text-xs">
                         Obligatorisk
                       </Badge>
                     </div>
-                    <p class="font-medium">{{ question.fraga }}</p>
+                    <p class="font-medium">{{ question.question }}</p>
 
                     <!-- Question-specific details -->
-                    <div v-if="question.typ === 'Skala'" class="mt-2 text-sm text-muted-foreground">
-                      Skala: {{ question.skalaMin ?? 1 }} - {{ question.skalaMax ?? 5 }}
-                      <span v-if="question.skalaKommentar">(med kommentarsfält)</span>
+                    <div v-if="question.type === 'Skala'" class="mt-2 text-sm text-muted-foreground">
+                      Skala: {{ question.scaleMin ?? 1 }} - {{ question.scaleMax ?? 5 }}
+                      <span v-if="question.scaleComment">(med kommentarsfält)</span>
                     </div>
                     <div
-                      v-else-if="question.typ === 'JaNej' && question.harKommentar"
+                      v-else-if="question.type === 'JaNej' && question.hasComment"
                       class="mt-2 text-sm text-muted-foreground"
                     >
                       Med kommentarsfält

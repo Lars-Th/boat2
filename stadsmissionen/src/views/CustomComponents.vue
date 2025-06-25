@@ -119,12 +119,24 @@ const fileTree: TreeNode[] = [
             type: 'file',
             component: ActivityForm,
             props: {
-              activity: {
-                name: 'Demo Activity',
-                description: 'This is a demo activity form',
-                startDate: '2024-01-20',
-                endDate: '2024-01-21',
+              get modelValue() {
+                return activityFormData.value;
               },
+              templates: [
+                      { id: 1, name: 'Workshop Template', description: 'Standard workshop setup', templateType: 'workshop' },
+      { id: 2, name: 'Meeting Template', description: 'Regular meeting format', templateType: 'meeting' },
+      { id: 3, name: 'Training Template', description: 'Training session format', templateType: 'training' },
+              ],
+              enheter: ['Enhet 1', 'Enhet 2', 'Enhet 3'],
+              participantGroups: [
+                { id: '1', namn: 'Group A' },
+                { id: '2', namn: 'Group B' },
+              ],
+              participants: [
+                { id: '1', namn: 'Anna Andersson' },
+                { id: '2', namn: 'Erik Svensson' },
+                { id: '3', namn: 'Maria Johansson' },
+              ],
             },
           },
           {
@@ -831,6 +843,28 @@ const fileTree: TreeNode[] = [
 const expandedFolders = ref(new Set(['pages', 'features', 'shared']));
 const selectedComponent = shallowRef<TreeNode | null>(null);
 
+// ActivityForm reactive state
+const activityFormData = ref({
+  templateId: '',
+  namn: 'Demo Activity',
+  beskrivning: 'This is a demo activity form',
+  plats: 'Demo Location',
+  startDatum: '2024-01-20',
+  startTid: '10:00',
+  varaktighet: 120,
+  arSerie: false,
+  serieInställningar: {
+    veckodag: '',
+    antalVeckor: 1,
+    slutDatum: '',
+  },
+  deltagare: [],
+  deltagargrupper: [],
+  maxDeltagare: null,
+  enhet: '',
+  anteckningar: 'Demo notes',
+});
+
 // Viewport state
 type ViewportType = 'desktop' | 'laptop' | 'phone';
 const currentViewport = ref<ViewportType>('desktop');
@@ -942,6 +976,17 @@ const handleDeleteSubItem = (tableKey: string, item: any) => {
 const handleSubItemClick = (tableKey: string, item: any) => {
   console.log('Sub item clicked in table:', tableKey, item);
   // In a real app, you would handle the item click here
+};
+
+// ActivityForm event handlers
+const handleActivityFormUpdate = (value: any) => {
+  activityFormData.value = value;
+  console.log('ActivityForm updated:', value);
+};
+
+const handleTemplateChange = (templateId: string) => {
+  console.log('Template changed:', templateId);
+  // In a real app, you might load template data here
 };
 
 // Statistics for the header
@@ -1580,7 +1625,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen">
     <StandardHeader
       title="UI Byggstenar"
       :breadcrumbs="[
@@ -1599,8 +1644,7 @@ onMounted(() => {
 
     <div class="pb-6">
       <!-- Toggle Section -->
-      <div class="mb-6 bg-white rounded-lg border p-4">
-        <div class="flex gap-2">
+        <div class="flex gap-2 m-4">
           <Button
             :variant="currentView === 'components' ? 'default' : 'outline'"
             class="gap-2"
@@ -1623,7 +1667,6 @@ onMounted(() => {
           >
             🍞 Toast Exempel
           </Button>
-        </div>
       </div>
 
       <!-- Content Area -->
@@ -1907,7 +1950,7 @@ onMounted(() => {
         </div>
 
         <!-- Component Renderer -->
-        <div class="flex-1 overflow-y-auto bg-gray-100">
+        <div class="flex-1 overflow-y-auto">
           <div v-if="selectedComponent" class="p-6">
             <div class="mb-4">
               <h2 class="text-xl font-semibold text-gray-900">{{ selectedComponent.name }}</h2>
@@ -2059,6 +2102,18 @@ onMounted(() => {
                     </div>
                   </template>
                 </ListPage>
+
+                <!-- ActivityForm with specific event handling -->
+                <ActivityForm
+                  v-else-if="selectedComponent.name === 'ActivityForm.vue'"
+                  :model-value="activityFormData"
+                  :templates="selectedComponent.props?.templates || []"
+                  :enheter="selectedComponent.props?.enheter || []"
+                  :participant-groups="selectedComponent.props?.participantGroups || []"
+                  :participants="selectedComponent.props?.participants || []"
+                  @update:model-value="handleActivityFormUpdate"
+                  @template-change="handleTemplateChange"
+                />
 
                 <!-- Default component rendering for all other components -->
                 <component

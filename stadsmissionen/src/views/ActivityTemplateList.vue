@@ -45,18 +45,27 @@ const {
   cacheKey: 'activityTypes',
 });
 
+const {
+  data: activities,
+  loading: activitiesLoading,
+  error: activitiesError,
+  refresh: refreshActivities,
+} = useApiList(() => api.activities.getAll(), {
+  cacheKey: 'activities',
+});
+
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || typesLoading.value);
-const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
+const isLoading = computed(() => templatesLoading.value || typesLoading.value || activitiesLoading.value);
+const hasError = computed(() => templatesError.value !== null || typesError.value !== null || activitiesError.value !== null);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
-  await Promise.all([refreshTemplates(), refreshTypes()]);
+  await Promise.all([refreshTemplates(), refreshTypes(), refreshActivities()]);
 };
 
 // Get activity type details from relational data or fallback to separate types
-const getActivityTypeDetails = (typeIds: string[]) => {
-  if (!activityTypes.value) return [];
+const getActivityTypeDetails = (typeIds: string[] | null | undefined) => {
+  if (!activityTypes.value || !typeIds || typeIds.length === 0) return [];
   return typeIds.map(id => {
     const type = activityTypes.value?.find(t => t.ActivityTypeID === parseInt(id));
     return (
@@ -75,19 +84,21 @@ const enhancedTemplates = computed(() => {
   if (!activityTemplates.value) return [];
 
   return activityTemplates.value.map(template => {
-    const types = getActivityTypeDetails(template.aktivitetstyper);
+    const types = getActivityTypeDetails(template.activityTypes || []);
     const primaryPurpose = types.length > 0 && types[0] ? types[0].Syfte : 'Inget syfte angivet';
 
-    // Calculate usage statistics - mock data for now since activities relation isn't available
-    const usageCount = 0; // Will be populated when real API supports relations
+    // Calculate usage statistics from activities data
+    const usageCount = activities.value
+      ? activities.value.filter(activity => activity.template === template.id).length
+      : 0;
 
     return {
       ...template,
       types,
       primaryPurpose,
-      questionCount: template.resultatformular.length,
-      durationHours: Math.floor(template.standardVaraktighet / 60),
-      durationMinutes: template.standardVaraktighet % 60,
+      questionCount: template.resultForm.length,
+          durationHours: Math.floor(template.standardDuration / 60),
+    durationMinutes: template.standardDuration % 60,
       usageCount,
     };
   });
@@ -104,16 +115,16 @@ const filteredTemplates = computed(() => {
     const search = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       template =>
-        template.namn.toLowerCase().includes(search) ||
-        template.beskrivning.toLowerCase().includes(search) ||
-        template.malltyp.toLowerCase().includes(search) ||
+            template.name.toLowerCase().includes(search) ||
+    template.description.toLowerCase().includes(search) ||
+    template.templateType.toLowerCase().includes(search) ||
         template.types.some(type => type.Typnamn.toLowerCase().includes(search))
     );
   }
 
   // Apply status filter
   if (statusFilter.value && statusFilter.value !== 'all') {
-    filtered = filtered.filter(template => template.malltyp === statusFilter.value);
+    filtered = filtered.filter(template => template.templateType === statusFilter.value);
   }
 
   return filtered;
@@ -127,8 +138,8 @@ const paginatedTemplates = computed(() => {
 });
 
 // Get template type icon and color
-const getTemplateTypeInfo = (malltyp: string) => {
-  switch (malltyp) {
+const getTemplateTypeInfo = (templateType: string) => {
+  switch (templateType) {
     case 'Standard':
       return { icon: Users, color: 'blue', label: 'Standard' };
     case 'Samtal':
@@ -136,27 +147,21 @@ const getTemplateTypeInfo = (malltyp: string) => {
     case 'OppetHus':
       return { icon: FileText, color: 'purple', label: 'Öppet hus' };
     default:
-      return { icon: FileText, color: 'gray', label: malltyp };
+      return { icon: FileText, color: 'gray', label: templateType };
   }
 };
 
 // Table columns
 const columns = [
   {
-    key: 'namn',
+    key: 'name',
     label: 'Mallnamn',
     sortable: true,
   },
   {
-    key: 'malltyp',
+    key: 'templateType',
     label: 'Typ',
     sortable: true,
-    type: 'custom' as const,
-  },
-  {
-    key: 'types',
-    label: 'Aktivitetstyper',
-    sortable: false,
     type: 'custom' as const,
   },
   {
@@ -166,14 +171,14 @@ const columns = [
     type: 'custom' as const,
   },
   {
-    key: 'beskrivning',
+    key: 'description',
     label: 'Beskrivning',
     sortable: true,
     type: 'custom' as const,
   },
   {
     key: 'actions',
-    label: '',
+    label: 'Åtgärder',
     sortable: false,
     type: 'actions' as const,
   },
@@ -207,17 +212,17 @@ const stats = computed(() => {
     },
     {
       label: 'Standard',
-      value: templates.filter(t => t.malltyp === 'Standard').length,
+      value: templates.filter(t => t.templateType === 'Standard').length,
       color: 'text-green-600',
     },
     {
       label: 'Samtal',
-      value: templates.filter(t => t.malltyp === 'Samtal').length,
+      value: templates.filter(t => t.templateType === 'Samtal').length,
       color: 'text-purple-600',
     },
     {
       label: 'Öppet hus',
-      value: templates.filter(t => t.malltyp === 'OppetHus').length,
+      value: templates.filter(t => t.templateType === 'OppetHus').length,
       color: 'text-orange-600',
     },
   ];
@@ -266,7 +271,7 @@ const handleEditTemplate = (template: any, event: MouseEvent) => {
 
 const handleDeleteTemplate = (template: any, event: MouseEvent) => {
   event.stopPropagation();
-  if (confirm(`Är du säker på att du vill ta bort mallen "${template.namn}"?`)) {
+  if (confirm(`Är du säker på att du vill ta bort mallen "${template.name}"?`)) {
     // TODO: Implement API call to delete template
     console.log('Delete template:', template.id);
   }
@@ -303,7 +308,7 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
       :show-view-switcher="false"
       :data="paginatedTemplates || []"
       :columns="columns"
-      :search-fields="['namn', 'beskrivning', 'malltyp']"
+      :search-fields="['name', 'description', 'templateType']"
       :loading="isLoading"
       :total-items="filteredTemplates.length"
       :current-page="currentPage"
@@ -317,56 +322,43 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
       @refresh="handleRefresh"
     >
       <!-- Custom column renderers -->
-      <template #cell-malltyp="{ row }">
+      <template #cell-templateType="{ row }">
         <div class="flex items-center gap-2">
           <component
-            :is="getTemplateTypeInfo((row as any).malltyp).icon"
+            :is="getTemplateTypeInfo((row as any).templateType).icon"
             class="h-4 w-4"
-            :class="`text-${getTemplateTypeInfo((row as any).malltyp).color}-600`"
+            :class="`text-${getTemplateTypeInfo((row as any).templateType).color}-600`"
           />
           <Badge
             :variant="
-              (row as any).malltyp === 'Standard'
+              (row as any).templateType === 'Standard'
                 ? 'default'
-                : (row as any).malltyp === 'Samtal'
+                : (row as any).templateType === 'Samtal'
                   ? 'secondary'
                   : 'outline'
             "
             class="text-xs"
           >
-            {{ getTemplateTypeInfo((row as any).malltyp).label }}
-          </Badge>
-        </div>
-      </template>
-
-      <template #cell-types="{ row }">
-        <div class="flex flex-wrap gap-1">
-          <Badge
-            v-for="type in ((row as any).types || []).slice(0, 2)"
-            :key="type.ActivityTypeID"
-            variant="outline"
-            class="text-xs"
-            :title="`${type.Syfte}\n\n${type.Beskrivning}`"
-          >
-            {{ type.Typnamn }}
-          </Badge>
-          <Badge v-if="((row as any).types || []).length > 2" variant="outline" class="text-xs">
-            +{{ ((row as any).types || []).length - 2 }}
+            {{ getTemplateTypeInfo((row as any).templateType).label }}
           </Badge>
         </div>
       </template>
 
       <template #cell-usageCount="{ row }">
-        <div class="text-center">
-          <Badge variant="secondary" class="text-xs">
-            {{ (row as any).usageCount }} aktiviteter
+        <div>
+          <Badge
+            :variant="(row as any).usageCount > 0 ? 'outline' : ''"
+            class="text-xs"
+          >
+            {{ (row as any).usageCount }}
+            {{ (row as any).usageCount === 1 ? 'aktivitet' : 'aktiviteter' }}
           </Badge>
         </div>
       </template>
 
-      <template #cell-beskrivning="{ row }">
+      <template #cell-description="{ row }">
         <div class="text-xs text-muted-foreground">
-          {{ (row as any).beskrivning }}
+          {{ (row as any).description }}
         </div>
       </template>
 

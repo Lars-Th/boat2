@@ -47,8 +47,8 @@ const selectedTemplate = computed(() => {
 });
 
 // Get template type info
-const getTemplateTypeInfo = (malltyp: string) => {
-  switch (malltyp) {
+const getTemplateTypeInfo = (templateType: string) => {
+  switch (templateType) {
     case 'Standard':
       return {
         label: 'Standard',
@@ -72,7 +72,7 @@ const getTemplateTypeInfo = (malltyp: string) => {
       };
     default:
       return {
-        label: malltyp,
+        label: templateType,
         description: '',
         allowsParticipants: true,
         allowsSeries: true,
@@ -137,19 +137,19 @@ const handleTemplateChange = (templateId: string | null) => {
                 :value="template.id"
               >
                 <div class="flex items-center gap-2">
-                  <Badge
-                    :variant="
-                      template.malltyp === 'Standard'
-                        ? 'default'
-                        : template.malltyp === 'Samtal'
-                          ? 'secondary'
-                          : 'outline'
-                    "
-                    class="text-xs"
-                  >
-                    {{ getTemplateTypeInfo(template.malltyp).label }}
-                  </Badge>
-                  <span>{{ template.namn }}</span>
+                                  <Badge
+                  :variant="
+                    template.templateType === 'Standard'
+                      ? 'default'
+                      : template.templateType === 'Samtal'
+                        ? 'secondary'
+                        : 'outline'
+                  "
+                  class="text-xs"
+                >
+                  {{ getTemplateTypeInfo(template.templateType).label }}
+                </Badge>
+                <span>{{ template.name }}</span>
                 </div>
               </SelectItem>
             </SelectContent>
@@ -161,37 +161,37 @@ const handleTemplateChange = (templateId: string | null) => {
           <div class="flex items-start gap-3">
             <div class="flex-1">
               <h4 class="font-medium">
-                {{ selectedTemplate.namn }}
+                {{ selectedTemplate.name }}
               </h4>
               <p class="text-sm text-muted-foreground mt-1">
-                {{ selectedTemplate.beskrivning }}
+                {{ selectedTemplate.description }}
               </p>
               <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                 <span class="flex items-center gap-1">
                   <Clock class="h-3 w-3" />
-                  {{ Math.floor(selectedTemplate.standardVaraktighet / 60) }}h
-                  {{ selectedTemplate.standardVaraktighet % 60 }}min
+                  {{ Math.floor(selectedTemplate.standardDuration / 60) }}h
+                  {{ selectedTemplate.standardDuration % 60 }}min
                 </span>
-                <span v-if="selectedTemplate.standardPlats" class="flex items-center gap-1">
+                <span v-if="selectedTemplate.standardLocation" class="flex items-center gap-1">
                   <MapPin class="h-3 w-3" />
-                  {{ selectedTemplate.standardPlats }}
+                  {{ selectedTemplate.standardLocation }}
                 </span>
                 <span class="flex items-center gap-1">
                   <FileText class="h-3 w-3" />
-                  {{ selectedTemplate.resultatformular.length }} frågor
+                  {{ selectedTemplate.resultForm.length }} frågor
                 </span>
               </div>
             </div>
             <Badge
               :variant="
-                selectedTemplate.malltyp === 'Standard'
+                selectedTemplate.templateType === 'Standard'
                   ? 'default'
-                  : selectedTemplate.malltyp === 'Samtal'
+                  : selectedTemplate.templateType === 'Samtal'
                     ? 'secondary'
                     : 'outline'
               "
             >
-              {{ getTemplateTypeInfo(selectedTemplate.malltyp).label }}
+              {{ getTemplateTypeInfo(selectedTemplate.templateType).label }}
             </Badge>
           </div>
         </div>

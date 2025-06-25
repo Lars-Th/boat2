@@ -7,13 +7,14 @@ import api from '@/api';
 import type { ActivityType } from '@/types';
 
 // Components
+import Button from '@/components/common/Button.vue';
 import ExtendedDetailPage from '@/components/shared/ExtendedDetailPage.vue';
+import DataTable from '@/components/shared/DataTable.vue';
 import { Badge } from '@/components/ui/badge';
 import {
   BarChart3,
-  Calendar,
-  Clock,
-  MapPin,
+  Check,
+  Plus,
   UserCheck,
   UserMinus,
   UserPlus,
@@ -139,7 +140,6 @@ const {
 
 // Extract data from the combined response
 const activity = computed(() => activityWithRelations.value);
-const _activityType = computed(() => activityWithRelations.value?.activityType);
 const attendances = computed(() => _attendancesData.value ?? []);
 const activityParticipants = computed(() => activityWithRelations.value?.participants ?? []);
 
@@ -224,14 +224,6 @@ const formatDate = (dateString: string) => {
   });
 };
 
-// Format time only (unused but keeping for potential future use)
-const _formatTime = (dateString: string) => {
-  return new Date(dateString).toLocaleString('sv-SE', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
 // Tabs configuration for ExtendedDetailPage
 const tabs = computed(() => [
   {
@@ -305,12 +297,12 @@ const participantTableData = computed(() => {
   );
 });
 
-// Column definitions (unused but keeping for potential future use)
-const _attendanceColumns = [
+// Column definitions for attendance table
+const attendanceColumns = [
   { key: 'participant', label: 'Deltagare', sortable: true },
+  { key: 'attendance', label: 'Närvaro', sortable: true, type: 'custom' as const },
   { key: 'phone', label: 'Telefon', sortable: false },
   { key: 'offices', label: 'Enheter', sortable: false, type: 'custom' as const },
-  { key: 'attendance', label: 'Närvaro', sortable: true, type: 'custom' as const },
   { key: 'datetime', label: 'Registrerad', sortable: true, type: 'custom' as const },
   { key: 'notes', label: 'Anteckningar', sortable: false },
   { key: 'actions', label: 'Åtgärder', type: 'actions' as const, width: '100px' },
@@ -543,8 +535,8 @@ const hasError = computed(
       <div class="text-center">
         <div class="h-8 w-8 text-destructive mx-auto mb-4">⚠️</div>
         <p class="text-destructive mb-4">Ett fel uppstod vid laddning av aktivitetsuppgifter</p>
-        <button
-          class="px-4 py-2 bg-primary text-primary-foreground rounded"
+        <Button
+          variant="primary"
           @click="
             () => {
               refreshActivity();
@@ -553,7 +545,7 @@ const hasError = computed(
           "
         >
           Försök igen
-        </button>
+        </Button>
       </div>
     </div>
 
@@ -579,109 +571,108 @@ const hasError = computed(
         <!-- Attendance Tab Content -->
         <template #tab-attendances>
           <div class="bg-white rounded-lg border">
-            <div class="flex items-center justify-between p-4 border-b">
-              <h3 class="text-lg font-semibold flex items-center gap-2">
-                <UserCheck class="h-5 w-5" />
-                Närvaroregistreringar
-              </h3>
-              <button
-                class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+            <div class="flex items-center justify-between p-4">
+              <Button
+                variant="primary"
+                size="sm"
+                class="gap-2"
                 @click="handleAddTabItem('attendances')"
               >
-                + Lägg till
-              </button>
+                <Plus class="h-3 w-3" />
+                Lägg till
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                class="gap-2"
+                @click="() => console.log('Färdigställ aktivitet')"
+              >
+                <Check class="h-3 w-3" />
+                Färdigställ aktivitet
+              </Button>
             </div>
-            <div class="p-4">
-              <div v-if="attendanceTableData.length === 0" class="text-center py-8 text-gray-500">
-                Inga närvaroregistreringar att visa
-              </div>
-              <div v-else class="overflow-x-auto">
-                <table class="w-full border-collapse">
-                  <thead>
-                    <tr class="border-b">
-                      <th class="text-left p-2 font-medium">Deltagare</th>
-                      <th class="text-left p-2 font-medium">Telefon</th>
-                      <th class="text-left p-2 font-medium">Enheter</th>
-                      <th class="text-left p-2 font-medium">Närvaro</th>
-                      <th class="text-left p-2 font-medium">Registrerad</th>
-                      <th class="text-left p-2 font-medium">Anteckningar</th>
-                      <th class="text-left p-2 font-medium w-24">Åtgärder</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="item in attendanceTableData"
-                      :key="item.id"
-                      class="border-b hover:bg-gray-50 cursor-pointer"
-                      @click="handleTabItemClick('attendances', item)"
+            <div>
+              <DataTable
+                :data="attendanceTableData"
+                :columns="attendanceColumns"
+                :show-search="false"
+                :show-pagination="false"
+                @row-click="item => handleTabItemClick('attendances', item)"
+                @edit="item => handleEditTabItem('attendances', item)"
+                @delete="(item, event) => handleDeleteTabItem('attendances', item)"
+              >
+                <!-- Custom cell for attendance status -->
+                <template #cell-attendance="{ value, row }">
+                  <Badge :variant="row.attendance ? 'outline' : 'default'">
+                    <UserCheck v-if="row.attendance" class="mr-1 h-3 w-3" />
+                    <UserX v-else class="mr-1 h-3 w-3" />
+                    {{ row.attendance ? 'Närvarande' : 'Frånvarande' }}
+                  </Badge>
+                </template>
+
+                <!-- Custom cell for offices -->
+                <template #cell-offices="{ value, row }">
+                  <div class="flex flex-wrap gap-1">
+                    <Badge
+                      v-for="office in row.offices"
+                      :key="office"
+                      variant="outline"
+                      class="text-xs"
                     >
-                      <td class="p-2">{{ item.participant }}</td>
-                      <td class="p-2">{{ item.phone }}</td>
-                      <td class="p-2">
-                        <div class="flex flex-wrap gap-1">
-                          <Badge
-                            v-for="office in item.offices"
-                            :key="office"
-                            variant="outline"
-                            class="text-xs"
-                          >
-                            {{ office }}
-                          </Badge>
-                          <span
-                            v-if="!item.offices || item.offices.length === 0"
-                            class="text-gray-500 text-sm"
-                          >
-                            Ingen enhet
-                          </span>
-                        </div>
-                      </td>
-                      <td class="p-2">
-                        <Badge :variant="item.attendance ? 'default' : 'destructive'">
-                          <UserCheck v-if="item.attendance" class="mr-1 h-3 w-3" />
-                          <UserX v-else class="mr-1 h-3 w-3" />
-                          {{ item.attendance ? 'Närvarande' : 'Frånvarande' }}
-                        </Badge>
-                      </td>
-                      <td class="p-2">{{ formatDate(item.datetime) }}</td>
-                      <td class="p-2">{{ item.notes }}</td>
-                      <td class="p-2">
-                        <div class="flex gap-1">
-                          <button
-                            v-if="!item.attendance"
-                            class="p-1 text-green-600 hover:bg-green-50 rounded flex items-center"
-                            title="Markera som närvarande"
-                            @click.stop="handleTogglePresence(item)"
-                          >
-                            <UserPlus class="h-4 w-4" />
-                          </button>
-                          <button
-                            v-if="item.attendance"
-                            class="p-1 text-orange-600 hover:bg-orange-50 rounded flex items-center"
-                            title="Markera som frånvarande"
-                            @click.stop="handleTogglePresence(item)"
-                          >
-                            <UserMinus class="h-4 w-4" />
-                          </button>
-                          <button
-                            class="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                            title="Redigera"
-                            @click.stop="handleEditTabItem('attendances', item)"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            class="p-1 text-red-600 hover:bg-red-50 rounded"
-                            title="Ta bort"
-                            @click.stop="handleDeleteTabItem('attendances', item)"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                      {{ office }}
+                    </Badge>
+                    <span
+                      v-if="!row.offices || row.offices.length === 0"
+                      class="text-gray-500 text-sm"
+                    >
+                      Ingen enhet
+                    </span>
+                  </div>
+                </template>
+
+                <!-- Custom cell for datetime -->
+                <template #cell-datetime="{ value, row }">
+                  {{ formatDate(row.datetime) }}
+                </template>
+
+                <!-- Custom row actions -->
+                <template #row-actions="{ row }">
+                  <button
+                    v-if="!row.attendance"
+                    class="p-1 text-green-600 hover:bg-green-50 rounded flex items-center mr-1"
+                    title="Markera som närvarande"
+                    @click.stop="handleTogglePresence(row)"
+                  >
+                    <UserPlus class="h-4 w-4" />
+                  </button>
+                  <button
+                    v-if="row.attendance"
+                    class="p-1 text-orange-600 hover:bg-orange-50 rounded flex items-center mr-1"
+                    title="Markera som frånvarande"
+                    @click.stop="handleTogglePresence(row)"
+                  >
+                    <UserMinus class="h-4 w-4" />
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50 mr-1"
+                    title="Redigera"
+                    @click.stop="handleEditTabItem('attendances', row)"
+                  >
+                    ✏️
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    title="Ta bort"
+                    @click.stop="handleDeleteTabItem('attendances', row)"
+                  >
+                    🗑️
+                  </Button>
+                </template>
+              </DataTable>
             </div>
           </div>
         </template>
@@ -690,16 +681,12 @@ const hasError = computed(
         <template #tab-participants>
           <div class="bg-white rounded-lg border">
             <div class="flex items-center justify-between p-4 border-b">
-              <h3 class="text-lg font-semibold flex items-center gap-2">
-                <Users class="h-5 w-5" />
-                Deltagare
-              </h3>
-              <button
-                class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                @click="handleAddTabItem('participants')"
-              >
+              <Button variant="primary" @click="handleAddTabItem('participants')">
                 + Lägg till
-              </button>
+              </Button>
+              <Button variant="secondary" @click="() => console.log('Färdigställ aktivitet')">
+                Färdigställ aktivitet
+              </Button>
             </div>
             <div class="p-4">
               <div v-if="participantTableData.length === 0" class="text-center py-8 text-gray-500">
@@ -754,11 +741,11 @@ const hasError = computed(
         <!-- Statistics Tab Content -->
         <template #tab-statistik>
           <div class="bg-white rounded-lg border">
-            <div class="p-4 border-b">
-              <h3 class="text-lg font-semibold flex items-center gap-2">
-                <BarChart3 class="h-5 w-5" />
-                Statistik
-              </h3>
+            <div class="flex items-center justify-between p-4 border-b">
+              <div></div>
+              <Button variant="secondary" @click="() => console.log('Färdigställ aktivitet')">
+                Färdigställ aktivitet
+              </Button>
             </div>
             <div class="p-4">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

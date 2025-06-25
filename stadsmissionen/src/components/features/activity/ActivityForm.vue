@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Calendar, Clock, Users } from 'lucide-vue-next';
+import { Calendar, Clock, FileText, Users } from 'lucide-vue-next';
 import { useValidation } from '@/composables/useValidation';
 import { activityValidationSchema } from '@/schemas/validationSchemas';
 
@@ -39,7 +39,7 @@ interface ActivityFormData {
 
 interface Props {
   modelValue: ActivityFormData;
-  templates: Array<{ id: string; namn: string; beskrivning: string; malltyp: string }>;
+  templates: Array<{ id: number; name: string; description: string; templateType: string }>;
   enheter: string[];
   participantGroups: Array<{ id: string; namn: string }>;
   participants: Array<{ id: string; namn: string }>;
@@ -162,14 +162,14 @@ defineExpose({
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="template in templates" :key="template.id" :value="template.id">
-                {{ template.namn }}
+                {{ template.name }}
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div v-if="selectedTemplate" class="mt-4 p-3 bg-muted rounded-md">
-          <p class="text-sm text-muted-foreground">{{ selectedTemplate.beskrivning }}</p>
+                        <p class="text-sm text-muted-foreground">{{ selectedTemplate.description }}</p>
         </div>
       </CardContent>
     </Card>

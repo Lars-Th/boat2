@@ -39,8 +39,8 @@ const navigateTo = (breadcrumb: BreadcrumbItem) => {
 </script>
 
 <template>
-  <div class="bg-white mx-4 my-2">
-    <div class="flex flex-col gap-2">
+  <div class="bg-white mx-4 my-3">
+    <div class="flex flex-col gap-3">
       <!-- Title and breadcrumbs (integrated from TitleBreadcrumbs) -->
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div class="flex-1">
