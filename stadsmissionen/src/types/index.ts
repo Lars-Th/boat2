@@ -132,17 +132,7 @@ export interface TableColumn<T = Record<string, unknown>> {
 }
 
 // Form types
-export interface FormField<T = unknown> {
-  name: string;
-  label: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'select' | 'textarea' | 'checkbox' | 'radio';
-  value: T;
-  placeholder?: string;
-  required?: boolean;
-  disabled?: boolean;
-  options?: Array<{ label: string; value: unknown }>;
-  validation?: ValidationRule;
-}
+// Removed unused FormField interface (conflicts with vee-validate's FormField)
 
 // Navigation types
 export interface NavigationItem {
@@ -155,14 +145,7 @@ export interface NavigationItem {
 }
 
 // Filter and Search types
-export interface SearchFilters {
-  [key: string]: string | number | boolean | Date | null | undefined;
-}
-
-export interface SortOption {
-  field: string;
-  direction: 'asc' | 'desc';
-}
+// Removed unused interfaces: SearchFilters, SortOption
 
 // Enhanced Toast types from advanced toast library
 export type ToastType = 'success' | 'error' | 'warning' | 'info' | 'confirm';
@@ -305,23 +288,6 @@ export interface UseNotificationsReturn {
   removeNotification: (id: string) => void;
   markAsRead: (id: string) => void;
   clearAll: () => void;
-}
-
-// Statistics interface
-
-// Theme interfaces
-export interface ColorDefinition {
-  key: string;
-  label: string;
-  description: string;
-  category: 'brand' | 'layout' | 'content' | 'status';
-}
-
-export interface Theme {
-  id: string;
-  name: string;
-  colors: Record<string, string>;
-  preview: string;
 }
 
 // Participant types
@@ -469,10 +435,7 @@ export interface LoginAccount {
 }
 
 // Route params interface
-export interface RouteParams {
-  id?: string;
-  [key: string]: string | undefined;
-}
+// Removed unused RouteParams interface
 
 // Validation types
 export interface ValidationRule {
@@ -493,12 +456,7 @@ export interface ValidationResult {
   errors?: string[];
 }
 
-export interface ValidationSchema {
-  [fieldName: string]: {
-    rules: string[];
-    displayName: string;
-  };
-}
+// Removed unused ValidationSchema interface (schemas/validationSchemas.ts defines its own local version)
 
 export interface UseValidationReturn {
   validate: (value: unknown, rules: ValidationRule) => ValidationResult;
@@ -517,7 +475,7 @@ export interface UseValidationReturn {
     data: Record<string, unknown>,
     schema: Record<string, { rules: string[]; displayName?: string }>
   ) => boolean;
-  validateWithSchema: (data: Record<string, unknown>, schema: ValidationSchema) => boolean;
+  // validateWithSchema: (data: Record<string, unknown>, schema: ValidationSchema) => boolean; // Removed unused reference
   validateNestedField: (
     data: Record<string, unknown>,
     fieldPath: string,
@@ -535,20 +493,10 @@ export interface UseValidationReturn {
 }
 
 // Utility types
-export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+// Removed unused utility types: Optional, RequiredFields
 
 // Generic data item for cards and tables
-export interface DataItem {
-  id: string | number;
-  [key: string]: unknown;
-}
-
-// Component prop types
-export interface BaseComponentProps {
-  class?: string;
-  id?: string;
-}
+// Removed unused interfaces: DataItem, BaseComponentProps
 
 export interface LoadingState {
   isLoading: boolean;

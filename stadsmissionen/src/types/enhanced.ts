@@ -9,11 +9,7 @@ export interface ActivityWithParticipants extends Activity {
   participants?: Participant[];
 }
 
-export interface ActivityWithRelations extends Activity {
-  activityType?: ActivityType;
-  participants?: Participant[];
-  attendances?: Attendance[];
-}
+// Removed unused ActivityWithRelations interface
 
 // Enhanced participant types with relational data
 export interface ParticipantWithActivities extends Participant {
@@ -67,31 +63,7 @@ export interface UserRelationalParams extends RelationalParams {
 }
 
 // Union types for different API responses based on include parameters
-export type ActivityResponse<T extends string[] = []> = T extends []
-  ? Activity
-  : T extends ['types']
-    ? ActivityWithTypes
-    : T extends ['participants']
-      ? ActivityWithParticipants
-      : T extends ['types', 'participants'] | ['participants', 'types']
-        ? ActivityWithTypes & ActivityWithParticipants
-        : ActivityWithRelations;
-
-export type ParticipantResponse<T extends string[] = []> = T extends []
-  ? Participant
-  : T extends ['activities']
-    ? ParticipantWithActivities
-    : T extends ['family']
-      ? ParticipantWithFamily
-      : T extends ['activities', 'family'] | ['family', 'activities']
-        ? ParticipantWithActivities & ParticipantWithFamily
-        : ParticipantWithRelations;
-
-export type UserResponse<T extends string[] = []> = T extends []
-  ? User
-  : T extends ['permissionGroup']
-    ? UserWithPermissionGroup
-    : UserWithPermissionGroup;
+// Removed unused complex conditional types: ActivityResponse, ParticipantResponse, UserResponse
 
 // Enhanced auth user type for authentication
 export interface AuthUser {

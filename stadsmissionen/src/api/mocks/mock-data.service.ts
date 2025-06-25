@@ -2,7 +2,6 @@ import type { ApiResponse } from '../client/types';
 import type { Activity, ActivityType, Attendance, Contact, Customer, Participant } from '@/types';
 import type {
   ActivityWithParticipants,
-  ActivityWithRelations,
   ActivityWithTypes,
   ParticipantWithActivities,
   ParticipantWithRelations,
@@ -74,11 +73,7 @@ export class MockDataService {
   // Activities with relational support
   async getActivities(
     params?: RelationalParams
-  ): Promise<
-    ApiResponse<
-      Activity[] | ActivityWithTypes[] | ActivityWithParticipants[] | ActivityWithRelations[]
-    >
-  > {
+  ): Promise<ApiResponse<Activity[] | ActivityWithTypes[] | ActivityWithParticipants[]>> {
     const activities = activitiesData as Activity[];
 
     if (!params?.include || params.include.length === 0) {
@@ -122,11 +117,7 @@ export class MockDataService {
   async getActivity(
     id: string,
     params?: RelationalParams
-  ): Promise<
-    ApiResponse<
-      Activity | ActivityWithTypes | ActivityWithParticipants | ActivityWithRelations | null
-    >
-  > {
+  ): Promise<ApiResponse<Activity | ActivityWithTypes | ActivityWithParticipants | null>> {
     const activity = activitiesData.find(a => a.ActivityID === parseInt(id));
     if (!activity) {
       return this.mockRequest(null);
