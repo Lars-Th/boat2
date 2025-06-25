@@ -560,7 +560,7 @@ const onDragStart = (event: DragEvent, item: any, type: string) => {
   draggedType.value = type;
   if (event.dataTransfer) {
     event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', item.id || item.WorkOrderID);
+    event.dataTransfer.setData('text/plain', item.id ?? item.WorkOrderID);
   }
 };
 
@@ -714,7 +714,7 @@ const isWorkDay = (date: Date) => {
 };
 
 const getHolidayName = (dateString: string) => {
-  return holidays.value[dateString] || '';
+  return holidays.value[dateString] ?? '';
 };
 
 // View mode functions
@@ -831,7 +831,7 @@ const cancelCopy = () => {
           <AlertCircle class="h-12 w-12 mx-auto mb-2" />
           <p class="text-lg font-semibold">Kunde inte ladda kalenderdata</p>
           <p class="text-sm text-muted-foreground mt-1">
-            {{ workOrdersError?.message || employeesError?.message || customersError?.message }}
+            {{ workOrdersError?.message ?? employeesError?.message ?? customersError?.message }}
           </p>
         </div>
         <Button variant="outline" @click="handleRetry">Försök igen</Button>

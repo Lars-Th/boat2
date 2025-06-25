@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ArrowLeft, Edit, FileText, Info, Plus, Save, Trash2, Undo2 } from 'lucide-vue-next';
-import type { Component } from 'vue';
 
 interface Field {
   key: string;

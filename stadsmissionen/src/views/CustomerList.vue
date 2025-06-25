@@ -277,7 +277,7 @@ const handleDeleteCustomer = async (customer: CustomerWithRelations, event: Even
         success('Kund borttagen', 'Kunden har tagits bort framgångsrikt.');
         await refreshCustomers();
       } else {
-        error('Fel vid borttagning', result.error?.message || 'Kunde inte ta bort kunden.');
+        error('Fel vid borttagning', result.error?.message ?? 'Kunde inte ta bort kunden.');
       }
     } catch (err) {
       error('Fel vid borttagning', 'Ett oväntat fel inträffade. Försök igen.');
