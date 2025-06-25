@@ -83,7 +83,7 @@ const enhancedParticipants = computed(() => {
       guardianNames,
       siblingNames,
       childrenNames,
-      totalRelations: participant.familyRelations?.length || 0,
+      totalRelations: participant.familyRelations?.length ?? 0,
     };
   });
 });
