@@ -204,12 +204,12 @@ const filteredGroups = computed(() => {
 
     // Unit filter
     const matchesUnit =
-      unitFilter.value === 'all' || (group.enheter || []).includes(unitFilter.value);
+      unitFilter.value === 'all' || (group.enheter ?? []).includes(unitFilter.value);
 
     // Search filter
     const matchesSearch =
       !searchQuery.value ||
-      [group.namn, group.beskrivning, ...(group.enheter || []), ...group.participantNames].some(
+      [group.namn, group.beskrivning, ...(group.enheter ?? []), ...group.participantNames].some(
         field => field?.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
       );
 

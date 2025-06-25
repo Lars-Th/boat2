@@ -225,8 +225,8 @@ const loadTemplate = () => {
         beskrivning: existingTemplate.beskrivning,
         malltyp: existingTemplate.malltyp,
         aktivitetstyper: [...existingTemplate.aktivitetstyper],
-        standardPlats: existingTemplate.standardPlats || '',
-        standardVaraktighet: existingTemplate.standardVaraktighet || 60,
+        standardPlats: existingTemplate.standardPlats ?? '',
+        standardVaraktighet: existingTemplate.standardVaraktighet ?? 60,
         resultatformular: [...existingTemplate.resultatformular],
       };
     }

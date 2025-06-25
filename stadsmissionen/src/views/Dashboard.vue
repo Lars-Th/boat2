@@ -29,7 +29,7 @@ const {
   refetch: refetchParticipants,
 } = useApi(
   () =>
-    api.participants?.getAll({ include: ['activities', 'attendances'] }) ||
+    api.participants?.getAll({ include: ['activities', 'attendances'] }) ??
     Promise.resolve({ data: [], success: true }),
   { immediate: true }
 );
@@ -41,7 +41,7 @@ const {
   refetch: refetchActivities,
 } = useApi(
   () =>
-    api.activities?.getAll({ include: ['types'] }) || Promise.resolve({ data: [], success: true }),
+    api.activities?.getAll({ include: ['types'] }) ?? Promise.resolve({ data: [], success: true }),
   { immediate: true }
 );
 
@@ -50,7 +50,7 @@ const {
   loading: attendancesLoading,
   error: attendancesError,
   refetch: refetchAttendances,
-} = useApi(() => api.attendances?.getAll() || Promise.resolve({ data: [], success: true }), {
+} = useApi(() => api.attendances?.getAll() ?? Promise.resolve({ data: [], success: true }), {
   immediate: true,
 });
 
@@ -59,7 +59,7 @@ const {
   loading: activityTypesLoading,
   error: activityTypesError,
   refetch: refetchActivityTypes,
-} = useApi(() => api.activityTypes?.getAll() || Promise.resolve({ data: [], success: true }), {
+} = useApi(() => api.activityTypes?.getAll() ?? Promise.resolve({ data: [], success: true }), {
   immediate: true,
 });
 

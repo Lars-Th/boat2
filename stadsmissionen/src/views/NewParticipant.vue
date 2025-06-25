@@ -45,7 +45,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => organizationsLoading.value || participantsLoading.value);
+const isLoading = computed(() => organizationsLoading.value ?? participantsLoading.value);
 const hasError = computed(
   () => organizationsError.value !== null || participantsError.value !== null
 );
