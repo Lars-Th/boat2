@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Key, Save } from 'lucide-vue-next';
-import { useApiItem, useApiList } from '@/composables/useApi';
+import { useApiItem } from '@/composables/useApi';
 import { useToast } from '@/composables/useToast';
 import { useAuth } from '@/composables/useAuth';
 import api from '@/api';

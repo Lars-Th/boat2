@@ -4,7 +4,6 @@ import StandardHeader from '@/components/layout/StandardHeader.vue';
 import ViewControls from '@/components/shared/ViewControls.vue';
 import DataTable from '@/components/shared/DataTable.vue';
 import PaginationControls from '@/components/shared/PaginationControls.vue';
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import { Button } from '@/components/ui/button';
 
 interface ActionButton {
@@ -107,8 +106,8 @@ const isLoadingState = computed(() => props.loading);
       :filters="filters"
       :show-view-switcher="showViewSwitcher"
       :view-mode="viewMode"
-      @update:search-query="$emit('update:searchQuery', $event)"
-      @update:view-mode="$emit('update:viewMode', $event)"
+      @update:search-query="emit('update:searchQuery', $event)"
+      @update:view-mode="emit('update:viewMode', $event)"
     />
 
     <!-- Loading State -->
@@ -148,8 +147,8 @@ const isLoadingState = computed(() => props.loading);
         :total-items="totalItems"
         :current-page="currentPage"
         :items-per-page="itemsPerPage"
-        @update:current-page="$emit('update:currentPage', $event)"
-        @update:items-per-page="$emit('update:itemsPerPage', $event)"
+        @update:current-page="emit('update:currentPage', $event)"
+        @update:items-per-page="emit('update:itemsPerPage', $event)"
       />
     </div>
   </div>
