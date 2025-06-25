@@ -836,7 +836,7 @@ type ViewportType = 'desktop' | 'laptop' | 'phone';
 const currentViewport = ref<ViewportType>('desktop');
 
 // View toggle state
-const currentView = ref<'components' | 'toasts'>('components');
+const currentView = ref<'components' | 'colors' | 'toasts'>('components');
 
 // Component preview ref for isolated styling
 const componentPreview = ref<HTMLElement | null>(null);
@@ -1029,15 +1029,45 @@ const spacingMultiplier = ref<number>(1);
 // Text size variables with base mathematical relationships (in rem)
 const textSizeVariables = ref<TextSizeVariable[]>([
   { name: 'Text XS', variable: '--text-xs', baseValue: 0.75, computedValue: 0.75, pixelValue: 12 },
-  { name: 'Text SM', variable: '--text-sm', baseValue: 0.875, computedValue: 0.875, pixelValue: 14 },
+  {
+    name: 'Text SM',
+    variable: '--text-sm',
+    baseValue: 0.875,
+    computedValue: 0.875,
+    pixelValue: 14,
+  },
   { name: 'Text Base', variable: '--text-base', baseValue: 1, computedValue: 1, pixelValue: 16 },
-  { name: 'Text LG', variable: '--text-lg', baseValue: 1.125, computedValue: 1.125, pixelValue: 18 },
+  {
+    name: 'Text LG',
+    variable: '--text-lg',
+    baseValue: 1.125,
+    computedValue: 1.125,
+    pixelValue: 18,
+  },
   { name: 'Text XL', variable: '--text-xl', baseValue: 1.25, computedValue: 1.25, pixelValue: 20 },
   { name: 'Text 2XL', variable: '--text-2xl', baseValue: 1.5, computedValue: 1.5, pixelValue: 24 },
-  { name: 'Text 3XL', variable: '--text-3xl', baseValue: 1.875, computedValue: 1.875, pixelValue: 30 },
-  { name: 'Text 4XL', variable: '--text-4xl', baseValue: 2.25, computedValue: 2.25, pixelValue: 36 },
+  {
+    name: 'Text 3XL',
+    variable: '--text-3xl',
+    baseValue: 1.875,
+    computedValue: 1.875,
+    pixelValue: 30,
+  },
+  {
+    name: 'Text 4XL',
+    variable: '--text-4xl',
+    baseValue: 2.25,
+    computedValue: 2.25,
+    pixelValue: 36,
+  },
   { name: 'Text 5XL', variable: '--text-5xl', baseValue: 3, computedValue: 3, pixelValue: 48 },
-  { name: 'Text 6XL', variable: '--text-6xl', baseValue: 3.75, computedValue: 3.75, pixelValue: 60 },
+  {
+    name: 'Text 6XL',
+    variable: '--text-6xl',
+    baseValue: 3.75,
+    computedValue: 3.75,
+    pixelValue: 60,
+  },
 ]);
 
 // Global text size multiplier
@@ -1046,9 +1076,218 @@ const textSizeMultiplier = ref<number>(1);
 // Text size target selection
 const textSizeTarget = ref<TextSizeTarget>('all');
 
+// Color variables with base theme values
+const colorVariables = ref<ColorVariable[]>([
+  // Primary colors
+  {
+    name: 'Primary',
+    variable: '--primary',
+    baseValue: 'hsl(221.2 83.2% 53.3%)',
+    computedValue: 'hsl(221.2 83.2% 53.3%)',
+    category: 'primary',
+  },
+  {
+    name: 'Primary Foreground',
+    variable: '--primary-foreground',
+    baseValue: 'hsl(210 40% 98%)',
+    computedValue: 'hsl(210 40% 98%)',
+    category: 'primary',
+  },
+
+  // Secondary colors
+  {
+    name: 'Secondary',
+    variable: '--secondary',
+    baseValue: 'hsl(210 40% 96%)',
+    computedValue: 'hsl(210 40% 96%)',
+    category: 'secondary',
+  },
+  {
+    name: 'Secondary Foreground',
+    variable: '--secondary-foreground',
+    baseValue: 'hsl(222.2 84% 4.9%)',
+    computedValue: 'hsl(222.2 84% 4.9%)',
+    category: 'secondary',
+  },
+
+  // Background colors
+  {
+    name: 'Background',
+    variable: '--background',
+    baseValue: 'hsl(0 0% 100%)',
+    computedValue: 'hsl(0 0% 100%)',
+    category: 'background',
+  },
+  {
+    name: 'Foreground',
+    variable: '--foreground',
+    baseValue: 'hsl(222.2 84% 4.9%)',
+    computedValue: 'hsl(222.2 84% 4.9%)',
+    category: 'background',
+  },
+  {
+    name: 'Card',
+    variable: '--card',
+    baseValue: 'hsl(0 0% 100%)',
+    computedValue: 'hsl(0 0% 100%)',
+    category: 'background',
+  },
+  {
+    name: 'Card Foreground',
+    variable: '--card-foreground',
+    baseValue: 'hsl(222.2 84% 4.9%)',
+    computedValue: 'hsl(222.2 84% 4.9%)',
+    category: 'background',
+  },
+
+  // Accent colors
+  {
+    name: 'Accent',
+    variable: '--accent',
+    baseValue: 'hsl(210 40% 96%)',
+    computedValue: 'hsl(210 40% 96%)',
+    category: 'accent',
+  },
+  {
+    name: 'Accent Foreground',
+    variable: '--accent-foreground',
+    baseValue: 'hsl(222.2 84% 4.9%)',
+    computedValue: 'hsl(222.2 84% 4.9%)',
+    category: 'accent',
+  },
+  {
+    name: 'Muted',
+    variable: '--muted',
+    baseValue: 'hsl(210 40% 96%)',
+    computedValue: 'hsl(210 40% 96%)',
+    category: 'accent',
+  },
+  {
+    name: 'Muted Foreground',
+    variable: '--muted-foreground',
+    baseValue: 'hsl(215.4 16.3% 46.9%)',
+    computedValue: 'hsl(215.4 16.3% 46.9%)',
+    category: 'accent',
+  },
+
+  // Destructive colors
+  {
+    name: 'Destructive',
+    variable: '--destructive',
+    baseValue: 'hsl(0 84.2% 60.2%)',
+    computedValue: 'hsl(0 84.2% 60.2%)',
+    category: 'destructive',
+  },
+  {
+    name: 'Destructive Foreground',
+    variable: '--destructive-foreground',
+    baseValue: 'hsl(210 40% 98%)',
+    computedValue: 'hsl(210 40% 98%)',
+    category: 'destructive',
+  },
+
+  // Sidebar colors
+  {
+    name: 'Sidebar',
+    variable: '--sidebar',
+    baseValue: 'hsl(222.2 84% 4.9%)',
+    computedValue: 'hsl(222.2 84% 4.9%)',
+    category: 'background',
+  },
+  {
+    name: 'Sidebar Foreground',
+    variable: '--sidebar-foreground',
+    baseValue: 'hsl(210 40% 98%)',
+    computedValue: 'hsl(210 40% 98%)',
+    category: 'background',
+  },
+]);
+
+// Color target selection
+const colorTarget = ref<ColorTarget>('all');
+
+// Color pairs for the colors view
+const colorPairs = ref([
+  {
+    name: 'Background',
+    background: 'bg-background',
+    foreground: 'text-foreground',
+    backgroundVar: '--background',
+    foregroundVar: '--foreground',
+    description: 'Main page background and text',
+  },
+  {
+    name: 'Primary',
+    background: 'bg-primary',
+    foreground: 'text-primary-foreground',
+    backgroundVar: '--primary',
+    foregroundVar: '--primary-foreground',
+    description: 'Main brand color for buttons and links',
+  },
+  {
+    name: 'Secondary',
+    background: 'bg-secondary',
+    foreground: 'text-secondary-foreground',
+    backgroundVar: '--secondary',
+    foregroundVar: '--secondary-foreground',
+    description: 'Secondary actions and subtle elements',
+  },
+  {
+    name: 'Accent',
+    background: 'bg-accent',
+    foreground: 'text-accent-foreground',
+    backgroundVar: '--accent',
+    foregroundVar: '--accent-foreground',
+    description: 'Accent color for highlights and emphasis',
+  },
+  {
+    name: 'Destructive',
+    background: 'bg-destructive',
+    foreground: 'text-destructive-foreground',
+    backgroundVar: '--destructive',
+    foregroundVar: '--destructive-foreground',
+    description: 'Error states and destructive actions',
+  },
+  {
+    name: 'Muted',
+    background: 'bg-muted',
+    foreground: 'text-muted-foreground',
+    backgroundVar: '--muted',
+    foregroundVar: '--muted-foreground',
+    description: 'Muted backgrounds and subtle text',
+  },
+  {
+    name: 'Card',
+    background: 'bg-card',
+    foreground: 'text-card-foreground',
+    backgroundVar: '--card',
+    foregroundVar: '--card-foreground',
+    description: 'Card backgrounds and content',
+  },
+  {
+    name: 'Sidebar',
+    background: 'bg-sidebar',
+    foreground: 'text-sidebar-foreground',
+    backgroundVar: '--sidebar',
+    foregroundVar: '--sidebar-foreground',
+    description: 'Sidebar background and navigation text',
+  },
+]);
+
 // Variable editor view selector
-type VariableEditorView = 'spacing' | 'text';
+type VariableEditorView = 'spacing' | 'text' | 'color';
 const currentVariableEditor = ref<VariableEditorView>('spacing');
+
+// Color Variables Management
+interface ColorVariable {
+  name: string;
+  variable: string;
+  baseValue: string; // The base color value (hex, hsl, etc.)
+  computedValue: string; // Current computed value
+  category: 'primary' | 'secondary' | 'background' | 'accent' | 'destructive';
+}
+
+type ColorTarget = 'all' | 'primary' | 'secondary' | 'background' | 'accent' | 'destructive';
 
 // Usage examples for margins and paddings
 const marginExamples = [
@@ -1099,6 +1338,25 @@ const letterSpacingExamples = [
   { class: 'tracking-normal', description: 'letter-spacing: 0em' },
   { class: 'tracking-wide', description: 'letter-spacing: 0.025em' },
   { class: 'tracking-wider', description: 'letter-spacing: 0.05em' },
+];
+
+// Color examples
+const colorExamples = [
+  {
+    class: 'bg-primary text-primary-foreground',
+    description: 'Primary background with foreground',
+  },
+  {
+    class: 'bg-secondary text-secondary-foreground',
+    description: 'Secondary background with foreground',
+  },
+  { class: 'bg-accent text-accent-foreground', description: 'Accent background with foreground' },
+  {
+    class: 'bg-destructive text-destructive-foreground',
+    description: 'Destructive background with foreground',
+  },
+  { class: 'bg-card text-card-foreground', description: 'Card background with foreground' },
+  { class: 'bg-muted text-muted-foreground', description: 'Muted background with foreground' },
 ];
 
 // Variable mapping for spacing numbers to match main.css variables
@@ -1218,7 +1476,10 @@ const updateAllTextSizeVariables = () => {
       if (textSizeTarget.value === 'tracking' || textSizeTarget.value === 'all') {
         // Letter spacing typically small values in em
         const letterSpacingValue = `${textSize.computedValue * 0.02}em`;
-        componentPreview.value.style.setProperty(`--letter-spacing-${sizeClass}`, letterSpacingValue);
+        componentPreview.value.style.setProperty(
+          `--letter-spacing-${sizeClass}`,
+          letterSpacingValue
+        );
       }
     });
   }
@@ -1254,7 +1515,58 @@ const onTextSizeTargetChange = () => {
   updateAllTextSizeVariables();
 };
 
-// Initialize spacing and text size variables when component mounts
+// Color Functions
+// Update CSS custom properties for all color variables
+const updateAllColorVariables = () => {
+  if (componentPreview.value) {
+    colorVariables.value.forEach(color => {
+      // Apply to the base color variable
+      componentPreview.value.style.setProperty(color.variable, color.computedValue);
+
+      // Apply based on target selection
+      if (colorTarget.value === 'all' || colorTarget.value === color.category) {
+        componentPreview.value.style.setProperty(color.variable, color.computedValue);
+      }
+    });
+  }
+};
+
+// Update individual color variable
+const updateIndividualColor = (index: number, value: string) => {
+  colorVariables.value[index].computedValue = value;
+  updateAllColorVariables();
+};
+
+// Reset all color values to base values
+const resetColorsToBaseValues = () => {
+  colorVariables.value.forEach(color => {
+    color.computedValue = color.baseValue;
+  });
+  updateAllColorVariables();
+};
+
+// Update all color variables when target changes
+const onColorTargetChange = () => {
+  updateAllColorVariables();
+};
+
+// Helper function to convert color to hex for color picker
+const colorToHex = (color: string): string => {
+  // Simple conversion for HSL to hex (basic implementation)
+  if (color.startsWith('hsl')) {
+    // For now, return a default hex color - in a real app you'd want proper HSL to hex conversion
+    return '#3b82f6';
+  }
+  return color.startsWith('#') ? color : '#3b82f6';
+};
+
+// Helper function to convert hex to HSL (basic implementation)
+const hexToHsl = (hex: string): string => {
+  // Basic implementation - in a real app you'd want proper hex to HSL conversion
+  return `hsl(221.2 83.2% 53.3%)`;
+};
+
+// Initialize spacing, text size, and color variables when component mounts
 onMounted(() => {
   // Wait for next tick to ensure component preview is rendered
   nextTick(() => {
@@ -1262,6 +1574,7 @@ onMounted(() => {
     updateAllSpacingVariables();
     computeTextSizeValues();
     updateAllTextSizeVariables();
+    updateAllColorVariables();
   });
 });
 </script>
@@ -1297,6 +1610,13 @@ onMounted(() => {
             Komponenter
           </Button>
           <Button
+            :variant="currentView === 'colors' ? 'default' : 'outline'"
+            class="gap-2"
+            @click="currentView = 'colors'"
+          >
+            🎨 Colors
+          </Button>
+          <Button
             :variant="currentView === 'toasts' ? 'default' : 'outline'"
             class="gap-2"
             @click="currentView = 'toasts'"
@@ -1307,7 +1627,97 @@ onMounted(() => {
       </div>
 
       <!-- Content Area -->
-      <ToastExample class="m-4" v-if="currentView === 'toasts'" />
+      <ToastExample v-if="currentView === 'toasts'" class="m-4" />
+
+      <!-- Colors View -->
+      <div v-else-if="currentView === 'colors'" class="p-6">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Color Pairs</h2>
+          <p class="text-gray-600">
+            Preview of background and foreground color combinations used throughout the application.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div
+            v-for="pair in colorPairs"
+            :key="pair.name"
+            :class="[pair.background, pair.foreground]"
+            class="p-6 rounded-lg border shadow-sm transition-transform hover:scale-105"
+          >
+            <div class="space-y-3">
+              <div>
+                <h3 class="text-lg font-semibold">{{ pair.name }}</h3>
+                <p class="text-sm opacity-80">{{ pair.description }}</p>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between">
+                  <span class="opacity-70">Background:</span>
+                  <code class="font-mono">{{ pair.backgroundVar }}</code>
+                </div>
+                <div class="flex justify-between">
+                  <span class="opacity-70">Foreground:</span>
+                  <code class="font-mono">{{ pair.foregroundVar }}</code>
+                </div>
+              </div>
+
+              <div class="mt-2 border-t border-current border-opacity-20">
+                <div class="flex items-center justify-between text-sm">
+                  <span>Different Opacity 60/40/20:</span>
+                  <div class="flex gap-1">
+                    <div class="w-2 h-2 rounded-full bg-current opacity-60"></div>
+                    <div class="w-2 h-2 rounded-full bg-current opacity-40"></div>
+                    <div class="w-2 h-2 rounded-full bg-current opacity-20"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Usage Examples -->
+        <div class="mt-12 bg-white rounded-lg border p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Usage Examples</h3>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Button Examples</h4>
+              <div class="space-y-3">
+                <button
+                  class="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:opacity-90 transition-opacity"
+                >
+                  Primary Button
+                </button>
+                <button
+                  class="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity"
+                >
+                  Secondary Button
+                </button>
+                <button
+                  class="px-4 py-2 bg-destructive text-destructive-foreground rounded-md hover:opacity-90 transition-opacity"
+                >
+                  Destructive Button
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Card Examples</h4>
+              <div class="space-y-3">
+                <div class="p-4 bg-card text-card-foreground rounded-md border">
+                  <h5 class="font-medium">Card Title</h5>
+                  <p class="text-sm opacity-80">Card content with proper contrast</p>
+                </div>
+                <div class="p-4 bg-muted text-muted-foreground rounded-md">
+                  <h5 class="font-medium">Muted Section</h5>
+                  <p class="text-sm opacity-80">Subtle background for secondary content</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div v-else class="flex h-[calc(100vh-200px)]">
         <!-- File Tree Sidebar -->
         <div class="w-80 bg-white border-r border-gray-200 overflow-y-auto">
@@ -1670,29 +2080,46 @@ onMounted(() => {
                         'px-4 py-2 text-sm font-medium rounded-md transition-colors',
                         currentVariableEditor === 'spacing'
                           ? 'bg-white text-blue-700 shadow-sm'
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-gray-500 hover:text-gray-700',
                       ]"
                       @click="currentVariableEditor = 'spacing'"
                     >
-                      Spacing Variables
+                      Spacing
                     </button>
                     <button
                       :class="[
                         'px-4 py-2 text-sm font-medium rounded-md transition-colors',
                         currentVariableEditor === 'text'
                           ? 'bg-white text-purple-700 shadow-sm'
-                          : 'text-gray-500 hover:text-gray-700'
+                          : 'text-gray-500 hover:text-gray-700',
                       ]"
                       @click="currentVariableEditor = 'text'"
                     >
-                      Text Size Variables
+                      Text Size
+                    </button>
+                    <button
+                      :class="[
+                        'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                        currentVariableEditor === 'color'
+                          ? 'bg-white text-green-700 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700',
+                      ]"
+                      @click="currentVariableEditor = 'color'"
+                    >
+                      Colour
                     </button>
                   </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                   <h3 class="text-lg font-semibold text-gray-900">
-                    {{ currentVariableEditor === 'spacing' ? 'Spacing Variables Editor' : 'Text Size Variables Editor' }}
+                    {{
+                      currentVariableEditor === 'spacing'
+                        ? 'Spacing Variables Editor'
+                        : currentVariableEditor === 'text'
+                          ? 'Text Size Variables Editor'
+                          : 'Color Variables Editor'
+                    }}
                   </h3>
                   <!-- Spacing Controls -->
                   <div v-if="currentVariableEditor === 'spacing'" class="flex items-center gap-2">
@@ -1751,12 +2178,29 @@ onMounted(() => {
                       <option value="tracking">Letter Spacing Only</option>
                     </select>
                   </div>
+
+                  <!-- Color Target Selector -->
+                  <div v-if="currentVariableEditor === 'color'" class="mt-4 sm:mt-0">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Apply to:</label>
+                    <select
+                      v-model="colorTarget"
+                      class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                      @change="onColorTargetChange"
+                    >
+                      <option value="all">All Color Categories</option>
+                      <option value="primary">Primary Colors</option>
+                      <option value="secondary">Secondary Colors</option>
+                      <option value="background">Background Colors</option>
+                      <option value="accent">Accent Colors</option>
+                      <option value="destructive">Destructive Colors</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               <div class="p-6">
                 <!-- Spacing Individual Controls Section -->
-                <div v-if="currentVariableEditor === 'spacing'" class="border-t border-gray-200 pt-6">
+                <div v-if="currentVariableEditor === 'spacing'">
                   <div class="flex items-center justify-between mb-4">
                     <div>
                       <h4 class="text-md font-semibold text-gray-900">
@@ -1821,7 +2265,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Text Size Individual Controls Section -->
-                <div v-if="currentVariableEditor === 'text'" class="border-t border-gray-200 pt-6">
+                <div v-if="currentVariableEditor === 'text'">
                   <div class="flex items-center justify-between mb-4">
                     <div>
                       <h4 class="text-md font-semibold text-gray-900">
@@ -1874,9 +2318,7 @@ onMounted(() => {
                           ></div>
                         </div>
                       </div>
-                      <div class="text-xs text-gray-500">
-                        {{ textSize.pixelValue }}px
-                      </div>
+                      <div class="text-xs text-gray-500">{{ textSize.pixelValue }}px</div>
                       <div class="text-xs text-purple-600">
                         Base: {{ textSize.baseValue }}rem × {{ textSizeMultiplier }} =
                         {{ (textSize.baseValue * textSizeMultiplier).toFixed(3) }}rem
@@ -1892,8 +2334,94 @@ onMounted(() => {
                   </div>
                 </div>
 
+                <!-- Color Individual Controls Section -->
+                <div v-if="currentVariableEditor === 'color'">
+                  <div class="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 class="text-md font-semibold text-gray-900">Individual Color Controls</h4>
+                      <p class="text-sm text-gray-600 mt-1">
+                        Customize individual color values. Colors are organized by category for
+                        better theme management.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      class="flex items-center gap-2"
+                      @click="resetColorsToBaseValues"
+                    >
+                      <Settings class="h-3 w-3" />
+                      Reset to Base
+                    </Button>
+                  </div>
+
+                  <!-- Color variables grouped by category -->
+                  <div class="space-y-8">
+                    <div
+                      v-for="category in [
+                        'primary',
+                        'secondary',
+                        'background',
+                        'accent',
+                        'destructive',
+                      ]"
+                      :key="category"
+                    >
+                      <h5 class="text-sm font-medium text-gray-700 mb-4 capitalize">
+                        {{ category }} Colors
+                      </h5>
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div
+                          v-for="(color, index) in colorVariables.filter(
+                            c => c.category === category
+                          )"
+                          :key="color.name"
+                          class="space-y-2"
+                        >
+                          <label class="block text-sm font-medium text-gray-700">
+                            {{ color.name }} ({{ color.variable }})
+                          </label>
+                          <div class="flex items-center space-x-2">
+                            <input
+                              :value="colorToHex(color.computedValue)"
+                              type="color"
+                              class="w-12 h-8 border border-gray-300 rounded cursor-pointer"
+                              @input="
+                                updateIndividualColor(
+                                  colorVariables.findIndex(c => c === color),
+                                  hexToHsl($event.target.value)
+                                )
+                              "
+                            />
+                            <input
+                              :value="color.computedValue"
+                              type="text"
+                              class="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                              @input="
+                                updateIndividualColor(
+                                  colorVariables.findIndex(c => c === color),
+                                  $event.target.value
+                                )
+                              "
+                            />
+                          </div>
+                          <!-- Color preview -->
+                          <div
+                            class="h-8 border border-gray-200 rounded"
+                            :style="{ backgroundColor: color.computedValue }"
+                          ></div>
+                          <div class="text-xs text-gray-500">Base: {{ color.baseValue }}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Spacing Usage Examples -->
-                <div v-if="currentVariableEditor === 'spacing'" class="mt-8 border-t border-gray-200 pt-6">
+                <div
+                  v-if="currentVariableEditor === 'spacing'"
+                  class="mt-8 border-t border-gray-200 pt-6"
+                >
                   <h4 class="text-md font-semibold text-gray-900 mb-4">Usage Examples</h4>
                   <div class="mb-4 p-3 bg-blue-50 rounded-lg">
                     <p class="text-sm text-blue-800">
@@ -1989,7 +2517,10 @@ onMounted(() => {
                 </div>
 
                 <!-- Text Size Usage Examples -->
-                <div v-if="currentVariableEditor === 'text'" class="mt-8 border-t border-gray-200 pt-6">
+                <div
+                  v-if="currentVariableEditor === 'text'"
+                  class="mt-8 border-t border-gray-200 pt-6"
+                >
                   <h4 class="text-md font-semibold text-gray-900 mb-4">Usage Examples</h4>
                   <div class="mb-4 p-3 bg-purple-50 rounded-lg">
                     <p class="text-sm text-purple-800">
@@ -1998,12 +2529,16 @@ onMounted(() => {
                         All text size, line height, and letter spacing utilities will be affected
                       </span>
                       <span v-else-if="textSizeTarget === 'text'">
-                        Only text size utilities (text-xs, text-sm, text-base, etc.) will be affected
+                        Only text size utilities (text-xs, text-sm, text-base, etc.) will be
+                        affected
                       </span>
                       <span v-else-if="textSizeTarget === 'leading'">
                         Only line height utilities (leading-3, leading-4, etc.) will be affected
                       </span>
-                      <span v-else>Only letter spacing utilities (tracking-tight, tracking-wide, etc.) will be affected</span>
+                      <span v-else>
+                        Only letter spacing utilities (tracking-tight, tracking-wide, etc.) will be
+                        affected
+                      </span>
                     </p>
                   </div>
 
@@ -2049,7 +2584,11 @@ onMounted(() => {
                           </code>
                           <div class="flex-1">
                             <div :class="example.class" class="text-gray-700 text-sm">
-                              Multiple lines of text<br>to show line height<br>spacing effect
+                              Multiple lines of text
+                              <br />
+                              to show line height
+                              <br />
+                              spacing effect
                             </div>
                           </div>
                         </div>
@@ -2082,6 +2621,64 @@ onMounted(() => {
                   </div>
                 </div>
 
+                <!-- Color Usage Examples -->
+                <div
+                  v-if="currentVariableEditor === 'color'"
+                  class="mt-8 border-t border-gray-200 pt-6"
+                >
+                  <h4 class="text-md font-semibold text-gray-900 mb-4">Usage Examples</h4>
+                  <div class="mb-4 p-3 bg-green-50 rounded-lg">
+                    <p class="text-sm text-green-800">
+                      <strong>Current Target:</strong>
+                      <span v-if="colorTarget === 'all'">
+                        All color categories will be affected
+                      </span>
+                      <span v-else>Only {{ colorTarget }} colors will be affected</span>
+                    </p>
+                  </div>
+
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Color Examples -->
+                    <div class="space-y-4">
+                      <h5 class="text-sm font-medium text-gray-700">Color Examples</h5>
+                      <div class="space-y-3">
+                        <div
+                          v-for="example in colorExamples"
+                          :key="example.class"
+                          class="flex items-center space-x-3"
+                        >
+                          <code class="text-sm bg-gray-100 px-2 py-1 rounded font-mono">
+                            {{ example.class }}
+                          </code>
+                          <div class="flex-1">
+                            <div :class="example.class" class="px-3 py-2 rounded text-sm">
+                              {{ example.description }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Color Palette Preview -->
+                    <div class="space-y-4">
+                      <h5 class="text-sm font-medium text-gray-700">Current Color Palette</h5>
+                      <div class="grid grid-cols-2 gap-2">
+                        <div
+                          v-for="color in colorVariables.slice(0, 8)"
+                          :key="color.name"
+                          class="flex items-center space-x-2"
+                        >
+                          <div
+                            class="w-6 h-6 rounded border border-gray-300"
+                            :style="{ backgroundColor: color.computedValue }"
+                          ></div>
+                          <span class="text-xs text-gray-600">{{ color.name }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Reset Button -->
                 <div class="mt-6 flex justify-end">
                   <Button
@@ -2102,9 +2699,18 @@ onMounted(() => {
                     <Settings class="h-4 w-4" />
                     Reset Multiplier (1×)
                   </Button>
+                  <Button
+                    v-if="currentVariableEditor === 'color'"
+                    variant="outline"
+                    class="flex items-center gap-2"
+                    @click="resetColorsToBaseValues"
+                  >
+                    <Settings class="h-4 w-4" />
+                    Reset Colors
+                  </Button>
                 </div>
               </div>
-                        </div>
+            </div>
           </div>
 
           <div v-else class="flex items-center justify-center h-full">

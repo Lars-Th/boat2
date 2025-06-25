@@ -15,7 +15,16 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from '@/components/ui/combobox';
-import { ArrowLeft, FileText, Info, Save, Trash2, Undo2, Check, ChevronsUpDown } from 'lucide-vue-next';
+import {
+  ArrowLeft,
+  Check,
+  ChevronsUpDown,
+  FileText,
+  Info,
+  Save,
+  Trash2,
+  Undo2,
+} from 'lucide-vue-next';
 
 interface Field {
   key: string;
@@ -83,11 +92,18 @@ const formatValue = (value: any, type?: string) => {
 const getSelectedOption = (field: Field, value: any) => {
   if (!field.options || !value) return null;
   const stringValue = value?.toString() || '';
-  return field.options.find((option: { value: string; label: string }) => option.value === stringValue) || null;
+  return (
+    field.options.find(
+      (option: { value: string; label: string }) => option.value === stringValue
+    ) || null
+  );
 };
 
 // Helper function to handle combobox selection
-const handleComboboxChange = (field: Field, selectedOption: { value: string; label: string } | null) => {
+const handleComboboxChange = (
+  field: Field,
+  selectedOption: { value: string; label: string } | null
+) => {
   const value = selectedOption ? selectedOption.value : '';
   updateField(field.key, value);
 };
@@ -95,16 +111,7 @@ const handleComboboxChange = (field: Field, selectedOption: { value: string; lab
 
 <template>
   <div class="relative">
-    <!-- Persistent Toast in Top Right -->
-    <Transition name="toast" appear>
-      <div
-        v-if="!readonly && hasUnsavedChanges"
-        class="fixed top-4 right-4 z-50 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2 shadow-lg max-w-sm transition-all duration-300 transform-gpu will-change-transform"
-      >
-        <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
-        <span class="text-sm text-amber-800 font-medium">Du har ändrat informationen</span>
-      </div>
-    </Transition>
+
 
     <!-- Header -->
     <StandardHeader
@@ -113,31 +120,6 @@ const handleComboboxChange = (field: Field, selectedOption: { value: string; lab
       :show-stats="props.showStats"
       :stats="props.stats"
     >
-      <template #actions>
-        <slot name="actions">
-          <Button
-            v-if="!readonly && hasUnsavedChanges"
-            variant="primary"
-            class="gap-2 h-8 text-xs"
-            @click="emit('save')"
-          >
-            <Save class="h-3 w-3" />
-            Spara
-          </Button>
-          <Button
-            variant="secondary"
-            class="gap-2 h-8 text-xs text-red-600"
-            @click="emit('delete')"
-          >
-            <Trash2 class="h-3 w-3" />
-            Radera
-          </Button>
-          <Button variant="secondary" class="gap-2 h-8 text-xs" @click="emit('back')">
-            <ArrowLeft class="h-3 w-3" />
-            Tillbaka
-          </Button>
-        </slot>
-      </template>
     </StandardHeader>
 
     <!-- Back Button and Save Button -->
@@ -169,6 +151,20 @@ const handleComboboxChange = (field: Field, selectedOption: { value: string; lab
         <Undo2 class="h-3 w-3" />
         Ångra
       </Button>
+
+      <!-- Spacer to push toast to consistent position -->
+      <div class="flex-1"></div>
+
+      <!-- Toast in fixed position -->
+      <Transition name="toast" appear>
+        <div
+          v-if="!readonly && hasUnsavedChanges"
+          class="w-64 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm h-8 transition-all duration-300 transform-gpu will-change-transform"
+        >
+          <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+          <span class="text-xs text-amber-800 font-medium">Du har ändrat informationen</span>
+        </div>
+      </Transition>
     </div>
 
     <!-- Form Content -->
@@ -185,7 +181,7 @@ const handleComboboxChange = (field: Field, selectedOption: { value: string; lab
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 gap-x-4">
               <div v-for="field in mainFields" :key="field.key" class="space-y-1">
-                <Label class="text-[0.625rem] font-medium text-gray-500">{{ field.label }}</Label>
+                <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
                 <Input
                   v-if="field.type === 'text'"
                   :model-value="(data[field.key] ?? '').toString()"
@@ -214,7 +210,7 @@ const handleComboboxChange = (field: Field, selectedOption: { value: string; lab
                   :model-value="(data[field.key] ?? '').toString()"
                   :readonly="readonly"
                   rows="3"
-                  class="text-xs resize-none"
+                  class="md:text-xs resize-none"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Combobox
@@ -226,8 +222,10 @@ const handleComboboxChange = (field: Field, selectedOption: { value: string; lab
                 >
                   <ComboboxAnchor as-child>
                     <ComboboxTrigger as-child>
-                      <Button variant="outline" class="text-xs">
-                        {{ getSelectedOption(field, data[field.key])?.label ?? 'Välj alternativ...' }}
+                      <Button variant="outline" class="font-normal text-xs">
+                        {{
+                          getSelectedOption(field, data[field.key])?.label ?? 'Välj alternativ...'
+                        }}
                         <ChevronsUpDown class="" />
                       </Button>
                     </ComboboxTrigger>
@@ -236,14 +234,11 @@ const handleComboboxChange = (field: Field, selectedOption: { value: string; lab
                   <ComboboxList class="">
                     <div class="">
                       <ComboboxInput
-                        class=""
                         :placeholder="`Sök ${field.label.toLowerCase()}...`"
                       />
                     </div>
 
-                    <ComboboxEmpty class="text-xs">
-                      Inga alternativ hittades.
-                    </ComboboxEmpty>
+                    <ComboboxEmpty class="text-xs">Inga alternativ hittades.</ComboboxEmpty>
 
                     <ComboboxGroup>
                       <ComboboxItem
