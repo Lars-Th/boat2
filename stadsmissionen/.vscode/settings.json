@@ -145,7 +145,7 @@
   },
   "emmet.triggerExpansionOnTab": true,
   // Auto-save configuration
-  "files.autoSave": "onFocusChange",
+  "files.autoSave": "off",
   "files.autoSaveDelay": 1000,
   // Search configuration
   "search.exclude": {

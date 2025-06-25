@@ -16,7 +16,7 @@ interface Emits {
 }
 
 defineProps<Props>();
-defineEmits<Emits>();
+const emit = defineEmits<Emits>();
 </script>
 
 <template>
@@ -45,7 +45,7 @@ defineEmits<Emits>();
             variant="ghost"
             size="sm"
             class="opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50"
-            @click.stop="emit('delete', organization.id, $event)"
+            @click.stop="$emit('delete', organization.id, $event)"
           >
             <Trash2 class="h-4 w-4" />
           </Button>

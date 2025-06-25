@@ -1,24 +1,6 @@
-import { computed, ref, type Ref, shallowRef } from 'vue';
+import { computed, ref, shallowRef } from 'vue';
 import type { ApiError, ApiResponse } from '@/api/client/types';
-
-export interface UseApiOptions<T = unknown> {
-  immediate?: boolean;
-  cache?: boolean;
-  cacheKey?: string;
-  onSuccess?: (data: T) => void;
-  onError?: (error: ApiError) => void;
-}
-
-export interface UseApiReturn<T> {
-  data: Ref<T | null>;
-  loading: Ref<boolean>;
-  error: Ref<ApiError | null>;
-  execute: () => Promise<void>;
-  refresh: () => Promise<void>;
-  reset: () => void;
-  isSuccess: Ref<boolean>;
-  isError: Ref<boolean>;
-}
+import type { UseApiOptions, UseApiReturn } from '@/types/composables';
 
 // Simple in-memory cache
 const cache = new Map<string, { data: unknown; timestamp: number }>();

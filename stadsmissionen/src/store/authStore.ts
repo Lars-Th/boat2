@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia';
-
-interface User {
-  id: string;
-  name: string;
-  // add other user properties as needed
-}
+import type { User } from '@/types/auth';
 
 const baseURL = 'http://localhost:41812/API'; // Replace with your actual backend URL
 

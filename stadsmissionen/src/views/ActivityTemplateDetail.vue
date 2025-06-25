@@ -27,7 +27,7 @@ import {
 // Use API service and composables
 import { useApiItem } from '@/composables/useApi';
 import api from '@/api';
-import type { ActivityTemplate, ActivityType } from '@/types';
+import type { ActivityTemplate } from '@/types';
 
 const router = useRouter();
 const route = useRoute();
@@ -56,7 +56,7 @@ const handleRefresh = async () => {
 
 // Mock usage statistics since relational data isn't available yet
 const usageStatistics = computed(() => {
-  if (!template.value?.activities) {
+  if (!template.value) {
     return {
       totalActivities: 0,
       recentActivities: 0,
@@ -66,7 +66,7 @@ const usageStatistics = computed(() => {
     };
   }
 
-  const { activities } = template.value;
+  const activities = template.value;
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 

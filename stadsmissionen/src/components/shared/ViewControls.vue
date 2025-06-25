@@ -106,10 +106,6 @@ const updateSecondaryFilter = (value: unknown) => {
   emit('update:secondaryFilter', stringValue);
 };
 
-const updateViewMode = (mode: 'list' | 'grid') => {
-  emit('update:viewMode', mode);
-};
-
 // Helper function to handle filter changes
 const handleFilterChange = (filter: Filter) => {
   return (value: unknown) => {
@@ -128,8 +124,8 @@ const handleFilterChange = (filter: Filter) => {
         <Button
           v-for="button in leftActionButtons"
           :key="button.label"
-          :variant="button.variant || 'primary'"
-          :size="button.size || 'sm'"
+          :variant="button.variant ?? 'primary'"
+          :size="button.size ?? 'sm'"
           :class="['gap-2 text-xs font-semibold', button.class]"
           @click="button.onClick"
         >
@@ -143,8 +139,8 @@ const handleFilterChange = (filter: Filter) => {
         <Button
           v-for="button in additionalActions"
           :key="button.label"
-          :variant="button.variant || 'secondary'"
-          :size="button.size || 'sm'"
+          :variant="button.variant ?? 'secondary'"
+          :size="button.size ?? 'sm'"
           :class="['gap-2 text-xs font-semibold', button.class]"
           @click="button.onClick"
         >

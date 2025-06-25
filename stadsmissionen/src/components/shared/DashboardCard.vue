@@ -35,7 +35,7 @@ withDefaults(defineProps<Props>(), {
       <div v-if="value" class="text-lg font-bold">
         {{ value }}
       </div>
-      <Badge v-if="badge" :variant="badge.variant || 'secondary'" class="mt-2 text-xs">
+      <Badge v-if="badge" :variant="badge.variant ?? 'secondary'" class="mt-2 text-xs">
         {{ badge.text }}
       </Badge>
       <slot />

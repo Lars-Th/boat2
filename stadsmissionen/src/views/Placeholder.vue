@@ -37,6 +37,4 @@
   </div>
 </template>
 
-<script setup lang="ts">
-// This is the main placeholder view
-</script>
+<script setup lang="ts"></script>
