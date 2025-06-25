@@ -131,13 +131,6 @@ export interface TableColumn<T = Record<string, unknown>> {
   badgeVariant?: (value: unknown) => string;
 }
 
-export interface PaginationInfo {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-}
-
 // Form types
 export interface FormField<T = unknown> {
   name: string;
@@ -315,12 +308,6 @@ export interface UseNotificationsReturn {
 }
 
 // Statistics interface
-export interface Statistic {
-  title: string;
-  value: string | number;
-  icon: Component;
-  color: string;
-}
 
 // Theme interfaces
 export interface ColorDefinition {
@@ -479,37 +466,6 @@ export interface LoginAccount {
   status: string;
   lastLogin: string;
   fullName?: string;
-}
-
-export interface Boat {
-  BoatID: number;
-  BoatNumber: string;
-  BoatName: string;
-  RegistrationNumber: string;
-  BoatType: string;
-  BoatModel: string;
-  YearBuilt: number;
-  Length: number;
-  Width: number;
-  Owner: string;
-  OwnerPhone: string;
-  OwnerEmail: string;
-  HarbourLocation: string;
-  Status: 'active' | 'maintenance' | 'inactive';
-  CreatedDate: string;
-  LastModified: string;
-  LastService: string;
-  NextService: string;
-  TechnicalDetails: {
-    Engine: string;
-    FuelType: string;
-    HullMaterial: string;
-    SailArea?: number;
-    Draft?: number;
-    MaxSpeed?: number;
-    FuelCapacity?: number;
-  };
-  Notes: string;
 }
 
 // Route params interface

@@ -24,21 +24,9 @@ export interface RelationshipConfig<T, R> {
   };
 }
 
-export interface CacheEntry {
-  data: any;
-  timestamp: number;
-  ttl: number;
-}
-
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
-}
-
-export interface CascadeDeleteResult {
-  canDelete: boolean;
-  dependentEntities: Array<{ entity: string; count: number }>;
-  cascadeActions: Array<{ action: 'delete' | 'nullify'; entity: string; field: string }>;
 }
 
 // Enhanced entity types with relationships
