@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import DataTable from '@/components/shared/DataTable.vue';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Edit, FileText, Info, List, Plus, Save, Trash2, Undo2 } from 'lucide-vue-next';
+import { ArrowLeft, Edit, FileText, Info, Plus, Save, Trash2, Undo2 } from 'lucide-vue-next';
 
 interface Field {
   key: string;
