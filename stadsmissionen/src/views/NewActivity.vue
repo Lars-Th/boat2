@@ -157,7 +157,7 @@ watch(
       const template = selectedTemplate.value;
       form.value.namn = template.namn;
       form.value.beskrivning = template.beskrivning;
-      form.value.plats = template.standardPlats || '';
+      form.value.plats = template.standardPlats ?? '';
       form.value.varaktighet = template.standardVaraktighet;
 
       // Reset series if template doesn't support it

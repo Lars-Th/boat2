@@ -94,7 +94,7 @@ const loginAccounts = computed(() => {
       email: user.email,
       firstName: user.name.split(' ')[0] ?? '',
       lastName: user.name.split(' ').slice(1).join(' ') ?? '',
-      role: user.permissionGroup ? user.permissionGroup.name : 'Okänd grupp',
+      role: user.permissionGroup?.name ?? 'Okänd grupp',
       status: 'Aktiv' as const,
       lastLogin: 'Aldrig',
       createdAt: '2024-01-01',
