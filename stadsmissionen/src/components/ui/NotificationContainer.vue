@@ -90,11 +90,11 @@ const getIcon = (type?: string) => {
         <div v-if="notification.type === 'confirm'" class="flex gap-2 ml-4">
           <Button
             size="sm"
-            :variant="notification.confirmVariant || 'destructive'"
+            :variant="notification.confirmVariant ?? 'destructive'"
             class="text-xs h-7"
             @click="notification.onConfirm?.()"
           >
-            {{ notification.confirmText || 'Bekräfta' }}
+            {{ notification.confirmText ?? 'Bekräfta' }}
           </Button>
           <Button
             size="sm"
@@ -102,7 +102,7 @@ const getIcon = (type?: string) => {
             class="text-xs h-7"
             @click="notification.onCancel?.()"
           >
-            {{ notification.cancelText || 'Avbryt' }}
+            {{ notification.cancelText ?? 'Avbryt' }}
           </Button>
         </div>
 

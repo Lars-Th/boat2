@@ -69,15 +69,15 @@ watch(
       form.value = {
         ContactID: newContact.ContactID,
         CustomerID: newContact.CustomerID,
-        FirstName: newContact.FirstName || '',
-        LastName: newContact.LastName || '',
-        Title: newContact.Title || '',
-        Phone: newContact.Phone || '',
-        Mobile: newContact.Mobile || '',
-        Email: newContact.Email || '',
-        Department: newContact.Department || '',
+        FirstName: newContact.FirstName ?? '',
+        LastName: newContact.LastName ?? '',
+        Title: newContact.Title ?? '',
+        Phone: newContact.Phone ?? '',
+        Mobile: newContact.Mobile ?? '',
+        Email: newContact.Email ?? '',
+        Department: newContact.Department ?? '',
         IsPrimary: newContact.IsPrimary ? 'true' : 'false',
-        Notes: newContact.Notes || '',
+        Notes: newContact.Notes ?? '',
       };
       hasUnsavedChanges.value = false;
     }
@@ -246,15 +246,15 @@ const handleDiscardChanges = () => {
     form.value = {
       ContactID: contact.value.ContactID,
       CustomerID: contact.value.CustomerID,
-      FirstName: contact.value.FirstName || '',
-      LastName: contact.value.LastName || '',
-      Title: contact.value.Title || '',
-      Phone: contact.value.Phone || '',
-      Mobile: contact.value.Mobile || '',
-      Email: contact.value.Email || '',
-      Department: contact.value.Department || '',
+      FirstName: contact.value.FirstName ?? '',
+      LastName: contact.value.LastName ?? '',
+      Title: contact.value.Title ?? '',
+      Phone: contact.value.Phone ?? '',
+      Mobile: contact.value.Mobile ?? '',
+      Email: contact.value.Email ?? '',
+      Department: contact.value.Department ?? '',
       IsPrimary: contact.value.IsPrimary ? 'true' : 'false',
-      Notes: contact.value.Notes || '',
+      Notes: contact.value.Notes ?? '',
     };
   }
   hasUnsavedChanges.value = false;

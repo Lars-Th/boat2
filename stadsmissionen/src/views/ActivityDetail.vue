@@ -9,17 +9,7 @@ import type { ActivityType } from '@/types';
 // Components
 import ExtendedDetailPage from '@/components/shared/ExtendedDetailPage.vue';
 import { Badge } from '@/components/ui/badge';
-import {
-  BarChart3,
-  Calendar,
-  Clock,
-  MapPin,
-  UserCheck,
-  UserMinus,
-  UserPlus,
-  Users,
-  UserX,
-} from 'lucide-vue-next';
+import { BarChart3, UserCheck, UserMinus, UserPlus, Users, UserX } from 'lucide-vue-next';
 
 // Define interfaces locally to ensure proper typing
 interface Attendance {
@@ -139,7 +129,6 @@ const {
 
 // Extract data from the combined response
 const activity = computed(() => activityWithRelations.value);
-const _activityType = computed(() => activityWithRelations.value?.activityType);
 const attendances = computed(() => _attendancesData.value ?? []);
 const activityParticipants = computed(() => activityWithRelations.value?.participants ?? []);
 
@@ -173,11 +162,11 @@ watch(
     if (newActivity) {
       form.value = {
         ActivityID: newActivity.ActivityID,
-        Namn: newActivity.Namn || '',
-        Beskrivning: newActivity.Beskrivning || '',
-        Plats: newActivity.Plats || '',
+        Namn: newActivity.Namn ?? '',
+        Beskrivning: newActivity.Beskrivning ?? '',
+        Plats: newActivity.Plats ?? '',
         DatumTid: formatDateForInput(newActivity.DatumTid),
-        ActivityTypeID: newActivity.ActivityTypeID || 0,
+        ActivityTypeID: newActivity.ActivityTypeID ?? 0,
       };
       hasUnsavedChanges.value = false;
     }
@@ -224,14 +213,6 @@ const formatDate = (dateString: string) => {
   });
 };
 
-// Format time only (unused but keeping for potential future use)
-const _formatTime = (dateString: string) => {
-  return new Date(dateString).toLocaleString('sv-SE', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
 // Tabs configuration for ExtendedDetailPage
 const tabs = computed(() => [
   {
@@ -262,7 +243,7 @@ const attendanceTableData = computed(() => {
     const participantJunctions =
       junctionData.value?.filter(
         (j: JunctionData) => j.ParticipantID === attendance.ParticipantID
-      ) || [];
+      ) ?? [];
 
     // Get office names for this participant
     const participantOffices = participantJunctions
@@ -278,7 +259,7 @@ const attendanceTableData = computed(() => {
       participant: participant
         ? `${participant.Fornamn} ${participant.Efternamn}`
         : 'Okänd deltagare',
-      phone: participant?.Telefon || '-',
+      phone: participant?.Telefon ?? '-',
       offices: participantOffices,
       attendance: attendance.Närvaro,
       datetime: attendance.DatumTid,
@@ -304,26 +285,6 @@ const participantTableData = computed(() => {
     }) ?? []
   );
 });
-
-// Column definitions (unused but keeping for potential future use)
-const _attendanceColumns = [
-  { key: 'participant', label: 'Deltagare', sortable: true },
-  { key: 'phone', label: 'Telefon', sortable: false },
-  { key: 'offices', label: 'Enheter', sortable: false, type: 'custom' as const },
-  { key: 'attendance', label: 'Närvaro', sortable: true, type: 'custom' as const },
-  { key: 'datetime', label: 'Registrerad', sortable: true, type: 'custom' as const },
-  { key: 'notes', label: 'Anteckningar', sortable: false },
-  { key: 'actions', label: 'Åtgärder', type: 'actions' as const, width: '100px' },
-];
-
-const _participantColumns = [
-  { key: 'name', label: 'Namn', sortable: true },
-  { key: 'phone', label: 'Telefon', sortable: false },
-  { key: 'email', label: 'E-post', sortable: false },
-  { key: 'attendanceCount', label: 'Registreringar', sortable: true, type: 'custom' as const },
-  { key: 'presentCount', label: 'Närvarande', sortable: true, type: 'custom' as const },
-  { key: 'actions', label: 'Åtgärder', type: 'actions' as const, width: '100px' },
-];
 
 // Statistics
 const stats = computed(() => {

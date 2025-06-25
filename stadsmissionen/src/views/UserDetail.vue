@@ -226,7 +226,7 @@ onMounted(() => {
     <div class="max-w-full mx-auto px-6">
       <!-- Header -->
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">{{ user?.name || 'Användare' }}</h1>
+        <h1 class="text-3xl font-bold text-gray-900">{{ user?.name ?? 'Användare' }}</h1>
         <p class="text-gray-600 mt-2">Hantera användarens kontoinställningar</p>
       </div>
 
@@ -282,7 +282,7 @@ onMounted(() => {
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Behörighetsgrupp</label>
           <Input
-            :value="user?.permissionGroup?.name || 'Laddar...'"
+            :value="user?.permissionGroup?.name ?? 'Laddar...'"
             type="text"
             class="w-full bg-gray-100"
             readonly
@@ -291,7 +291,7 @@ onMounted(() => {
           <div class="text-xs text-gray-500 mt-1">
             Debug: {{ user?.permissionGroup ? 'Has permissionGroup' : 'No permissionGroup' }} |
             PermissionID: {{ user?.permissionID }} | Group Name:
-            {{ user?.permissionGroup?.name || 'N/A' }}
+            {{ user?.permissionGroup?.name ?? 'N/A' }}
           </div>
         </div>
 

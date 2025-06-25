@@ -3,11 +3,10 @@ import { computed, ref } from 'vue';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import ViewControls from '@/components/shared/ViewControls.vue';
 import DataTable from '@/components/shared/DataTable.vue';
-import PaginationControls from '@/components/shared/PaginationControls.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Clock, Loader2, QrCode, XCircle } from 'lucide-vue-next';
+import { CheckCircle, Loader2, QrCode, XCircle } from 'lucide-vue-next';
 
 // Use API service and composables
 import { useApiList } from '@/composables/useApi';
@@ -87,7 +86,7 @@ const columns = [
       if (typeof value === 'string') {
         return new Date(value).toLocaleString('sv-SE');
       }
-      return String(value || '');
+      return String(value ?? '');
     },
   },
   {

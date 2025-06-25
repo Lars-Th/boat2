@@ -1,29 +1,6 @@
 import { BaseService } from './base.service';
 import type { ApiResponse } from '@/api/client/types';
-
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-  };
-  token: string;
-  refreshToken?: string;
-  expiresIn?: number;
-}
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-}
+import type { LoginRequest, LoginResponse, User } from '@/types/auth';
 
 export class AuthService extends BaseService<any> {
   constructor(httpClient: any) {

@@ -335,7 +335,7 @@ const getRoleColor = (roleId: string) => {
                             class="h-8 w-8 object-contain"
                           />
                           <p class="text-sm bg-muted p-2 rounded flex-1">
-                            {{ selectedOrganization.logotyp || 'Ingen logotyp' }}
+                            {{ selectedOrganization.logotyp ?? 'Ingen logotyp' }}
                           </p>
                         </div>
                       </div>
@@ -356,7 +356,7 @@ const getRoleColor = (roleId: string) => {
                           placeholder="Gatuadress"
                         />
                         <p v-else class="text-sm bg-muted p-2 rounded">
-                          {{ selectedOrganization.kontaktuppgifter.adress || 'Ingen adress' }}
+                          {{ selectedOrganization.kontaktuppgifter.adress ?? 'Ingen adress' }}
                         </p>
                       </div>
 
@@ -369,7 +369,7 @@ const getRoleColor = (roleId: string) => {
                             placeholder="12345"
                           />
                           <p v-else class="text-sm bg-muted p-2 rounded">
-                            {{ selectedOrganization.kontaktuppgifter.postnummer || '-' }}
+                            {{ selectedOrganization.kontaktuppgifter.postnummer ?? '-' }}
                           </p>
                         </div>
                         <div class="space-y-2">
@@ -380,7 +380,7 @@ const getRoleColor = (roleId: string) => {
                             placeholder="Ort"
                           />
                           <p v-else class="text-sm bg-muted p-2 rounded">
-                            {{ selectedOrganization.kontaktuppgifter.ort || '-' }}
+                            {{ selectedOrganization.kontaktuppgifter.ort ?? '-' }}
                           </p>
                         </div>
                       </div>
@@ -393,7 +393,7 @@ const getRoleColor = (roleId: string) => {
                           placeholder="031-123456"
                         />
                         <p v-else class="text-sm bg-muted p-2 rounded">
-                          {{ selectedOrganization.kontaktuppgifter.telefon || 'Ingen telefon' }}
+                          {{ selectedOrganization.kontaktuppgifter.telefon ?? 'Ingen telefon' }}
                         </p>
                       </div>
 
@@ -406,7 +406,7 @@ const getRoleColor = (roleId: string) => {
                           placeholder="info@example.se"
                         />
                         <p v-else class="text-sm bg-muted p-2 rounded">
-                          {{ selectedOrganization.kontaktuppgifter.epost || 'Ingen e-post' }}
+                          {{ selectedOrganization.kontaktuppgifter.epost ?? 'Ingen e-post' }}
                         </p>
                       </div>
                     </div>
