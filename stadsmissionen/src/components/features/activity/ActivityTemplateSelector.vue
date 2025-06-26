@@ -37,7 +37,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value);
+const isLoading = computed(() => Boolean(templatesLoading.value));
 const hasError = computed(() => templatesError.value !== null);
 
 // Get selected template

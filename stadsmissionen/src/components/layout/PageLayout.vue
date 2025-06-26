@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { type Component, computed } from 'vue';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
-import type { BreadcrumbItem } from '@/types';
+import type { UIBreadcrumbItem } from '@/types';
 
 interface Props {
   title: string;
-  breadcrumbs?: string | BreadcrumbItem[];
+  breadcrumbs?: string | UIBreadcrumbItem[];
   showStats?: boolean;
   stats?: Array<{
     title: string;

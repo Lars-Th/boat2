@@ -6,7 +6,9 @@ import {
   AuthService,
   ContactService,
   CustomerService,
+  OrganizationService,
   ParticipantService,
+  UserService,
 } from '../services';
 
 export class ApiConfiguration {
@@ -19,10 +21,12 @@ export class ApiConfiguration {
   public readonly auth: AuthService;
   public readonly customers: CustomerService;
   public readonly contacts: ContactService;
+  public readonly organizations: OrganizationService;
+  public readonly users: UserService;
 
   constructor(baseURL?: string) {
     this.httpClient = new HttpClient({
-      baseURL: baseURL ?? (import.meta.env['VITE_API_BASE_URL'] as string) ?? '/api',
+      baseURL: baseURL ?? (import.meta.env as ['VITE_API_BASE_URL'] as string) ?? '/api',
     });
 
     // Initialize all services
@@ -33,6 +37,8 @@ export class ApiConfiguration {
     this.auth = new AuthService(this.httpClient);
     this.customers = new CustomerService(this.httpClient);
     this.contacts = new ContactService(this.httpClient);
+    this.organizations = new OrganizationService(this.httpClient);
+    this.users = new UserService(this.httpClient);
   }
 
   setBaseURL(baseURL: string): void {

@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
-import { organizationService } from '@/api/services/organization.service';
-import type { Organization } from '@/types';
-import type { ApiResponse } from '@/api/client/types';
+import api from '@/api';
+import type { Organization } from '@/types/entities';
+import type { ApiResponse } from '@/types/api';
 
 export function useOrganizationManagement() {
   // Reactive state
@@ -44,7 +44,7 @@ export function useOrganizationManagement() {
     error.value = null;
 
     try {
-      const response: ApiResponse<Organization[]> = await organizationService.getAll();
+      const response: ApiResponse<Organization[]> = await api.organizations.getAll();
 
       if (response.success) {
         organizations.value = response.data;
@@ -66,7 +66,7 @@ export function useOrganizationManagement() {
     error.value = null;
 
     try {
-      const response: ApiResponse<Organization | null> = await organizationService.getById(id);
+      const response: ApiResponse<Organization | null> = await api.organizations.getById(id);
 
       if (response.success) {
         currentOrganization.value = response.data;
@@ -88,7 +88,7 @@ export function useOrganizationManagement() {
     error.value = null;
 
     try {
-      const response = await organizationService.getSettings();
+      const response = await api.organizations.getSettings();
 
       if (response.success) {
         organizationSettings.value = response.data;
@@ -113,8 +113,7 @@ export function useOrganizationManagement() {
     error.value = null;
 
     try {
-      const response: ApiResponse<Organization> =
-        await organizationService.create(organizationData);
+      const response: ApiResponse<Organization> = await api.organizations.create(organizationData);
 
       if (response.success) {
         // Add the new organization to the list
@@ -151,7 +150,7 @@ export function useOrganizationManagement() {
     error.value = null;
 
     try {
-      const response: ApiResponse<Organization> = await organizationService.update(
+      const response: ApiResponse<Organization> = await api.organizations.update(
         id,
         organizationData
       );
@@ -196,7 +195,7 @@ export function useOrganizationManagement() {
     error.value = null;
 
     try {
-      const response: ApiResponse<boolean> = await organizationService.delete(id);
+      const response: ApiResponse<boolean> = await api.organizations.delete(id);
 
       if (response.success) {
         // Remove the organization from the list
@@ -247,7 +246,7 @@ export function useOrganizationManagement() {
     error.value = null;
 
     try {
-      const response: ApiResponse<boolean> = await organizationService.updateSettings(settings);
+      const response: ApiResponse<boolean> = await api.organizations.updateSettings(settings);
 
       if (response.success) {
         // Update the settings in the local state

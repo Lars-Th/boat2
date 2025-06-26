@@ -16,21 +16,21 @@ const {
   data: tasks,
   loading: tasksLoading,
   error: tasksError,
-  refetch: refetchTasks,
+  refresh: refetchTasks,
 } = useApi(() => api.tasks.getAll(), { immediate: true });
 
 const {
   data: workOrders,
   loading: workOrdersLoading,
   error: workOrdersError,
-  refetch: refetchWorkOrders,
+  refresh: refetchWorkOrders,
 } = useApi(() => api.workOrders.getAll(), { immediate: true });
 
 const {
   data: customers,
   loading: customersLoading,
   error: customersError,
-  refetch: refetchCustomers,
+  refresh: refetchCustomers,
 } = useApi(() => api.customers.getAll(), { immediate: true });
 
 // Add time entries API call
@@ -38,16 +38,16 @@ const {
   data: timeEntries,
   loading: timeEntriesLoading,
   error: timeEntriesError,
-  refetch: refetchTimeEntries,
+  refresh: refetchTimeEntries,
 } = useApi(() => Promise.resolve({ data: [], success: true }), { immediate: true });
 
 // Loading and error states
 const isLoading = computed(
   () =>
-    tasksLoading.value ||
-    workOrdersLoading.value ||
-    customersLoading.value ||
-    timeEntriesLoading.value
+    Boolean(tasksLoading.value) ||
+    Boolean(workOrdersLoading.value) ||
+    Boolean(customersLoading.value) ||
+    Boolean(timeEntriesLoading.value)
 );
 
 const hasError = computed(

@@ -3,7 +3,7 @@ import { MockDataService } from '@/api/mocks';
 import type { Activity, Attendance, Contact, Customer, Participant } from '@/types';
 import type { RelationalParams } from '@/types/enhanced';
 import type { ContactWithRelations, CustomerWithRelations } from '@/types/relationships';
-import type { ApiResponse, RequestParams } from '@/api/client/types';
+import type { ApiResponse, RequestParams } from '@/types';
 
 // Export all types and client functionality
 export * from '@/api/client';
@@ -12,7 +12,7 @@ export * from '@/api/config';
 export * from '@/api/mocks';
 
 // Environment-based API service selection
-const USE_MOCK_API = import.meta.env['VITE_USE_MOCK_API'] === 'true';
+const USE_MOCK_API = (import.meta as any).env?.VITE_USE_MOCK_API === 'true';
 
 // Create the main API service instance
 const apiService = USE_MOCK_API ? new MockDataService() : new ApiConfiguration();
@@ -162,59 +162,74 @@ export const api = {
           ),
   },
 
-  // Legacy compatibility for organizations, users, etc.
+  // Organizations
   organizations: {
     getAll: () =>
       USE_MOCK_API
         ? (apiService as MockDataService).getOrganizations()
-        : Promise.reject(new Error('Organizations not implemented in real API yet')),
+        : (apiService as ApiConfiguration).organizations.getAll(),
+
+    getById: (id: string) =>
+      USE_MOCK_API
+        ? Promise.reject(new Error('Organizations getById not implemented in mock'))
+        : (apiService as ApiConfiguration).organizations.getById(id),
 
     create: (data: Record<string, unknown>) =>
       USE_MOCK_API
         ? (apiService as MockDataService).createOrganization(data as never)
-        : Promise.reject(new Error('Organizations not implemented in real API yet')),
+        : (apiService as ApiConfiguration).organizations.create(data),
 
     update: (id: string, data: Record<string, unknown>) =>
       USE_MOCK_API
         ? (apiService as MockDataService).updateOrganization(id, data as never)
-        : Promise.reject(new Error('Organizations not implemented in real API yet')),
+        : (apiService as ApiConfiguration).organizations.update(id, data),
 
     delete: (id: string) =>
       USE_MOCK_API
         ? (apiService as MockDataService).deleteOrganization(id)
-        : Promise.reject(new Error('Organizations not implemented in real API yet')),
+        : (apiService as ApiConfiguration).organizations.delete(id),
+
+    getSettings: () =>
+      USE_MOCK_API
+        ? Promise.reject(new Error('Organizations getSettings not implemented in mock'))
+        : (apiService as ApiConfiguration).organizations.getSettings(),
+
+    updateSettings: (settings: any) =>
+      USE_MOCK_API
+        ? Promise.reject(new Error('Organizations updateSettings not implemented in mock'))
+        : (apiService as ApiConfiguration).organizations.updateSettings(settings),
   },
 
   users: {
     getAll: (params?: RequestParams & RelationalParams) =>
       USE_MOCK_API
         ? (apiService as MockDataService).getUsers(params)
-        : Promise.reject(new Error('Users not implemented in real API yet')),
+        : (apiService as ApiConfiguration).users.getAll(),
 
     getById: (id: string, params?: RelationalParams) =>
       USE_MOCK_API
         ? (apiService as MockDataService).getUser(id, params)
-        : Promise.reject(new Error('Users not implemented in real API yet')),
+        : (apiService as ApiConfiguration).users.getById(id),
 
     create: (data: Record<string, unknown>) =>
       USE_MOCK_API
         ? (apiService as MockDataService).createUser(data as never)
-        : Promise.reject(new Error('Users not implemented in real API yet')),
+        : (apiService as ApiConfiguration).users.create(data),
 
     update: (id: string, data: Record<string, unknown>) =>
       USE_MOCK_API
         ? (apiService as MockDataService).updateUser(id, data as never)
-        : Promise.reject(new Error('Users not implemented in real API yet')),
+        : (apiService as ApiConfiguration).users.update(id, data),
 
     delete: (id: string) =>
       USE_MOCK_API
         ? (apiService as MockDataService).deleteUser(id)
-        : Promise.reject(new Error('Users not implemented in real API yet')),
+        : (apiService as ApiConfiguration).users.delete(id),
 
     updatePassword: (id: string, newPassword: string) =>
       USE_MOCK_API
         ? (apiService as MockDataService).updateUserPassword(id, newPassword)
-        : Promise.reject(new Error('Users not implemented in real API yet')),
+        : (apiService as ApiConfiguration).users.changePassword(id, newPassword),
   },
 
   participantGroups: {

@@ -46,7 +46,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || typesLoading.value);
+const isLoading = computed(() => Boolean(templatesLoading.value) || Boolean(typesLoading.value));
 const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
@@ -76,7 +76,10 @@ const enhancedTemplates = computed(() => {
 
   return activityTemplates.value.map(template => {
     const types = getActivityTypeDetails(template.aktivitetstyper);
-    const primaryPurpose = types.length > 0 && types[0] ? types[0].Syfte : 'Inget syfte angivet';
+    const primaryPurpose =
+      types.length > 0 && types[0]
+        ? (types[0].Syfte ?? 'Inget syfte angivet')
+        : 'Inget syfte angivet';
 
     // Calculate usage statistics - mock data for now since activities relation isn't available
     const usageCount = 0; // Will be populated when real API supports relations
@@ -301,7 +304,7 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
       :add-actions="addActions"
       :filters="filters"
       :show-view-switcher="false"
-      :data="paginatedTemplates || []"
+      :data="paginatedTemplates ?? []"
       :columns="columns"
       :search-fields="['namn', 'beskrivning', 'malltyp']"
       :loading="isLoading"
@@ -342,7 +345,7 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
       <template #cell-types="{ row }">
         <div class="flex flex-wrap gap-1">
           <Badge
-            v-for="type in ((row as any).types || []).slice(0, 2)"
+            v-for="type in ((row as any).types ?? []).slice(0, 2)"
             :key="type.ActivityTypeID"
             variant="outline"
             class="text-xs"
@@ -350,8 +353,8 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
           >
             {{ type.Typnamn }}
           </Badge>
-          <Badge v-if="((row as any).types || []).length > 2" variant="outline" class="text-xs">
-            +{{ ((row as any).types || []).length - 2 }}
+          <Badge v-if="((row as any).types ?? []).length > 2" variant="outline" class="text-xs">
+            +{{ ((row as any).types ?? []).length - 2 }}
           </Badge>
         </div>
       </template>

@@ -5,7 +5,7 @@ import ViewControls from '@/components/shared/ViewControls.vue';
 import DataTable from '@/components/shared/DataTable.vue';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-vue-next';
-import type { BreadcrumbItem, TableColumn } from '@/types';
+import type { TableColumn, UIBreadcrumbItem } from '@/types';
 import { useToast } from '@/composables/useToast';
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
@@ -13,7 +13,7 @@ import api from '@/api';
 const { info } = useToast();
 
 // Breadcrumbs
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs: UIBreadcrumbItem[] = [
   { label: 'Inställningar', to: '/settings' },
   { label: 'Användare', to: '/settings/users' },
   { label: 'Behörighetsgrupper', isCurrentPage: true },
@@ -48,7 +48,7 @@ const actionButtons = [
 ];
 
 // Loading and error states
-const isLoading = computed(() => permissionGroupsLoading.value);
+const isLoading = computed(() => Boolean(permissionGroupsLoading.value));
 const hasError = computed(() => permissionGroupsError.value !== null);
 
 // Statistics

@@ -11,12 +11,12 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Filter, Search, X } from 'lucide-vue-next';
-import type { FilterOption } from '@/types';
+import type { UIFilterOption } from '@/types';
 
 interface FilterConfig {
   key: string;
   label: string;
-  options: FilterOption[];
+  options: UIFilterOption[];
 }
 
 interface Props {

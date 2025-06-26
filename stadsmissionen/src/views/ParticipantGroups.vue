@@ -65,7 +65,9 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => groupsLoading.value || participantsLoading.value);
+const isLoading = computed(
+  () => Boolean(groupsLoading.value) || Boolean(participantsLoading.value)
+);
 const hasError = computed(() => groupsError.value !== null || participantsError.value !== null);
 
 // Refresh function for error recovery
@@ -105,7 +107,7 @@ const enhancedGroups = computed(() => {
       : [];
 
     // Calculate activity statistics from included relations
-    const activityCount = group.activities ? group.activities.length : 0;
+    const activityCount = group.activities?.length ?? 0;
     const recentActivityCount = group.activities
       ? group.activities.filter(activity => {
           const activityDate = new Date(activity.Datum ?? activity.CreatedDate);
@@ -117,7 +119,7 @@ const enhancedGroups = computed(() => {
     return {
       ...group,
       participantNames,
-      participantCount: group.participants ? group.participants.length : 0,
+      participantCount: group.participants?.length ?? 0,
       activityCount,
       recentActivityCount,
       isAutomatic: !!group.automatiskregel,
@@ -204,12 +206,12 @@ const filteredGroups = computed(() => {
 
     // Unit filter
     const matchesUnit =
-      unitFilter.value === 'all' || (group.enheter || []).includes(unitFilter.value);
+      unitFilter.value === 'all' || (group.enheter ?? []).includes(unitFilter.value);
 
     // Search filter
     const matchesSearch =
       !searchQuery.value ||
-      [group.namn, group.beskrivning, ...(group.enheter || []), ...group.participantNames].some(
+      [group.namn, group.beskrivning, ...(group.enheter ?? []), ...group.participantNames].some(
         field => field?.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
       );
 

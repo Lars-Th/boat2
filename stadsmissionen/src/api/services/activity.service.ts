@@ -1,5 +1,5 @@
 import type { Activity } from '@/types';
-import type { ApiResponse, QueryParams } from '../client/types';
+import type { ApiResponse, QueryParams } from '@/types';
 import type { HttpClient } from '../client/http-client';
 import { BaseService } from '@/api/services/base.service';
 

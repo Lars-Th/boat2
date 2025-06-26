@@ -64,11 +64,13 @@ const {
 });
 
 // Loading state
-const isLoading = computed(() => activitiesLoading.value || activityTypesLoading.value);
+const isLoading = computed(
+  () => Boolean(activitiesLoading.value) || Boolean(activityTypesLoading.value)
+);
 
 // Error state
 const hasError = computed(
-  () => activitiesError.value !== null || activityTypesError.value !== null
+  () => (activitiesError.value ?? null) !== null || (activityTypesError.value ?? null) !== null
 );
 
 // Table columns
