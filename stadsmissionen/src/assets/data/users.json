@@ -1,44 +1,82 @@
 [
   {
     "id": 1,
-    "name": "Lars Thomas",
-    "email": "lars.thomas@ostergotlandsstadsmission.se",
+    "name": "Super Admin",
+    "email": "superadmin@stadsmissionen.se",
     "password": "admin123",
-    "permissionID": 1
+    "permissionID": 1,
+    "stadsmission": 1
   },
   {
     "id": 2,
     "name": "Erik Enhetschef",
     "email": "erik.enhetschef@ostergotlandsstadsmission.se",
     "password": "erik123",
-    "permissionID": 2
+    "permissionID": 2,
+    "stadsmission": 1
   },
   {
     "id": 3,
     "name": "Maria Koordinator",
     "email": "maria.koordinator@ostergotlandsstadsmission.se",
     "password": "maria123",
-    "permissionID": 3
+    "permissionID": 3,
+    "stadsmission": 1
   },
   {
     "id": 4,
     "name": "Johan Tölp",
     "email": "johan.handlaggare@ostergotlandsstadsmission.se",
     "password": "johan123",
-    "permissionID": 3
+    "permissionID": 3,
+    "stadsmission": 1
   },
   {
     "id": 5,
     "name": "Lisa Medarbetare",
     "email": "lisa.medarbetare@ostergotlandsstadsmission.se",
     "password": "lisa123",
-    "permissionID": 3
+    "permissionID": 3,
+    "stadsmission": 1
   },
   {
     "id": 6,
     "name": "Karin Stockholmsadmin",
     "email": "karin.admin@stadsmissionen.se",
     "password": "karin123",
-    "permissionID": 4
+    "permissionID": 4,
+    "stadsmission": 2
+  },
+  {
+    "id": 7,
+    "name": "Anna Göteborgschef",
+    "email": "anna.chef@goteborgsstadsmission.se",
+    "password": "anna123",
+    "permissionID": 2,
+    "stadsmission": 3
+  },
+  {
+    "id": 8,
+    "name": "Peter Göteborghandläggare",
+    "email": "peter.handlaggare@goteborgsstadsmission.se",
+    "password": "peter123",
+    "permissionID": 3,
+    "stadsmission": 3
+  },
+  {
+    "id": 9,
+    "name": "Sara Arvikakoordinator",
+    "email": "sara.koordinator@arvikastadsmission.se",
+    "password": "sara123",
+    "permissionID": 2,
+    "stadsmission": 4
+  },
+  {
+    "id": 10,
+    "name": "Magnus Arvikamedarbetare",
+    "email": "magnus.medarbetare@arvikastadsmission.se",
+    "password": "magnus123",
+    "permissionID": 3,
+    "stadsmission": 4
   }
 ]

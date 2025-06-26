@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Building,
   Calendar,
   ClipboardList,
   Code,
@@ -204,6 +205,12 @@ export const bottomNavigationItems: NavigationItem[] = [
             name: 'Aktivitetsmallar',
             path: '/activity-templates',
             icon: FileText,
+            permissions: ['A', 'SA'],
+          },
+          {
+            name: 'Stadsmissioner',
+            path: '/settings/stadsmissioner',
+            icon: Building,
             permissions: ['A', 'SA'],
           },
         ],

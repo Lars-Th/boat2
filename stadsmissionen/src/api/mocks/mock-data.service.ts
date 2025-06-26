@@ -18,18 +18,19 @@ import type {
 // Import JSON data
 import activitiesData from '@/assets/data/activities.json';
 import activityTypesData from '@/assets/data/activityTypes.json';
-import organizationSettingsData from '@/assets/data/organizationSettings.json';
 import usersData from '@/assets/data/users.json';
 import participantsData from '@/assets/data/participants.json';
 import participantGroupsData from '@/assets/data/participantGroups.json';
 import attendancesData from '@/assets/data/attendances.json';
 import activityTemplatesData from '@/assets/data/activityTemplates.json';
+import activityCompletionsData from '@/assets/data/activityCompletions.json';
+import organizationsData from '@/assets/data/organizations.json';
 import customersData from '@/assets/data/customers.json';
 import contactsData from '@/assets/data/contacts.json';
-import employeesData from '@/assets/data/employees.json';
 import permissionGroupsData from '@/assets/data/permissionGroups.json';
 import officesData from '@/assets/data/offices.json';
-import enheterParticipantsGroupsData from '@/assets/data/enheterParticipantsGroups.json';
+import groupsJunctionData from '@/assets/data/groupsJunction.json';
+import officesUsersJunctionData from '@/assets/data/officesUsersJunction.json';
 
 export class MockDataService {
   private delay = 300; // Simulate network delay
@@ -219,61 +220,6 @@ export class MockDataService {
   // Activity Types
   async getActivityTypes(): Promise<ApiResponse<ActivityType[]>> {
     return this.mockRequest(activityTypesData as unknown as ActivityType[]);
-  }
-
-  // Organizations
-  async getOrganizations(): Promise<ApiResponse<typeof organizationSettingsData.organizations>> {
-    return this.mockRequest(organizationSettingsData.organizations);
-  }
-
-  async createOrganization(
-    org: Partial<(typeof organizationSettingsData.organizations)[0]>
-  ): Promise<ApiResponse<(typeof organizationSettingsData.organizations)[0]>> {
-    const newOrg = {
-      ...org,
-      id: (
-        Math.max(...organizationSettingsData.organizations.map(o => parseInt(o.id))) + 1
-      ).toString(),
-      skapadDatum: new Date().toISOString(),
-    } as unknown as (typeof organizationSettingsData.organizations)[0];
-
-    return this.mockRequest(newOrg);
-  }
-
-  async updateOrganization(
-    id: string,
-    org: Partial<(typeof organizationSettingsData.organizations)[0]>
-  ): Promise<ApiResponse<(typeof organizationSettingsData.organizations)[0]>> {
-    const existingOrg = organizationSettingsData.organizations.find(o => o.id === id);
-    if (!existingOrg) {
-      return {
-        data: null as unknown as (typeof organizationSettingsData.organizations)[0],
-        success: false,
-        error: {
-          message: 'Organization not found',
-          code: 'NOT_FOUND',
-        },
-      };
-    }
-
-    const updatedOrg = { ...existingOrg, ...org };
-    return this.mockRequest(updatedOrg);
-  }
-
-  async deleteOrganization(id: string): Promise<ApiResponse<boolean>> {
-    const exists = organizationSettingsData.organizations.some(o => o.id === id);
-    if (!exists) {
-      return {
-        data: false,
-        success: false,
-        error: {
-          message: 'Organization not found',
-          code: 'NOT_FOUND',
-        },
-      };
-    }
-
-    return this.mockRequest(true);
   }
 
   // Users
@@ -515,8 +461,18 @@ export class MockDataService {
   async getActivityTemplate(
     id: string
   ): Promise<ApiResponse<(typeof activityTemplatesData)[0] | null>> {
-    const template = activityTemplatesData.find(t => t.id === id);
+    const template = activityTemplatesData.find(t => t.id === parseInt(id));
     return this.mockRequest(template ?? null);
+  }
+
+  // Organizations (new)
+  async getNewOrganizations(): Promise<ApiResponse<typeof organizationsData>> {
+    return this.mockRequest(organizationsData);
+  }
+
+  async getNewOrganization(id: string): Promise<ApiResponse<(typeof organizationsData)[0] | null>> {
+    const organization = organizationsData.find(o => o.id === parseInt(id));
+    return this.mockRequest(organization ?? null);
   }
 
   // Customers
@@ -754,11 +710,6 @@ export class MockDataService {
     return this.mockRequest(true);
   }
 
-  // Employees
-  async getEmployees(): Promise<ApiResponse<typeof employeesData>> {
-    return this.mockRequest(employeesData);
-  }
-
   // PermissionGroups
   async getPermissionGroups(): Promise<ApiResponse<typeof permissionGroupsData>> {
     return this.mockRequest(permissionGroupsData);
@@ -856,6 +807,7 @@ export class MockDataService {
       name: user.name,
       email: user.email,
       role: this.getPermissionRole(user.permissionID),
+      stadsmission: user.stadsmission,
       permissionGroup,
     };
 
@@ -916,6 +868,7 @@ export class MockDataService {
       name: user.name,
       email: user.email,
       role: this.getPermissionRole(user.permissionID),
+      stadsmission: user.stadsmission,
       permissionGroup,
     };
 
@@ -952,6 +905,7 @@ export class MockDataService {
       name: user.name,
       email: user.email,
       role: this.getPermissionRole(user.permissionID),
+      stadsmission: user.stadsmission,
       permissionGroup,
     };
 
@@ -1006,26 +960,24 @@ export class MockDataService {
     return this.mockRequest(office ?? null);
   }
 
-  // Junction table methods - Enheter Participants Groups
-  async getEnheterParticipantsGroups(): Promise<ApiResponse<typeof enheterParticipantsGroupsData>> {
-    return this.mockRequest(enheterParticipantsGroupsData);
+  // Junction table methods - Enheter Participants Groups (using groupsJunction as replacement)
+  async getEnheterParticipantsGroups(): Promise<ApiResponse<typeof groupsJunctionData>> {
+    return this.mockRequest(groupsJunctionData);
   }
 
   async getEnheterParticipantsGroupsByParticipantId(
     participantId: string
-  ): Promise<ApiResponse<typeof enheterParticipantsGroupsData>> {
-    const filtered = enheterParticipantsGroupsData.filter(
-      item => item.ParticipantID === parseInt(participantId)
+  ): Promise<ApiResponse<typeof groupsJunctionData>> {
+    const filtered = groupsJunctionData.filter(
+      item => item.participantID === parseInt(participantId)
     );
     return this.mockRequest(filtered);
   }
 
   async getEnheterParticipantsGroupsByOfficeId(
     officeId: string
-  ): Promise<ApiResponse<typeof enheterParticipantsGroupsData>> {
-    const filtered = enheterParticipantsGroupsData.filter(
-      item => item.OfficeID === parseInt(officeId)
-    );
+  ): Promise<ApiResponse<typeof groupsJunctionData>> {
+    const filtered = groupsJunctionData.filter(item => item.officeID === parseInt(officeId));
     return this.mockRequest(filtered);
   }
 
@@ -1053,5 +1005,121 @@ export class MockDataService {
     (attendancesData as any)[existingAttendanceIndex] = updatedAttendance;
 
     return this.mockRequest(updatedAttendance);
+  }
+
+  // Groups Junction
+  async getGroupsJunction(): Promise<ApiResponse<typeof groupsJunctionData>> {
+    return this.mockRequest(groupsJunctionData);
+  }
+
+  // Offices Users Junction
+  async getOfficesUsersJunction(): Promise<ApiResponse<typeof officesUsersJunctionData>> {
+    return this.mockRequest(officesUsersJunctionData);
+  }
+
+  // Activity Completions
+  async getActivityCompletions(): Promise<ApiResponse<typeof activityCompletionsData>> {
+    return this.mockRequest(activityCompletionsData);
+  }
+
+  async getActivityCompletion(
+    id: string
+  ): Promise<ApiResponse<(typeof activityCompletionsData)[0] | null>> {
+    const completion = activityCompletionsData.find(c => c.id === parseInt(id));
+    return this.mockRequest(completion || null);
+  }
+
+  async getActivityCompletionsByActivityId(
+    activityId: string
+  ): Promise<ApiResponse<typeof activityCompletionsData>> {
+    const completions = activityCompletionsData.filter(c => c.aktivitetId === parseInt(activityId));
+    return this.mockRequest(completions);
+  }
+
+  async createActivityCompletion(
+    completion: Omit<(typeof activityCompletionsData)[0], 'id' | 'skapadDatum'>
+  ): Promise<ApiResponse<(typeof activityCompletionsData)[0]>> {
+    const newCompletion = {
+      ...completion,
+      id: Math.max(...activityCompletionsData.map(c => c.id)) + 1,
+      skapadDatum: new Date().toISOString(),
+    };
+    return this.mockRequest(newCompletion);
+  }
+
+  async updateActivityCompletion(
+    id: string,
+    completion: Partial<(typeof activityCompletionsData)[0]>
+  ): Promise<ApiResponse<(typeof activityCompletionsData)[0]>> {
+    const existingIndex = activityCompletionsData.findIndex(c => c.id === parseInt(id));
+    if (existingIndex === -1) {
+      return {
+        data: null as unknown as (typeof activityCompletionsData)[0],
+        success: false,
+        error: { message: 'Activity completion not found', code: 'NOT_FOUND' },
+      };
+    }
+
+    const existing = activityCompletionsData[existingIndex]!;
+    const updated = { ...existing, ...completion };
+    (activityCompletionsData as any)[existingIndex] = updated;
+    return this.mockRequest(updated);
+  }
+
+  async deleteActivityCompletion(id: string): Promise<ApiResponse<boolean>> {
+    const index = activityCompletionsData.findIndex(c => c.id === parseInt(id));
+    if (index === -1) {
+      return this.mockRequest(false);
+    }
+    (activityCompletionsData as any).splice(index, 1);
+    return this.mockRequest(true);
+  }
+
+  async getActivityCompletionStats(): Promise<
+    ApiResponse<{
+      totalCompletions: number;
+      completionRate: number;
+      averageRating: number;
+      participantSatisfaction: number;
+      followUpNeeded: number;
+    }>
+  > {
+    const totalCompletions = activityCompletionsData.length;
+    const totalActivities = activitiesData.length;
+    const completionRate =
+      totalActivities > 0 ? Math.round((totalCompletions / totalActivities) * 100) : 0;
+
+    // Calculate average rating from scale questions (assuming 1-5 scale)
+    let totalRatings = 0;
+    let ratingCount = 0;
+
+    activityCompletionsData.forEach(completion => {
+      completion.resultat.forEach(result => {
+        result.svar.forEach(answer => {
+          if (typeof answer.svar === 'number' && answer.svar >= 1 && answer.svar <= 5) {
+            totalRatings += answer.svar;
+            ratingCount++;
+          }
+        });
+      });
+    });
+
+    const averageRating = ratingCount > 0 ? Math.round((totalRatings / ratingCount) * 10) / 10 : 0;
+    const participantSatisfaction =
+      averageRating >= 4
+        ? Math.round((averageRating / 5) * 100)
+        : Math.round((averageRating / 5) * 100);
+    const followUpNeeded = activityCompletionsData.reduce(
+      (count, completion) => count + completion.uppföljningsbehov.length,
+      0
+    );
+
+    return this.mockRequest({
+      totalCompletions,
+      completionRate,
+      averageRating,
+      participantSatisfaction,
+      followUpNeeded,
+    });
   }
 }

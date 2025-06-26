@@ -54,10 +54,10 @@ interface ParticipantData {
 }
 
 interface JunctionData {
-  JunctionID: number;
-  OfficeID: number;
-  ParticipantID: number;
-  ParticipantGroupID: string | null;
+  id: number;
+  groupID: number;
+  participantID: number;
+  officeID: number;
 }
 
 interface OfficeData {
@@ -253,13 +253,13 @@ const attendanceTableData = computed(() => {
     // Find participant's offices through junction table
     const participantJunctions =
       junctionData.value?.filter(
-        (j: JunctionData) => j.ParticipantID === attendance.ParticipantID
+        (j: JunctionData) => j.participantID === attendance.ParticipantID
       ) ?? [];
 
     // Get office names for this participant
     const participantOffices = participantJunctions
       .map((junction: JunctionData) => {
-        const office = officesData.value?.find((o: OfficeData) => o.OfficeID === junction.OfficeID);
+        const office = officesData.value?.find((o: OfficeData) => o.OfficeID === junction.officeID);
         return office?.Name;
       })
       .filter(Boolean) // Remove undefined values
@@ -499,6 +499,12 @@ const handleTogglePresence = async (item: any) => {
   }
 };
 
+const handleCompleteActivity = () => {
+  if (activityId && activityId !== 'new') {
+    router.push(`/activities/${activityId}/complete`);
+  }
+};
+
 // Loading and error states
 const isLoading = computed(
   () =>
@@ -581,12 +587,7 @@ const hasError = computed(
                 <Plus class="h-3 w-3" />
                 Lägg till
               </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                class="gap-2"
-                @click="() => console.log('Färdigställ aktivitet')"
-              >
+              <Button variant="secondary" size="sm" class="gap-2" @click="handleCompleteActivity">
                 <Check class="h-3 w-3" />
                 Färdigställ aktivitet
               </Button>
@@ -684,7 +685,7 @@ const hasError = computed(
               <Button variant="primary" @click="handleAddTabItem('participants')">
                 + Lägg till
               </Button>
-              <Button variant="secondary" @click="() => console.log('Färdigställ aktivitet')">
+              <Button variant="secondary" @click="handleCompleteActivity">
                 Färdigställ aktivitet
               </Button>
             </div>
@@ -743,7 +744,7 @@ const hasError = computed(
           <div class="bg-white rounded-lg border">
             <div class="flex items-center justify-between p-4 border-b">
               <div></div>
-              <Button variant="secondary" @click="() => console.log('Färdigställ aktivitet')">
+              <Button variant="secondary" @click="handleCompleteActivity">
                 Färdigställ aktivitet
               </Button>
             </div>

@@ -63,8 +63,8 @@ export interface Organization {
   id: string;
   namn: string;
   logotyp?: string;
-  aktiv: boolean;
   enheter: string[];
+  userCount?: number;
   kommentarLabels: {
     kommentar1: string;
     kommentar2: string;

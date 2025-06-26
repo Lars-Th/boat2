@@ -1,0 +1,167 @@
+[
+  {
+    "id": 1,
+    "activityID": 1,
+    "officeID": 1
+  },
+  {
+    "id": 2,
+    "activityID": 1,
+    "officeID": 2
+  },
+  {
+    "id": 3,
+    "activityID": 2,
+    "officeID": 1
+  },
+  {
+    "id": 4,
+    "activityID": 2,
+    "officeID": 3
+  },
+  {
+    "id": 5,
+    "activityID": 3,
+    "officeID": 2
+  },
+  {
+    "id": 6,
+    "activityID": 4,
+    "officeID": 1
+  },
+  {
+    "id": 7,
+    "activityID": 4,
+    "officeID": 6
+  },
+  {
+    "id": 8,
+    "activityID": 5,
+    "officeID": 1
+  },
+  {
+    "id": 9,
+    "activityID": 6,
+    "officeID": 2
+  },
+  {
+    "id": 10,
+    "activityID": 6,
+    "officeID": 7
+  },
+  {
+    "id": 11,
+    "activityID": 7,
+    "officeID": 1
+  },
+  {
+    "id": 12,
+    "activityID": 7,
+    "officeID": 6
+  },
+  {
+    "id": 13,
+    "activityID": 8,
+    "officeID": 5
+  },
+  {
+    "id": 14,
+    "activityID": 8,
+    "officeID": 3
+  },
+  {
+    "id": 15,
+    "activityID": 9,
+    "officeID": 3
+  },
+  {
+    "id": 16,
+    "activityID": 9,
+    "officeID": 8
+  },
+  {
+    "id": 17,
+    "activityID": 10,
+    "officeID": 2
+  },
+  {
+    "id": 18,
+    "activityID": 11,
+    "officeID": 1
+  },
+  {
+    "id": 19,
+    "activityID": 12,
+    "officeID": 1
+  },
+  {
+    "id": 20,
+    "activityID": 12,
+    "officeID": 6
+  },
+  {
+    "id": 21,
+    "activityID": 13,
+    "officeID": 1
+  },
+  {
+    "id": 22,
+    "activityID": 13,
+    "officeID": 2
+  },
+  {
+    "id": 23,
+    "activityID": 13,
+    "officeID": 3
+  },
+  {
+    "id": 24,
+    "activityID": 14,
+    "officeID": 4
+  },
+  {
+    "id": 25,
+    "activityID": 15,
+    "officeID": 2
+  },
+  {
+    "id": 26,
+    "activityID": 15,
+    "officeID": 7
+  },
+  {
+    "id": 27,
+    "activityID": 16,
+    "officeID": 5
+  },
+  {
+    "id": 28,
+    "activityID": 17,
+    "officeID": 8
+  },
+  {
+    "id": 29,
+    "activityID": 18,
+    "officeID": 4
+  },
+  {
+    "id": 30,
+    "activityID": 18,
+    "officeID": 5
+  },
+  {
+    "id": 31,
+    "activityID": 19,
+    "officeID": 7
+  },
+  {
+    "id": 32,
+    "activityID": 20,
+    "officeID": 4
+  },
+  {
+    "id": 33,
+    "activityID": 20,
+    "officeID": 9
+  }
+]

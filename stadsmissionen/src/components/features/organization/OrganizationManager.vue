@@ -82,7 +82,6 @@ const handleCreateOrganization = (formData: OrganizationFormData) => {
     id: `org-${Date.now()}`,
     namn: formData.namn,
     logotyp: formData.logotyp ?? '/src/assets/images/default-logo.png',
-    aktiv: true,
     enheter: [...formData.enheter],
     kommentarLabels: { ...formData.kommentarLabels },
     kontaktuppgifter: { ...formData.kontaktuppgifter },

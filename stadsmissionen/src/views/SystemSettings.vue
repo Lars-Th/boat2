@@ -41,8 +41,8 @@ const {
   loading: organizationsLoading,
   error: organizationsError,
   refresh: refreshOrganizations,
-} = useApiList<Organization>(() => api.organizations.getAll(), {
-  cacheKey: 'organizations',
+} = useApiList<any>(() => api.newOrganizations.getAll(), {
+  cacheKey: 'newOrganizations',
 });
 
 const {
@@ -54,13 +54,27 @@ const {
   cacheKey: 'users',
 });
 
+const {
+  data: officesData,
+  loading: officesLoading,
+  error: officesError,
+  refresh: refreshOffices,
+} = useApiList<any>(() => api.offices.getAll(), {
+  cacheKey: 'offices',
+});
+
 // Loading and error states
-const isLoading = computed(() => organizationsLoading.value || usersLoading.value);
-const hasError = computed(() => organizationsError.value !== null || usersError.value !== null);
+const isLoading = computed(
+  () => organizationsLoading.value || usersLoading.value || officesLoading.value
+);
+const hasError = computed(
+  () =>
+    organizationsError.value !== null || usersError.value !== null || officesError.value !== null
+);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
-  await Promise.all([refreshOrganizations(), refreshUsers()]);
+  await Promise.all([refreshOrganizations(), refreshUsers(), refreshOffices()]);
 };
 
 // Initialize organization API composable
@@ -69,7 +83,7 @@ const { organizations, loadOrganizations, updateOrganization } = useOrganization
 // Local state for selected organization
 const selectedOrgId = ref<string>('');
 const selectedOrganization = computed(
-  () => organizations.value.find((org: Organization) => org.id === selectedOrgId.value) ?? null
+  () => newOrganizations.value.find((org: any) => org.id.toString() === selectedOrgId.value) ?? null
 );
 
 // Computed properties for the template
@@ -83,18 +97,28 @@ const organizationUsers = computed(() => {
   );
 });
 
+// Use the new organizations data
+const newOrganizations = computed(() => {
+  const orgs = organizationsData.value ?? [];
+  const offices = officesData.value ?? [];
+  const users = usersData.value ?? [];
+
+  // Add linked offices and user count to each organization
+  return orgs.map((org: any) => ({
+    ...org,
+    enheter: offices
+      .filter((office: any) => office.OrganizationID === org.id)
+      .map((office: any) => office.Name),
+    userCount: users.filter((user: any) => user.stadsmission === org.id).length,
+  }));
+});
+
 const stats = computed(() => [
   {
     title: 'Totalt organisationer',
-    value: organizations.value.length,
+    value: newOrganizations.value.length,
     icon: Building,
     color: 'blue',
-  },
-  {
-    title: 'Aktiva organisationer',
-    value: organizations.value.filter((org: Organization) => org.aktiv).length,
-    icon: CheckCircle,
-    color: 'green',
   },
   {
     title: 'Totalt användare',
@@ -147,11 +171,11 @@ const updateOrganizationInfo = (updates: Partial<Organization>) => {
 
 // Load data on component mount
 const loadData = async () => {
-  await Promise.all([loadOrganizations(), refreshOrganizations(), refreshUsers()]);
+  await Promise.all([refreshOrganizations(), refreshUsers(), refreshOffices()]);
 
   // Set initial selected organization
-  if (organizations.value.length > 0 && organizations.value[0]) {
-    selectedOrgId.value = organizations.value[0].id;
+  if (newOrganizations.value.length > 0 && newOrganizations.value[0]) {
+    selectedOrgId.value = newOrganizations.value[0].id.toString();
   }
 };
 
@@ -261,10 +285,10 @@ const getRoleColor = (roleId: string) => {
       <!-- Organization Manager Section -->
       <OrganizationManager
         v-else
-        :organizations="organizations"
+        :organizations="newOrganizations"
         :selected-org-id="selectedOrgId"
         :users="users"
-        @update:organizations="organizations = $event"
+        @update:organizations="newOrganizations = $event"
         @update:selected-org-id="selectOrganization"
         @update:users="users = $event"
       />

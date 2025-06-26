@@ -76,6 +76,44 @@ export const api = {
         : (apiService as ApiConfiguration).activityTypes.getById(id),
   },
 
+  // Activity Completions
+  activityCompletions: {
+    getAll: () =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getActivityCompletions()
+        : Promise.reject(new Error('Activity completions not implemented in real API yet')),
+
+    getById: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getActivityCompletion(id)
+        : Promise.reject(new Error('Activity completions not implemented in real API yet')),
+
+    getByActivityId: (activityId: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getActivityCompletionsByActivityId(activityId)
+        : Promise.reject(new Error('Activity completions not implemented in real API yet')),
+
+    create: (data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).createActivityCompletion(data)
+        : Promise.reject(new Error('Activity completions not implemented in real API yet')),
+
+    update: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateActivityCompletion(id, data)
+        : Promise.reject(new Error('Activity completions not implemented in real API yet')),
+
+    delete: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).deleteActivityCompletion(id)
+        : Promise.reject(new Error('Activity completions not implemented in real API yet')),
+
+    getStats: () =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getActivityCompletionStats()
+        : Promise.reject(new Error('Activity completions not implemented in real API yet')),
+  },
+
   // Participants
   participants: {
     getAll: (params?: RequestParams & RelationalParams) =>
@@ -255,6 +293,22 @@ export const api = {
         : Promise.reject(new Error('Junction table not implemented in real API yet')),
   },
 
+  // Groups Junction
+  groupsJunction: {
+    getAll: () =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getGroupsJunction()
+        : Promise.reject(new Error('Groups junction not implemented in real API yet')),
+  },
+
+  // Offices Users Junction
+  officesUsersJunction: {
+    getAll: () =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getOfficesUsersJunction()
+        : Promise.reject(new Error('Offices users junction not implemented in real API yet')),
+  },
+
   activityTemplates: {
     getAll: () =>
       USE_MOCK_API
@@ -265,6 +319,18 @@ export const api = {
       USE_MOCK_API
         ? (apiService as MockDataService).getActivityTemplate(id)
         : Promise.reject(new Error('Activity templates not implemented in real API yet')),
+  },
+
+  newOrganizations: {
+    getAll: () =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getNewOrganizations()
+        : Promise.reject(new Error('New organizations not implemented in real API yet')),
+
+    getById: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getNewOrganization(id)
+        : Promise.reject(new Error('New organizations not implemented in real API yet')),
   },
 
   customers: {
@@ -367,14 +433,6 @@ export const api = {
       USE_MOCK_API
         ? (apiService as MockDataService).deleteContact(id)
         : (apiService as ApiConfiguration).contacts.delete(id),
-  },
-
-  // Employees
-  employees: {
-    getAll: () =>
-      USE_MOCK_API
-        ? (apiService as MockDataService).getEmployees()
-        : Promise.reject(new Error('Employees not implemented in real API yet')),
   },
 
   // PermissionGroups

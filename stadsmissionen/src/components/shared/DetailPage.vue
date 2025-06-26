@@ -170,15 +170,15 @@ const handleComboboxChange = (
       <div class="lg:col-span-2">
         <slot name="main-content" :data="data" :readonly="readonly">
           <!-- Default form fields -->
-          <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold flex items-center text-gray-600 mb-2 gap-2">
+          <div class="bg-background rounded-lg border p-4">
+            <h3 class="text-sm font-semibold flex items-center text-foreground/80 mb-2 gap-2">
               <FileText class="h-4 w-4" />
               Grundläggande information
             </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 gap-x-4">
               <div v-for="field in mainFields" :key="field.key" class="space-y-1">
-                <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
+                <Label class="text-[10px] font-medium text-foreground/80">{{ field.label }}</Label>
                 <Input
                   v-if="field.type === 'text'"
                   :model-value="(data[field.key] ?? '').toString()"
@@ -260,16 +260,20 @@ const handleComboboxChange = (
       <div class="space-y-4">
         <slot name="sidebar-content" :data="data" :readonly="readonly">
           <!-- Default sidebar -->
-          <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
+          <div class="bg-background rounded-lg border p-4">
+            <h3
+              class="text-sm font-semibold mb-3 flex items-center gap-2 text-secondary-foreground"
+            >
               <Info class="h-4 w-4" />
               Information
             </h3>
 
             <div class="space-y-2">
               <div v-for="field in sidebarFields" :key="field.key" class="space-y-1">
-                <Label class="text-[10px] font-medium text-gray-500">{{ field.label }}</Label>
-                <div class="text-xs text-gray-700">
+                <Label class="text-[10px] font-medium text-secondary-foreground">
+                  {{ field.label }}
+                </Label>
+                <div class="text-xs text-secondary-foreground">
                   {{ formatValue(data[field.key], field.type) }}
                 </div>
               </div>

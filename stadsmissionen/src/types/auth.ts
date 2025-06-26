@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  stadsmission?: number;
   permissionGroup?: {
     name: string;
   };

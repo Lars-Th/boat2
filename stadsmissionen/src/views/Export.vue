@@ -21,7 +21,6 @@ const dateTo = ref('');
 const includePersonalData = ref(false);
 const includeAttendance = ref(true);
 const includeActivities = ref(true);
-const includeFamilyRelations = ref(false);
 
 const exportOptions = [
   { value: 'excel', label: 'Excel (.xlsx)', icon: FileText },
@@ -36,7 +35,6 @@ const handleExport = () => {
     includePersonalData: includePersonalData.value,
     includeAttendance: includeAttendance.value,
     includeActivities: includeActivities.value,
-    includeFamilyRelations: includeFamilyRelations.value,
   };
 
   console.log('Exporting data:', exportData);

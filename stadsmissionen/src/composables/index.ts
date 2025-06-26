@@ -4,6 +4,7 @@ export { useNotifications } from '@/composables/useNotifications';
 export { useValidation } from '@/composables/useValidation';
 export { useAuth } from '@/composables/useAuth';
 export { useOrganizationManagement } from '@/composables/useOrganizationManagement';
+export { useActiveOrganization } from '@/composables/useActiveOrganization';
 
 // Export API composables
 export { useApi, useApiList, useApiItem } from '@/composables/useApi';

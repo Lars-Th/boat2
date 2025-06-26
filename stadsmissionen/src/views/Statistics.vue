@@ -42,6 +42,30 @@ const {
   immediate: true,
 });
 
+const {
+  data: activityCompletions,
+  loading: completionsLoading,
+  error: completionsError,
+  refetch: refetchCompletions,
+} = useApi(
+  () => api.activityCompletions?.getAll() || Promise.resolve({ data: [], success: true }),
+  {
+    immediate: true,
+  }
+);
+
+const {
+  data: completionStats,
+  loading: completionStatsLoading,
+  error: completionStatsError,
+  refetch: refetchCompletionStats,
+} = useApi(
+  () => api.activityCompletions?.getStats() || Promise.resolve({ data: null, success: true }),
+  {
+    immediate: true,
+  }
+);
+
 // Extract data from relational responses
 const participants = computed(() => participantsWithActivities.value ?? []);
 const activities = computed(() => activitiesWithTypes.value ?? []);
@@ -59,19 +83,32 @@ const activityTypes = computed(() => {
 
 // Loading and error states
 const isLoading = computed(
-  () => participantsLoading.value || activitiesLoading.value || attendancesLoading.value
+  () =>
+    participantsLoading.value ||
+    activitiesLoading.value ||
+    attendancesLoading.value ||
+    completionsLoading.value ||
+    completionStatsLoading.value
 );
 
 const hasError = computed(
   () =>
     participantsError.value !== null ||
     activitiesError.value !== null ||
-    attendancesError.value !== null
+    attendancesError.value !== null ||
+    completionsError.value !== null ||
+    completionStatsError.value !== null
 );
 
 // Event handlers
 const handleRetry = async () => {
-  await Promise.all([refetchParticipants(), refetchActivities(), refetchAttendances()]);
+  await Promise.all([
+    refetchParticipants(),
+    refetchActivities(),
+    refetchAttendances(),
+    refetchCompletions(),
+    refetchCompletionStats(),
+  ]);
 };
 
 // Calculate statistics from API data
@@ -174,11 +211,11 @@ const stats = computed(() => [
     change: '+5%',
   },
   {
-    title: 'Registreringar',
-    value: totalAttendances.value,
+    title: 'Genomförda aktiviteter',
+    value: activityCompletions.value?.length ?? 0,
     icon: Activity,
     color: 'orange',
-    change: '+15%',
+    change: completionStats.value ? `${completionStats.value.completionRate}%` : '0%',
   },
 ]);
 </script>
@@ -301,6 +338,111 @@ const stats = computed(() => [
               <div class="flex gap-2">
                 <Badge variant="outline">{{ stat.activities }} aktiviteter</Badge>
                 <Badge variant="secondary">{{ stat.attendanceRate }}% närvaro</Badge>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Activity Completion Statistics -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle class="flex items-center gap-2">
+              <BarChart3 class="h-5 w-5" />
+              Genomförandegrad
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-blue-600">
+                {{ completionStats?.completionRate ?? 0 }}%
+              </div>
+              <div class="text-sm text-muted-foreground">av aktiviteter genomförda</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle class="flex items-center gap-2">
+              <Users class="h-5 w-5" />
+              Genomsnittligt betyg
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-green-600">
+                {{ completionStats?.averageRating ?? 0 }}
+              </div>
+              <div class="text-sm text-muted-foreground">av 5 möjliga</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle class="flex items-center gap-2">
+              <TrendingUp class="h-5 w-5" />
+              Deltagarnöjdhet
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-purple-600">
+                {{ completionStats?.participantSatisfaction ?? 0 }}%
+              </div>
+              <div class="text-sm text-muted-foreground">nöjda deltagare</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle class="flex items-center gap-2">
+              <AlertCircle class="h-5 w-5" />
+              Uppföljning
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-orange-600">
+                {{ completionStats?.followUpNeeded ?? 0 }}
+              </div>
+              <div class="text-sm text-muted-foreground">behöver uppföljning</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <!-- Recent Activity Completions -->
+      <Card>
+        <CardHeader>
+          <CardTitle class="flex items-center gap-2">
+            <Activity class="h-5 w-5" />
+            Senaste genomförda aktiviteter
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-3">
+            <div
+              v-for="completion in (activityCompletions || []).slice(0, 5)"
+              :key="completion.id"
+              class="flex items-center justify-between p-3 border rounded"
+            >
+              <div class="flex-1">
+                <div class="font-medium">Aktivitet {{ completion.aktivitetId }}</div>
+                <div class="text-sm text-muted-foreground">
+                  {{ new Date(completion.genomfordDatum).toLocaleDateString('sv-SE') }}
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <Badge variant="outline">{{ completion.antalNarvarande }} deltagare</Badge>
+                <Badge
+                  :variant="completion.uppföljningsbehov.length > 0 ? 'destructive' : 'default'"
+                >
+                  {{ completion.uppföljningsbehov.length }} uppföljningar
+                </Badge>
               </div>
             </div>
           </div>

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { onMounted, ref } from 'vue';
 import { ChevronDown, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-vue-next';
-import stadsmissionenLogo from '@/assets/images/stadsmissionen-logo.png';
+import { useActiveOrganization } from '@/composables/useActiveOrganization';
 
 // Props
 interface Props {
@@ -50,8 +50,8 @@ interface Props {
 //   })
 // })
 withDefaults(defineProps<Props>(), {
-  logoSrc: stadsmissionenLogo,
-  logoAlt: 'Östergötlands Stadsmission',
+  logoSrc: '',
+  logoAlt: 'Stadsmissionen',
   currentUser: () => ({
     id: 1,
     name: 'Lars Thomas',
@@ -62,6 +62,9 @@ withDefaults(defineProps<Props>(), {
 
 const router = useRouter();
 const route = useRoute();
+
+// Get active organization based on logged-in user
+const { activeOrganizationLogo, activeOrganizationName } = useActiveOrganization();
 
 // State for expanded menu items
 const expandedMenuItems = ref<Set<string>>(new Set());
@@ -145,6 +148,14 @@ const emit = defineEmits<{
 const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
   emit('userAction', action);
 };
+
+// Handle image loading errors
+const handleImageError = (event: Event) => {
+  const img = event.target as any;
+  if (img.src !== '/src/assets/images/logo-placeholder.png') {
+    img.src = '/src/assets/images/logo-placeholder.png';
+  }
+};
 </script>
 
 <template>
@@ -152,9 +163,10 @@ const handleUserAction = (action: 'profile' | 'settings' | 'logout') => {
     <!-- Sidebar Header -->
     <div class="p-4">
       <img
-        :src="logoSrc ?? stadsmissionenLogo"
-        :alt="logoAlt ?? 'Östergötlands Stadsmission'"
+        :src="logoSrc || activeOrganizationLogo || '/src/assets/images/logo-placeholder.png'"
+        :alt="logoAlt || activeOrganizationName || 'Stadsmissionen'"
         class="w-full h-auto max-h-24 object-contain"
+        @error="handleImageError"
       />
     </div>
 

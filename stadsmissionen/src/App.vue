@@ -33,12 +33,12 @@ const handleUserAction = async (action: 'profile' | 'settings' | 'logout') => {
 <template>
   <ErrorBoundary show-details>
     <!-- Authenticated Layout -->
-    <div v-if="isAuthenticated && route.name !== 'login'" class="flex h-screen bg-white">
+    <div v-if="isAuthenticated && route.name !== 'login'" class="flex h-screen bg-background">
       <!-- Navigation Sidebar -->
       <NavigationSidebar :current-user="currentUser || undefined" @user-action="handleUserAction" />
 
       <!-- Main Content Area -->
-      <main class="flex-1 overflow-auto bg-white">
+      <main class="flex-1 overflow-auto bg-background">
         <RouterView />
       </main>
 
@@ -47,7 +47,7 @@ const handleUserAction = async (action: 'profile' | 'settings' | 'logout') => {
     </div>
 
     <!-- Login Layout -->
-    <div v-else class="h-screen bg-white">
+    <div v-else class="h-screen bg-background">
       <RouterView />
       <ToastContainer />
     </div>

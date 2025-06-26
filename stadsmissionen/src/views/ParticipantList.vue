@@ -14,9 +14,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Plus, Trash2 } from 'lucide-vue-next';
 
-// Import organization settings
-import organizationSettings from '@/assets/data/organizationSettings.json';
-
 const router = useRouter();
 const { success, error } = useToast();
 
@@ -50,11 +47,16 @@ const isLoading = computed(() => participantsLoading.value);
 // Error state
 const hasError = computed(() => participantsError.value !== null);
 
-// Get current organization
-const currentOrg = organizationSettings.organizations.find(
-  org => org.id === organizationSettings.currentOrganization
-);
-const enheter = currentOrg?.enheter ?? [];
+// Get offices data
+const {
+  data: officesData,
+  loading: officesLoading,
+  error: officesError,
+} = useApiList(() => api.offices.getAll(), {
+  cacheKey: 'offices',
+});
+
+const enheter = computed(() => officesData.value ?? []);
 
 // Calculate age from personnummer or return unknown
 const calculateAge = (personnummer: string) => {
@@ -125,7 +127,7 @@ const stats = computed(() => {
       { label: 'Totalt', value: 0, color: 'text-blue-600' },
       { label: 'Barn (under 18)', value: 0, color: 'text-green-600' },
       { label: 'Med familjerelationer', value: 0, color: 'text-purple-600' },
-      { label: 'Totala enheter', value: enheter.length, color: 'text-orange-600' },
+      { label: 'Totala enheter', value: enheter.value.length, color: 'text-orange-600' },
     ];
   }
 
@@ -152,7 +154,7 @@ const stats = computed(() => {
     },
     {
       label: 'Totala enheter',
-      value: enheter.length,
+      value: enheter.value.length,
       color: 'text-orange-600',
     },
   ];

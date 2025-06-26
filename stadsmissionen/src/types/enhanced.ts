@@ -16,16 +16,6 @@ export interface ParticipantWithActivities extends Participant {
   activities?: Activity[];
 }
 
-export interface ParticipantWithFamily extends Participant {
-  familyMembers?: Participant[];
-}
-
-export interface ParticipantWithRelations extends Participant {
-  activities?: Activity[];
-  familyMembers?: Participant[];
-  attendances?: Attendance[];
-}
-
 // Enhanced user types with relational data
 export interface PermissionGroup {
   id: number;
@@ -55,7 +45,7 @@ export interface ActivityRelationalParams extends RelationalParams {
 }
 
 export interface ParticipantRelationalParams extends RelationalParams {
-  include?: ('activities' | 'family' | 'attendances')[];
+  include?: ('activities' | 'attendances')[];
 }
 
 export interface UserRelationalParams extends RelationalParams {
@@ -71,5 +61,6 @@ export interface AuthUser {
   name: string;
   email: string;
   role: string;
+  stadsmission?: number;
   permissionGroup?: PermissionGroup;
 }

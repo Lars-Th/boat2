@@ -24,6 +24,7 @@ const ActivityTypes = () => import('@/views/ActivityTypes.vue');
 const ActivityTemplateList = () => import('@/views/ActivityTemplateList.vue');
 const ActivityTemplateDetail = () => import('@/views/ActivityTemplateDetail.vue');
 const NewActivityTemplate = () => import('@/views/NewActivityTemplate.vue');
+const ActivityCompletion = () => import('@/views/ActivityCompletion.vue');
 
 // Participant management
 const ParticipantList = () => import('@/views/ParticipantList.vue');
@@ -38,6 +39,9 @@ const Export = () => import('@/views/Export.vue');
 // Development
 const CustomComponents = () => import('@/views/CustomComponents.vue');
 const Placeholder = () => import('@/views/Placeholder.vue');
+
+// System Settings
+const SystemSettings = () => import('@/views/SystemSettings.vue');
 
 // Auth routes
 export const authRoutes: RouteRecordRaw[] = [
@@ -129,6 +133,11 @@ export const activityRoutes: RouteRecordRaw[] = [
     name: 'edit-activity-template',
     component: NewActivityTemplate,
   },
+  {
+    path: '/activities/:id/complete',
+    name: 'activity-completion',
+    component: ActivityCompletion,
+  },
 ];
 
 // Participant management routes
@@ -200,6 +209,11 @@ export const settingsRoutes: RouteRecordRaw[] = [
     path: '/settings/permission-groups',
     name: 'settings-permission-groups',
     component: PermissionGroups,
+  },
+  {
+    path: '/settings/stadsmissioner',
+    name: 'settings-stadsmissioner',
+    component: SystemSettings,
   },
 ];
 

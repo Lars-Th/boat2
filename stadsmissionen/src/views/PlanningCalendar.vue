@@ -45,7 +45,7 @@ const {
   loading: employeesLoading,
   error: employeesError,
   refresh: refetchEmployees,
-} = useApiList(() => api.employees.getAll(), { cacheKey: 'employees' });
+} = useApiList(() => api.users.getAll(), { cacheKey: 'users' });
 
 // Loading and error states
 const isLoading = computed(

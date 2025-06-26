@@ -52,6 +52,9 @@ import NewOrganizationForm from '@/components/features/organization/NewOrganizat
 // Toast Example component
 import ToastExample from '@/components/features/development/ToastExample.vue';
 
+// Views
+import SystemSettings from '@/views/SystemSettings.vue';
+
 // File tree structure
 interface TreeNode {
   name: string;
@@ -67,7 +70,15 @@ const fileTree: TreeNode[] = [
     name: 'pages',
     path: 'pages',
     type: 'folder',
-    children: [],
+    children: [
+      {
+        name: 'SystemSettings.vue',
+        path: 'pages/SystemSettings.vue',
+        type: 'file',
+        component: SystemSettings,
+        props: {},
+      },
+    ],
   },
   {
     name: 'common',
@@ -124,9 +135,24 @@ const fileTree: TreeNode[] = [
                 return activityFormData.value;
               },
               templates: [
-                      { id: 1, name: 'Workshop Template', description: 'Standard workshop setup', templateType: 'workshop' },
-      { id: 2, name: 'Meeting Template', description: 'Regular meeting format', templateType: 'meeting' },
-      { id: 3, name: 'Training Template', description: 'Training session format', templateType: 'training' },
+                {
+                  id: 1,
+                  name: 'Workshop Template',
+                  description: 'Standard workshop setup',
+                  templateType: 'workshop',
+                },
+                {
+                  id: 2,
+                  name: 'Meeting Template',
+                  description: 'Regular meeting format',
+                  templateType: 'meeting',
+                },
+                {
+                  id: 3,
+                  name: 'Training Template',
+                  description: 'Training session format',
+                  templateType: 'training',
+                },
               ],
               enheter: ['Enhet 1', 'Enhet 2', 'Enhet 3'],
               participantGroups: [
@@ -859,7 +885,8 @@ const fileTree: TreeNode[] = [
           ],
           data: {
             name: 'Demo Extended Project',
-            description: 'Ett omfattande projekt som demonstrerar ExtendedDetailPage med flera flikar och komplex data',
+            description:
+              'Ett omfattande projekt som demonstrerar ExtendedDetailPage med flera flikar och komplex data',
             manager: 'Anna Svensson',
             department: 'utveckling',
             status: 'active',
@@ -1742,29 +1769,29 @@ onMounted(() => {
 
     <div class="pb-6">
       <!-- Toggle Section -->
-        <div class="flex gap-2 m-4">
-          <Button
-            :variant="currentView === 'components' ? 'default' : 'outline'"
-            class="gap-2"
-            @click="currentView = 'components'"
-          >
-            <FileText class="h-4 w-4" />
-            Komponenter
-          </Button>
-          <Button
-            :variant="currentView === 'colors' ? 'default' : 'outline'"
-            class="gap-2"
-            @click="currentView = 'colors'"
-          >
-            🎨 Colors
-          </Button>
-          <Button
-            :variant="currentView === 'toasts' ? 'default' : 'outline'"
-            class="gap-2"
-            @click="currentView = 'toasts'"
-          >
-            🍞 Toast Exempel
-          </Button>
+      <div class="flex gap-2 m-4">
+        <Button
+          :variant="currentView === 'components' ? 'default' : 'outline'"
+          class="gap-2"
+          @click="currentView = 'components'"
+        >
+          <FileText class="h-4 w-4" />
+          Komponenter
+        </Button>
+        <Button
+          :variant="currentView === 'colors' ? 'default' : 'outline'"
+          class="gap-2"
+          @click="currentView = 'colors'"
+        >
+          🎨 Colors
+        </Button>
+        <Button
+          :variant="currentView === 'toasts' ? 'default' : 'outline'"
+          class="gap-2"
+          @click="currentView = 'toasts'"
+        >
+          🍞 Toast Exempel
+        </Button>
       </div>
 
       <!-- Content Area -->

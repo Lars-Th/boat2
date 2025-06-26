@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApiList } from '@/composables/useApi';
 import { useToast } from '@/composables/useToast';
+import { useAuth } from '@/composables/useAuth';
 import api from '@/api';
 
 // Components
@@ -24,6 +25,7 @@ import type { Participant, ParticipantGroup } from '@/types';
 
 const router = useRouter();
 const { success, error } = useToast();
+const { currentUser } = useAuth();
 
 // Filter state
 const typeFilter = ref('all');
@@ -42,18 +44,15 @@ watch([searchQuery, typeFilter, unitFilter], () => {
   currentPage.value = 1;
 });
 
-// Fetch data using enhanced API with relational data
+// Fetch data using the new structure
 const {
   data: participantGroups,
   loading: groupsLoading,
   error: groupsError,
   refresh: refreshGroups,
-} = useApiList<ParticipantGroup>(
-  () => api.participantGroups.getAll({ include: ['participants', 'activities'] }),
-  {
-    cacheKey: 'participantGroupsWithRelations',
-  }
-);
+} = useApiList<any>(() => api.participantGroups.getAll(), {
+  cacheKey: 'participantGroups',
+});
 
 const {
   data: participants,
@@ -64,76 +63,153 @@ const {
   cacheKey: 'participants',
 });
 
+const {
+  data: users,
+  loading: usersLoading,
+  error: usersError,
+  refresh: refreshUsers,
+} = useApiList<any>(() => api.users.getAll(), {
+  cacheKey: 'users',
+});
+
+const {
+  data: offices,
+  loading: officesLoading,
+  error: officesError,
+  refresh: refreshOffices,
+} = useApiList<any>(() => api.offices.getAll(), {
+  cacheKey: 'offices',
+});
+
+const {
+  data: groupsJunction,
+  loading: junctionLoading,
+  error: junctionError,
+  refresh: refreshJunction,
+} = useApiList<any>(
+  () => api.groupsJunction?.getAll() || Promise.resolve({ data: [], success: true }),
+  {
+    cacheKey: 'groupsJunction',
+  }
+);
+
 // Loading and error states
-const isLoading = computed(() => groupsLoading.value || participantsLoading.value);
-const hasError = computed(() => groupsError.value !== null || participantsError.value !== null);
+const isLoading = computed(
+  () =>
+    groupsLoading.value ||
+    participantsLoading.value ||
+    usersLoading.value ||
+    officesLoading.value ||
+    junctionLoading.value
+);
+const hasError = computed(
+  () =>
+    groupsError.value !== null ||
+    participantsError.value !== null ||
+    usersError.value !== null ||
+    officesError.value !== null ||
+    junctionError.value !== null
+);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
-  await Promise.all([refreshGroups(), refreshParticipants()]);
+  await Promise.all([
+    refreshGroups(),
+    refreshParticipants(),
+    refreshUsers(),
+    refreshOffices(),
+    refreshJunction(),
+  ]);
 };
 
 // New group form
 const newGroupForm = ref({
-  namn: '',
-  beskrivning: '',
-  enheter: [] as string[],
-  deltagare: [] as string[],
-  automatiskregel: '',
-  isAutomatic: false,
+  name: '',
+  description: '',
+  type: '',
 });
 
-// Available units
-const enheter = [
-  'Barn och unga',
-  'Familjecentral',
-  'Ekonomisk rådgivning',
-  'Boendestöd',
-  'Arbetsträning',
-  'Språkstöd',
-  'Fritidsgård',
-];
+// Get current user's organization offices
+const currentUserOffices = computed(() => {
+  if (!currentUser.value?.stadsmission || !offices.value) return [];
 
-// Enhanced groups with calculated data from relations
+  return offices.value.filter(
+    (office: any) => office.stadsmission === currentUser.value?.stadsmission
+  );
+});
+
+// Enhanced groups with calculated data from junction table and organization filtering
 const enhancedGroups = computed(() => {
-  if (!participantGroups.value) return [];
+  if (!participantGroups.value || !groupsJunction.value || !participants.value || !users.value)
+    return [];
 
-  return participantGroups.value.map(group => {
-    // Get participant names from included relations
-    const participantNames = group.participants
-      ? group.participants.map(p => `${p.Fornamn} ${p.Efternamn}`)
-      : [];
+  // Filter groups by current user's organization
+  const userStadsmission = currentUser.value?.stadsmission;
+  if (!userStadsmission) return [];
 
-    // Calculate activity statistics from included relations
-    const activityCount = group.activities ? group.activities.length : 0;
-    const recentActivityCount = group.activities
-      ? group.activities.filter(activity => {
-          const activityDate = new Date(activity.Datum ?? activity.CreatedDate);
-          const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-          return activityDate >= thirtyDaysAgo;
-        }).length
-      : 0;
+  return participantGroups.value
+    .filter((group: any) => {
+      // Check if group was created by someone from the same organization
+      const creator = users.value.find((user: any) => user.id === group.createdBy);
+      return creator?.stadsmission === userStadsmission;
+    })
+    .map((group: any) => {
+      // Get junction records for this group
+      const groupJunctions = groupsJunction.value.filter(
+        (junction: any) => junction.groupID === group.id
+      );
 
-    return {
-      ...group,
-      participantNames,
-      participantCount: group.participants ? group.participants.length : 0,
-      activityCount,
-      recentActivityCount,
-      isAutomatic: !!group.automatiskregel,
-      enheterText: (group.enheter ?? []).join(', '),
-    };
-  });
+      // Get participants for this group
+      const groupParticipants = groupJunctions
+        .map((junction: any) => {
+          return participants.value.find((p: any) => p.ParticipantID === junction.participantID);
+        })
+        .filter(Boolean);
+
+      // Get offices for this group
+      const groupOffices = groupJunctions
+        .map((junction: any) => {
+          return currentUserOffices.value.find(
+            (office: any) => office.OfficeID === junction.officeID
+          );
+        })
+        .filter(Boolean);
+
+      // Get unique office names
+      const uniqueOffices = [...new Set(groupOffices.map((office: any) => office.Name))];
+
+      // Get participant names
+      const participantNames = groupParticipants
+        .map((p: any) => (p ? `${p.Fornamn} ${p.Efternamn}` : ''))
+        .filter(Boolean);
+
+      // Get creator name
+      const creator = users.value.find((user: any) => user.id === group.createdBy);
+      const creatorName = creator ? creator.name : 'Okänd';
+
+      return {
+        ...group,
+        participantNames,
+        participantCount: groupParticipants.length,
+        activityCount: 0, // TODO: Calculate from activities if needed
+        recentActivityCount: 0,
+        enheter: uniqueOffices,
+        enheterText: uniqueOffices.join(', '),
+        creatorName,
+        isAutomatic: false, // New structure doesn't have automatic groups
+      };
+    });
 });
 
 // Table columns
 const columns = [
-  { key: 'namn', label: 'Gruppnamn', sortable: true, type: 'custom' },
-  { key: 'beskrivning', label: 'Beskrivning', sortable: false, type: 'custom' },
+  { key: 'name', label: 'Gruppnamn', sortable: true, type: 'custom' },
+  { key: 'description', label: 'Beskrivning', sortable: false, type: 'custom' },
+  { key: 'type', label: 'Typ', sortable: true, type: 'custom' },
   { key: 'enheter', label: 'Enheter', sortable: false, type: 'custom' },
   { key: 'participantCount', label: 'Deltagare', sortable: true, type: 'custom' },
-  { key: 'activityCount', label: 'Aktiviteter', sortable: true, type: 'custom' },
-  { key: 'isAutomatic', label: 'Typ', sortable: true, type: 'custom' },
+  { key: 'creatorName', label: 'Skapad av', sortable: true, type: 'custom' },
+  { key: 'createdDate', label: 'Skapad', sortable: true, type: 'custom' },
   { key: 'actions', label: 'Åtgärder', sortable: false, type: 'actions' },
 ];
 
@@ -144,26 +220,40 @@ const breadcrumbs = computed(() => [
   { label: 'Deltagargrupper', to: '', isCurrentPage: true },
 ]);
 
-// Statistics calculated from enhanced relational data
+// Statistics calculated from enhanced data
 const stats = computed(() => {
-  if (!participantGroups.value) {
+  if (!enhancedGroups.value) {
     return [
       { label: 'Totalt', value: 0, color: 'text-blue-600' },
-      { label: 'Manuella', value: 0, color: 'text-green-600' },
-      { label: 'Automatiska', value: 0, color: 'text-purple-600' },
       { label: 'Deltagare', value: 0, color: 'text-orange-600' },
+      { label: 'Kontor', value: 0, color: 'text-green-600' },
+      { label: 'Typer', value: 0, color: 'text-purple-600' },
     ];
   }
 
-  const groups = participantGroups.value;
-  const manualGroups = groups.filter(g => !g.automatiskregel);
-  const automaticGroups = groups.filter(g => g.automatiskregel);
+  const groups = enhancedGroups.value;
 
   // Calculate unique participants across all groups
   const allParticipantIds = new Set();
-  groups.forEach(group => {
-    if (group.participants) {
-      group.participants.forEach(p => allParticipantIds.add(p.ParticipantID));
+  groups.forEach((group: any) => {
+    if (group.participantNames) {
+      group.participantNames.forEach((name: string) => allParticipantIds.add(name));
+    }
+  });
+
+  // Calculate unique offices
+  const allOffices = new Set();
+  groups.forEach((group: any) => {
+    if (group.enheter) {
+      group.enheter.forEach((office: string) => allOffices.add(office));
+    }
+  });
+
+  // Calculate unique types
+  const allTypes = new Set();
+  groups.forEach((group: any) => {
+    if (group.type) {
+      allTypes.add(group.type);
     }
   });
 
@@ -174,19 +264,19 @@ const stats = computed(() => {
       color: 'text-blue-600',
     },
     {
-      label: 'Manuella',
-      value: manualGroups.length,
-      color: 'text-green-600',
-    },
-    {
-      label: 'Automatiska',
-      value: automaticGroups.length,
-      color: 'text-purple-600',
-    },
-    {
       label: 'Deltagare',
       value: allParticipantIds.size,
       color: 'text-orange-600',
+    },
+    {
+      label: 'Kontor',
+      value: allOffices.size,
+      color: 'text-green-600',
+    },
+    {
+      label: 'Typer',
+      value: allTypes.size,
+      color: 'text-purple-600',
     },
   ];
 });
@@ -195,22 +285,28 @@ const stats = computed(() => {
 const filteredGroups = computed(() => {
   if (!enhancedGroups.value) return [];
 
-  return enhancedGroups.value.filter(group => {
+  return enhancedGroups.value.filter((group: any) => {
     // Type filter
-    const matchesType =
-      typeFilter.value === 'all' ||
-      (typeFilter.value === 'manual' && !group.isAutomatic) ||
-      (typeFilter.value === 'automatic' && group.isAutomatic);
+    const matchesType = typeFilter.value === 'all' || group.type === typeFilter.value;
 
     // Unit filter
     const matchesUnit =
       unitFilter.value === 'all' || (group.enheter || []).includes(unitFilter.value);
 
     // Search filter
+    const searchFields = [
+      group.name,
+      group.description,
+      group.type,
+      group.creatorName,
+      ...(group.enheter || []),
+      ...group.participantNames,
+    ];
+
     const matchesSearch =
       !searchQuery.value ||
-      [group.namn, group.beskrivning, ...(group.enheter || []), ...group.participantNames].some(
-        field => field?.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
+      searchFields.some((field: any) =>
+        field?.toString().toLowerCase().includes(searchQuery.value.toLowerCase())
       );
 
     return matchesType && matchesUnit && matchesSearch;
@@ -246,57 +342,44 @@ const addActions = computed(() => [
 ]);
 
 // Filters for ViewControls
-const filters = computed(() => [
-  {
-    modelValue: typeFilter.value,
-    placeholder: 'Alla typer',
-    options: [
-      { key: 'all', label: 'Alla typer', value: 'all' },
-      { key: 'manual', label: 'Manuella', value: 'manual' },
-      { key: 'automatic', label: 'Automatiska', value: 'automatic' },
-    ],
-    onChange: (value: string) => {
-      typeFilter.value = value;
+const filters = computed(() => {
+  // Get unique types from current groups
+  const groupTypes = enhancedGroups.value
+    .map((group: any) => group.type)
+    .filter((type: string) => type);
+  const uniqueTypes = [...new Set(groupTypes)];
+
+  return [
+    {
+      modelValue: typeFilter.value,
+      placeholder: 'Alla typer',
+      options: [
+        { key: 'all', label: 'Alla typer', value: 'all' },
+        ...uniqueTypes.map(type => ({ key: type, label: type, value: type })),
+      ],
+      onChange: (value: string) => {
+        typeFilter.value = value;
+      },
     },
-  },
-  {
-    modelValue: unitFilter.value,
-    placeholder: 'Alla enheter',
-    options: [
-      { key: 'all', label: 'Alla enheter', value: 'all' },
-      ...enheter.map(enhet => ({ key: enhet, label: enhet, value: enhet })),
-    ],
-    onChange: (value: string) => {
-      unitFilter.value = value;
+    {
+      modelValue: unitFilter.value,
+      placeholder: 'Alla kontor',
+      options: [
+        { key: 'all', label: 'Alla kontor', value: 'all' },
+        ...currentUserOffices.value.map((office: any) => ({
+          key: office.Name,
+          label: office.Name,
+          value: office.Name,
+        })),
+      ],
+      onChange: (value: string) => {
+        unitFilter.value = value;
+      },
     },
-  },
-]);
+  ];
+});
 
-// Handle unit selection for new group
-const handleUnitChange = (enhet: string, checked: boolean) => {
-  if (checked) {
-    newGroupForm.value.enheter.push(enhet);
-  } else {
-    const index = newGroupForm.value.enheter.indexOf(enhet);
-    if (index > -1) {
-      newGroupForm.value.enheter.splice(index, 1);
-    }
-  }
-};
-
-// Handle participant selection for new group
-const handleParticipantChange = (participantId: string, checked: boolean) => {
-  if (checked) {
-    newGroupForm.value.deltagare.push(participantId);
-  } else {
-    const index = newGroupForm.value.deltagare.indexOf(participantId);
-    if (index > -1) {
-      newGroupForm.value.deltagare.splice(index, 1);
-    }
-  }
-};
-
-// Available participants for selection
+// Available participants for selection (for future use)
 const availableParticipants = computed(() => {
   return participants.value ?? [];
 });
@@ -357,12 +440,9 @@ const handleSaveNewGroup = () => {
 
   // Reset form
   newGroupForm.value = {
-    namn: '',
-    beskrivning: '',
-    enheter: [],
-    deltagare: [],
-    automatiskregel: '',
-    isAutomatic: false,
+    name: '',
+    description: '',
+    type: '',
   };
 };
 
@@ -370,12 +450,9 @@ const handleCancelNewGroup = () => {
   showNewGroupDialog.value = false;
   // Reset form
   newGroupForm.value = {
-    namn: '',
-    beskrivning: '',
-    enheter: [],
-    deltagare: [],
-    automatiskregel: '',
-    isAutomatic: false,
+    name: '',
+    description: '',
+    type: '',
   };
 };
 </script>
@@ -424,23 +501,27 @@ const handleCancelNewGroup = () => {
         :loading="isLoading"
         @row-click="handleRowClick"
       >
-        <template #cell-namn="{ row }">
-          <span class="font-bold">{{ row.namn }}</span>
+        <template #cell-name="{ row }">
+          <span class="font-bold">{{ row.name }}</span>
         </template>
 
-        <template #cell-beskrivning="{ row }">
-          <span class="text-muted-foreground">{{ row.beskrivning }}</span>
+        <template #cell-description="{ row }">
+          <span class="text-muted-foreground">{{ row.description }}</span>
+        </template>
+
+        <template #cell-type="{ row }">
+          <Badge variant="outline" class="text-xs">{{ row.type }}</Badge>
         </template>
 
         <template #cell-enheter="{ row }">
           <div class="flex flex-wrap gap-1">
             <Badge
-              v-for="enhet in (row.enheter || []).slice(0, 2)"
-              :key="enhet"
+              v-for="office in (row.enheter || []).slice(0, 2)"
+              :key="office"
               variant="default"
               class="text-xs"
             >
-              {{ enhet }}
+              {{ office }}
             </Badge>
             <Badge v-if="(row.enheter || []).length > 2" variant="default" class="text-xs">
               +{{ (row.enheter || []).length - 2 }}
@@ -452,21 +533,14 @@ const handleCancelNewGroup = () => {
           <Badge variant="default" class="text-xs">{{ row.participantCount }} deltagare</Badge>
         </template>
 
-        <template #cell-activityCount="{ row }">
-          <div class="text-center">
-            <div class="text-sm font-medium">{{ row.activityCount }}</div>
-            <div v-if="row.recentActivityCount > 0" class="text-xs text-green-600">
-              {{ row.recentActivityCount }} senaste 30d
-            </div>
-          </div>
+        <template #cell-creatorName="{ row }">
+          <span class="text-sm">{{ row.creatorName }}</span>
         </template>
 
-        <template #cell-isAutomatic="{ row }">
-          <div class="flex items-center gap-2">
-            <Badge :variant="row.isAutomatic ? 'secondary' : 'default'" class="text-xs">
-              {{ row.isAutomatic ? 'Automatisk' : 'Manuell' }}
-            </Badge>
-          </div>
+        <template #cell-createdDate="{ row }">
+          <span class="text-sm text-muted-foreground">
+            {{ new Date(row.createdDate).toLocaleDateString('sv-SE') }}
+          </span>
         </template>
 
         <template #row-actions="{ row }">
@@ -513,80 +587,32 @@ const handleCancelNewGroup = () => {
           <div class="space-y-4">
             <div>
               <Label for="group-name">Gruppnamn</Label>
-              <Input id="group-name" v-model="newGroupForm.namn" placeholder="Ange gruppnamn..." />
+              <Input id="group-name" v-model="newGroupForm.name" placeholder="Ange gruppnamn..." />
             </div>
 
             <div>
               <Label for="group-description">Beskrivning</Label>
               <Textarea
                 id="group-description"
-                v-model="newGroupForm.beskrivning"
+                v-model="newGroupForm.description"
                 placeholder="Beskriv gruppens syfte..."
                 rows="3"
               />
             </div>
-          </div>
 
-          <!-- Group Type -->
-          <div class="space-y-4">
-            <div class="flex items-center gap-2">
-              <Switch id="automatic-group" v-model="newGroupForm.isAutomatic" />
-              <Label for="automatic-group">Automatisk grupp</Label>
-            </div>
-
-            <div v-if="newGroupForm.isAutomatic">
-              <Label for="automatic-rule">Automatisk regel</Label>
+            <div>
+              <Label for="group-type">Typ</Label>
               <Input
-                id="automatic-rule"
-                v-model="newGroupForm.automatiskregel"
-                placeholder="t.ex. 'ålder >= 18 AND enhet = Arbetsträning'"
+                id="group-type"
+                v-model="newGroupForm.type"
+                placeholder="Ange gruppens typ..."
               />
             </div>
           </div>
 
-          <!-- Units -->
-          <div>
-            <Label>Enheter</Label>
-            <div class="grid grid-cols-2 gap-2 mt-2">
-              <div v-for="enhet in enheter" :key="enhet" class="flex items-center space-x-2">
-                <Checkbox
-                  :id="`unit-${enhet}`"
-                  :checked="newGroupForm.enheter.includes(enhet)"
-                  @update:checked="checked => handleUnitChange(enhet, checked)"
-                />
-                <Label :for="`unit-${enhet}`" class="text-sm">{{ enhet }}</Label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Participants (only for manual groups) -->
-          <div v-if="!newGroupForm.isAutomatic && availableParticipants.length > 0">
-            <Label>Deltagare</Label>
-            <div class="max-h-40 overflow-y-auto border rounded-md p-3 mt-2">
-              <div
-                v-for="participant in availableParticipants.slice(0, 20)"
-                :key="participant.ParticipantID"
-                class="flex items-center space-x-2 py-1"
-              >
-                <Checkbox
-                  :id="`participant-${participant.ParticipantID}`"
-                  :checked="newGroupForm.deltagare.includes(participant.ParticipantID.toString())"
-                  @update:checked="
-                    checked =>
-                      handleParticipantChange(participant.ParticipantID.toString(), checked)
-                  "
-                />
-                <Label :for="`participant-${participant.ParticipantID}`" class="text-sm">
-                  {{ participant.Fornamn }} {{ participant.Efternamn }}
-                </Label>
-              </div>
-              <div
-                v-if="availableParticipants.length > 20"
-                class="text-xs text-muted-foreground mt-2"
-              >
-                Visar första 20 deltagare. Använd sökfunktion för fler.
-              </div>
-            </div>
+          <!-- Note -->
+          <div class="text-sm text-muted-foreground p-3 bg-muted rounded-md">
+            <p>Deltagare och kontor kan läggas till efter att gruppen har skapats.</p>
           </div>
 
           <!-- Actions -->

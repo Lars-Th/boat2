@@ -35,13 +35,13 @@ const {
   cacheKey: 'organizations',
 });
 
-// Fetch existing participants with family relations for family connections
+// Fetch existing participants with activities and attendances
 const {
-  data: participantsWithFamily,
+  data: participantsWithActivitiesAndAttendances,
   loading: participantsLoading,
   error: participantsError,
-} = useApiList(() => api.participants.getAll({ include: ['family'] }), {
-  cacheKey: 'participants-family',
+} = useApiList(() => api.participants.getAll({ include: ['activities', 'attendances'] }), {
+  cacheKey: 'participants-activities-attendances',
 });
 
 // Loading and error states

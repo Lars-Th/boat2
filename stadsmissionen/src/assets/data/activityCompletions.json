@@ -1,46 +1,46 @@
 [
   {
-    "id": "completion-1",
-    "aktivitetId": "activity-1",
+    "id": 1,
+    "aktivitetId": 1,
     "genomfordDatum": "2025-01-15T17:00:00Z",
     "antalInbjudna": 8,
     "antalNarvarande": 6,
-    "frånvarande": ["participant-3", "participant-7"],
+    "frånvarande": [3, 7],
     "resultat": [
       {
-        "deltagarId": "participant-1",
+        "deltagarId": 1,
         "svar": [
           {
-            "fragaId": "q1",
+            "fragaId": 1,
             "svar": 4,
             "kommentar": "Mycket engagerad och förstod materialet bra"
           },
           {
-            "fragaId": "q2",
+            "fragaId": 2,
             "svar": true,
             "kommentar": "Deltog aktivt i diskussionerna"
           },
           {
-            "fragaId": "q3",
+            "fragaId": 4,
             "svar": "Behöver extra stöd med matematik nästa gång"
           }
         ]
       },
       {
-        "deltagarId": "participant-2",
+        "deltagarId": 2,
         "svar": [
           {
-            "fragaId": "q1",
+            "fragaId": 1,
             "svar": 3,
             "kommentar": "Förstod det mesta men behöver repetition"
           },
           {
-            "fragaId": "q2",
+            "fragaId": 2,
             "svar": true,
             "kommentar": ""
           },
           {
-            "fragaId": "q3",
+            "fragaId": 4,
             "svar": "Bra framsteg, fortsätt så här"
           }
         ]
@@ -48,7 +48,7 @@
     ],
     "uppföljningsbehov": [
       {
-        "deltagarId": "participant-3",
+        "deltagarId": 3,
         "anledning": "Frånvarande utan förvarning",
         "åtgärd": "Kontakta föräldrar",
         "prioritet": "hög"
@@ -59,28 +59,28 @@
     "skapadDatum": "2025-01-15T18:30:00Z"
   },
   {
-    "id": "completion-2",
-    "aktivitetId": "activity-2",
+    "id": 2,
+    "aktivitetId": 2,
     "genomfordDatum": "2025-01-12T14:00:00Z",
     "antalInbjudna": 1,
     "antalNarvarande": 1,
     "frånvarande": [],
     "resultat": [
       {
-        "deltagarId": "participant-5",
+        "deltagarId": 5,
         "svar": [
           {
-            "fragaId": "q1",
+            "fragaId": 1,
             "svar": 5,
             "kommentar": "Mycket bra framsteg, klienten känner sig mer hopefull"
           },
           {
-            "fragaId": "q2",
+            "fragaId": 2,
             "svar": true,
             "kommentar": "Behöver uppföljning inom 2 veckor"
           },
           {
-            "fragaId": "q3",
+            "fragaId": 3,
             "svar": "Diskuterade copingstrategier och sätta upp kortsiktiga mål. Klienten verkar motiverad att fortsätta arbeta på sina utmaningar."
           }
         ]
@@ -88,7 +88,7 @@
     ],
     "uppföljningsbehov": [
       {
-        "deltagarId": "participant-5",
+        "deltagarId": 5,
         "anledning": "Planerad uppföljning",
         "åtgärd": "Boka nytt samtal inom 2 veckor",
         "prioritet": "medium"
@@ -99,8 +99,8 @@
     "skapadDatum": "2025-01-12T15:15:00Z"
   },
   {
-    "id": "completion-3",
-    "aktivitetId": "activity-3",
+    "id": 3,
+    "aktivitetId": 3,
     "genomfordDatum": "2025-01-10T10:00:00Z",
     "antalInbjudna": 0,
     "antalNarvarande": 25,
@@ -128,17 +128,17 @@
         "deltagarId": "anonym-feedback-1",
         "svar": [
           {
-            "fragaId": "q1",
+            "fragaId": 1,
             "svar": 4,
             "kommentar": ""
           },
           {
-            "fragaId": "q2",
+            "fragaId": 2,
             "svar": true,
             "kommentar": ""
           },
           {
-            "fragaId": "q3",
+            "fragaId": 3,
             "svar": "Mer aktiviteter för tonåringar skulle vara bra"
           }
         ]

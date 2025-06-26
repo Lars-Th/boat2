@@ -1,68 +1,82 @@
 [
   {
-    "id": "group-1",
-    "namn": "Läxläsning tisdagar",
-    "beskrivning": "Barn som kommer på läxhjälp tisdagar",
-    "enheter": ["Barn och unga"],
-    "isAutomatic": false,
-    "automatiskregel": null,
-    "skapadDatum": "2025-01-15T10:00:00Z",
-    "skapadAv": "admin",
-    "aktiv": true
+    "id": 1,
+    "name": "Läxläsning tisdagar",
+    "description": "Barn som kommer på läxhjälp tisdagar",
+    "createdDate": "2025-01-15T10:00:00Z",
+    "createdBy": 1,
+    "type": "Läxhjälp"
   },
   {
-    "id": "group-2",
-    "namn": "Språkcafé-gruppen",
-    "beskrivning": "Regelbundna deltagare i språkcafé",
-    "enheter": ["Språkstöd"],
-    "isAutomatic": false,
-    "automatiskregel": null,
-    "skapadDatum": "2025-01-10T14:30:00Z",
-    "skapadAv": "languageteacher",
-    "aktiv": true
+    "id": 2,
+    "name": "Språkcafé-gruppen",
+    "description": "Regelbundna deltagare i språkcafé",
+    "createdDate": "2025-01-10T14:30:00Z",
+    "createdBy": 6,
+    "type": "Språkstöd"
   },
   {
-    "id": "group-3",
-    "namn": "Föräldrastöd-gruppen",
-    "beskrivning": "Föräldrar som deltar i stödgrupper",
-    "enheter": ["Familjecentral"],
-    "isAutomatic": false,
-    "automatiskregel": null,
-    "skapadDatum": "2025-01-08T13:15:00Z",
-    "skapadAv": "familycounselor",
-    "aktiv": true
+    "id": 3,
+    "name": "Föräldrastöd-gruppen",
+    "description": "Föräldrar som deltar i stödgrupper",
+    "createdDate": "2025-01-08T13:15:00Z",
+    "createdBy": 2,
+    "type": "Familjecentral"
   },
   {
-    "id": "group-4",
-    "namn": "Ungdomsgrupp 13-16 år",
-    "beskrivning": "Automatisk grupp för ungdomar mellan 13-16 år",
-    "enheter": ["Barn och unga", "Fritidsgård"],
-    "isAutomatic": true,
-    "automatiskregel": "Ålder mellan 13-16 år OCH enhet innehåller 'Barn och unga'",
-    "skapadDatum": "2025-01-12T11:00:00Z",
-    "skapadAv": "youthcoordinator",
-    "aktiv": true
+    "id": 4,
+    "name": "Ungdomsgrupp 13-16 år",
+    "description": "Ungdomar mellan 13-16 år",
+    "createdDate": "2025-01-12T11:00:00Z",
+    "createdBy": 1,
+    "type": "Ungdomsverksamhet"
   },
   {
-    "id": "group-5",
-    "namn": "Kreativa aktiviteter",
-    "beskrivning": "Deltagare som är intresserade av konst och hantverk",
-    "enheter": ["Barn och unga", "Familjecentral"],
-    "isAutomatic": false,
-    "automatiskregel": null,
-    "skapadDatum": "2025-01-05T09:00:00Z",
-    "skapadAv": "artteacher",
-    "aktiv": true
+    "id": 5,
+    "name": "Kreativa aktiviteter",
+    "description": "Deltagare som är intresserade av konst och hantverk",
+    "createdDate": "2025-01-05T09:00:00Z",
+    "createdBy": 3,
+    "type": "Kreativ verksamhet"
   },
   {
-    "id": "group-6",
-    "namn": "Ekonomisk rådgivning - Återkommande",
-    "beskrivning": "Klienter som har regelbundna möten för ekonomisk rådgivning",
-    "enheter": ["Ekonomisk rådgivning"],
-    "isAutomatic": false,
-    "automatiskregel": null,
-    "skapadDatum": "2025-01-03T16:45:00Z",
-    "skapadAv": "financialadvisor",
-    "aktiv": true
+    "id": 6,
+    "name": "Ekonomisk rådgivning - Återkommande",
+    "description": "Klienter som har regelbundna möten för ekonomisk rådgivning",
+    "createdDate": "2025-01-03T16:45:00Z",
+    "createdBy": 6,
+    "type": "Ekonomisk rådgivning"
+  },
+  {
+    "id": 7,
+    "name": "Vuxenutbildning svenska",
+    "description": "Vuxna som deltar i svenskkurser",
+    "createdDate": "2025-01-20T14:00:00Z",
+    "createdBy": 5,
+    "type": "Språkstöd"
+  },
+  {
+    "id": 8,
+    "name": "Familjeaktiviteter helger",
+    "description": "Familjer som deltar i helgaktiviteter",
+    "createdDate": "2025-01-18T11:30:00Z",
+    "createdBy": 7,
+    "type": "Familjecentral"
+  },
+  {
+    "id": 9,
+    "name": "Mentorskap ungdomar",
+    "description": "Ungdomar som har mentorsstöd",
+    "createdDate": "2025-01-16T13:45:00Z",
+    "createdBy": 8,
+    "type": "Mentorskap"
+  },
+  {
+    "id": 10,
+    "name": "Lokalt närområdesstöd",
+    "description": "Personer som får stöd i närområdet",
+    "createdDate": "2025-01-14T10:15:00Z",
+    "createdBy": 9,
+    "type": "Lokalt stöd"
   }
 ]

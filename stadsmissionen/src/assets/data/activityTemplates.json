@@ -8,7 +8,7 @@
     "standardLocation": "Studierum A",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Hur väl förstod deltagaren dagens material?",
         "type": "Skala",
         "required": true,
@@ -17,21 +17,21 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Deltog barnet aktivt i aktiviteten?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Behöver barnet extra stöd nästa gång?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q4",
+        "id": 4,
         "question": "Övriga observationer och anteckningar",
         "type": "Kommentar",
         "required": false
@@ -49,7 +49,7 @@
     "standardLocation": "Samtalsrum 1",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Uppnåddes målen för samtalet?",
         "type": "Skala",
         "required": true,
@@ -58,14 +58,14 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Behövs uppföljning inom 2 veckor?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Sammanfattning av samtalet och nästa steg",
         "type": "Kommentar",
         "required": true
@@ -83,7 +83,7 @@
     "standardLocation": "Stora salen",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Hur upplevde du dagens aktivitet?",
         "type": "Skala",
         "required": false,
@@ -92,14 +92,14 @@
         "scaleComment": false
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Skulle du rekommendera detta till andra familjer?",
         "type": "JaNej",
-        "required": false,
+        "required": true,
         "hasComment": false
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Vad kan vi förbättra till nästa gång?",
         "type": "Kommentar",
         "required": false
@@ -117,7 +117,7 @@
     "standardLocation": "Caféet",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Känner du att du utvecklade dina språkfärdigheter idag?",
         "type": "Skala",
         "required": true,
@@ -126,14 +126,14 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Var atmosfären välkomnande och trygg?",
         "type": "JaNej",
         "required": true,
         "hasComment": false
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Vilka ämnen vill du prata om nästa gång?",
         "type": "Kommentar",
         "required": false
@@ -151,7 +151,7 @@
     "standardLocation": "Grupprum B",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Fick du användbar information eller stöd idag?",
         "type": "Skala",
         "required": true,
@@ -160,14 +160,14 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Känner du dig mer förberedd att hantera utmaningar?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Ämnen du vill diskutera nästa gång",
         "type": "Kommentar",
         "required": false
@@ -185,7 +185,7 @@
     "standardLocation": "Konferensrum 1",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Hur väl förstod du dagens ekonomiska koncept?",
         "type": "Skala",
         "required": true,
@@ -194,7 +194,7 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Känner du dig mer säker på att hantera din ekonomi?",
         "type": "Skala",
         "required": true,
@@ -203,14 +203,14 @@
         "scaleComment": false
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Behöver du individuell uppföljning?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q4",
+        "id": 4,
         "question": "Vilka ekonomiska områden vill du lära dig mer om?",
         "type": "Kommentar",
         "required": false
@@ -228,7 +228,7 @@
     "standardLocation": "Yogastudion",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Hur känner du dig efter dagens session?",
         "type": "Skala",
         "required": true,
@@ -237,14 +237,14 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Var övningarna lagom utmanande?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Övriga kommentarer eller önskemål",
         "type": "Kommentar",
         "required": false
@@ -262,7 +262,7 @@
     "standardLocation": "Datorsal",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Hur väl förstod du dagens digitala moment?",
         "type": "Skala",
         "required": true,
@@ -271,7 +271,7 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Känner du dig mer säker med tekniken nu?",
         "type": "Skala",
         "required": true,
@@ -280,14 +280,14 @@
         "scaleComment": false
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Behöver du extra hjälp med något specifikt?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q4",
+        "id": 4,
         "question": "Vad vill du lära dig härnäst?",
         "type": "Kommentar",
         "required": false
@@ -305,7 +305,7 @@
     "standardLocation": "Konstsalen",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Hur inspirerad känner du dig efter dagens session?",
         "type": "Skala",
         "required": true,
@@ -314,14 +314,14 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Fick du uttrycka dig kreativt som du ville?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Vilka tekniker eller material vill du prova nästa gång?",
         "type": "Kommentar",
         "required": false
@@ -339,7 +339,7 @@
     "standardLocation": "Rådgivningsrum",
     "resultForm": [
       {
-        "id": "q1",
+        "id": 1,
         "question": "Fick du svar på dina bostadsfrågor?",
         "type": "Skala",
         "required": true,
@@ -348,14 +348,14 @@
         "scaleComment": true
       },
       {
-        "id": "q2",
+        "id": 2,
         "question": "Behöver du hjälp med praktiska åtgärder?",
         "type": "JaNej",
         "required": true,
         "hasComment": true
       },
       {
-        "id": "q3",
+        "id": 3,
         "question": "Planerade åtgärder och uppföljning",
         "type": "Kommentar",
         "required": true

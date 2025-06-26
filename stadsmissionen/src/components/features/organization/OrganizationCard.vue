@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Building, Check, Phone, Trash2 } from 'lucide-vue-next';
+import { Building, Check, Phone, Trash2, Users } from 'lucide-vue-next';
 import type { Organization } from '@/types';
 
 interface Props {
@@ -32,15 +32,18 @@ const emit = defineEmits<Emits>();
       <div class="flex items-start justify-between">
         <div class="space-y-1">
           <CardTitle class="text-lg">{{ organization.namn }}</CardTitle>
-          <div class="flex items-center gap-2 text-sm text-muted-foreground">
-            <Building class="h-4 w-4" />
-            {{ organization.enheter.length }} enheter
+          <div class="flex items-center gap-4 text-sm text-muted-foreground">
+            <div class="flex items-center gap-2">
+              <Building class="h-4 w-4" />
+              {{ organization.enheter.length }} enheter
+            </div>
+            <div class="flex items-center gap-2">
+              <Users class="h-4 w-4" />
+              {{ organization.userCount || 0 }} användare
+            </div>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <Badge :variant="organization.aktiv ? 'default' : 'outline'" class="text-xs">
-            {{ organization.aktiv ? 'Aktiv' : 'Inaktiv' }}
-          </Badge>
           <Button
             variant="ghost"
             size="sm"
