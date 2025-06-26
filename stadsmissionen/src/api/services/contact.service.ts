@@ -1,9 +1,8 @@
 import type { Contact } from '@/types';
 import type { ContactWithRelations } from '@/types/relationships';
 import type { RelationalParams } from '@/types/enhanced';
-import type { ApiResponse } from '@/types';
 import type { HttpClient } from '../client/http-client';
-import type { QueryParams, RequestParams } from '@/types';
+import type { ApiResponse, QueryParams, RequestParams } from '@/types/api';
 import { BaseService } from './base.service';
 
 /**

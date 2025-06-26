@@ -14,14 +14,14 @@ export abstract class BaseService<T> {
     // Convert RequestParams to QueryParams for the HTTP client
     const queryParams: QueryParams = params
       ? {
-        page: params.page,
-        pageSize: params.pageSize,
-        sort: params.sort,
-        order: params.order,
-        search: params.search,
-        // Flatten filters into query params
-        ...(params.filters ?? {}),
-      }
+          page: params.page,
+          pageSize: params.pageSize,
+          sort: params.sort,
+          order: params.order,
+          search: params.search,
+          // Flatten filters into query params
+          ...(params.filters ?? {}),
+        }
       : {};
 
     return this.httpClient.get<T[]>(this.endpoint, queryParams);
