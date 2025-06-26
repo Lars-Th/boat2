@@ -234,10 +234,13 @@ const tabs = computed(() => [
 
 // Data for tabs
 const attendanceTableData = computed(() => {
+  if (!Array.isArray(attendances.value)) return [];
   return attendances.value.map((attendance: Attendance) => {
-    const participant = activityParticipants.value?.find(
-      (p: ParticipantData) => p.ParticipantID === attendance.ParticipantID
-    );
+    const participant = Array.isArray(activityParticipants.value)
+      ? activityParticipants.value?.find(
+          (p: ParticipantData) => p.ParticipantID === attendance.ParticipantID
+        )
+      : undefined;
 
     // Find participant's offices through junction table
     const participantJunctions =
@@ -269,21 +272,22 @@ const attendanceTableData = computed(() => {
 });
 
 const participantTableData = computed(() => {
-  return (
-    activityParticipants.value?.map((participant: ParticipantData) => {
-      const participantAttendances = attendances.value.filter(
-        (a: Attendance) => a.ParticipantID === participant.ParticipantID
-      );
-      return {
-        id: participant.ParticipantID,
-        name: `${participant.Fornamn} ${participant.Efternamn}`,
-        phone: participant.Telefon,
-        email: participant['E-post'],
-        attendanceCount: participantAttendances.length,
-        presentCount: participantAttendances.filter((a: Attendance) => a.Närvaro).length,
-      };
-    }) ?? []
-  );
+  if (!Array.isArray(activityParticipants.value)) return [];
+  if (!Array.isArray(attendances.value)) return [];
+
+  return activityParticipants.value.map((participant: ParticipantData) => {
+    const participantAttendances = attendances.value.filter(
+      (a: Attendance) => a.ParticipantID === participant.ParticipantID
+    );
+    return {
+      id: participant.ParticipantID,
+      name: `${participant.Fornamn} ${participant.Efternamn}`,
+      phone: participant.Telefon,
+      email: participant['E-post'],
+      attendanceCount: participantAttendances.length,
+      presentCount: participantAttendances.filter((a: Attendance) => a.Närvaro).length,
+    };
+  });
 });
 
 // Statistics
@@ -471,11 +475,11 @@ const handleTogglePresence = async (item: any) => {
 // Loading and error states
 const isLoading = computed(
   () =>
-    activityLoading.value ||
-    activityTypesLoading.value ||
-    attendancesLoading.value ||
-    officesLoading.value ||
-    junctionLoading.value
+    Boolean(activityLoading.value) ||
+    Boolean(activityTypesLoading.value) ||
+    Boolean(attendancesLoading.value) ||
+    Boolean(officesLoading.value) ||
+    Boolean(junctionLoading.value)
 );
 const hasError = computed(
   () =>

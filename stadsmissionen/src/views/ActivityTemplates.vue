@@ -50,7 +50,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || typesLoading.value);
+const isLoading = computed(() => Boolean(templatesLoading.value) || Boolean(typesLoading.value));
 const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
@@ -86,7 +86,7 @@ const enhancedTemplates = computed(() => {
         : 'Inget syfte angivet';
 
     // Calculate usage statistics from included activities relation
-    const usageCount = template.activities ? template.activities.length : 0;
+    const usageCount = template.activities?.length ?? 0;
 
     return {
       ...template,

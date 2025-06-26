@@ -296,7 +296,7 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
 };
 
 // Loading and error states
-const isLoading = computed(() => customersLoading.value);
+const isLoading = computed(() => Boolean(customersLoading.value));
 const hasError = computed(() => customersError.value !== null);
 </script>
 

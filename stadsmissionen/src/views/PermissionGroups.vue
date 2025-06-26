@@ -48,7 +48,7 @@ const actionButtons = [
 ];
 
 // Loading and error states
-const isLoading = computed(() => permissionGroupsLoading.value);
+const isLoading = computed(() => Boolean(permissionGroupsLoading.value));
 const hasError = computed(() => permissionGroupsError.value !== null);
 
 // Statistics

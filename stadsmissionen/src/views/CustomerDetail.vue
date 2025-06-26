@@ -313,7 +313,7 @@ const handleSubItemClick = (tableKey: string, item: any) => {
 };
 
 // Loading and error states
-const isLoading = computed(() => customerLoading.value);
+const isLoading = computed(() => Boolean(customerLoading.value));
 const hasError = computed(() => customerError.value !== null);
 </script>
 

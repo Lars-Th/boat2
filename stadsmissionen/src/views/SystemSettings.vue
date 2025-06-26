@@ -55,7 +55,9 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => organizationsLoading.value || usersLoading.value);
+const isLoading = computed(
+  () => Boolean(organizationsLoading.value) || Boolean(usersLoading.value)
+);
 const hasError = computed(() => organizationsError.value !== null || usersError.value !== null);
 
 // Refresh function for error recovery

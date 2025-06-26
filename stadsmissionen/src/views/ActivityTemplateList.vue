@@ -46,7 +46,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || typesLoading.value);
+const isLoading = computed(() => Boolean(templatesLoading.value) || Boolean(typesLoading.value));
 const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery

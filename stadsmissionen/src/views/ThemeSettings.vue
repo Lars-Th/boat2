@@ -39,7 +39,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => themesLoading.value);
+const isLoading = computed(() => Boolean(themesLoading.value));
 const hasError = computed(() => themesError.value !== null);
 
 // Refresh function for error recovery

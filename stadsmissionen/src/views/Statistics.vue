@@ -59,7 +59,10 @@ const activityTypes = computed(() => {
 
 // Loading and error states
 const isLoading = computed(
-  () => participantsLoading.value || activitiesLoading.value || attendancesLoading.value
+  () =>
+    Boolean(participantsLoading.value) ||
+    Boolean(activitiesLoading.value) ||
+    Boolean(attendancesLoading.value)
 );
 
 const hasError = computed(

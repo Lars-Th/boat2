@@ -80,7 +80,7 @@ const {
 );
 
 // Loading and error states
-const isLoading = computed(() => usersLoading.value);
+const isLoading = computed(() => Boolean(usersLoading.value));
 const hasError = computed(() => usersError.value !== null);
 
 // Transform API data to match LoginAccount interface

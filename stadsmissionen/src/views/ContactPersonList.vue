@@ -250,7 +250,7 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
 };
 
 // Loading and error states
-const isLoading = computed(() => contactsLoading.value);
+const isLoading = computed(() => Boolean(contactsLoading.value));
 const hasError = computed(() => contactsError.value !== null);
 </script>
 
