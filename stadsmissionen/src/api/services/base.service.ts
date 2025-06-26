@@ -1,5 +1,5 @@
 import type { HttpClient } from '../client/http-client';
-import type { ApiResponse, QueryParams, RequestParams } from '../client/types';
+import type { ApiResponse, QueryParams, RequestParams } from '@/types';
 
 export abstract class BaseService<T> {
   protected httpClient: HttpClient;

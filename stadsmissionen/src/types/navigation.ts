@@ -1,4 +1,4 @@
-export interface NavigationItem {
+export interface MainNavigationItem {
   name: string;
   path: string;
   icon: any;

@@ -11,3 +11,4 @@ export { ParticipantService } from '@/api/services/participant.service';
 export { AuthService } from '@/api/services/auth.service';
 export { CustomerService } from '@/api/services/customer.service';
 export { ContactService } from '@/api/services/contact.service';
+export { UserService } from '@/api/services/user.service';

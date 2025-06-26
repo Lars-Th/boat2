@@ -53,7 +53,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || typesLoading.value);
+const isLoading = computed(() => Boolean(templatesLoading.value) || Boolean(typesLoading.value));
 const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
@@ -157,7 +157,7 @@ watch(
       const template = selectedTemplate.value;
       form.value.namn = template.name;
       form.value.beskrivning = template.description;
-      form.value.plats = template.standardLocation || '';
+      form.value.plats = template.standardLocation ?? '';
       form.value.varaktighet = template.standardDuration;
 
       // Reset series if template doesn't support it

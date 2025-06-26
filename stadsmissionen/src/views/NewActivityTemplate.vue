@@ -60,7 +60,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => typesLoading.value || templatesLoading.value);
+const isLoading = computed(() => Boolean(typesLoading.value) || Boolean(templatesLoading.value));
 const hasError = computed(() => typesError.value !== null || templatesError.value !== null);
 
 // Refresh function for error recovery
@@ -225,8 +225,8 @@ const loadTemplate = () => {
         beskrivning: existingTemplate.description,
         malltyp: existingTemplate.templateType,
         aktivitetstyper: [...existingTemplate.activityTypes],
-        standardPlats: existingTemplate.standardLocation || '',
-        standardVaraktighet: existingTemplate.standardDuration || 60,
+        standardPlats: existingTemplate.standardLocation ?? '',
+        standardVaraktighet: existingTemplate.standardDuration ?? 60,
         resultatformular: [...existingTemplate.resultForm],
       };
     }

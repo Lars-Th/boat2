@@ -204,7 +204,7 @@ const mainFields = computed(() => [
       activityTypes.value?.map(type => ({
         value: type.ActivityTypeID.toString(),
         label: type.Typnamn,
-      })) || [],
+      })) ?? [],
   },
 ]);
 
@@ -245,10 +245,13 @@ const tabs = computed(() => [
 
 // Data for tabs
 const attendanceTableData = computed(() => {
+  if (!Array.isArray(attendances.value)) return [];
   return attendances.value.map((attendance: Attendance) => {
-    const participant = activityParticipants.value?.find(
-      (p: ParticipantData) => p.ParticipantID === attendance.ParticipantID
-    );
+    const participant = Array.isArray(activityParticipants.value)
+      ? activityParticipants.value?.find(
+          (p: ParticipantData) => p.ParticipantID === attendance.ParticipantID
+        )
+      : undefined;
 
     // Find participant's offices through junction table
     const participantJunctions =
@@ -280,21 +283,22 @@ const attendanceTableData = computed(() => {
 });
 
 const participantTableData = computed(() => {
-  return (
-    activityParticipants.value?.map((participant: ParticipantData) => {
-      const participantAttendances = attendances.value.filter(
-        (a: Attendance) => a.ParticipantID === participant.ParticipantID
-      );
-      return {
-        id: participant.ParticipantID,
-        name: `${participant.Fornamn} ${participant.Efternamn}`,
-        phone: participant.Telefon,
-        email: participant['E-post'],
-        attendanceCount: participantAttendances.length,
-        presentCount: participantAttendances.filter((a: Attendance) => a.Närvaro).length,
-      };
-    }) ?? []
-  );
+  if (!Array.isArray(activityParticipants.value)) return [];
+  if (!Array.isArray(attendances.value)) return [];
+
+  return activityParticipants.value.map((participant: ParticipantData) => {
+    const participantAttendances = attendances.value.filter(
+      (a: Attendance) => a.ParticipantID === participant.ParticipantID
+    );
+    return {
+      id: participant.ParticipantID,
+      name: `${participant.Fornamn} ${participant.Efternamn}`,
+      phone: participant.Telefon,
+      email: participant['E-post'],
+      attendanceCount: participantAttendances.length,
+      presentCount: participantAttendances.filter((a: Attendance) => a.Närvaro).length,
+    };
+  });
 });
 
 // Column definitions for attendance table
@@ -362,14 +366,14 @@ const breadcrumbs = computed(() => {
   return [
     { label: 'Dashboard', to: '/' },
     { label: 'Aktiviteter', to: '/activities' },
-    { label: activity.value?.Namn || 'Aktivitetsdetaljer', to: '', isCurrentPage: true },
+    { label: activity.value?.Namn ?? 'Aktivitetsdetaljer', to: '', isCurrentPage: true },
   ];
 });
 
 // Page title
 const pageTitle = computed(() => {
   if (isNew.value) return 'Lägg till ny aktivitet';
-  return activity.value?.Namn || 'Aktivitetsdetaljer';
+  return activity.value?.Namn ?? 'Aktivitetsdetaljer';
 });
 
 // Event handlers
@@ -387,7 +391,7 @@ const handleSave = async () => {
         success('Aktivitet skapad', 'Den nya aktiviteten har skapats framgångsrikt.');
         router.push(`/activities/${result.data.ActivityID}`);
       } else {
-        error('Fel vid skapande', result.error?.message || 'Kunde inte skapa aktiviteten.');
+        error('Fel vid skapande', result.error?.message ?? 'Kunde inte skapa aktiviteten.');
       }
     } else {
       // Update existing activity
@@ -398,7 +402,7 @@ const handleSave = async () => {
         await refreshActivity();
         await refreshAttendances();
       } else {
-        error('Fel vid uppdatering', result.error?.message || 'Kunde inte uppdatera aktiviteten.');
+        error('Fel vid uppdatering', result.error?.message ?? 'Kunde inte uppdatera aktiviteten.');
       }
     }
   } catch (_err) {
@@ -415,7 +419,7 @@ const handleDelete = async () => {
       success('Aktivitet borttagen', 'Aktiviteten har tagits bort framgångsrikt.');
       router.push('/activities');
     } else {
-      error('Fel vid borttagning', result.error?.message || 'Kunde inte ta bort aktiviteten.');
+      error('Fel vid borttagning', result.error?.message ?? 'Kunde inte ta bort aktiviteten.');
     }
   } catch (_err) {
     error('Fel vid borttagning', 'Ett oväntat fel inträffade. Försök igen.');
@@ -431,11 +435,11 @@ const handleDiscardChanges = () => {
     // Reset form to original data
     form.value = {
       ActivityID: activity.value.ActivityID,
-      Namn: activity.value.Namn || '',
-      Beskrivning: activity.value.Beskrivning || '',
-      Plats: activity.value.Plats || '',
+      Namn: activity.value.Namn ?? '',
+      Beskrivning: activity.value.Beskrivning ?? '',
+      Plats: activity.value.Plats ?? '',
       DatumTid: formatDateForInput(activity.value.DatumTid),
-      ActivityTypeID: activity.value.ActivityTypeID || 0,
+      ActivityTypeID: activity.value.ActivityTypeID ?? 0,
     };
   }
   hasUnsavedChanges.value = false;
@@ -492,7 +496,7 @@ const handleTogglePresence = async (item: any) => {
       // Refresh attendance data
       await refreshAttendances();
     } else {
-      error('Fel vid uppdatering', result.error?.message || 'Kunde inte uppdatera närvarostatus.');
+      error('Fel vid uppdatering', result.error?.message ?? 'Kunde inte uppdatera närvarostatus.');
     }
   } catch (_err) {
     error('Fel vid uppdatering', 'Ett oväntat fel inträffade. Försök igen.');
@@ -508,11 +512,11 @@ const handleCompleteActivity = () => {
 // Loading and error states
 const isLoading = computed(
   () =>
-    activityLoading.value ||
-    activityTypesLoading.value ||
-    attendancesLoading.value ||
-    officesLoading.value ||
-    junctionLoading.value
+    Boolean(activityLoading.value) ||
+    Boolean(activityTypesLoading.value) ||
+    Boolean(attendancesLoading.value) ||
+    Boolean(officesLoading.value) ||
+    Boolean(junctionLoading.value)
 );
 const hasError = computed(
   () =>

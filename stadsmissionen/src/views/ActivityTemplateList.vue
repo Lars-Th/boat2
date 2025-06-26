@@ -55,12 +55,8 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(
-  () => templatesLoading.value || typesLoading.value || activitiesLoading.value
-);
-const hasError = computed(
-  () => templatesError.value !== null || typesError.value !== null || activitiesError.value !== null
-);
+const isLoading = computed(() => Boolean(templatesLoading.value) || Boolean(typesLoading.value));
+const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
 const handleRefresh = async () => {
@@ -88,8 +84,11 @@ const enhancedTemplates = computed(() => {
   if (!activityTemplates.value) return [];
 
   return activityTemplates.value.map(template => {
-    const types = getActivityTypeDetails(template.activityTypes || []);
-    const primaryPurpose = types.length > 0 && types[0] ? types[0].Syfte : 'Inget syfte angivet';
+    const types = getActivityTypeDetails(template.aktivitetstyper);
+    const primaryPurpose =
+      types.length > 0 && types[0]
+        ? (types[0].Syfte ?? 'Inget syfte angivet')
+        : 'Inget syfte angivet';
 
     // Calculate usage statistics from activities data
     const usageCount = activities.value
@@ -310,7 +309,7 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
       :add-actions="addActions"
       :filters="filters"
       :show-view-switcher="false"
-      :data="paginatedTemplates || []"
+      :data="paginatedTemplates ?? []"
       :columns="columns"
       :search-fields="['name', 'description', 'templateType']"
       :loading="isLoading"
@@ -343,7 +342,24 @@ const handleItemsPerPageUpdate = (newItemsPerPage: number) => {
             "
             class="text-xs"
           >
-            {{ getTemplateTypeInfo((row as any).templateType).label }}
+            {{ getTemplateTypeInfo((row as any).malltyp).label }}
+          </Badge>
+        </div>
+      </template>
+
+      <template #cell-types="{ row }">
+        <div class="flex flex-wrap gap-1">
+          <Badge
+            v-for="type in ((row as any).types ?? []).slice(0, 2)"
+            :key="type.ActivityTypeID"
+            variant="outline"
+            class="text-xs"
+            :title="`${type.Syfte}\n\n${type.Beskrivning}`"
+          >
+            {{ type.Typnamn }}
+          </Badge>
+          <Badge v-if="((row as any).types ?? []).length > 2" variant="outline" class="text-xs">
+            +{{ ((row as any).types ?? []).length - 2 }}
           </Badge>
         </div>
       </template>

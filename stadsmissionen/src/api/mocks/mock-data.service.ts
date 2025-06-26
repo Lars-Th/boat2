@@ -1,4 +1,4 @@
-import type { ApiResponse } from '../client/types';
+import type { ApiResponse } from '@/types';
 import type {
   Activity,
   ActivityType,

@@ -1,5 +1,5 @@
 import { computed, ref, shallowRef } from 'vue';
-import type { ApiError, ApiResponse } from '@/api/client/types';
+import type { ApiError, ApiResponse } from '@/types';
 import type { UseApiOptions, UseApiReturn } from '@/types/composables';
 
 // Simple in-memory cache

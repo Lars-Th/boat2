@@ -16,7 +16,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Edit, Plus, Trash2, UserPlus } from 'lucide-vue-next';
-import type { BreadcrumbItem, LoginAccount, TableColumn, User } from '@/types';
+import type { LoginAccount, TableColumn, UIBreadcrumbItem, User } from '@/types';
 import { useToast } from '@/composables/useToast';
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
@@ -27,7 +27,7 @@ const router = useRouter();
 // const router = useRouter()
 
 // Breadcrumbs
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs: UIBreadcrumbItem[] = [
   { label: 'Inställningar', to: '/settings' },
   { label: 'Användare', to: '/settings/users' },
   { label: 'Inloggningskonton', isCurrentPage: true },
@@ -80,7 +80,7 @@ const {
 );
 
 // Loading and error states
-const isLoading = computed(() => usersLoading.value);
+const isLoading = computed(() => Boolean(usersLoading.value));
 const hasError = computed(() => usersError.value !== null);
 
 // Transform API data to match LoginAccount interface
@@ -94,7 +94,7 @@ const loginAccounts = computed(() => {
       email: user.email,
       firstName: user.name.split(' ')[0] ?? '',
       lastName: user.name.split(' ').slice(1).join(' ') ?? '',
-      role: user.permissionGroup ? user.permissionGroup.name : 'Okänd grupp',
+      role: user.permissionGroup?.name ?? 'Okänd grupp',
       status: 'Aktiv' as const,
       lastLogin: 'Aldrig',
       createdAt: '2024-01-01',

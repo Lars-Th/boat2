@@ -89,7 +89,7 @@ export interface ParticipantGroup {
   automatiskregel?: string | null;
 }
 
-export interface PermissionGroup {
+export interface ActivityPermissionGroup {
   id: string;
   name: string;
   description: string;

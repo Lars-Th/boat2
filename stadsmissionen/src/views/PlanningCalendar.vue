@@ -49,7 +49,10 @@ const {
 
 // Loading and error states
 const isLoading = computed(
-  () => workOrdersLoading.value || customersLoading.value || employeesLoading.value
+  () =>
+    Boolean(workOrdersLoading.value) ||
+    Boolean(customersLoading.value) ||
+    Boolean(employeesLoading.value)
 );
 
 const hasError = computed(

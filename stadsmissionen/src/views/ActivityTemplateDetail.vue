@@ -46,7 +46,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templateLoading.value);
+const isLoading = computed(() => Boolean(templateLoading.value));
 const hasError = computed(() => templateError.value !== null);
 
 // Refresh function for error recovery
@@ -230,7 +230,7 @@ const breadcrumbs = computed(() => [
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'Aktiviteter', to: '/activities' },
   { label: 'Lista Mallar', to: '/activity-templates' },
-  { label: template.value?.name || 'Mall', isCurrentPage: true },
+  { label: template.value?.namn ?? 'Mall', isCurrentPage: true },
 ]);
 </script>
 

@@ -95,12 +95,14 @@ const {
 
 // Loading and error states
 const isLoading = computed(
+
   () =>
-    groupsLoading.value ||
-    participantsLoading.value ||
+    Boolean(groupsLoading.value) ||
+    Boolean(participantsLoading.value ||
     usersLoading.value ||
     officesLoading.value ||
     junctionLoading.value
+)
 );
 const hasError = computed(
   () =>
@@ -291,7 +293,7 @@ const filteredGroups = computed(() => {
 
     // Unit filter
     const matchesUnit =
-      unitFilter.value === 'all' || (group.enheter || []).includes(unitFilter.value);
+      unitFilter.value === 'all' || (group.enheter ?? []).includes(unitFilter.value);
 
     // Search filter
     const searchFields = [

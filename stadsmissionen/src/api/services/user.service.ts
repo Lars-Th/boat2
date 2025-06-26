@@ -1,5 +1,7 @@
-import type { ApiResponse } from '@/api/client/types';
+import type { ApiResponse } from '@/types';
 import type { User } from '@/types';
+import type { HttpClient } from '@/api/client/http-client';
+import { BaseService } from '@/api/services/base.service';
 
 /**
  * User API Service
@@ -7,288 +9,66 @@ import type { User } from '@/types';
  * This service handles all user-related API operations including
  * CRUD operations, authentication, and user management.
  */
-export class UserService {
-  private baseUrl: string;
-
-  constructor(baseUrl: string = '/api') {
-    this.baseUrl = baseUrl;
+export class UserService extends BaseService<User> {
+  constructor(httpClient: HttpClient) {
+    super(httpClient, '/users');
   }
 
   /**
-   * Get all users
+   * Get all users (overrides BaseService method)
    */
   async getAll(): Promise<ApiResponse<User[]>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as User[];
-
-      return {
-        data,
-        success: true,
-        message: 'Users retrieved successfully',
-      };
-    } catch (error) {
-      return {
-        data: [],
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to fetch users',
-          code: 'FETCH_ERROR',
-        },
-      };
-    }
+    return super.getAll();
   }
 
   /**
-   * Get user by ID
+   * Get user by ID (overrides BaseService method)
    */
   async getById(id: string): Promise<ApiResponse<User | null>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users/${id}`);
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          return {
-            data: null,
-            success: true,
-            message: 'User not found',
-          };
-        }
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as User;
-
-      return {
-        data,
-        success: true,
-        message: 'User retrieved successfully',
-      };
-    } catch (error) {
-      return {
-        data: null,
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to fetch user',
-          code: 'FETCH_ERROR',
-        },
-      };
-    }
+    return super.getById(id);
   }
 
   /**
-   * Create a new user
+   * Create a new user (overrides BaseService method)
    */
   async create(user: Partial<User>): Promise<ApiResponse<User>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as User;
-
-      return {
-        data,
-        success: true,
-        message: 'User created successfully',
-      };
-    } catch (error) {
-      return {
-        data: null as unknown as User,
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to create user',
-          code: 'CREATE_ERROR',
-        },
-      };
-    }
+    return super.create(user);
   }
 
   /**
-   * Update an existing user
+   * Update an existing user (overrides BaseService method)
    */
   async update(id: string, user: Partial<User>): Promise<ApiResponse<User>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as User;
-
-      return {
-        data,
-        success: true,
-        message: 'User updated successfully',
-      };
-    } catch (error) {
-      return {
-        data: null as unknown as User,
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to update user',
-          code: 'UPDATE_ERROR',
-        },
-      };
-    }
+    return super.update(id, user);
   }
 
   /**
-   * Delete a user
+   * Delete a user (overrides BaseService method)
    */
   async delete(id: string): Promise<ApiResponse<boolean>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return {
-        data: true,
-        success: true,
-        message: 'User deleted successfully',
-      };
-    } catch (error) {
-      return {
-        data: false,
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to delete user',
-          code: 'DELETE_ERROR',
-        },
-      };
-    }
+    return super.delete(id);
   }
 
   /**
    * Change user password
    */
   async changePassword(id: string, newPassword: string): Promise<ApiResponse<boolean>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users/${id}/password`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ newPassword }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      return {
-        data: true,
-        success: true,
-        message: 'Password changed successfully',
-      };
-    } catch (error) {
-      return {
-        data: false,
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to change password',
-          code: 'PASSWORD_CHANGE_ERROR',
-        },
-      };
-    }
+    return this.put(`/${id}/password`, { newPassword });
   }
 
   /**
    * Update user roles
    */
   async updateRoles(id: string, roles: string[]): Promise<ApiResponse<User>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users/${id}/roles`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ roller: roles }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as User;
-
-      return {
-        data,
-        success: true,
-        message: 'User roles updated successfully',
-      };
-    } catch (error) {
-      return {
-        data: null as unknown as User,
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to update user roles',
-          code: 'ROLES_UPDATE_ERROR',
-        },
-      };
-    }
+    return this.put(`/${id}/roles`, { roller: roles });
   }
 
   /**
    * Update user units
    */
   async updateUnits(id: string, units: string[]): Promise<ApiResponse<User>> {
-    try {
-      const response = await fetch(`${this.baseUrl}/users/${id}/units`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ enheter: units }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = (await response.json()) as User;
-
-      return {
-        data,
-        success: true,
-        message: 'User units updated successfully',
-      };
-    } catch (error) {
-      return {
-        data: null as unknown as User,
-        success: false,
-        error: {
-          message: error instanceof Error ? error.message : 'Failed to update user units',
-          code: 'UNITS_UPDATE_ERROR',
-        },
-      };
-    }
+    return this.put(`/${id}/units`, { enheter: units });
   }
 }
 
-// Export a default instance
-export const userService = new UserService();
+// Note: Default instance removed - now created via ApiConfiguration with proper HttpClient

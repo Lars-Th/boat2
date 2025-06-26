@@ -30,6 +30,4 @@ export * from './enums';
 // Composables
 export * from './composables';
 
-// Import API types from the API client for backward compatibility
-import type { ApiError, ApiResponse } from '../api/client/types';
-export type { ApiError, ApiResponse };
+// API types are now defined in ./api and exported above

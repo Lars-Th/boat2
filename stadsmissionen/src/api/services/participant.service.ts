@@ -1,5 +1,5 @@
 import type { Attendance, Participant } from '@/types';
-import type { ApiResponse, QueryParams } from '@/api/client/types';
+import type { ApiResponse, QueryParams } from '@/types';
 import type { HttpClient } from '@/api/client/http-client';
 import { BaseService } from '@/api/services/base.service';
 

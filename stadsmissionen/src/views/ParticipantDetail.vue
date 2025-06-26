@@ -65,7 +65,7 @@ const activities = computed(() => participantWithRelations.value?.activities ?? 
 const attendances = computed(() => participantWithRelations.value?.attendances ?? []);
 
 // Loading and error states
-const isLoading = computed(() => participantLoading.value || typesLoading.value);
+const isLoading = computed(() => Boolean(participantLoading.value) || Boolean(typesLoading.value));
 
 const hasError = computed(() => participantError.value !== null || typesError.value !== null);
 

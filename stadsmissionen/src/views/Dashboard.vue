@@ -17,7 +17,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-vue-next';
-import type { BreadcrumbItem } from '@/types';
+import type { UIBreadcrumbItem } from '@/types';
 import { useApi } from '@/composables/useApi';
 import api from '@/api';
 
@@ -29,7 +29,7 @@ const {
   refetch: refetchParticipants,
 } = useApi(
   () =>
-    api.participants?.getAll({ include: ['activities', 'attendances'] }) ||
+    api.participants?.getAll({ include: ['activities', 'attendances'] }) ??
     Promise.resolve({ data: [], success: true }),
   { immediate: true }
 );
@@ -41,7 +41,7 @@ const {
   refetch: refetchActivities,
 } = useApi(
   () =>
-    api.activities?.getAll({ include: ['types'] }) || Promise.resolve({ data: [], success: true }),
+    api.activities?.getAll({ include: ['types'] }) ?? Promise.resolve({ data: [], success: true }),
   { immediate: true }
 );
 
@@ -50,7 +50,7 @@ const {
   loading: attendancesLoading,
   error: attendancesError,
   refetch: refetchAttendances,
-} = useApi(() => api.attendances?.getAll() || Promise.resolve({ data: [], success: true }), {
+} = useApi(() => api.attendances?.getAll() ?? Promise.resolve({ data: [], success: true }), {
   immediate: true,
 });
 
@@ -59,7 +59,7 @@ const {
   loading: activityTypesLoading,
   error: activityTypesError,
   refetch: refetchActivityTypes,
-} = useApi(() => api.activityTypes?.getAll() || Promise.resolve({ data: [], success: true }), {
+} = useApi(() => api.activityTypes?.getAll() ?? Promise.resolve({ data: [], success: true }), {
   immediate: true,
 });
 
@@ -70,10 +70,10 @@ const activities = computed(() => activitiesWithTypes.value ?? []);
 // Loading and error states
 const isLoading = computed(
   () =>
-    participantsLoading.value ||
-    activitiesLoading.value ||
-    attendancesLoading.value ||
-    activityTypesLoading.value
+    Boolean(participantsLoading.value) ||
+    Boolean(activitiesLoading.value) ||
+    Boolean(attendancesLoading.value) ||
+    Boolean(activityTypesLoading.value)
 );
 
 const hasError = computed(
@@ -192,7 +192,7 @@ const quickActions = [
 ];
 
 // Breadcrumbs
-const breadcrumbs: BreadcrumbItem[] = [{ label: 'Stadsmissionen', isCurrentPage: true }];
+const breadcrumbs: UIBreadcrumbItem[] = [{ label: 'Stadsmissionen', isCurrentPage: true }];
 
 // Navigation shortcuts
 const navigationShortcuts = [

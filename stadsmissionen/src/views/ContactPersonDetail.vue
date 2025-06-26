@@ -261,7 +261,7 @@ const handleDiscardChanges = () => {
 };
 
 // Loading and error states
-const isLoading = computed(() => contactLoading.value || customersLoading.value);
+const isLoading = computed(() => Boolean(contactLoading.value) || Boolean(customersLoading.value));
 const hasError = computed(() => contactError.value !== null || customersError.value !== null);
 </script>
 

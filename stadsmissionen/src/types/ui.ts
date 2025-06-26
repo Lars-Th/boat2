@@ -3,7 +3,7 @@ import type { Component, VNode } from 'vue';
 
 // UI Component interfaces
 
-export interface BreadcrumbItem {
+export interface UIBreadcrumbItem {
   label: string;
   href?: string;
   to?: string | { name: string; params?: Record<string, unknown> };
@@ -24,11 +24,11 @@ export interface TableColumn<T = Record<string, unknown>> {
   badgeVariant?: (value: unknown) => string;
 }
 
-export interface NavigationItem {
+export interface UINavigationItem {
   label: string;
   path?: string;
   icon?: string | Component;
-  children?: NavigationItem[];
+  children?: UINavigationItem[];
   badge?: string | number;
   external?: boolean;
 }
@@ -39,7 +39,7 @@ export interface LoadingState {
   data?: unknown;
 }
 
-export interface FilterOption {
+export interface UIFilterOption {
   key?: string;
   label: string;
   value?: string | number | boolean | Date;

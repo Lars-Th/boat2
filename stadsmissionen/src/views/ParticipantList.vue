@@ -42,7 +42,7 @@ const {
 });
 
 // Loading state
-const isLoading = computed(() => participantsLoading.value);
+const isLoading = computed(() => Boolean(participantsLoading.value));
 
 // Error state
 const hasError = computed(() => participantsError.value !== null);

@@ -65,7 +65,10 @@ const {
 
 // Loading and error states
 const isLoading = computed(
-  () => organizationsLoading.value || usersLoading.value || officesLoading.value
+  () =>
+    Boolean(organizationsLoading.value) ||
+    Boolean(usersLoading.value) ||
+    Boolean(officesLoading.value)
 );
 const hasError = computed(
   () =>

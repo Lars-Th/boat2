@@ -50,7 +50,7 @@ const {
 });
 
 // Loading and error states
-const isLoading = computed(() => templatesLoading.value || typesLoading.value);
+const isLoading = computed(() => Boolean(templatesLoading.value) || Boolean(typesLoading.value));
 const hasError = computed(() => templatesError.value !== null || typesError.value !== null);
 
 // Refresh function for error recovery
@@ -86,7 +86,7 @@ const enhancedTemplates = computed(() => {
         : 'Inget syfte angivet';
 
     // Calculate usage statistics from included activities relation
-    const usageCount = template.activities ? template.activities.length : 0;
+    const usageCount = template.activities?.length ?? 0;
 
     return {
       ...template,
@@ -337,7 +337,7 @@ const handleViewTemplate = (template: any, event: MouseEvent) => {
         <template #cell-types="{ row }">
           <div class="flex flex-wrap gap-1">
             <Badge
-              v-for="type in (row.types || []).slice(0, 2)"
+              v-for="type in (row.types ?? []).slice(0, 2)"
               :key="type.ActivityTypeID"
               variant="outline"
               class="text-xs"
@@ -345,8 +345,8 @@ const handleViewTemplate = (template: any, event: MouseEvent) => {
             >
               {{ type.Typnamn }}
             </Badge>
-            <Badge v-if="(row.types || []).length > 2" variant="outline" class="text-xs">
-              +{{ (row.types || []).length - 2 }}
+            <Badge v-if="(row.types ?? []).length > 2" variant="outline" class="text-xs">
+              +{{ (row.types ?? []).length - 2 }}
             </Badge>
           </div>
         </template>
