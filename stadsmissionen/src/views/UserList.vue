@@ -16,7 +16,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Edit, Plus, Trash2, UserPlus } from 'lucide-vue-next';
-import type { BreadcrumbItem, LoginAccount, TableColumn, User } from '@/types';
+import type { LoginAccount, TableColumn, UIBreadcrumbItem, User } from '@/types';
 import { useToast } from '@/composables/useToast';
 import { useApiList } from '@/composables/useApi';
 import api from '@/api';
@@ -27,7 +27,7 @@ const router = useRouter();
 // const router = useRouter()
 
 // Breadcrumbs
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs: UIBreadcrumbItem[] = [
   { label: 'Inställningar', to: '/settings' },
   { label: 'Användare', to: '/settings/users' },
   { label: 'Inloggningskonton', isCurrentPage: true },

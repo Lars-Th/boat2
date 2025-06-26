@@ -1,5 +1,5 @@
 import { BaseService } from './base.service';
-import type { ApiResponse } from '@/api/client/types';
+import type { ApiResponse } from '@/types';
 import type { LoginRequest, LoginResponse, User } from '@/types/auth';
 
 export class AuthService extends BaseService<any> {

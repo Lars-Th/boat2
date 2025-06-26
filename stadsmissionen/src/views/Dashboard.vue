@@ -17,7 +17,7 @@ import {
   UserPlus,
   Users,
 } from 'lucide-vue-next';
-import type { BreadcrumbItem } from '@/types';
+import type { UIBreadcrumbItem } from '@/types';
 import { useApi } from '@/composables/useApi';
 import api from '@/api';
 
@@ -192,7 +192,7 @@ const quickActions = [
 ];
 
 // Breadcrumbs
-const breadcrumbs: BreadcrumbItem[] = [{ label: 'Stadsmissionen', isCurrentPage: true }];
+const breadcrumbs: UIBreadcrumbItem[] = [{ label: 'Stadsmissionen', isCurrentPage: true }];
 
 // Navigation shortcuts
 const navigationShortcuts = [

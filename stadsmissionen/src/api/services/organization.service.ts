@@ -1,4 +1,4 @@
-import type { ApiResponse } from '@/api/client/types';
+import type { ApiResponse } from '@/types';
 import type { Organization } from '@/types';
 
 /**

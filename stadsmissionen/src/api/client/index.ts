@@ -10,7 +10,7 @@ import type {
   PaginationParams,
   QueryParams,
   RequestParams,
-} from '@/api/client/types';
+} from '@/types';
 
 // Export HTTP client
 export { HttpClient } from '@/api/client/http-client';

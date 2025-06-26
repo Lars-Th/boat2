@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { organizationService } from '@/api/services/organization.service';
 import type { Organization } from '@/types';
-import type { ApiResponse } from '@/api/client/types';
+import type { ApiResponse } from '@/types';
 
 export function useOrganizationManagement() {
   // Reactive state

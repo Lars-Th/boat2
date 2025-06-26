@@ -1,5 +1,5 @@
 import type { HttpClient } from '../client/http-client';
-import type { ApiResponse, QueryParams, RequestParams } from '../client/types';
+import type { ApiResponse, QueryParams, RequestParams } from '@/types';
 
 export abstract class BaseService<T> {
   protected httpClient: HttpClient;
@@ -14,14 +14,14 @@ export abstract class BaseService<T> {
     // Convert RequestParams to QueryParams for the HTTP client
     const queryParams: QueryParams = params
       ? {
-          page: params.page,
-          pageSize: params.pageSize,
-          sort: params.sort,
-          order: params.order,
-          search: params.search,
-          // Flatten filters into query params
-          ...(params.filters ?? {}),
-        }
+        page: params.page,
+        pageSize: params.pageSize,
+        sort: params.sort,
+        order: params.order,
+        search: params.search,
+        // Flatten filters into query params
+        ...(params.filters ?? {}),
+      }
       : {};
 
     return this.httpClient.get<T[]>(this.endpoint, queryParams);

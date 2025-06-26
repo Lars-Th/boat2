@@ -27,7 +27,7 @@ export interface ParticipantWithRelations extends Participant {
 }
 
 // Enhanced user types with relational data
-export interface PermissionGroup {
+export interface DetailedPermissionGroup {
   id: number;
   name: string;
   administreraInloggningskonton: boolean;
@@ -42,7 +42,7 @@ export interface PermissionGroup {
 }
 
 export interface UserWithPermissionGroup extends User {
-  permissionGroup?: PermissionGroup;
+  permissionGroup?: DetailedPermissionGroup;
 }
 
 // API parameter types for include options
@@ -71,5 +71,5 @@ export interface AuthUser {
   name: string;
   email: string;
   role: string;
-  permissionGroup?: PermissionGroup;
+  permissionGroup?: DetailedPermissionGroup;
 }

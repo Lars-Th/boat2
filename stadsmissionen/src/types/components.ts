@@ -26,7 +26,7 @@ export interface SubTable {
   }>;
 }
 
-export interface BreadcrumbItem {
+export interface SimpleBreadcrumbItem {
   label: string;
   href?: string;
   current?: boolean;
@@ -47,7 +47,7 @@ export interface ActionButton {
   disabled?: boolean;
 }
 
-export interface FilterOption {
+export interface SimpleFilterOption {
   label: string;
   value: any;
   count?: number;
@@ -57,7 +57,7 @@ export interface Filter {
   key: string;
   label: string;
   type: 'select' | 'multiselect' | 'date' | 'daterange' | 'text';
-  options?: FilterOption[];
+  options?: SimpleFilterOption[];
   value: any;
 }
 

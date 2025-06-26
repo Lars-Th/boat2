@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router';
 import { ChevronRight } from 'lucide-vue-next';
 
-import type { BreadcrumbItem } from '@/types';
+import type { UIBreadcrumbItem } from '@/types';
 
 interface Stat {
   label: string;
@@ -13,7 +13,7 @@ interface Stat {
 
 interface Props {
   title: string;
-  breadcrumbs?: BreadcrumbItem[];
+  breadcrumbs?: UIBreadcrumbItem[];
   stats?: Stat[];
   showBackButton?: boolean;
   showStats?: boolean;
@@ -27,7 +27,7 @@ withDefaults(defineProps<Props>(), {
 
 const router = useRouter();
 
-const navigateTo = (breadcrumb: BreadcrumbItem) => {
+const navigateTo = (breadcrumb: UIBreadcrumbItem) => {
   if (breadcrumb.to && !breadcrumb.isCurrentPage) {
     if (typeof breadcrumb.to === 'string') {
       router.push(breadcrumb.to);

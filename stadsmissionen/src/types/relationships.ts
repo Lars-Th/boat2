@@ -1,13 +1,6 @@
 // Import base types
 import type { Contact, Customer } from './index';
-
-// Import base API types
-export interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  message?: string;
-  error?: any;
-}
+import type { ApiResponse } from './api';
 
 export interface CustomerWithRelations extends Customer {
   // Resolved relationships - always optional since they're loaded conditionally

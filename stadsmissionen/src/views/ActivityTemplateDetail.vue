@@ -256,7 +256,7 @@ const breadcrumbs = computed(() => [
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'Aktiviteter', to: '/activities' },
   { label: 'Lista Mallar', to: '/activity-templates' },
-  { label: template.value?.namn || 'Mall', isCurrentPage: true },
+  { label: template.value?.namn ?? 'Mall', isCurrentPage: true },
 ]);
 </script>
 

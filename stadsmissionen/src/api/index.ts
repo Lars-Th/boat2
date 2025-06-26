@@ -3,7 +3,7 @@ import { MockDataService } from '@/api/mocks';
 import type { Activity, Attendance, Contact, Customer, Participant } from '@/types';
 import type { RelationalParams } from '@/types/enhanced';
 import type { ContactWithRelations, CustomerWithRelations } from '@/types/relationships';
-import type { ApiResponse, RequestParams } from '@/api/client/types';
+import type { ApiResponse, RequestParams } from '@/types';
 
 // Export all types and client functionality
 export * from '@/api/client';
@@ -155,11 +155,11 @@ export const api = {
       USE_MOCK_API
         ? Promise.reject(new Error('Not implemented in mock'))
         : (apiService as ApiConfiguration).attendances.markAttendance(
-            activityId,
-            participantId,
-            present,
-            notes
-          ),
+          activityId,
+          participantId,
+          present,
+          notes
+        ),
   },
 
   // Legacy compatibility for organizations, users, etc.

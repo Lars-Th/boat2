@@ -5,7 +5,7 @@ import type {
   ApiResponse,
   HttpMethod,
   QueryParams,
-} from '@/api/client/types';
+} from '@/types';
 
 export class HttpClient {
   private config: ApiConfig;
