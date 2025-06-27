@@ -267,7 +267,6 @@ export class MockDataService {
       name: user.name,
       email: user.email,
       role: this.getPermissionRole(user.permissionID),
-      stadsmission: user.stadsmission,
       permissionGroup,
     };
 
@@ -328,7 +327,6 @@ export class MockDataService {
       name: user.name,
       email: user.email,
       role: this.getPermissionRole(user.permissionID),
-      stadsmission: user.stadsmission,
       permissionGroup,
     };
 
@@ -365,7 +363,6 @@ export class MockDataService {
       name: user.name,
       email: user.email,
       role: this.getPermissionRole(user.permissionID),
-      stadsmission: user.stadsmission,
       permissionGroup,
     };
 

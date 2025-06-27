@@ -1,28 +1,5 @@
 // Core business entity interfaces
 
-export interface Organization {
-  id: string;
-  namn: string;
-  logotyp?: string;
-  enheter: string[];
-  userCount?: number;
-  kommentarLabels: {
-    kommentar1: string;
-    kommentar2: string;
-    kommentar3: string;
-  };
-  kontaktuppgifter: {
-    adress: string;
-    postnummer: string;
-    ort: string;
-    telefon: string;
-    epost: string;
-    webbplats: string;
-  };
-  skapadDatum: string;
-  uppdateradDatum: string;
-}
-
 export interface LoginAccount {
   id: number;
   username: string;
@@ -45,7 +22,6 @@ export interface User {
   email: string;
   password: string;
   permissionID: number;
-  stadsmission: number;
 }
 
 export interface PermissionGroup {

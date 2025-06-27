@@ -40,7 +40,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   logoSrc: '',
-  logoAlt: 'Stadsmissionen',
+  logoAlt: 'Project Specific',
   currentUser: () => ({
     id: 1,
     name: 'Lars Thomas',
@@ -56,12 +56,12 @@ const route = useRoute();
 const expandedMenuItems = ref<Set<string>>(new Set());
 
 const themes = [
-  { name: 'Stadsmissionen', value: 'stadsmissionen', class: 'theme_stadsmissionen' },
+  { name: 'Project Specific Theme', value: 'project-specific', class: 'theme_project-specific' },
   { name: 'Default', value: 'default', class: 'theme_default' },
   { name: 'Dark', value: 'dark', class: 'dark' },
 ];
 
-const currentTheme = ref('stadsmissionen');
+const currentTheme = ref('project-specific');
 
 const navigateTo = (path: string) => {
   router.push(path);
@@ -91,12 +91,8 @@ const setTheme = (theme: (typeof themes)[0] | undefined) => {
   // Remove all theme classes
   document.documentElement.classList.remove(
     'dark',
-    'theme_stadsmissionen',
+    'theme_project-specific',
     'theme_default',
-    'theme_fuchsia',
-    'theme_purple',
-    'theme_amber',
-    'theme_sky',
     'theme_pink'
   );
 
@@ -111,7 +107,7 @@ const setTheme = (theme: (typeof themes)[0] | undefined) => {
 
 // Load saved theme on mount
 onMounted(() => {
-  const savedTheme = localStorage.getItem('theme') ?? 'stadsmissionen';
+  const savedTheme = localStorage.getItem('theme') ?? 'project-specific';
   const theme = themes.find(t => t.value === savedTheme);
   if (theme) {
     setTheme(theme);
@@ -150,7 +146,7 @@ const handleImageError = (event: Event) => {
     <div class="p-4">
       <img
         :src="logoSrc || '/src/assets/images/logo-placeholder.png'"
-        :alt="logoAlt || 'Stadsmissionen'"
+        :alt="logoAlt || 'Project Specific'"
         class="w-full h-auto max-h-24 object-contain"
         @error="handleImageError"
       />
@@ -297,7 +293,7 @@ const handleImageError = (event: Event) => {
               <span
                 class="w-3 h-3 rounded-full mr-2 border"
                 :class="{
-                  'border-gray-600': theme.value === 'stadsmissionen',
+                  'border-gray-600': theme.value === 'project-specific',
                   'bg-gray-100 border-gray-300': theme.value === 'default',
                   'bg-gray-800 border-gray-600': theme.value === 'dark',
                   'bg-fuchsia-500 border-fuchsia-600': theme.value === 'fuchsia',
@@ -306,7 +302,7 @@ const handleImageError = (event: Event) => {
                   'bg-sky-500 border-sky-600': theme.value === 'sky',
                   'bg-pink-500 border-pink-600': theme.value === 'pink',
                 }"
-                :style="theme.value === 'stadsmissionen' ? { backgroundColor: '#0071ba' } : {}"
+                :style="theme.value === 'project-specific' ? { backgroundColor: '#0071ba' } : {}"
               />
               {{ theme.name }}
               <span v-if="currentTheme === theme.value" class="ml-auto">✓</span>
