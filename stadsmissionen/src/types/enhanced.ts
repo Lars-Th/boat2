@@ -1,20 +1,4 @@
-import type { Activity, ActivityType, Attendance, Participant, User } from './index';
-
-// Enhanced activity types with relational data
-export interface ActivityWithTypes extends Activity {
-  activityType?: ActivityType;
-}
-
-export interface ActivityWithParticipants extends Activity {
-  participants?: Participant[];
-}
-
-// Removed unused ActivityWithRelations interface
-
-// Enhanced participant types with relational data
-export interface ParticipantWithActivities extends Participant {
-  activities?: Activity[];
-}
+import type { PermissionGroup, User } from './index';
 
 // Enhanced user types with relational data
 export interface DetailedPermissionGroup {
@@ -40,20 +24,11 @@ export interface RelationalParams {
   include?: string[];
 }
 
-export interface ActivityRelationalParams extends RelationalParams {
-  include?: ('types' | 'participants' | 'attendances')[];
-}
-
-export interface ParticipantRelationalParams extends RelationalParams {
-  include?: ('activities' | 'attendances')[];
-}
-
 export interface UserRelationalParams extends RelationalParams {
   include?: 'permissionGroup'[];
 }
 
 // Union types for different API responses based on include parameters
-// Removed unused complex conditional types: ActivityResponse, ParticipantResponse, UserResponse
 
 // Enhanced auth user type for authentication
 export interface AuthUser {
@@ -67,11 +42,6 @@ export interface AuthUser {
 
 // Enhanced types for API operations and relationship loading
 
-// Base query parameters
-export interface QueryParams {
-  [key: string]: string | number | boolean | null | undefined;
-}
-
 // Request parameters for paginated API calls
 export interface RequestParams {
   page?: number;
@@ -80,11 +50,6 @@ export interface RequestParams {
   sort?: string;
   order?: 'asc' | 'desc';
   filters?: Record<string, any>;
-}
-
-// Relationship loading parameters
-export interface RelationalParams {
-  include?: string[]; // Array of relationship names to include
 }
 
 // Combined parameters for API calls with relationships
@@ -177,90 +142,12 @@ export interface TableConfig<T> {
   onSearch?: (searchTerm: string) => void;
 }
 
-// Form field types for dynamic forms
-export interface FormField {
-  key: string;
-  label: string;
-  type:
-    | 'text'
-    | 'email'
-    | 'password'
-    | 'number'
-    | 'date'
-    | 'datetime'
-    | 'textarea'
-    | 'select'
-    | 'multiselect'
-    | 'checkbox'
-    | 'radio'
-    | 'file'
-    | 'custom';
-  required?: boolean;
-  placeholder?: string;
-  helpText?: string;
-  validation?: ValidationRule[];
-
-  // For select/radio/checkbox types
-  options?: Array<{ value: any; label: string; disabled?: boolean }>;
-
-  // For number inputs
-  min?: number;
-  max?: number;
-  step?: number;
-
-  // For text inputs
-  minLength?: number;
-  maxLength?: number;
-  pattern?: string;
-
-  // For file inputs
-  accept?: string;
-  multiple?: boolean;
-  maxSize?: number; // in bytes
-
-  // Conditional display
-  showIf?: (formData: any) => boolean;
-
-  // Custom component
-  component?: any;
-  props?: Record<string, any>;
-
-  // Styling
-  className?: string;
-  style?: Record<string, any>;
-
-  // Error handling
-  error?: string;
-}
-
 // Validation rule
 export interface ValidationRule {
   type: 'required' | 'email' | 'min' | 'max' | 'minLength' | 'maxLength' | 'pattern' | 'custom';
   value?: any;
   message: string;
   validator?: (value: any, formData: any) => boolean;
-}
-
-// Form configuration
-export interface FormConfig {
-  fields: FormField[];
-  layout?: 'vertical' | 'horizontal' | 'inline' | 'grid';
-  gridColumns?: number;
-  submitLabel?: string;
-  cancelLabel?: string;
-  showCancel?: boolean;
-  disabled?: boolean;
-  loading?: boolean;
-
-  // Validation
-  validateOnChange?: boolean;
-  validateOnBlur?: boolean;
-
-  // Callbacks
-  onSubmit?: (formData: any) => void | Promise<void>;
-  onCancel?: () => void;
-  onChange?: (key: string, value: any, formData: any) => void;
-  onValidate?: (errors: Record<string, string>) => void;
 }
 
 // Entity operation types

@@ -111,15 +111,6 @@ export function useValidation(): UseValidationReturn {
       return null;
     },
 
-    organizationNumber: (value: unknown, fieldName: string) => {
-      if (!value) return null;
-      const orgRegex = /^\d{6}-\d{4}$/;
-      if (!orgRegex.test(String(value))) {
-        return `${fieldName} måste ha formatet 556123-4567`;
-      }
-      return null;
-    },
-
     postalCode: (value: unknown, fieldName: string) => {
       if (!value) return null;
       const postalRegex = /^\d{5}$/;
@@ -275,7 +266,6 @@ export const validationPatterns = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   phone: /^[+]?[1-9][\d]{0,15}$/,
   postalCode: /^\d{5}$/,
-  organizationNumber: /^\d{6}-\d{4}$/,
   website: /^https?:\/\/.+\..+/,
 } as const;
 
@@ -291,9 +281,6 @@ export const commonRules = {
   },
   postalCode: {
     pattern: validationPatterns.postalCode,
-  },
-  organizationNumber: {
-    pattern: validationPatterns.organizationNumber,
   },
   website: {
     pattern: validationPatterns.website,

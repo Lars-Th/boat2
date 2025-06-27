@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, LogIn } from 'lucide-vue-next';
-import stadsmissionenLogo from '@/assets/images/ostergotland.png';
+import logo from '@/assets/images/logo-placeholder.png';
 
 const { login } = useAuth();
 
@@ -27,15 +27,9 @@ const demoUsers = ref<
     email: string;
     role: string;
     type: 'admin' | 'manager' | 'user';
-    stadsmission?: number;
-    organizationName?: string;
-    officeCount?: number;
   }>
 >([]);
 const loadingDemoUsers = ref(false);
-const organizations = ref<Array<{ id: number; name: string }>>([]);
-const offices = ref<Array<any>>([]);
-const officesUsersJunction = ref<Array<any>>([]);
 
 // Handle form submission
 const handleSubmit = async () => {
@@ -66,69 +60,15 @@ const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-// Load demo users and organizations from API
+// Load demo users from API
 const loadDemoUsers = async () => {
   loadingDemoUsers.value = true;
   try {
-    // Load all required data in parallel
-    const [orgResponse, usersResponse, fullUsersResponse, officesResponse, junctionResponse] =
-      await Promise.all([
-        api.newOrganizations.getAll(),
-        api.auth.getDemoUsers(),
-        api.users.getAll(),
-        api.offices.getAll(),
-        api.officesUsersJunction.getAll(),
-      ]);
-
-    // Process organizations
-    if (orgResponse.success && orgResponse.data) {
-      organizations.value = orgResponse.data.map((org: any) => ({
-        id: org.id,
-        name: org.name || org.namn,
-      }));
-    }
-
-    // Process offices
-    if (officesResponse.success && officesResponse.data) {
-      offices.value = officesResponse.data;
-    }
-
-    // Process junction data
-    if (junctionResponse.success && junctionResponse.data) {
-      officesUsersJunction.value = junctionResponse.data;
-    }
+    const usersResponse = await api.auth.getDemoUsers();
 
     // Process demo users
-    if (
-      usersResponse.success &&
-      usersResponse.data &&
-      fullUsersResponse.success &&
-      fullUsersResponse.data
-    ) {
-      const fullUsers = fullUsersResponse.data;
-
-      // Enhance demo users with stadsmission, organization info, and office count
-      demoUsers.value = usersResponse.data.map((demoUser: any) => {
-        const fullUser = fullUsers.find((u: any) => u.id === demoUser.id);
-        const org = organizations.value.find(o => o.id === fullUser?.stadsmission);
-
-        // Calculate office count for this user
-        const userOfficeCount = officesUsersJunction.value.filter(
-          (junction: any) => junction.userID === demoUser.id
-        ).length;
-
-        return {
-          ...demoUser,
-          stadsmission: fullUser?.stadsmission,
-          organizationName: org?.name || 'Okänd organisation',
-          officeCount: userOfficeCount,
-        };
-      });
-    } else if (usersResponse.success && usersResponse.data) {
-      demoUsers.value = usersResponse.data.map((user: any) => ({
-        ...user,
-        officeCount: 0,
-      }));
+    if (usersResponse.success && usersResponse.data) {
+      demoUsers.value = usersResponse.data;
     }
   } catch (err) {
     console.error('Failed to load demo users:', err);
@@ -157,9 +97,9 @@ const fillDemoCredentials = (user: (typeof demoUsers.value)[0]) => {
   password.value = passwordMap[user.email] ?? 'demo123';
 };
 
-// Organize users by stadsmission and sort by role
-const organizedUsers = computed(() => {
-  if (!demoUsers.value.length || !organizations.value.length) {
+// Sort users by role
+const sortedUsers = computed(() => {
+  if (!demoUsers.value.length) {
     return [];
   }
 
@@ -172,34 +112,11 @@ const organizedUsers = computed(() => {
     Medarbetare: 1,
   };
 
-  // Group users by organization
-  const usersByOrg = demoUsers.value.reduce(
-    (acc, user) => {
-      const orgId = user.stadsmission;
-      if (!orgId) return acc;
-
-      if (!acc[orgId]) {
-        acc[orgId] = [];
-      }
-      acc[orgId].push(user);
-      return acc;
-    },
-    {} as { [key: number]: typeof demoUsers.value }
-  );
-
-  // Create organized structure with sorting
-  return organizations.value
-    .filter(org => usersByOrg[org.id]) // Only include orgs that have users
-    .map(org => ({
-      id: org.id,
-      name: org.name,
-      users: usersByOrg[org.id].sort((a, b) => {
-        const aLevel = roleHierarchy[a.role] || 0;
-        const bLevel = roleHierarchy[b.role] || 0;
-        return bLevel - aLevel; // Descending order
-      }),
-    }))
-    .sort((a, b) => a.id - b.id); // Sort organizations by ID
+  return [...demoUsers.value].sort((a, b) => {
+    const aLevel = roleHierarchy[a.role] || 0;
+    const bLevel = roleHierarchy[b.role] || 0;
+    return bLevel - aLevel; // Descending order
+  });
 });
 
 // Initialize demo users on component mount
@@ -215,7 +132,7 @@ onMounted(() => {
     <div class="w-full max-w-2xl">
       <!-- Logo -->
       <div class="text-center mb-8">
-        <img :src="stadsmissionenLogo" alt="Östergötlands Stadsmission" class="h-16 mx-auto mb-4" />
+        <img :src="logo" alt="Östergötlands Stadsmission" class="h-16 mx-auto mb-4" />
         <h1 class="text-2xl font-bold text-gray-900">Välkommen tillbaka</h1>
         <p class="text-gray-600 mt-2">Logga in på ditt konto</p>
       </div>
@@ -295,32 +212,25 @@ onMounted(() => {
               <span class="text-sm text-gray-500">Laddar demo-konton...</span>
             </div>
 
-            <!-- Demo user buttons organized by stadsmission in columns -->
-            <div v-else class="space-y-4">
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div v-for="org in organizedUsers" :key="org.id" class="space-y-2">
-                  <h4 class="text-xs font-medium text-gray-700 text-center">{{ org.name }}</h4>
-                  <div class="space-y-1">
-                    <Button
-                      v-for="user in org.users"
-                      :key="user.id"
-                      variant="outline"
-                      size="sm"
-                      :disabled="isLoading"
-                      class="w-full text-left justify-start h-auto py-2 text-xs"
-                      @click="fillDemoCredentials(user)"
-                    >
-                      <div class="flex flex-col items-start w-full">
-                        <div class="text-xs">{{ user.role }}</div>
-                        <div
-                          class="text-xs text-muted-foreground mt-1 flex items-center justify-between w-full"
-                        >
-                          <span>{{ user.officeCount || 0 }} kontor</span>
-                        </div>
-                      </div>
-                    </Button>
+            <!-- Demo user buttons in a simple list -->
+            <div v-else class="space-y-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <Button
+                  v-for="user in sortedUsers"
+                  :key="user.id"
+                  variant="outline"
+                  size="sm"
+                  :disabled="isLoading"
+                  class="text-left justify-start h-auto py-2 text-xs"
+                  @click="fillDemoCredentials(user)"
+                >
+                  <div class="flex flex-col items-start w-full">
+                    <div class="text-xs font-medium">{{ user.role }}</div>
+                    <div class="text-xs text-muted-foreground mt-1">
+                      {{ user.name }}
+                    </div>
                   </div>
-                </div>
+                </Button>
               </div>
 
               <!-- Fallback if no demo users loaded -->

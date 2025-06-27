@@ -13,8 +13,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { onMounted, ref } from 'vue';
 import { ChevronDown, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-vue-next';
-import { useActiveOrganization } from '@/composables/useActiveOrganization';
-
 // Props
 interface Props {
   logoSrc?: string;
@@ -40,15 +38,6 @@ interface Props {
   } | null;
 }
 
-// const props = withDefaults(defineProps<Props>(), {
-//   logoSrc: stadsmissionenLogo,
-//   logoAlt: 'Östergötlands Stadsmission',
-//   currentUser: () => ({
-//     name: 'Lars Thomas',
-//     email: 'lars.thomas@example.com',
-//     role: 'Administrator'
-//   })
-// })
 withDefaults(defineProps<Props>(), {
   logoSrc: '',
   logoAlt: 'Stadsmissionen',
@@ -62,9 +51,6 @@ withDefaults(defineProps<Props>(), {
 
 const router = useRouter();
 const route = useRoute();
-
-// Get active organization based on logged-in user
-const { activeOrganizationLogo, activeOrganizationName } = useActiveOrganization();
 
 // State for expanded menu items
 const expandedMenuItems = ref<Set<string>>(new Set());
@@ -163,8 +149,8 @@ const handleImageError = (event: Event) => {
     <!-- Sidebar Header -->
     <div class="p-4">
       <img
-        :src="logoSrc || activeOrganizationLogo || '/src/assets/images/logo-placeholder.png'"
-        :alt="logoAlt || activeOrganizationName || 'Stadsmissionen'"
+        :src="logoSrc || '/src/assets/images/logo-placeholder.png'"
+        :alt="logoAlt || 'Stadsmissionen'"
         class="w-full h-auto max-h-24 object-contain"
         @error="handleImageError"
       />

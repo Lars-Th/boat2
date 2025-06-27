@@ -14,34 +14,6 @@ export const routePermissions: PermissionConfig = {
   // Dashboard
   dashboard: ['H', 'A', 'SA'],
 
-  // Activities
-  activities: ['H', 'A', 'SA'],
-  'activity-detail': ['H', 'A', 'SA'],
-  'new-activity': ['A', 'SA'],
-  attendance: ['H', 'A', 'SA'],
-  'activity-types': ['A', 'SA'],
-  'activity-templates': ['A', 'SA'],
-  'new-activity-template': ['A', 'SA'],
-  'activity-template-detail': ['A', 'SA'],
-  'edit-activity-template': ['A', 'SA'],
-
-  // Participants
-  participants: ['H', 'A', 'SA'],
-  'participant-detail': ['H', 'A', 'SA'],
-  'new-participant': ['H', 'A', 'SA'],
-  'edit-participant': ['H', 'A', 'SA'],
-  'participant-groups': ['H', 'A', 'SA'],
-
-  // Reports
-  reports: ['A', 'SA'],
-  export: ['A', 'SA'],
-
-  // Customers
-  customers: ['H', 'A', 'SA'],
-  'customer-detail': ['H', 'A', 'SA'],
-  contacts: ['H', 'A', 'SA'],
-  'contact-detail': ['H', 'A', 'SA'],
-
   // Settings
   settings: ['H', 'A', 'SA'],
   'settings-my-account': ['H', 'A', 'SA'],

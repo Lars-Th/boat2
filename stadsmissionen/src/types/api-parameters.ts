@@ -97,70 +97,6 @@ export interface AggregationParams {
   having?: WhereClause[];
 }
 
-// Entity-specific API parameters
-export interface CustomerApiParams extends ApiRequestParams {
-  includeInactive?: boolean;
-  region?: string;
-  customerType?: string;
-}
-
-export interface ContactApiParams extends ApiRequestParams {
-  customerId?: number;
-  isPrimary?: boolean;
-  department?: string;
-}
-
-export interface TaskApiParams extends ApiRequestParams {
-  status?: 'active' | 'completed' | 'pending' | 'cancelled';
-  priority?: 'low' | 'medium' | 'high' | 'urgent';
-  type?: 'police_tow' | 'accident_tow' | 'private_tow' | 'abandoned_tow';
-  dateRange?: {
-    start: string;
-    end: string;
-  };
-  carId?: number;
-  towingStationId?: number;
-}
-
-export interface CarApiParams extends ApiRequestParams {
-  status?: 'active' | 'inactive' | 'sold' | 'scrapped';
-  brand?: string;
-  year?: number;
-  ownerName?: string;
-}
-
-export interface ParticipantApiParams extends ApiRequestParams {
-  enheter?: string[];
-  kon?: 'Man' | 'Kvinna' | 'Annan' | 'Vill inte ange';
-  ageRange?: {
-    min: number;
-    max: number;
-  };
-  location?: {
-    radius: number;
-    centerLat: number;
-    centerLng: number;
-  };
-}
-
-export interface ActivityApiParams extends ApiRequestParams {
-  status?: 'planned' | 'active' | 'completed' | 'cancelled';
-  activityTypeId?: number;
-  responsibleUserId?: number;
-  dateRange?: {
-    start: string;
-    end: string;
-  };
-  location?: string;
-  maxParticipants?: number;
-}
-
-export interface UserApiParams extends ApiRequestParams {
-  permissionId?: number;
-  stadsmission?: number;
-  isActive?: boolean;
-}
-
 // Bulk operation parameters
 export interface BulkCreateParams<T> {
   items: Partial<T>[];
@@ -222,7 +158,6 @@ export interface SubscriptionParams {
 // API operation context
 export interface ApiContext {
   userId?: string;
-  organizationId?: string;
   permissions?: string[];
   locale?: string;
   timezone?: string;

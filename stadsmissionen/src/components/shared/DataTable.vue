@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 import { ArrowUpDown, ChevronDown, ChevronUp, Edit, Trash2 } from 'lucide-vue-next';
-import type { TableColumn } from '@/types';
+import type { TableColumn } from '@/types/ui';
 
 interface Props {
   data: Record<string, unknown>[];
@@ -31,6 +31,7 @@ interface Props {
   showActions?: boolean;
   showSearch?: boolean;
   showPagination?: boolean;
+  idField?: string; // Allow customization of the ID field
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -43,6 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
   showActions: true,
   showSearch: true,
   showPagination: true,
+  idField: 'id',
 });
 
 const emit = defineEmits<{
@@ -171,7 +173,7 @@ const handleDelete = (item: Record<string, unknown>, event: Event) => {
 };
 
 const getCellValue = (item: Record<string, unknown>, column: TableColumn) => {
-  const value = item[column.key];
+  const value = item[String(column.key)];
 
   // Apply formatting if provided
   if (column.format && value !== null && value !== undefined) {
@@ -198,6 +200,25 @@ const getBadgeVariant = (
     }
   }
   return 'default';
+};
+
+// Generate a unique key for each row
+const getRowKey = (item: Record<string, unknown>, index: number): string => {
+  // Try to use the configured ID field first
+  if (item[props.idField]) {
+    return String(item[props.idField]);
+  }
+
+  // Fallback to common ID fields
+  const commonIdFields = ['id', 'uuid', '_id', 'key'];
+  for (const field of commonIdFields) {
+    if (item[field]) {
+      return String(item[field]);
+    }
+  }
+
+  // If no ID field is found, use the index
+  return String(index);
 };
 
 // Expose search and filter for parent components
@@ -238,7 +259,7 @@ defineExpose({
                 getResponsiveClasses(column, index),
               ]"
               :style="column.width ? { width: column.width } : {}"
-              @click="column.sortable ? sortBy(column.key) : null"
+              @click="column.sortable ? sortBy(String(column.key)) : null"
             >
               <div
                 v-if="column.sortable"
@@ -252,7 +273,7 @@ defineExpose({
                 "
               >
                 {{ column.label }}
-                <component :is="getSortIcon(column.key)" class="h-3 w-3" />
+                <component :is="getSortIcon(String(column.key))" class="h-3 w-3" />
               </div>
               <span v-else>{{ column.label }}</span>
             </TableHead>
@@ -261,7 +282,7 @@ defineExpose({
         <TableBody>
           <TableRow
             v-for="(item, index) in filteredData"
-            :key="String(item['id'] || item['ParticipantID'] || item['ActivityID'] || index)"
+            :key="getRowKey(item, index)"
             class="hover:bg-muted/30 cursor-pointer"
             @click="handleRowClick(item)"
           >
@@ -290,7 +311,7 @@ defineExpose({
               <!-- Custom type with slot -->
               <slot
                 v-else-if="column.type === 'custom'"
-                :name="`cell-${column.key}`"
+                :name="`cell-${String(column.key)}`"
                 :value="getCellValue(item, column)"
                 :row="item"
               >

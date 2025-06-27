@@ -31,29 +31,11 @@ import LoadingSpinner from '@/components/common/LoadingSpinner.vue';
 import ErrorBoundary from '@/components/common/ErrorBoundary.vue';
 import NavigationSidebar from '@/components/layout/NavigationSidebar.vue';
 
-// Activity components
-import ActivityForm from '@/components/features/activity/ActivityForm.vue';
-import ActivityParticipantSelector from '@/components/features/activity/ActivityParticipantSelector.vue';
-import ActivityDetailsForm from '@/components/features/activity/ActivityDetailsForm.vue';
-import ActivitySeriesSettings from '@/components/features/activity/ActivitySeriesSettings.vue';
-import ActivityTemplateSelector from '@/components/features/activity/ActivityTemplateSelector.vue';
-
 // User components
 import PasswordChangeDialog from '@/components/features/user/PasswordChangeDialog.vue';
-import RoleInformationCards from '@/components/features/user/RoleInformationCards.vue';
-import UserForm from '@/components/features/user/UserForm.vue';
-
-// Organization components
-import UnitManager from '@/components/features/organization/UnitManager.vue';
-import OrganizationManager from '@/components/features/organization/OrganizationManager.vue';
-import OrganizationCard from '@/components/features/organization/OrganizationCard.vue';
-import NewOrganizationForm from '@/components/features/organization/NewOrganizationForm.vue';
 
 // Toast Example component
 import ToastExample from '@/components/features/development/ToastExample.vue';
-
-// Views
-import SystemSettings from '@/views/SystemSettings.vue';
 
 // File tree structure
 interface TreeNode {
@@ -70,15 +52,7 @@ const fileTree: TreeNode[] = [
     name: 'pages',
     path: 'pages',
     type: 'folder',
-    children: [
-      {
-        name: 'SystemSettings.vue',
-        path: 'pages/SystemSettings.vue',
-        type: 'file',
-        component: SystemSettings,
-        props: {},
-      },
-    ],
+    children: [],
   },
   {
     name: 'common',
@@ -106,182 +80,6 @@ const fileTree: TreeNode[] = [
     type: 'folder',
     children: [
       {
-        name: 'activity',
-        path: 'features/activity',
-        type: 'folder',
-        children: [
-          {
-            name: 'ActivityDetailsForm.vue',
-            path: 'features/activity/ActivityDetailsForm.vue',
-            type: 'file',
-            component: ActivityDetailsForm,
-            props: {
-              activity: {
-                name: 'Demo Activity',
-                description: 'This is a demo activity',
-                startDate: '2024-01-20',
-                endDate: '2024-01-21',
-                location: 'Demo Location',
-              },
-            },
-          },
-          {
-            name: 'ActivityForm.vue',
-            path: 'features/activity/ActivityForm.vue',
-            type: 'file',
-            component: ActivityForm,
-            props: {
-              get modelValue() {
-                return activityFormData.value;
-              },
-              templates: [
-                {
-                  id: 1,
-                  name: 'Workshop Template',
-                  description: 'Standard workshop setup',
-                  templateType: 'workshop',
-                },
-                {
-                  id: 2,
-                  name: 'Meeting Template',
-                  description: 'Regular meeting format',
-                  templateType: 'meeting',
-                },
-                {
-                  id: 3,
-                  name: 'Training Template',
-                  description: 'Training session format',
-                  templateType: 'training',
-                },
-              ],
-              enheter: ['Enhet 1', 'Enhet 2', 'Enhet 3'],
-              participantGroups: [
-                { id: '1', namn: 'Group A' },
-                { id: '2', namn: 'Group B' },
-              ],
-              participants: [
-                { id: '1', namn: 'Anna Andersson' },
-                { id: '2', namn: 'Erik Svensson' },
-                { id: '3', namn: 'Maria Johansson' },
-              ],
-            },
-          },
-          {
-            name: 'ActivityParticipantSelector.vue',
-            path: 'features/activity/ActivityParticipantSelector.vue',
-            type: 'file',
-            component: ActivityParticipantSelector,
-            props: {
-              selectedParticipants: [],
-              availableParticipants: [
-                { id: 1, name: 'Anna Andersson', email: 'anna@example.com' },
-                { id: 2, name: 'Erik Svensson', email: 'erik@example.com' },
-              ],
-            },
-          },
-          {
-            name: 'ActivitySeriesSettings.vue',
-            path: 'features/activity/ActivitySeriesSettings.vue',
-            type: 'file',
-            component: ActivitySeriesSettings,
-            props: {
-              settings: {
-                frequency: 'weekly',
-                endDate: '2024-12-31',
-                maxParticipants: 20,
-              },
-            },
-          },
-          {
-            name: 'ActivityTemplateSelector.vue',
-            path: 'features/activity/ActivityTemplateSelector.vue',
-            type: 'file',
-            component: ActivityTemplateSelector,
-            props: {
-              templates: [
-                { id: 1, name: 'Workshop Template', description: 'Standard workshop setup' },
-                { id: 2, name: 'Meeting Template', description: 'Regular meeting format' },
-              ],
-            },
-          },
-        ],
-      },
-
-      {
-        name: 'organization',
-        path: 'features/organization',
-        type: 'folder',
-        children: [
-          {
-            name: 'NewOrganizationForm.vue',
-            path: 'features/organization/NewOrganizationForm.vue',
-            type: 'file',
-            component: NewOrganizationForm,
-          },
-          {
-            name: 'OrganizationCard.vue',
-            path: 'features/organization/OrganizationCard.vue',
-            type: 'file',
-            component: OrganizationCard,
-            props: {
-              organization: {
-                id: 'demo-org-1',
-                namn: 'Demo Organization',
-                aktiv: true,
-                enheter: ['Enhet 1', 'Enhet 2', 'Enhet 3', 'Enhet 4'],
-                kontaktuppgifter: {
-                  telefon: '08-123 45 67',
-                  ort: 'Stockholm',
-                },
-              },
-              isSelected: false,
-            },
-          },
-          {
-            name: 'OrganizationManager.vue',
-            path: 'features/organization/OrganizationManager.vue',
-            type: 'file',
-            component: OrganizationManager,
-            props: {
-              organizations: [
-                {
-                  id: 'demo-org-1',
-                  namn: 'Demo Org 1',
-                  aktiv: true,
-                  enheter: ['Enhet A', 'Enhet B'],
-                  kontaktuppgifter: {
-                    telefon: '08-111 11 11',
-                    ort: 'Stockholm',
-                  },
-                },
-                {
-                  id: 'demo-org-2',
-                  namn: 'Demo Org 2',
-                  aktiv: true,
-                  enheter: ['Enhet X', 'Enhet Y', 'Enhet Z'],
-                  kontaktuppgifter: {
-                    telefon: '08-222 22 22',
-                    ort: 'Göteborg',
-                  },
-                },
-              ],
-              selectedOrgId: 'demo-org-1',
-              users: [],
-            },
-          },
-          {
-            name: 'UnitManager.vue',
-            path: 'features/organization/UnitManager.vue',
-            type: 'file',
-            component: UnitManager,
-            props: {
-              units: ['Demo Unit 1', 'Demo Unit 2', 'Demo Unit 3'],
-              organizationName: 'Demo Organization',
-            },
-          },
-        ],
-      },
-      {
         name: 'user',
         path: 'features/user',
         type: 'folder',
@@ -292,33 +90,8 @@ const fileTree: TreeNode[] = [
             type: 'file',
             component: PasswordChangeDialog,
             props: {
-              isOpen: true,
-              user: { id: 1, name: 'Demo User' },
-            },
-          },
-          {
-            name: 'RoleInformationCards.vue',
-            path: 'features/user/RoleInformationCards.vue',
-            type: 'file',
-            component: RoleInformationCards,
-            props: {
-              roles: [
-                { name: 'Admin', description: 'Full system access' },
-                { name: 'User', description: 'Standard user access' },
-              ],
-            },
-          },
-          {
-            name: 'UserForm.vue',
-            path: 'features/user/UserForm.vue',
-            type: 'file',
-            component: UserForm,
-            props: {
-              user: {
-                name: 'Demo User',
-                email: 'demo@example.com',
-                role: 'User',
-              },
+              open: true,
+              user: { id: '1', namn: 'Demo User', epost: 'demo@example.com' },
             },
           },
         ],
@@ -492,7 +265,7 @@ const fileTree: TreeNode[] = [
                 { key: 'active', label: 'Aktiva', value: 'active' },
                 { key: 'inactive', label: 'Inaktiva', value: 'inactive' },
               ],
-              onChange: value => console.log('Filter changed:', value),
+              onChange: (value: any) => console.log('Filter changed:', value),
             },
           ],
           data: [
@@ -575,7 +348,7 @@ const fileTree: TreeNode[] = [
                 { key: 'active', label: 'Aktiva', value: 'active' },
                 { key: 'inactive', label: 'Inaktiva', value: 'inactive' },
               ],
-              onChange: value => console.log('Status filter changed:', value),
+              onChange: (value: any) => console.log('Status filter changed:', value),
             },
             {
               modelValue: 'all',
@@ -586,7 +359,7 @@ const fileTree: TreeNode[] = [
                 { key: 'page', label: 'Sidor', value: 'page' },
                 { key: 'layout', label: 'Layout', value: 'layout' },
               ],
-              onChange: value => console.log('Type filter changed:', value),
+              onChange: (value: any) => console.log('Type filter changed:', value),
             },
           ],
           searchQuery: '',
@@ -968,28 +741,6 @@ const fileTree: TreeNode[] = [
 const expandedFolders = ref(new Set(['pages', 'features', 'shared']));
 const selectedComponent = shallowRef<TreeNode | null>(null);
 
-// ActivityForm reactive state
-const activityFormData = ref({
-  templateId: '',
-  namn: 'Demo Activity',
-  beskrivning: 'This is a demo activity form',
-  plats: 'Demo Location',
-  startDatum: '2024-01-20',
-  startTid: '10:00',
-  varaktighet: 120,
-  arSerie: false,
-  serieInställningar: {
-    veckodag: '',
-    antalVeckor: 1,
-    slutDatum: '',
-  },
-  deltagare: [],
-  deltagargrupper: [],
-  maxDeltagare: null,
-  enhet: '',
-  anteckningar: 'Demo notes',
-});
-
 // Viewport state
 type ViewportType = 'desktop' | 'laptop' | 'phone';
 const currentViewport = ref<ViewportType>('desktop');
@@ -1101,17 +852,6 @@ const handleDeleteSubItem = (tableKey: string, item: any) => {
 const handleSubItemClick = (tableKey: string, item: any) => {
   console.log('Sub item clicked in table:', tableKey, item);
   // In a real app, you would handle the item click here
-};
-
-// ActivityForm event handlers
-const handleActivityFormUpdate = (value: any) => {
-  activityFormData.value = value;
-  console.log('ActivityForm updated:', value);
-};
-
-const handleTemplateChange = (templateId: string) => {
-  console.log('Template changed:', templateId);
-  // In a real app, you might load template data here
 };
 
 // Statistics for the header
@@ -2227,18 +1967,6 @@ onMounted(() => {
                     </div>
                   </template>
                 </ListPage>
-
-                <!-- ActivityForm with specific event handling -->
-                <ActivityForm
-                  v-else-if="selectedComponent.name === 'ActivityForm.vue'"
-                  :model-value="activityFormData"
-                  :templates="selectedComponent.props?.templates || []"
-                  :enheter="selectedComponent.props?.enheter || []"
-                  :participant-groups="selectedComponent.props?.participantGroups || []"
-                  :participants="selectedComponent.props?.participants || []"
-                  @update:model-value="handleActivityFormUpdate"
-                  @template-change="handleTemplateChange"
-                />
 
                 <!-- Default component rendering for all other components -->
                 <component

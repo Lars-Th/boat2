@@ -1,53 +1,21 @@
 import { HttpClient } from '../client/http-client';
-import {
-  ActivityService,
-  ActivityTypeService,
-  AttendanceService,
-  AuthService,
-  CarService,
-  ContactService,
-  CustomerService,
-  OrganizationService,
-  ParticipantService,
-  TaskService,
-  TowingStationService,
-  UserService,
-} from '../services';
+import { UserService } from '../services';
 
 export class ApiConfiguration {
   private httpClient: HttpClient;
 
-  public readonly activities: ActivityService;
-  public readonly activityTypes: ActivityTypeService;
-  public readonly attendances: AttendanceService;
-  public readonly participants: ParticipantService;
-  public readonly auth: AuthService;
-  public readonly customers: CustomerService;
-  public readonly contacts: ContactService;
-  public readonly organizations: OrganizationService;
   public readonly users: UserService;
-  public readonly tasks: TaskService;
-  public readonly cars: CarService;
-  public readonly towingStations: TowingStationService;
 
   constructor(baseURL?: string) {
     this.httpClient = new HttpClient({
-      baseURL: baseURL ?? (import.meta.env as ['VITE_API_BASE_URL'] as string) ?? '/api',
+      baseURL:
+        baseURL ??
+        (import.meta.env as unknown as { VITE_API_BASE_URL: string }).VITE_API_BASE_URL ??
+        '/api',
     });
 
     // Initialize all services
-    this.activities = new ActivityService(this.httpClient);
-    this.activityTypes = new ActivityTypeService(this.httpClient);
-    this.attendances = new AttendanceService(this.httpClient);
-    this.participants = new ParticipantService(this.httpClient);
-    this.auth = new AuthService(this.httpClient);
-    this.customers = new CustomerService(this.httpClient);
-    this.contacts = new ContactService(this.httpClient);
-    this.organizations = new OrganizationService(this.httpClient);
     this.users = new UserService(this.httpClient);
-    this.tasks = new TaskService(this.httpClient);
-    this.cars = new CarService(this.httpClient);
-    this.towingStations = new TowingStationService(this.httpClient);
   }
 
   setBaseURL(baseURL: string): void {

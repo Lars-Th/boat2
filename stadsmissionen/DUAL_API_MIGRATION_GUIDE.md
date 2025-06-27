@@ -2,7 +2,11 @@
 
 ## Overview
 
-This guide provides step-by-step instructions for migrating from JSON import-based prototyping to a proper Dual API architecture that supports both Mock and Real API implementations. This architecture enables seamless development workflow where UX designers can work with JSON data while developers integrate with real APIs.
+This guide provides step-by-step instructions for migrating from JSON
+import-based prototyping to a proper Dual API architecture that supports both
+Mock and Real API implementations. This architecture enables seamless
+development workflow where UX designers can work with JSON data while developers
+integrate with real APIs.
 
 ## Current Architecture Analysis
 
@@ -10,7 +14,8 @@ This guide provides step-by-step instructions for migrating from JSON import-bas
 
 The current implementation demonstrates a mature dual API pattern with:
 
-1. **Service Layer Architecture**: All entities have dedicated service classes (`TaskService`, `CarService`, etc.)
+1. **Service Layer Architecture**: All entities have dedicated service classes
+   (`TaskService`, `CarService`, etc.)
 2. **Type System**: Comprehensive type definitions with relationship support
 3. **Mock Data Service**: Centralized mock implementation with JSON data sources
 4. **API Abstraction**: Clean interface that switches between mock and real APIs
@@ -19,9 +24,11 @@ The current implementation demonstrates a mature dual API pattern with:
 ### Key Components
 
 - **Base Service**: `BaseService<T>` provides CRUD operations
-- **Relationship Types**: `TaskWithRelations`, `CarWithRelations` for complex data structures
+- **Relationship Types**: `TaskWithRelations`, `CarWithRelations` for complex
+  data structures
 - **Mock Data Service**: Handles JSON data with relationship resolution
-- **API Index**: Unified interface switching between mock and real implementations
+- **API Index**: Unified interface switching between mock and real
+  implementations
 
 ## Migration Steps
 
@@ -136,7 +143,12 @@ Create relationship interfaces for complex data structures:
 #### `src/types/relationships.ts`
 
 ```typescript
-import type { Task, Car, TowingStation, TaskTowingStationJunction } from './entities';
+import type {
+  Task,
+  Car,
+  TowingStation,
+  TaskTowingStationJunction,
+} from './entities';
 
 // Extended interfaces with relationships
 export interface TaskWithRelations extends Task {
@@ -354,7 +366,10 @@ export class TaskService extends BaseService<Task> {
       queryParams['dateEnd'] = params.dateRange.end;
     }
 
-    return this.httpClient.get<Task[] | TaskWithRelations[]>(this.endpoint, queryParams);
+    return this.httpClient.get<Task[] | TaskWithRelations[]>(
+      this.endpoint,
+      queryParams
+    );
   }
 
   async getById(
@@ -382,7 +397,10 @@ export class TaskService extends BaseService<Task> {
       Notes?: string;
     }
   ): Promise<ApiResponse<Task>> {
-    return this.httpClient.patch<Task>(`${this.endpoint}/${id}/complete`, completionData);
+    return this.httpClient.patch<Task>(
+      `${this.endpoint}/${id}/complete`,
+      completionData
+    );
   }
 
   async releaseTask(
@@ -394,7 +412,10 @@ export class TaskService extends BaseService<Task> {
       Notes?: string;
     }
   ): Promise<ApiResponse<Task>> {
-    return this.httpClient.patch<Task>(`${this.endpoint}/${id}/release`, releaseData);
+    return this.httpClient.patch<Task>(
+      `${this.endpoint}/${id}/release`,
+      releaseData
+    );
   }
 
   async getByStatus(
@@ -408,7 +429,8 @@ export class TaskService extends BaseService<Task> {
 
 ### Step 8: Implement Mock Data Service
 
-Create a comprehensive mock service that handles JSON data with relationship resolution:
+Create a comprehensive mock service that handles JSON data with relationship
+resolution:
 
 #### `src/api/mocks/mock-data.service.ts`
 
@@ -452,7 +474,9 @@ export class MockDataService {
   }
 
   // Task methods with relationship support
-  async getTasks(params?: any): Promise<ApiResponse<Task[] | TaskWithRelations[]>> {
+  async getTasks(
+    params?: any
+  ): Promise<ApiResponse<Task[] | TaskWithRelations[]>> {
     let tasks = [...(tasksData as Task[])];
 
     // Apply filtering
@@ -500,7 +524,10 @@ export class MockDataService {
     return this.mockRequest(tasks);
   }
 
-  async getTask(id: string, params?: RelationalParams): Promise<ApiResponse<Task | TaskWithRelations | null>> {
+  async getTask(
+    id: string,
+    params?: RelationalParams
+  ): Promise<ApiResponse<Task | TaskWithRelations | null>> {
     const task = (tasksData as Task[]).find(t => t.TaskID === parseInt(id));
     if (!task) {
       return this.mockRequest(null);
@@ -536,7 +563,9 @@ export class MockDataService {
     return this.mockRequest(task);
   }
 
-  async createTask(data: Omit<Task, 'TaskID' | 'CreatedDate' | 'UpdatedDate'>): Promise<ApiResponse<Task>> {
+  async createTask(
+    data: Omit<Task, 'TaskID' | 'CreatedDate' | 'UpdatedDate'>
+  ): Promise<ApiResponse<Task>> {
     const newTask: Task = {
       ...data,
       TaskID: Math.max(...tasksData.map(t => t.TaskID)) + 1,
@@ -550,7 +579,10 @@ export class MockDataService {
     return this.mockRequest(newTask);
   }
 
-  async updateTask(id: string, data: Partial<Task>): Promise<ApiResponse<Task>> {
+  async updateTask(
+    id: string,
+    data: Partial<Task>
+  ): Promise<ApiResponse<Task>> {
     const taskIndex = tasksData.findIndex(t => t.TaskID === parseInt(id));
     if (taskIndex === -1) {
       return {
@@ -619,7 +651,9 @@ import type { RelationalParams } from '@/types/enhanced';
 const USE_MOCK_API = import.meta.env?.VITE_USE_MOCK_API === 'true';
 
 // Create the main API service instance
-const apiService = USE_MOCK_API ? new MockDataService() : new ApiConfiguration();
+const apiService = USE_MOCK_API
+  ? new MockDataService()
+  : new ApiConfiguration();
 
 // Clean, domain-focused API interface
 export const api = {
@@ -779,7 +813,8 @@ export function useApiList<T>(
   const api = useApi(apiCall, { immediate: true, cache: true, ...options });
 
   const isEmpty = computed(
-    () => api.isSuccess.value && (!api.data.value || api.data.value.length === 0)
+    () =>
+      api.isSuccess.value && (!api.data.value || api.data.value.length === 0)
   );
 
   return {
@@ -850,41 +885,45 @@ Update your Vue components to use the new API structure:
 
 ```vue
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useApi, useApiList, useApiMutation } from '@/composables/useApi';
-import { api } from '@/api';
-import type { Task } from '@/types';
+  import { computed, onMounted } from 'vue';
+  import { useRoute } from 'vue-router';
+  import { useApi, useApiList, useApiMutation } from '@/composables/useApi';
+  import { api } from '@/api';
+  import type { Task } from '@/types';
 
-const route = useRoute();
-const taskId = route.params.id as string;
-const isNew = computed(() => taskId === 'new');
+  const route = useRoute();
+  const taskId = route.params.id as string;
+  const isNew = computed(() => taskId === 'new');
 
-// API-based data fetching with relationships
-const { data: taskWithRelations, execute: fetchTaskWithRelations } = useApi(() =>
-  api.tasks.getById(taskId, { include: ['car', 'towingStations'] })
-);
+  // API-based data fetching with relationships
+  const { data: taskWithRelations, execute: fetchTaskWithRelations } = useApi(
+    () => api.tasks.getById(taskId, { include: ['car', 'towingStations'] })
+  );
 
-const { data: cars, execute: fetchCars } = useApiList(() => api.cars.getAll());
+  const { data: cars, execute: fetchCars } = useApiList(() =>
+    api.cars.getAll()
+  );
 
-// API mutations for CRUD operations
-const updateTaskMutation = useApiMutation((data: { id: string; updates: Partial<Task> }) =>
-  api.tasks.update(data.id, data.updates)
-);
+  // API mutations for CRUD operations
+  const updateTaskMutation = useApiMutation(
+    (data: { id: string; updates: Partial<Task> }) =>
+      api.tasks.update(data.id, data.updates)
+  );
 
-const createTaskMutation = useApiMutation(
-  (data: Omit<Task, 'TaskID' | 'CreatedDate' | 'UpdatedDate'>) => api.tasks.create(data)
-);
+  const createTaskMutation = useApiMutation(
+    (data: Omit<Task, 'TaskID' | 'CreatedDate' | 'UpdatedDate'>) =>
+      api.tasks.create(data)
+  );
 
-// Initialize data
-onMounted(async () => {
-  await fetchCars();
-  if (!isNew.value) {
-    await fetchTaskWithRelations();
-  }
-});
+  // Initialize data
+  onMounted(async () => {
+    await fetchCars();
+    if (!isNew.value) {
+      await fetchTaskWithRelations();
+    }
+  });
 
-// Your component logic here...
+  // Your component logic here...
 </script>
 ```
 
@@ -932,7 +971,9 @@ describe('TaskService', () => {
   });
 
   it('should fetch task with relationships', async () => {
-    const response = await mockService.getTask('1', { include: ['car', 'towingStations'] });
+    const response = await mockService.getTask('1', {
+      include: ['car', 'towingStations'],
+    });
 
     expect(response.success).toBe(true);
     expect(response.data).toHaveProperty('car');
@@ -966,18 +1007,21 @@ describe('TaskService', () => {
 ## Implementation Benefits
 
 ### For UX Designers
+
 - Work directly with JSON data files
 - Immediate visual feedback without backend dependencies
 - Ability to prototype complex data structures
 - No need for API knowledge
 
 ### For Developers
+
 - Seamless transition from mock to real API
 - Type-safe development with full TypeScript support
 - Consistent interface regardless of data source
 - Easy testing with controlled mock data
 
 ### For Teams
+
 - Parallel development workflow
 - Reduced dependencies between frontend and backend
 - Easier debugging and development
@@ -986,21 +1030,25 @@ describe('TaskService', () => {
 ## Advanced Features
 
 ### 1. Relationship Loading
+
 The architecture supports complex relationship loading:
 
 ```typescript
 // Load task with all relationships
-const task = await api.tasks.getById('1', { include: ['car', 'towingStations'] });
+const task = await api.tasks.getById('1', {
+  include: ['car', 'towingStations'],
+});
 
 // Load multiple relationships selectively
 const tasks = await api.tasks.getAll({
   include: ['car'],
   status: 'active',
-  priority: 'high'
+  priority: 'high',
 });
 ```
 
 ### 2. Computed Fields
+
 Relationship interfaces can include computed fields:
 
 ```typescript
@@ -1012,16 +1060,18 @@ interface TaskWithRelations extends Task {
 ```
 
 ### 3. Caching Strategy
+
 The composables support caching for performance:
 
 ```typescript
 const { data: tasks } = useApiList(() => api.tasks.getAll(), {
   cache: true,
-  cacheKey: 'tasks-list'
+  cacheKey: 'tasks-list',
 });
 ```
 
 ### 4. Error Handling
+
 Comprehensive error handling with typed errors:
 
 ```typescript
@@ -1084,4 +1134,6 @@ Follow consistent patterns for API methods:
 - `getByStatus(status, params)` - Filtered lists
 - `entitySpecificMethod(id, data)` - Domain-specific operations
 
-This architecture provides a robust foundation for scaling from prototype to production while maintaining developer productivity and type safety throughout the development process.
+This architecture provides a robust foundation for scaling from prototype to
+production while maintaining developer productivity and type safety throughout
+the development process.

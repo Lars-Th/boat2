@@ -32,13 +32,6 @@ export interface SimpleBreadcrumbItem {
   current?: boolean;
 }
 
-export interface StatItem {
-  label: string;
-  value: string | number;
-  change?: string;
-  trend?: 'up' | 'down' | 'neutral';
-}
-
 export interface ActionButton {
   label: string;
   action: () => void;
@@ -68,17 +61,6 @@ export interface FilterConfig {
   options?: Array<{ label: string; value: any }>;
   placeholder?: string;
   multiple?: boolean;
-}
-
-export interface CustomerData {
-  id: number;
-  name: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  postalCode?: string;
-  country?: string;
 }
 
 export interface Stat {
