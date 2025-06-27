@@ -4,10 +4,13 @@ import {
   ActivityTypeService,
   AttendanceService,
   AuthService,
+  CarService,
   ContactService,
   CustomerService,
   OrganizationService,
   ParticipantService,
+  TaskService,
+  TowingStationService,
   UserService,
 } from '../services';
 
@@ -23,6 +26,9 @@ export class ApiConfiguration {
   public readonly contacts: ContactService;
   public readonly organizations: OrganizationService;
   public readonly users: UserService;
+  public readonly tasks: TaskService;
+  public readonly cars: CarService;
+  public readonly towingStations: TowingStationService;
 
   constructor(baseURL?: string) {
     this.httpClient = new HttpClient({
@@ -39,6 +45,9 @@ export class ApiConfiguration {
     this.contacts = new ContactService(this.httpClient);
     this.organizations = new OrganizationService(this.httpClient);
     this.users = new UserService(this.httpClient);
+    this.tasks = new TaskService(this.httpClient);
+    this.cars = new CarService(this.httpClient);
+    this.towingStations = new TowingStationService(this.httpClient);
   }
 
   setBaseURL(baseURL: string): void {

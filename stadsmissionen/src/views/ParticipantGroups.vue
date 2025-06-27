@@ -95,14 +95,14 @@ const {
 
 // Loading and error states
 const isLoading = computed(
-
   () =>
     Boolean(groupsLoading.value) ||
-    Boolean(participantsLoading.value ||
-    usersLoading.value ||
-    officesLoading.value ||
-    junctionLoading.value
-)
+    Boolean(
+      participantsLoading.value ||
+        usersLoading.value ||
+        officesLoading.value ||
+        junctionLoading.value
+    )
 );
 const hasError = computed(
   () =>

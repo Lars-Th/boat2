@@ -8,6 +8,7 @@ export * from './relationships';
 
 // API & Client
 export * from './api';
+export * from './api-parameters';
 
 // UI & Components
 export * from './ui';
@@ -30,4 +31,4 @@ export * from './enums';
 // Composables
 export * from './composables';
 
-// API types are now defined in ./api and exported above
+// API types are now defined in ./api and ./api-parameters and exported above

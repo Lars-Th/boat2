@@ -31,6 +31,10 @@ import permissionGroupsData from '@/assets/data/permissionGroups.json';
 import officesData from '@/assets/data/offices.json';
 import groupsJunctionData from '@/assets/data/groupsJunction.json';
 import officesUsersJunctionData from '@/assets/data/officesUsersJunction.json';
+import tasksData from '@/assets/data/tasks.json';
+import carsData from '@/assets/data/cars.json';
+import towingStationsData from '@/assets/data/towingstations.json';
+import taskTowingStationJunctionData from '@/assets/data/taskTowingStationJunction.json';
 
 export class MockDataService {
   private delay = 300; // Simulate network delay
@@ -1121,5 +1125,369 @@ export class MockDataService {
       participantSatisfaction,
       followUpNeeded,
     });
+  }
+
+  // ===== TASKS API METHODS =====
+  async getTasks(params?: any): Promise<ApiResponse<any[]>> {
+    let tasks = [...(tasksData as any[])];
+
+    // Apply filtering if provided
+    if (params?.status) {
+      tasks = tasks.filter(task => task.Status === params.status);
+    }
+    if (params?.priority) {
+      tasks = tasks.filter(task => task.Priority === params.priority);
+    }
+    if (params?.type) {
+      tasks = tasks.filter(task => task.Type === params.type);
+    }
+    if (params?.carId) {
+      tasks = tasks.filter(task => task.CarID === params.carId);
+    }
+
+    // Apply search if provided
+    if (params?.search) {
+      const searchTerm = params.search.toLowerCase();
+      tasks = tasks.filter(
+        task =>
+          task.TaskNumber?.toLowerCase().includes(searchTerm) ||
+          task.TowingReason?.toLowerCase().includes(searchTerm) ||
+          task.TowingLocation?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply sorting
+    if (params?.sort) {
+      tasks.sort((a, b) => {
+        const aVal = a[params.sort];
+        const bVal = b[params.sort];
+        const order = params.order === 'desc' ? -1 : 1;
+        return (aVal > bVal ? 1 : -1) * order;
+      });
+    }
+
+    // Apply pagination
+    if (params?.page && params?.pageSize) {
+      const start = (params.page - 1) * params.pageSize;
+      const end = start + params.pageSize;
+      tasks = tasks.slice(start, end);
+    }
+
+    return this.mockRequest(tasks);
+  }
+
+  async getTask(id: string, params?: any): Promise<ApiResponse<any | null>> {
+    const task = (tasksData as any[]).find(t => t.TaskID === parseInt(id));
+    if (!task) {
+      return this.mockRequest(null);
+    }
+
+    // If relationships are requested, add them
+    if (params?.include) {
+      const enhanced = { ...task };
+
+      if (params.include.includes('car')) {
+        const car = (carsData as any[]).find(c => c.CarID === task.CarID);
+        enhanced.car = car;
+      }
+
+      if (params.include.includes('towingStations')) {
+        const junctions = (taskTowingStationJunctionData as any[]).filter(
+          j => j.TaskID === task.TaskID
+        );
+        const stations = junctions
+          .map(junction => {
+            const station = (towingStationsData as any[]).find(
+              s => s.TowingStationID === junction.TowingStationID
+            );
+            return station ? { ...station, junction } : null;
+          })
+          .filter(Boolean);
+        enhanced.towingStations = stations;
+      }
+
+      return this.mockRequest(enhanced);
+    }
+
+    return this.mockRequest(task);
+  }
+
+  async createTask(data: any): Promise<ApiResponse<any>> {
+    const newTask = {
+      ...data,
+      TaskID: Math.max(...(tasksData as any[]).map(t => t.TaskID)) + 1,
+      CreatedDate: new Date().toISOString(),
+      UpdatedDate: new Date().toISOString(),
+    };
+
+    (tasksData as any[]).push(newTask);
+    return this.mockRequest(newTask);
+  }
+
+  async updateTask(id: string, data: any): Promise<ApiResponse<any>> {
+    const taskIndex = (tasksData as any[]).findIndex(t => t.TaskID === parseInt(id));
+    if (taskIndex === -1) {
+      return {
+        data: null,
+        success: false,
+        error: { message: 'Task not found', code: 'NOT_FOUND' },
+      };
+    }
+
+    const updatedTask = {
+      ...(tasksData as any[])[taskIndex],
+      ...data,
+      UpdatedDate: new Date().toISOString(),
+    };
+
+    (tasksData as any[])[taskIndex] = updatedTask;
+    return this.mockRequest(updatedTask);
+  }
+
+  async deleteTask(id: string): Promise<ApiResponse<boolean>> {
+    const taskIndex = (tasksData as any[]).findIndex(t => t.TaskID === parseInt(id));
+    if (taskIndex === -1) {
+      return {
+        data: false,
+        success: false,
+        error: { message: 'Task not found', code: 'NOT_FOUND' },
+      };
+    }
+
+    (tasksData as any[]).splice(taskIndex, 1);
+    return this.mockRequest(true);
+  }
+
+  // ===== CARS API METHODS =====
+  async getCars(params?: any): Promise<ApiResponse<any[]>> {
+    let cars = [...(carsData as any[])];
+
+    // Apply filtering
+    if (params?.status) {
+      cars = cars.filter(car => car.Status === params.status);
+    }
+    if (params?.brand) {
+      cars = cars.filter(car => car.Brand?.toLowerCase().includes(params.brand.toLowerCase()));
+    }
+    if (params?.year) {
+      cars = cars.filter(car => car.Year === params.year);
+    }
+    if (params?.ownerName) {
+      cars = cars.filter(car =>
+        car.OwnerName?.toLowerCase().includes(params.ownerName.toLowerCase())
+      );
+    }
+
+    // Apply search
+    if (params?.search) {
+      const searchTerm = params.search.toLowerCase();
+      cars = cars.filter(
+        car =>
+          car.LicensePlate?.toLowerCase().includes(searchTerm) ||
+          car.Brand?.toLowerCase().includes(searchTerm) ||
+          car.Model?.toLowerCase().includes(searchTerm) ||
+          car.OwnerName?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply sorting and pagination similar to tasks
+    if (params?.sort) {
+      cars.sort((a, b) => {
+        const aVal = a[params.sort];
+        const bVal = b[params.sort];
+        const order = params.order === 'desc' ? -1 : 1;
+        return (aVal > bVal ? 1 : -1) * order;
+      });
+    }
+
+    if (params?.page && params?.pageSize) {
+      const start = (params.page - 1) * params.pageSize;
+      const end = start + params.pageSize;
+      cars = cars.slice(start, end);
+    }
+
+    return this.mockRequest(cars);
+  }
+
+  async getCar(id: string, params?: any): Promise<ApiResponse<any | null>> {
+    const car = (carsData as any[]).find(c => c.CarID === parseInt(id));
+    if (!car) {
+      return this.mockRequest(null);
+    }
+
+    // If relationships are requested, add them
+    if (params?.include?.includes('tasks')) {
+      const enhanced = { ...car };
+      const relatedTasks = (tasksData as any[]).filter(t => t.CarID === car.CarID);
+      enhanced.tasks = relatedTasks;
+      return this.mockRequest(enhanced);
+    }
+
+    return this.mockRequest(car);
+  }
+
+  async createCar(data: any): Promise<ApiResponse<any>> {
+    const newCar = {
+      ...data,
+      CarID: Math.max(...(carsData as any[]).map(c => c.CarID)) + 1,
+      CreatedDate: new Date().toISOString(),
+      UpdatedDate: new Date().toISOString(),
+    };
+
+    (carsData as any[]).push(newCar);
+    return this.mockRequest(newCar);
+  }
+
+  async updateCar(id: string, data: any): Promise<ApiResponse<any>> {
+    const carIndex = (carsData as any[]).findIndex(c => c.CarID === parseInt(id));
+    if (carIndex === -1) {
+      return {
+        data: null,
+        success: false,
+        error: { message: 'Car not found', code: 'NOT_FOUND' },
+      };
+    }
+
+    const updatedCar = {
+      ...(carsData as any[])[carIndex],
+      ...data,
+      UpdatedDate: new Date().toISOString(),
+    };
+
+    (carsData as any[])[carIndex] = updatedCar;
+    return this.mockRequest(updatedCar);
+  }
+
+  async deleteCar(id: string): Promise<ApiResponse<boolean>> {
+    const carIndex = (carsData as any[]).findIndex(c => c.CarID === parseInt(id));
+    if (carIndex === -1) {
+      return {
+        data: false,
+        success: false,
+        error: { message: 'Car not found', code: 'NOT_FOUND' },
+      };
+    }
+
+    (carsData as any[]).splice(carIndex, 1);
+    return this.mockRequest(true);
+  }
+
+  // ===== TOWING STATIONS API METHODS =====
+  async getTowingStations(params?: any): Promise<ApiResponse<any[]>> {
+    let stations = [...(towingStationsData as any[])];
+
+    // Apply filtering
+    if (params?.city) {
+      stations = stations.filter(station =>
+        station.City?.toLowerCase().includes(params.city.toLowerCase())
+      );
+    }
+    if (params?.status) {
+      stations = stations.filter(station => station.Status === params.status);
+    }
+
+    // Apply search
+    if (params?.search) {
+      const searchTerm = params.search.toLowerCase();
+      stations = stations.filter(
+        station =>
+          station.Name?.toLowerCase().includes(searchTerm) ||
+          station.City?.toLowerCase().includes(searchTerm) ||
+          station.Address?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply sorting and pagination
+    if (params?.sort) {
+      stations.sort((a, b) => {
+        const aVal = a[params.sort];
+        const bVal = b[params.sort];
+        const order = params.order === 'desc' ? -1 : 1;
+        return (aVal > bVal ? 1 : -1) * order;
+      });
+    }
+
+    if (params?.page && params?.pageSize) {
+      const start = (params.page - 1) * params.pageSize;
+      const end = start + params.pageSize;
+      stations = stations.slice(start, end);
+    }
+
+    return this.mockRequest(stations);
+  }
+
+  async getTowingStation(id: string, params?: any): Promise<ApiResponse<any | null>> {
+    const station = (towingStationsData as any[]).find(s => s.TowingStationID === parseInt(id));
+    if (!station) {
+      return this.mockRequest(null);
+    }
+
+    // If relationships are requested, add them
+    if (params?.include?.includes('tasks')) {
+      const enhanced = { ...station };
+      const junctions = (taskTowingStationJunctionData as any[]).filter(
+        j => j.TowingStationID === station.TowingStationID
+      );
+      const relatedTasks = junctions
+        .map(junction => {
+          const task = (tasksData as any[]).find(t => t.TaskID === junction.TaskID);
+          return task ? { ...task, junction } : null;
+        })
+        .filter(Boolean);
+      enhanced.tasks = relatedTasks;
+      return this.mockRequest(enhanced);
+    }
+
+    return this.mockRequest(station);
+  }
+
+  async createTowingStation(data: any): Promise<ApiResponse<any>> {
+    const newStation = {
+      ...data,
+      TowingStationID: Math.max(...(towingStationsData as any[]).map(s => s.TowingStationID)) + 1,
+      CreatedDate: new Date().toISOString(),
+      UpdatedDate: new Date().toISOString(),
+    };
+
+    (towingStationsData as any[]).push(newStation);
+    return this.mockRequest(newStation);
+  }
+
+  async updateTowingStation(id: string, data: any): Promise<ApiResponse<any>> {
+    const stationIndex = (towingStationsData as any[]).findIndex(
+      s => s.TowingStationID === parseInt(id)
+    );
+    if (stationIndex === -1) {
+      return {
+        data: null,
+        success: false,
+        error: { message: 'Towing station not found', code: 'NOT_FOUND' },
+      };
+    }
+
+    const updatedStation = {
+      ...(towingStationsData as any[])[stationIndex],
+      ...data,
+      UpdatedDate: new Date().toISOString(),
+    };
+
+    (towingStationsData as any[])[stationIndex] = updatedStation;
+    return this.mockRequest(updatedStation);
+  }
+
+  async deleteTowingStation(id: string): Promise<ApiResponse<boolean>> {
+    const stationIndex = (towingStationsData as any[]).findIndex(
+      s => s.TowingStationID === parseInt(id)
+    );
+    if (stationIndex === -1) {
+      return {
+        data: false,
+        success: false,
+        error: { message: 'Towing station not found', code: 'NOT_FOUND' },
+      };
+    }
+
+    (towingStationsData as any[]).splice(stationIndex, 1);
+    return this.mockRequest(true);
   }
 }

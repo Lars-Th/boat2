@@ -97,3 +97,269 @@ export interface LoginAccount {
     name: string;
   };
 }
+
+// New entities based on mock data analysis
+
+export interface Task {
+  TaskID: number;
+  TaskNumber: string;
+  CarID: number;
+  Status: 'active' | 'completed' | 'pending' | 'cancelled';
+  Priority: 'low' | 'medium' | 'high' | 'urgent';
+  Type: 'police_tow' | 'accident_tow' | 'private_tow' | 'abandoned_tow';
+  TowingReason: string;
+  TowingDate: string;
+  TowingLocation: string;
+  TowingOfficerName: string;
+  TowingOfficerBadge: string | null;
+  CompletedDate: string | null;
+  ReleasedDate: string | null;
+  TowDurationHours: number | null;
+  TotalCost: number;
+  PaidAmount: number;
+  PaymentStatus: 'pending' | 'paid' | 'overdue' | 'hold';
+  PaymentDate: string | null;
+  PaymentMethod: 'cash' | 'card' | 'invoice' | 'transfer' | null;
+  ReleaseAuthorizedBy: string | null;
+  CreatedDate: string;
+  UpdatedDate: string;
+  Notes: string;
+}
+
+export interface Car {
+  CarID: number;
+  LicensePlate: string;
+  Brand: string;
+  Model: string;
+  Year: number;
+  Color: string;
+  VIN: string;
+  OwnerName: string;
+  OwnerPhone: string;
+  OwnerEmail: string;
+  OwnerAddress: string;
+  InsuranceCompany: string;
+  InsurancePolicyNumber: string;
+  Status: 'active' | 'inactive' | 'sold' | 'scrapped';
+  Notes: string;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface TowingStation {
+  TowingStationID: number;
+  Name: string;
+  StationNumber: string;
+  Address: string;
+  PostalCode: string;
+  City: string;
+  Country: string;
+  Phone: string;
+  Email: string;
+  ContactPersonName: string;
+  ContactPersonPhone: string;
+  ContactPersonEmail: string;
+  WorkingHours: {
+    Monday: string;
+    Tuesday: string;
+    Wednesday: string;
+    Thursday: string;
+    Friday: string;
+    Saturday: string;
+    Sunday: string;
+  };
+  EmergencyAvailable: boolean;
+  Capacity: number;
+  CurrentOccupancy: number;
+  PricePerHour: number;
+  PricePerDay: number;
+  StorageTypes: Array<'indoor' | 'outdoor' | 'covered' | 'secure'>;
+  Services: Array<'towing' | 'storage' | 'inspection' | 'release'>;
+  Status: 'active' | 'inactive' | 'maintenance';
+  LicenseNumber: string;
+  InsurancePolicyNumber: string;
+  Notes: string;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface Participant {
+  ParticipantID: number;
+  Fornamn: string;
+  Efternamn: string;
+  Personnummer: string;
+  Kon: 'Man' | 'Kvinna' | 'Annan' | 'Vill inte ange';
+  Telefon: string;
+  'E-post': string;
+  Adress: string;
+  Postnummer: string;
+  Ort: string;
+  Kartkoordinater: {
+    lat: number;
+    lng: number;
+  };
+  Enheter: string[];
+  Kommentar1: string;
+  Kommentar2: string;
+  Kommentar3: string;
+}
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  permissionID: number;
+  stadsmission: number;
+}
+
+export interface ActivityType {
+  ActivityTypeID: number;
+  Typnamn: string;
+  Syfte: string;
+  Beskrivning: string;
+}
+
+export interface Office {
+  OfficeID: number;
+  OfficeName: string;
+  Address: string;
+  PostalCode: string;
+  City: string;
+  Country: string;
+  Phone: string;
+  Email: string;
+  ContactPerson: string;
+  Status: 'active' | 'inactive';
+  Notes: string;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface PermissionGroup {
+  PermissionGroupID: number;
+  GroupName: string;
+  Description: string;
+  Permissions: string[];
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface ParticipantGroup {
+  ParticipantGroupID: number;
+  GroupName: string;
+  Description: string;
+  GroupType: string;
+  MaxParticipants: number;
+  CurrentParticipants: number;
+  StartDate: string;
+  EndDate: string | null;
+  Status: 'active' | 'inactive' | 'completed';
+  ResponsibleUser: string;
+  Notes: string;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface Activity {
+  ActivityID: number;
+  ActivityName: string;
+  ActivityTypeID: number;
+  Description: string;
+  StartTime: string;
+  EndTime: string;
+  Location: string;
+  MaxParticipants: number;
+  CurrentParticipants: number;
+  Status: 'planned' | 'active' | 'completed' | 'cancelled';
+  ResponsibleUserID: number;
+  Notes: string;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface ActivityTemplate {
+  ActivityTemplateID: number;
+  TemplateName: string;
+  ActivityTypeID: number;
+  Description: string;
+  DefaultDuration: number;
+  DefaultLocation: string;
+  DefaultMaxParticipants: number;
+  Instructions: string;
+  RequiredMaterials: string[];
+  Tags: string[];
+  IsActive: boolean;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface Attendance {
+  AttendanceID: number;
+  ActivityID: number;
+  ParticipantID: number;
+  AttendanceDate: string;
+  Status: 'present' | 'absent' | 'late' | 'excused';
+  CheckInTime: string | null;
+  CheckOutTime: string | null;
+  Notes: string;
+  RecordedByUserID: number;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+export interface ActivityCompletion {
+  ActivityCompletionID: number;
+  ActivityID: number;
+  ParticipantID: number;
+  CompletionDate: string;
+  CompletionStatus: 'completed' | 'partially_completed' | 'not_completed';
+  Score: number | null;
+  Feedback: string;
+  NextSteps: string;
+  CompletedByUserID: number;
+  CreatedDate: string;
+  UpdatedDate: string;
+}
+
+// Junction table interfaces for many-to-many relationships
+
+export interface ActivityOfficeJunction {
+  ActivityID: number;
+  OfficeID: number;
+  CreatedDate: string;
+}
+
+export interface OfficeUserJunction {
+  OfficeID: number;
+  UserID: number;
+  Role: string;
+  StartDate: string;
+  EndDate: string | null;
+  Status: 'active' | 'inactive';
+  CreatedDate: string;
+}
+
+export interface ParticipantGroupJunction {
+  ParticipantID: number;
+  ParticipantGroupID: number;
+  JoinDate: string;
+  LeaveDate: string | null;
+  Status: 'active' | 'inactive' | 'completed';
+  Role: 'participant' | 'leader' | 'assistant';
+  CreatedDate: string;
+}
+
+export interface TaskTowingStationJunction {
+  JunctionID: number;
+  TaskID: number;
+  TowingStationID: number;
+  StorageStartDate: string;
+  StorageEndDate: string | null;
+  StorageType: 'outdoor' | 'covered' | 'secure';
+  StorageLocation: string;
+  PricePerHour: number;
+  TotalStorageCost: number;
+  Status: 'active' | 'completed' | 'transferred';
+  Notes: string;
+}

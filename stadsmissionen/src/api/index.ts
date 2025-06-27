@@ -530,6 +530,193 @@ export const api = {
         ? (apiService as MockDataService).getDefaultUser()
         : Promise.reject(new Error('Default user not implemented in real API')),
   },
+
+  // Tasks
+  tasks: {
+    getAll: (params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTasks(params)
+        : (apiService as ApiConfiguration).tasks.getAll(params),
+
+    getById: (id: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTask(id, params)
+        : (apiService as ApiConfiguration).tasks.getById(id, params),
+
+    create: (data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).createTask(data)
+        : (apiService as ApiConfiguration).tasks.create(data),
+
+    update: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateTask(id, data)
+        : (apiService as ApiConfiguration).tasks.update(id, data),
+
+    delete: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).deleteTask(id)
+        : (apiService as ApiConfiguration).tasks.delete(id),
+
+    completeTask: (id: string, data: any) =>
+      USE_MOCK_API
+        ? Promise.reject(new Error('CompleteTask not implemented in mock yet'))
+        : (apiService as ApiConfiguration).tasks.completeTask(id, data),
+
+    releaseTask: (id: string, data: any) =>
+      USE_MOCK_API
+        ? Promise.reject(new Error('ReleaseTask not implemented in mock yet'))
+        : (apiService as ApiConfiguration).tasks.releaseTask(id, data),
+
+    updatePayment: (id: string, data: any) =>
+      USE_MOCK_API
+        ? Promise.reject(new Error('UpdatePayment not implemented in mock yet'))
+        : (apiService as ApiConfiguration).tasks.updatePayment(id, data),
+
+    getByStatus: (status: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTasks({ ...params, status })
+        : (apiService as ApiConfiguration).tasks.getByStatus(status, params),
+
+    getByCarId: (carId: number, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTasks({ ...params, carId })
+        : (apiService as ApiConfiguration).tasks.getByCarId(carId, params),
+  },
+
+  // Cars
+  cars: {
+    getAll: (params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getCars(params)
+        : (apiService as ApiConfiguration).cars.getAll(params),
+
+    getById: (id: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getCar(id, params)
+        : (apiService as ApiConfiguration).cars.getById(id, params),
+
+    create: (data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).createCar(data)
+        : (apiService as ApiConfiguration).cars.create(data),
+
+    update: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateCar(id, data)
+        : (apiService as ApiConfiguration).cars.update(id, data),
+
+    delete: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).deleteCar(id)
+        : (apiService as ApiConfiguration).cars.delete(id),
+
+    getByLicensePlate: (licensePlate: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getCars({ ...params, search: licensePlate })
+        : (apiService as ApiConfiguration).cars.getByLicensePlate(licensePlate, params),
+
+    getByVIN: (vin: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getCars({ ...params, search: vin })
+        : (apiService as ApiConfiguration).cars.getByVIN(vin, params),
+
+    getByOwner: (ownerName: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getCars({ ...params, ownerName })
+        : (apiService as ApiConfiguration).cars.getByOwner(ownerName, params),
+
+    updateStatus: (id: string, status: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateCar(id, { Status: status })
+        : (apiService as ApiConfiguration).cars.updateStatus(id, status),
+
+    updateOwnerInfo: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateCar(id, data)
+        : (apiService as ApiConfiguration).cars.updateOwnerInfo(id, data),
+
+    updateInsurance: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateCar(id, data)
+        : (apiService as ApiConfiguration).cars.updateInsurance(id, data),
+  },
+
+  // Towing Stations
+  towingStations: {
+    getAll: (params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTowingStations(params)
+        : (apiService as ApiConfiguration).towingStations.getAll(params),
+
+    getById: (id: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTowingStation(id, params)
+        : (apiService as ApiConfiguration).towingStations.getById(id, params),
+
+    create: (data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).createTowingStation(data)
+        : (apiService as ApiConfiguration).towingStations.create(data),
+
+    update: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateTowingStation(id, data)
+        : (apiService as ApiConfiguration).towingStations.update(id, data),
+
+    delete: (id: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).deleteTowingStation(id)
+        : (apiService as ApiConfiguration).towingStations.delete(id),
+
+    getByCity: (city: string, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTowingStations({ ...params, city })
+        : (apiService as ApiConfiguration).towingStations.getByCity(city, params),
+
+    getAvailableStations: (params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTowingStations({ ...params, status: 'active' })
+        : (apiService as ApiConfiguration).towingStations.getAvailableStations(params),
+
+    updateCapacity: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateTowingStation(id, data)
+        : (apiService as ApiConfiguration).towingStations.updateCapacity(id, data),
+
+    updatePricing: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateTowingStation(id, data)
+        : (apiService as ApiConfiguration).towingStations.updatePricing(id, data),
+
+    updateWorkingHours: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateTowingStation(id, data)
+        : (apiService as ApiConfiguration).towingStations.updateWorkingHours(id, data),
+
+    updateServices: (id: string, data: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateTowingStation(id, data)
+        : (apiService as ApiConfiguration).towingStations.updateServices(id, data),
+
+    updateStatus: (id: string, status: string) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).updateTowingStation(id, { Status: status })
+        : (apiService as ApiConfiguration).towingStations.updateStatus(id, status),
+
+    getWithAvailableCapacity: (minCapacity?: number, params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTowingStations(params)
+        : (apiService as ApiConfiguration).towingStations.getWithAvailableCapacity(
+            minCapacity,
+            params
+          ),
+
+    getEmergencyAvailable: (params?: any) =>
+      USE_MOCK_API
+        ? (apiService as MockDataService).getTowingStations({ ...params, status: 'active' })
+        : (apiService as ApiConfiguration).towingStations.getEmergencyAvailable(params),
+  },
 };
 
 // Default export for convenience

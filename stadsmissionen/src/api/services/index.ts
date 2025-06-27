@@ -12,3 +12,6 @@ export { AuthService } from '@/api/services/auth.service';
 export { CustomerService } from '@/api/services/customer.service';
 export { ContactService } from '@/api/services/contact.service';
 export { UserService } from '@/api/services/user.service';
+export { TaskService } from '@/api/services/task.service';
+export { CarService } from '@/api/services/car.service';
+export { TowingStationService } from '@/api/services/towing-station.service';
