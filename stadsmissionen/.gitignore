@@ -1,18 +1,11 @@
-<<<<<<< HEAD
 # Dependencies
 node_modules/
-=======
-# Logs
-logs
-*.log
->>>>>>> master
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-<<<<<<< HEAD
 # Package lock files (currently staged)
 package-lock.json
 yarn.lock
@@ -22,10 +15,6 @@ dist/
 dist-ssr/
 build/
 out/
-.next/
-.nuxt/
-.vuepress/dist/
-.serverless/
 
 # Runtime data
 pids
@@ -82,25 +71,12 @@ temp/
 .Trashes
 ehthumbs.db
 Thumbs.db
-=======
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-# .vscode/*
-# !.vscode/extensions.json
-.idea
-.DS_Store
->>>>>>> master
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-<<<<<<< HEAD
 # OS generated files
 .directory
 .fuse_hidden*
@@ -145,7 +121,4 @@ dist-ssr
 .cursor/
 
 # Local development
-*.local 
-=======
-.vs/
->>>>>>> master
+*.local
