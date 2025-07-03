@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "legal_name": "Marincenter i Loftahammar AB",
+    "display_name": "Marincenter",
+    "org_number": "556235-7565",
+    "logo_url": "/images/logos/vastkusten-logo.png",
+    "street": "Varvsvägen 10",
+    "postal_code": "59470",
+    "city": "Loftahammar",
+    "country": "Sweden",
+    "latitude": 57.903367,
+    "longitude": 16.697517,
+    "contact_phone": "+46 31 123 45 67",
+    "contact_email": "info@vastkustenbatlager.se",
+    "website": "https://www.vastkustenbatlager.se",
+    "vat_number": "SE556123456701",
+    "business_description": "Professionell båtförvaring och marina tjänster på västkusten",
+    "founded_year": 1995,
+    "invoice_prefix": "VBL",
+    "default_currency": "SEK",
+    "timezone": "Europe/Stockholm",
+    "business_hours": "08:00-17:00",
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": "2024-01-01T00:00:00.000Z"
+  }
+]

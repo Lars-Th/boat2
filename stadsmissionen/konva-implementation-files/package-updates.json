@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "konva": "^9.3.20",
+    "vue-konva": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/konva": "^9.2.0",
+    "@types/geojson": "^7.0.0"
+  }
+}

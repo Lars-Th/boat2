@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, shallowRef } from 'vue';
+import { useToast } from '@/composables/useToast';
 import {
   ChevronDown,
   ChevronRight,
@@ -805,6 +806,9 @@ const viewportStyles = computed(() => {
   }
 });
 
+// Toast composable for success notifications
+const { success } = useToast();
+
 // Event handlers for ComplexDetailPage
 const handleFieldChange = (key: string, value: any) => {
   console.log('Field changed:', key, value);
@@ -816,6 +820,10 @@ const handleFieldChange = (key: string, value: any) => {
 
 const handleSave = () => {
   console.log('Save clicked');
+
+  // Show success toast notification
+  success('Komponent sparad!', 'Demo komponenten har sparats framgångsrikt.');
+
   // In a real app, you would save the data here
 };
 

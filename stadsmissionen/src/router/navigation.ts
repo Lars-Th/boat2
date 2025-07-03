@@ -1,22 +1,79 @@
 import {
+  Anchor,
+  Building2,
   Code,
   LayoutDashboard,
+  MessageCircle,
   Package,
+  Phone,
   Settings,
   Shield,
   User,
   UserCheck,
   Users,
+  Warehouse,
 } from 'lucide-vue-next';
 import type { MainNavigationItem } from '@/types/navigation';
 
 // Main navigation items
 export const mainNavigationItems: MainNavigationItem[] = [
   {
-    name: 'Start',
-    path: '/home',
+    name: 'Översikt',
+    path: '/dashboard',
     icon: LayoutDashboard,
     permissions: ['H', 'A', 'SA'],
+  },
+  {
+    name: 'Kundinformation',
+    path: '/boats',
+    icon: Anchor,
+    permissions: ['H', 'A', 'SA'],
+    dropdown: [
+      {
+        name: 'Hantering',
+        icon: Building2,
+        children: [
+          {
+            name: 'Kunder',
+            path: '/customers',
+            icon: Users,
+            permissions: ['H', 'A', 'SA'],
+          },
+          {
+            name: 'Kontaktpersoner',
+            path: '/contacts',
+            icon: Phone,
+            permissions: ['H', 'A', 'SA'],
+          },
+          {
+            name: 'Båtar',
+            path: '/boats',
+            icon: Anchor,
+            permissions: ['H', 'A', 'SA'],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: 'Båtlagring',
+    path: '/storage',
+    icon: Warehouse,
+    permissions: ['H', 'A', 'SA'],
+    dropdown: [
+      {
+        name: 'Lagring',
+        icon: Warehouse,
+        children: [
+          {
+            name: 'Skapa lager',
+            path: '/storage/locations',
+            icon: Warehouse,
+            permissions: ['H', 'A', 'SA'],
+          },
+        ],
+      },
+    ],
   },
 ];
 
@@ -38,6 +95,12 @@ export const bottomNavigationItems: MainNavigationItem[] = [
             icon: Package,
             permissions: ['H', 'A', 'SA'],
           },
+          {
+            name: 'Tooltip System',
+            path: '/tooltip-demo',
+            icon: MessageCircle,
+            permissions: ['H', 'A', 'SA'],
+          },
         ],
       },
     ],
@@ -52,6 +115,12 @@ export const bottomNavigationItems: MainNavigationItem[] = [
         name: 'Användare',
         icon: Users,
         children: [
+          {
+            name: 'Företagsinställningar',
+            path: '/settings/company',
+            icon: Building2,
+            permissions: ['A', 'SA'],
+          },
           {
             name: 'Mitt konto',
             path: '/settings/my-account',

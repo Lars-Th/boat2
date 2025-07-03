@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onUnmounted, ref, watch } from 'vue';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import Button from '@/components/common/Button.vue';
 import { Input } from '@/components/ui/input';
@@ -15,16 +16,8 @@ import {
   ComboboxList,
   ComboboxTrigger,
 } from '@/components/ui/combobox';
-import {
-  ArrowLeft,
-  Check,
-  ChevronsUpDown,
-  FileText,
-  Info,
-  Save,
-  Trash2,
-  Undo2,
-} from 'lucide-vue-next';
+import { ArrowLeft, Check, ChevronsUpDown, FileText, Info, Save, Undo2 } from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
 
 interface Field {
   key: string;
@@ -107,6 +100,44 @@ const handleComboboxChange = (
   const value = selectedOption ? selectedOption.value : '';
   updateField(field.key, value);
 };
+
+// Toast system for unsaved changes
+const { warning, dismiss } = useToast();
+const unsavedChangesToastId = ref<string | null>(null);
+
+// Watch for unsaved changes and show/hide toast accordingly
+watch(
+  () => props.hasUnsavedChanges,
+  hasChanges => {
+    if (hasChanges && !props.readonly) {
+      // Show toast if not already showing
+      if (!unsavedChangesToastId.value) {
+        unsavedChangesToastId.value = warning(
+          'Du har ändrat informationen',
+          'Kom ihåg att spara dina ändringar.',
+          {
+            persistent: true,
+            position: 'top-right',
+          }
+        );
+      }
+    } else {
+      // Hide toast if showing
+      if (unsavedChangesToastId.value) {
+        dismiss(unsavedChangesToastId.value);
+        unsavedChangesToastId.value = null;
+      }
+    }
+  },
+  { immediate: true }
+);
+
+// Clean up toast on unmount
+onUnmounted(() => {
+  if (unsavedChangesToastId.value) {
+    dismiss(unsavedChangesToastId.value);
+  }
+});
 </script>
 
 <template>
@@ -120,48 +151,41 @@ const handleComboboxChange = (
     ></StandardHeader>
 
     <!-- Back Button and Save Button -->
-    <div class="flex items-center gap-2 mx-4">
-      <!-- Back Button (always visible) -->
-      <Button variant="secondary" size="sm" @click="emit('back')">
-        <ArrowLeft class="w-3 h-3" />
-        Tillbaka
-      </Button>
+    <div class="flex items-center justify-between gap-2 mx-4">
+      <div class="flex items-center gap-2">
+        <!-- Back Button (always visible) -->
+        <Button variant="secondary" size="sm" @click="emit('back')">
+          <ArrowLeft class="w-3 h-3" />
+          Tillbaka
+        </Button>
 
-      <!-- Save Button (appears when there are changes) -->
-      <Button
-        v-if="!readonly && hasUnsavedChanges"
-        variant="primary"
-        size="sm"
-        @click="emit('save')"
-      >
-        <Save class="h-3 w-3" />
-        Spara
-      </Button>
-
-      <!-- Discard Changes Button (appears when there are changes) -->
-      <Button
-        v-if="!readonly && hasUnsavedChanges"
-        variant="secondary"
-        size="sm"
-        @click="emit('discard-changes')"
-      >
-        <Undo2 class="h-3 w-3" />
-        Ångra
-      </Button>
-
-      <!-- Spacer to push toast to consistent position -->
-      <div class="flex-1"></div>
-
-      <!-- Toast in fixed position -->
-      <Transition name="toast" appear>
-        <div
+        <!-- Save Button (appears when there are changes) -->
+        <Button
           v-if="!readonly && hasUnsavedChanges"
-          class="w-64 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 flex items-center gap-2 shadow-sm h-8 transition-all duration-300 transform-gpu will-change-transform"
+          variant="primary"
+          size="sm"
+          @click="emit('save')"
         >
-          <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
-          <span class="text-xs text-amber-800 font-medium">Du har ändrat informationen</span>
-        </div>
-      </Transition>
+          <Save class="h-3 w-3" />
+          Spara
+        </Button>
+
+        <!-- Discard Changes Button (appears when there are changes) -->
+        <Button
+          v-if="!readonly && hasUnsavedChanges"
+          variant="secondary"
+          size="sm"
+          @click="emit('discard-changes')"
+        >
+          <Undo2 class="h-3 w-3" />
+          Ångra
+        </Button>
+      </div>
+
+      <!-- Custom header actions slot -->
+      <div class="flex items-center gap-2">
+        <slot name="header-actions" :data="data" :readonly="readonly"></slot>
+      </div>
     </div>
 
     <!-- Form Content -->
@@ -284,20 +308,3 @@ const handleComboboxChange = (
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.toast-enter-active,
-.toast-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(100%) scale(0.95);
-}
-
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(100%) scale(0.95);
-}
-</style>

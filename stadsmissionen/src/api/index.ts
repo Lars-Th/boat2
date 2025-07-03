@@ -1,7 +1,7 @@
 import { ApiConfiguration } from '@/api/config';
 import { MockDataService } from '@/api/mocks';
 import type { RelationalParams } from '@/types/enhanced';
-import type { ApiResponse, RequestParams } from '@/types';
+import type { ApiRequestParams } from '@/types';
 
 // Export all types and client functionality
 export * from '@/api/client';
@@ -19,7 +19,7 @@ const apiService = USE_MOCK_API ? new MockDataService() : new ApiConfiguration()
 export const api = {
   // Activities
   users: {
-    getAll: (params?: RequestParams & RelationalParams) =>
+    getAll: (params?: ApiRequestParams & RelationalParams) =>
       USE_MOCK_API
         ? (apiService as MockDataService).getUsers(params)
         : (apiService as ApiConfiguration).users.getAll(),
@@ -83,47 +83,47 @@ export const api = {
     login: (email: string, password: string) =>
       USE_MOCK_API
         ? (apiService as MockDataService).login(email, password)
-        : (apiService as ApiConfiguration).auth.login({ email, password }),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
-    logout: (token?: string) =>
+    logout: (_token?: string) =>
       USE_MOCK_API
         ? (apiService as MockDataService).logout()
-        : (apiService as ApiConfiguration).auth.logout(token),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
     getCurrentUser: (token: string) =>
       USE_MOCK_API
         ? (apiService as MockDataService).getCurrentUser(token)
-        : (apiService as ApiConfiguration).auth.getCurrentUser(token),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
-    refreshToken: (refreshToken: string) =>
+    refreshToken: (_refreshToken: string) =>
       USE_MOCK_API
         ? Promise.reject(new Error('Refresh token not implemented in mock'))
-        : (apiService as ApiConfiguration).auth.refreshToken(refreshToken),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
-    validateToken: (token: string) =>
+    validateToken: (_token: string) =>
       USE_MOCK_API
         ? Promise.reject(new Error('Token validation not implemented in mock'))
-        : (apiService as ApiConfiguration).auth.validateToken(token),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
-    changePassword: (oldPassword: string, newPassword: string, token: string) =>
+    changePassword: (_oldPassword: string, _newPassword: string, _token: string) =>
       USE_MOCK_API
         ? Promise.reject(new Error('Change password not implemented in mock'))
-        : (apiService as ApiConfiguration).auth.changePassword(oldPassword, newPassword, token),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
-    requestPasswordReset: (email: string) =>
+    requestPasswordReset: (_email: string) =>
       USE_MOCK_API
         ? Promise.reject(new Error('Password reset not implemented in mock'))
-        : (apiService as ApiConfiguration).auth.requestPasswordReset(email),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
-    resetPassword: (token: string, newPassword: string) =>
+    resetPassword: (_token: string, _newPassword: string) =>
       USE_MOCK_API
         ? Promise.reject(new Error('Password reset not implemented in mock'))
-        : (apiService as ApiConfiguration).auth.resetPassword(token, newPassword),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
     getDemoUsers: () =>
       USE_MOCK_API
         ? (apiService as MockDataService).getDemoUsers()
-        : (apiService as ApiConfiguration).auth.getDemoUsers(),
+        : Promise.reject(new Error('Auth not implemented in real API yet')),
 
     getDefaultUser: () =>
       USE_MOCK_API

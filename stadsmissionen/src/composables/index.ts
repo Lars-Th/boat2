@@ -1,5 +1,6 @@
 // Export all composables from a central location
 export { useToast } from '@/composables/useToast';
+export { useTooltip } from '@/composables/useTooltip';
 export { useNotifications } from '@/composables/useNotifications';
 export { useValidation } from '@/composables/useValidation';
 export { useAuth } from '@/composables/useAuth';

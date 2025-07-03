@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "name": "Huvudlager A",
+    "unit_type": "warehouse",
+    "shape_geometry": "{\"type\":\"Polygon\",\"coordinates\":[[[11.9740,57.7085],[11.9750,57.7085],[11.9750,57.7095],[11.9740,57.7095],[11.9740,57.7085]]]}",
+    "level_count": 3,
+    "is_connected_to_land": true,
+    "connected_unit_id": null,
+    "latitude": 57.709,
+    "longitude": 11.9745
+  },
+  {
+    "id": 2,
+    "name": "Brygga Nord",
+    "unit_type": "dock",
+    "shape_geometry": "{\"type\":\"LineString\",\"coordinates\":[[11.9742,57.7088],[11.9748,57.7088]]}",
+    "level_count": 0,
+    "is_connected_to_land": true,
+    "connected_unit_id": 3,
+    "latitude": 57.7088,
+    "longitude": 11.9745
+  },
+  {
+    "id": 3,
+    "name": "Brygga Syd",
+    "unit_type": "dock",
+    "shape_geometry": "{\"type\":\"LineString\",\"coordinates\":[[11.9748,57.7088],[11.9748,57.7082]]}",
+    "level_count": 0,
+    "is_connected_to_land": false,
+    "connected_unit_id": 2,
+    "latitude": 57.7085,
+    "longitude": 11.9748
+  },
+  {
+    "id": 4,
+    "name": "Stockholm Centrallager",
+    "unit_type": "warehouse",
+    "shape_geometry": "{\"type\":\"Polygon\",\"coordinates\":[[[18.0680,59.3290],[18.0690,59.3290],[18.0690,59.3300],[18.0680,59.3300],[18.0680,59.3290]]]}",
+    "level_count": 2,
+    "is_connected_to_land": true,
+    "connected_unit_id": null,
+    "latitude": 59.3295,
+    "longitude": 18.0685
+  },
+  {
+    "id": 5,
+    "name": "Strandbryggan",
+    "unit_type": "dock",
+    "shape_geometry": "{\"type\":\"LineString\",\"coordinates\":[[18.0682,59.3292],[18.0688,59.3292]]}",
+    "level_count": 0,
+    "is_connected_to_land": true,
+    "connected_unit_id": null,
+    "latitude": 59.3292,
+    "longitude": 18.0685
+  },
+  {
+    "id": 6,
+    "name": "Malmö Lager 1",
+    "unit_type": "warehouse",
+    "shape_geometry": "{\"type\":\"Polygon\",\"coordinates\":[[[13.0030,55.6045],[13.0040,55.6045],[13.0040,55.6055],[13.0030,55.6055],[13.0030,55.6045]]]}",
+    "level_count": 4,
+    "is_connected_to_land": true,
+    "connected_unit_id": null,
+    "latitude": 55.605,
+    "longitude": 13.0035
+  },
+  {
+    "id": 7,
+    "name": "Hamn-brygga Väst",
+    "unit_type": "dock",
+    "shape_geometry": "{\"type\":\"LineString\",\"coordinates\":[[13.0032,55.6048],[13.0038,55.6048]]}",
+    "level_count": 0,
+    "is_connected_to_land": true,
+    "connected_unit_id": 8,
+    "latitude": 55.6048,
+    "longitude": 13.0035
+  },
+  {
+    "id": 8,
+    "name": "Hamn-brygga Öst",
+    "unit_type": "dock",
+    "shape_geometry": "{\"type\":\"LineString\",\"coordinates\":[[13.0038,55.6048],[13.0038,55.6052]]}",
+    "level_count": 0,
+    "is_connected_to_land": false,
+    "connected_unit_id": 7,
+    "latitude": 55.605,
+    "longitude": 13.0038
+  }
+]

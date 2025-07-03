@@ -1,0 +1,132 @@
+[
+  {
+    "id": 1,
+    "name": "Huvudbrygga A",
+    "Type": "Brygga",
+    "Lat": 57.9014,
+    "Long": 16.6954,
+    "Height": 0,
+    "width": 150,
+    "Comment": "Större båtar (8-15m) - 25 platser - Djup: 3.5m - El, Vatten, Avfall"
+  },
+  {
+    "id": 2,
+    "name": "Gästbrygga B",
+    "Type": "Brygga",
+    "Lat": 57.9021,
+    "Long": 16.6961,
+    "Height": 0,
+    "width": 120,
+    "Comment": "Medelstora båtar (6-12m) - 15 platser - Djup: 2.8m - El, Vatten"
+  },
+  {
+    "id": 3,
+    "name": "Småbåtsbrygga C",
+    "Type": "Brygga",
+    "Lat": 57.9028,
+    "Long": 16.6964,
+    "Height": 0,
+    "width": 200,
+    "Comment": "Små båtar (4-8m) - 30 platser - Djup: 2.0m - El"
+  },
+  {
+    "id": 4,
+    "name": "Servicebrygga D",
+    "Type": "Brygga",
+    "Lat": 57.9017,
+    "Long": 16.6960,
+    "Height": 0,
+    "width": 80,
+    "Comment": "Service och reparationer - 8 platser - Djup: 4.0m - El, Vatten, Kran, Verkstad"
+  },
+  {
+    "id": 5,
+    "name": "Vinterbrygga E",
+    "Type": "Brygga",
+    "Lat": 57.9026,
+    "Long": 16.6970,
+    "Height": 0,
+    "width": 130,
+    "Comment": "Vinterförvaring flytande - 20 platser - Djup: 3.0m - El, Säkerhet"
+  },
+  {
+    "id": 10,
+    "name": "Vinterbrygga F",
+    "Type": "Brygga",
+    "Lat": 57.9025,
+    "Long": 16.6977,
+    "Height": 0,
+    "width": 130,
+    "Comment": "Vinterförvaring flytande - 20 platser - Djup: 3.0m - El, Säkerhet"
+  },
+  {
+    "id": 11,
+    "name": "Vinterbrygga G",
+    "Type": "Brygga",
+    "Lat": 57.9024,
+    "Long": 16.6984,
+    "Height": 0,
+    "width": 130,
+    "Comment": "Vinterförvaring flytande - 20 platser - Djup: 3.0m - El, Säkerhet"
+  },
+  {
+    "id": 12,
+    "name": "Vinterbrygga H",
+    "Type": "Brygga",
+    "Lat": 57.9019,
+    "Long": 16.6992,
+    "Height": 0,
+    "width": 130,
+    "Comment": "Vinterförvaring flytande - 20 platser - Djup: 3.0m - El, Säkerhet"
+  },
+  {
+    "id": 13,
+    "name": "Vinterbrygga I",
+    "Type": "Brygga",
+    "Lat": 57.9010,
+    "Long": 16.6983,
+    "Height": 0,
+    "width": 130,
+    "Comment": "Vinterförvaring flytande - 20 platser - Djup: 3.0m - El, Säkerhet"
+  },
+  {
+    "id": 6,
+    "name": "Båthall Nord",
+    "Type": "Lager",
+    "Lat": 57.9039,
+    "Long": 16.6977,
+    "Height": 8,
+    "width": 50,
+    "Comment": "Inomhus - 120 båtar - 2000 m² - Alla storlekar upp till 12m - Kran, El, Säkerhet"
+  },
+  {
+    "id": 7,
+    "name": "Utomhuslager Syd",
+    "Type": "Lager",
+    "Lat": 57.9036,
+    "Long": 16.6987,
+    "Height": 0,
+    "width": 60,
+    "Comment": "Utomhus - 80 båtar - 1500 m² - Alla storlekar upp till 15m - Kran, Säkerhet"
+  },
+  {
+    "id": 8,
+    "name": "Täckt lager Väst",
+    "Type": "Lager",
+    "Lat": 57.9036,
+    "Long": 16.6972,
+    "Height": 6,
+    "width": 40,
+    "Comment": "Delvis täckt - 60 båtar - 1200 m² - Medel till stora båtar (8-14m) - Kran, El"
+  },
+  {
+    "id": 9,
+    "name": "Släp- och trailerplats",
+    "Type": "Lager",
+    "Lat": 57.9035,
+    "Long": 16.6992,
+    "Height": 0,
+    "width": 40,
+    "Comment": "Trailer - 45 platser - 800 m² - Trailerbara båtar upp till 8m - Säkerhet, Belysning"
+  }
+]

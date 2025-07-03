@@ -8,9 +8,26 @@ const UserList = () => import('@/views/UserList.vue');
 const UserDetail = () => import('@/views/UserDetail.vue');
 const PermissionGroups = () => import('@/views/PermissionGroups.vue');
 
+// Boat storage system
+const CustomerList = () => import('@/views/CustomerList.vue');
+const CustomerDetail = () => import('@/views/CustomerDetail.vue');
+const ContactList = () => import('@/views/ContactList.vue');
+const ContactDetail = () => import('@/views/ContactDetail.vue');
+const BoatList = () => import('@/views/BoatList.vue');
+const BoatDetail = () => import('@/views/BoatDetail.vue');
+
+// Storage management
+const StorageLocationList = () => import('@/views/StorageLocationList.vue');
+const StorageLocationDetail = () => import('@/views/StorageLocationDetail.vue');
+
 // Development
 const CustomComponents = () => import('@/views/CustomComponents.vue');
+const TooltipDemo = () => import('@/views/TooltipDemo.vue');
 const Placeholder = () => import('@/views/Placeholder.vue');
+const Dashboard = () => import('@/views/Dashboard.vue');
+
+// Company Settings
+const CompanySettings = () => import('@/views/CompanySettings.vue');
 
 // Auth routes
 export const authRoutes: RouteRecordRaw[] = [
@@ -22,12 +39,65 @@ export const authRoutes: RouteRecordRaw[] = [
   },
 ];
 
+// Boat storage routes
+export const boatStorageRoutes: RouteRecordRaw[] = [
+  {
+    path: '/customers',
+    name: 'customers',
+    component: CustomerList,
+  },
+  {
+    path: '/customers/:id',
+    name: 'customer-detail',
+    component: CustomerDetail,
+  },
+  {
+    path: '/contacts',
+    name: 'contacts',
+    component: ContactList,
+  },
+  {
+    path: '/contacts/:id',
+    name: 'contact-detail',
+    component: ContactDetail,
+  },
+  {
+    path: '/boats',
+    name: 'boats',
+    component: BoatList,
+  },
+  {
+    path: '/boats/:id',
+    name: 'boat-detail',
+    component: BoatDetail,
+  },
+];
+
+// Storage routes
+export const storageRoutes: RouteRecordRaw[] = [
+  {
+    path: '/storage/locations',
+    name: 'storage-locations',
+    component: StorageLocationList,
+  },
+  {
+    path: '/storage/locations/:id',
+    name: 'storage-location-detail',
+    component: StorageLocationDetail,
+  },
+];
+
 // Settings routes
 export const settingsRoutes: RouteRecordRaw[] = [
   {
     path: '/settings',
     name: 'settings',
     component: UserDetail,
+  },
+  {
+    path: '/settings/company',
+    name: 'settings-company',
+    component: CompanySettings,
   },
   {
     path: '/settings/my-account',
@@ -54,6 +124,11 @@ export const settingsRoutes: RouteRecordRaw[] = [
 // Home/Dashboard routes
 export const homeRoutes: RouteRecordRaw[] = [
   {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Dashboard,
+  },
+  {
     path: '/home',
     name: 'home',
     component: Placeholder,
@@ -68,6 +143,11 @@ export const developmentRoutes: RouteRecordRaw[] = [
     component: CustomComponents,
   },
   {
+    path: '/tooltip-demo',
+    name: 'tooltip-demo',
+    component: TooltipDemo,
+  },
+  {
     path: '/placeholder',
     name: 'placeholder',
     component: Placeholder,
@@ -79,12 +159,12 @@ export const utilityRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'root',
-    redirect: '/home',
+    redirect: '/dashboard',
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    redirect: '/home',
+    redirect: '/dashboard',
   },
 ];
 
@@ -95,4 +175,6 @@ export const allRoutes: RouteRecordRaw[] = [
   ...homeRoutes,
   ...settingsRoutes,
   ...developmentRoutes,
+  ...boatStorageRoutes,
+  ...storageRoutes,
 ];

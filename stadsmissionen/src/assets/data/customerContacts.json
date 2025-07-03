@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "customer_id": 1,
+    "first_name": "Ingrid",
+    "last_name": "Andersson",
+    "phone": "+46 70 123 45 68",
+    "email": "ingrid.andersson@email.se",
+    "note": "Hustru, kan kontaktas vid behov"
+  },
+  {
+    "id": 2,
+    "customer_id": 2,
+    "first_name": "Margareta",
+    "last_name": "Svensson",
+    "phone": "+46 31 987 65 44",
+    "email": "margareta.svensson@nordicsjofart.se",
+    "note": "VD:s assistent"
+  },
+  {
+    "id": 3,
+    "customer_id": 2,
+    "first_name": "Gunnar",
+    "last_name": "Holm",
+    "phone": "+46 70 111 22 33",
+    "email": "gunnar.holm@nordicsjofart.se",
+    "note": "Teknisk chef"
+  },
+  {
+    "id": 4,
+    "customer_id": 3,
+    "first_name": "Per",
+    "last_name": "Pettersson",
+    "phone": "+46 70 987 12 35",
+    "email": "per.pettersson@gmail.com",
+    "note": "Make, huvudkontakt för båten"
+  },
+  {
+    "id": 5,
+    "customer_id": 4,
+    "first_name": "Lena",
+    "last_name": "Johansson",
+    "phone": "+46 70 555 77 89",
+    "email": "lena.johansson@hotmail.com",
+    "note": "Hustru"
+  },
+  {
+    "id": 6,
+    "customer_id": 5,
+    "first_name": "Johan",
+    "last_name": "Nilsson",
+    "phone": "+46 70 444 33 23",
+    "email": "johan.nilsson@outlook.com",
+    "note": "Make, tekniskt ansvarig"
+  },
+  {
+    "id": 7,
+    "customer_id": 6,
+    "first_name": "Birgitta",
+    "last_name": "Lindberg",
+    "phone": "+46 70 666 55 45",
+    "email": "birgitta.lindberg@telia.com",
+    "note": "Hustru, kan hantera betalningar"
+  }
+]

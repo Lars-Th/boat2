@@ -10,8 +10,9 @@ interface ActionButton {
   label: string;
   icon?: any;
   onClick: () => void;
-  variant?: 'default' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary';
   class?: string;
+  size?: 'default' | 'sm' | 'lg';
 }
 
 interface Filter {
@@ -78,6 +79,8 @@ const emit = defineEmits<{
   'update:currentPage': [page: number];
   'update:itemsPerPage': [itemsPerPage: number];
   'row-click': [row: any];
+  'edit': [row: any];
+  'delete': [row: any, event: Event];
   refresh: [];
 }>();
 
@@ -135,6 +138,8 @@ const isLoadingState = computed(() => props.loading);
         :search-fields="searchFields"
         :loading="loading"
         @row-click="emit('row-click', $event)"
+        @edit="emit('edit', $event)"
+        @delete="(item: any, event: Event) => emit('delete', item, event)"
       >
         <!-- Pass through all slots -->
         <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">

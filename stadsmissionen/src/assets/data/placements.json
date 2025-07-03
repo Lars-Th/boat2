@@ -1,0 +1,93 @@
+[
+  {
+    "id": 1,
+    "boat_id": 1,
+    "storage_unit_id": 2,
+    "warehouse_level_id": null,
+    "x_coordinate": 15.5,
+    "y_coordinate": 8.2,
+    "rotation_angle": 0.0,
+    "reserved": false,
+    "placed": true,
+    "reserved_date": "2024-01-15T08:30:00Z",
+    "placed_date": "2024-01-16T10:15:00Z"
+  },
+  {
+    "id": 2,
+    "boat_id": 2,
+    "storage_unit_id": 1,
+    "warehouse_level_id": 1,
+    "x_coordinate": 25.0,
+    "y_coordinate": 12.5,
+    "rotation_angle": 90.0,
+    "reserved": false,
+    "placed": true,
+    "reserved_date": "2024-02-01T12:15:00Z",
+    "placed_date": "2024-02-02T09:30:00Z"
+  },
+  {
+    "id": 3,
+    "boat_id": 4,
+    "storage_unit_id": 3,
+    "warehouse_level_id": null,
+    "x_coordinate": 8.0,
+    "y_coordinate": 20.0,
+    "rotation_angle": 45.0,
+    "reserved": false,
+    "placed": true,
+    "reserved_date": "2024-01-10T11:20:00Z",
+    "placed_date": "2024-01-12T14:00:00Z"
+  },
+  {
+    "id": 4,
+    "boat_id": 5,
+    "storage_unit_id": 6,
+    "warehouse_level_id": 7,
+    "x_coordinate": 18.5,
+    "y_coordinate": 22.8,
+    "rotation_angle": 180.0,
+    "reserved": false,
+    "placed": true,
+    "reserved_date": "2024-02-10T14:00:00Z",
+    "placed_date": "2024-02-11T11:45:00Z"
+  },
+  {
+    "id": 5,
+    "boat_id": 7,
+    "storage_unit_id": 4,
+    "warehouse_level_id": 4,
+    "x_coordinate": 35.2,
+    "y_coordinate": 15.7,
+    "rotation_angle": 270.0,
+    "reserved": false,
+    "placed": true,
+    "reserved_date": "2024-01-05T13:45:00Z",
+    "placed_date": "2024-01-08T16:20:00Z"
+  },
+  {
+    "id": 6,
+    "boat_id": 3,
+    "storage_unit_id": 5,
+    "warehouse_level_id": null,
+    "x_coordinate": 12.0,
+    "y_coordinate": 6.5,
+    "rotation_angle": 0.0,
+    "reserved": true,
+    "placed": false,
+    "reserved_date": "2024-03-20T10:00:00Z",
+    "placed_date": null
+  },
+  {
+    "id": 7,
+    "boat_id": 6,
+    "storage_unit_id": 2,
+    "warehouse_level_id": null,
+    "x_coordinate": 22.3,
+    "y_coordinate": 11.8,
+    "rotation_angle": 15.0,
+    "reserved": true,
+    "placed": false,
+    "reserved_date": "2024-03-25T09:00:00Z",
+    "placed_date": null
+  }
+]

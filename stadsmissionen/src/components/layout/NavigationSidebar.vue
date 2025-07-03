@@ -13,6 +13,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { onMounted, ref } from 'vue';
 import { ChevronDown, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-vue-next';
+
+// Import company data
+import companiesData from '@/assets/data/companies.json';
 // Props
 interface Props {
   logoSrc?: string;
@@ -54,6 +57,19 @@ const route = useRoute();
 
 // State for expanded menu items
 const expandedMenuItems = ref<Set<string>>(new Set());
+
+// Company logo state
+const companyLogo = ref<string>('');
+const companyName = ref<string>('');
+
+// Get company data
+const getCompanyData = () => {
+  const company = companiesData[0];
+  if (company) {
+    companyLogo.value = company.logo_url || '';
+    companyName.value = company.display_name || company.legal_name || '';
+  }
+};
 
 const themes = [
   { name: 'Project Specific Theme', value: 'project-specific', class: 'theme_project-specific' },
@@ -112,6 +128,20 @@ onMounted(() => {
   if (theme) {
     setTheme(theme);
   }
+
+  // Load company data
+  getCompanyData();
+
+  // Listen for company logo updates from company settings
+  window.addEventListener('company-logo-updated', (event: CustomEvent) => {
+    companyLogo.value = event.detail as string;
+  });
+
+  // Also check localStorage for logo updates on mount
+  const savedLogoUrl = localStorage.getItem('company_logo_url');
+  if (savedLogoUrl) {
+    companyLogo.value = savedLogoUrl;
+  }
 });
 
 // Check if any child route of a dropdown menu is active
@@ -145,8 +175,8 @@ const handleImageError = (event: Event) => {
     <!-- Sidebar Header -->
     <div class="p-4">
       <img
-        :src="logoSrc || '/src/assets/images/logo-placeholder.png'"
-        :alt="logoAlt || 'Project Specific'"
+        :src="companyLogo || logoSrc || '/src/assets/images/logo-placeholder.png'"
+        :alt="companyName || logoAlt || 'Project Specific'"
         class="w-full h-auto max-h-24 object-contain"
         @error="handleImageError"
       />

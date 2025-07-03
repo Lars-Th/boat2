@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onUnmounted, ref, watch } from 'vue';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import DataTable from '@/components/shared/DataTable.vue';
 import Button from '@/components/common/Button.vue';
@@ -13,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ArrowLeft, Edit, FileText, Info, Plus, Save, Trash2, Undo2 } from 'lucide-vue-next';
+import { useToast } from '@/composables/useToast';
 
 interface Field {
   key: string;
@@ -98,20 +100,47 @@ const formatValue = (value: unknown, type?: string) => {
       return `${value}`;
   }
 };
+
+// Toast system for unsaved changes
+const { warning, dismiss } = useToast();
+const unsavedChangesToastId = ref<string | null>(null);
+
+// Watch for unsaved changes and show/hide toast accordingly
+watch(
+  () => props.hasUnsavedChanges,
+  hasChanges => {
+    if (hasChanges && !props.readonly) {
+      // Show toast if not already showing
+      if (!unsavedChangesToastId.value) {
+        unsavedChangesToastId.value = warning(
+          'Du har ändrat informationen',
+          'Kom ihåg att spara dina ändringar.',
+          {
+            persistent: true,
+            position: 'top-right',
+          }
+        );
+      }
+    } else {
+      // Hide toast if showing
+      if (unsavedChangesToastId.value) {
+        dismiss(unsavedChangesToastId.value);
+        unsavedChangesToastId.value = null;
+      }
+    }
+  },
+  { immediate: true }
+);
+
+// Clean up toast on unmount
+onUnmounted(() => {
+  if (unsavedChangesToastId.value) {
+    dismiss(unsavedChangesToastId.value);
+  }
+});
 </script>
 <template>
   <div>
-    <!-- Persistent Toast in Top Right -->
-    <Transition name="toast" appear>
-      <div
-        v-if="!readonly && hasUnsavedChanges"
-        class="fixed top-4 right-4 z-50 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2 shadow-lg max-w-sm transition-all duration-300 transform-gpu will-change-transform"
-      >
-        <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
-        <span class="text-sm text-amber-800 font-medium">Du har ändrat informationen</span>
-      </div>
-    </Transition>
-
     <!-- Header -->
     <StandardHeader
       :title="title"
@@ -332,20 +361,3 @@ const formatValue = (value: unknown, type?: string) => {
     </div>
   </div>
 </template>
-
-<style lang="scss" scoped>
-.toast-enter-active,
-.toast-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(100%) scale(0.95);
-}
-
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(100%) scale(0.95);
-}
-</style>
