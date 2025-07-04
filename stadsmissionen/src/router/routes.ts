@@ -26,6 +26,11 @@ const TooltipDemo = () => import('@/views/TooltipDemo.vue');
 const Placeholder = () => import('@/views/Placeholder.vue');
 const Dashboard = () => import('@/views/Dashboard.vue');
 
+// Konva Canvas Testing
+const KonvaCanvas = () => import('@/components/konva/KonvaCanvas.vue');
+const KonvaAdvanced = () => import('@/views/KonvaAdvanced.vue');
+const BoatCanvasTest = () => import('@/views/BoatCanvasTest.vue');
+
 // Company Settings
 const CompanySettings = () => import('@/views/CompanySettings.vue');
 
@@ -151,6 +156,21 @@ export const developmentRoutes: RouteRecordRaw[] = [
     path: '/placeholder',
     name: 'placeholder',
     component: Placeholder,
+  },
+  {
+    path: '/konva-test',
+    name: 'konva-test',
+    component: KonvaCanvas,
+  },
+  {
+    path: '/konva-advanced',
+    name: 'konva-advanced',
+    component: KonvaAdvanced,
+  },
+  {
+    path: '/boat-canvas-test',
+    name: 'boat-canvas-test',
+    component: BoatCanvasTest,
   },
 ];
 

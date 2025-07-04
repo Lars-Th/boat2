@@ -53,8 +53,7 @@ Båtlagring (Boat Storage)
 #### **Boat Placement Engine:**
 - **Dimensional matching**: boat length/width + safety margins
 - **Rotation capability**: boats can rotate to optimize fit
-- **Intelligent suggestions**: system recommends best placement
-- **Visual collision detection**: prevents overlapping placements
+- **Visual collision detection**: prevents overlapping placements is not importaint at this stage, but different colors to show if collision ocur
 
 #### **Boat Status Tracking:**
 - **Physically Present**: boat is currently in the assigned location
@@ -76,6 +75,8 @@ Båtlagring (Boat Storage)
 - **Map integration**: show location on overview map
 - **Multi-criteria filtering**: by status, size, customer, etc.
 
+
+
 ---
 
 ## 🎯 **TECHNICAL INTEGRATION POINTS**
@@ -96,6 +97,12 @@ Båtlagring (Boat Storage)
 - **Active location tracking**: which space currently occupied
 - **Migration scheduling**: automated seasonal transfers
 - **Capacity planning**: optimize space utilization year-round
+
+### **Design Philosophy:**
+- **Elegant, intuitive interface**
+- **Professional CAD-like functionality**
+- **Real-world scale accuracy**
+- **Visual clarity for complex layouts**
 
 ---
 

@@ -73,6 +73,7 @@ export interface Boat {
   id: number;
   customer_id: number;
   name: string;
+  registreringsnummer: string;
   length: number;
   width: number;
   safety_margin: number;

@@ -173,9 +173,12 @@ onUnmounted(() => {
     </div>
 
     <!-- Main Form Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mx-4 mb-6">
-      <!-- Main Content (2/3 width) -->
-      <div class="lg:col-span-2">
+    <div
+      class="mx-4 mb-6"
+      :class="sidebarFields.length > 0 ? 'grid grid-cols-1 lg:grid-cols-3 gap-6' : 'block'"
+    >
+      <!-- Main Content -->
+      <div :class="sidebarFields.length > 0 ? 'lg:col-span-2' : 'w-full'">
         <slot name="main-content" :data="data" :readonly="readonly">
           <!-- Default form fields -->
           <div class="bg-white rounded-lg border p-6">
@@ -246,8 +249,8 @@ onUnmounted(() => {
         </slot>
       </div>
 
-      <!-- Sidebar Content (1/3 width) -->
-      <div class="space-y-4">
+      <!-- Sidebar Content (1/3 width) - Only show if there are sidebar fields -->
+      <div v-if="sidebarFields.length > 0" class="space-y-4">
         <slot name="sidebar-content" :data="data" :readonly="readonly">
           <!-- Default sidebar -->
           <div class="bg-white rounded-lg border p-6">

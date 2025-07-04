@@ -12,6 +12,7 @@ import {
   UserCheck,
   Users,
   Warehouse,
+  Shapes,
 } from 'lucide-vue-next';
 import type { MainNavigationItem } from '@/types/navigation';
 
@@ -99,6 +100,24 @@ export const bottomNavigationItems: MainNavigationItem[] = [
             name: 'Tooltip System',
             path: '/tooltip-demo',
             icon: MessageCircle,
+            permissions: ['H', 'A', 'SA'],
+          },
+          {
+            name: 'Konva Test',
+            path: '/konva-test',
+            icon: Shapes,
+            permissions: ['H', 'A', 'SA'],
+          },
+          {
+            name: 'Konva Advanced',
+            path: '/konva-advanced',
+            icon: Shapes,
+            permissions: ['H', 'A', 'SA'],
+          },
+          {
+            name: 'Båt Canvas Test',
+            path: '/boat-canvas-test',
+            icon: Shapes,
             permissions: ['H', 'A', 'SA'],
           },
         ],
