@@ -153,33 +153,33 @@ onUnmounted(() => {
     <!-- Back Button and Save Button -->
     <div class="flex items-center justify-between gap-2 mx-4">
       <div class="flex items-center gap-2">
-        <!-- Back Button (always visible) -->
-        <Button variant="secondary" size="sm" @click="emit('back')">
-          <ArrowLeft class="w-3 h-3" />
-          Tillbaka
-        </Button>
+      <!-- Back Button (always visible) -->
+      <Button variant="secondary" size="sm" @click="emit('back')">
+        <ArrowLeft class="w-3 h-3" />
+        Tillbaka
+      </Button>
 
-        <!-- Save Button (appears when there are changes) -->
-        <Button
-          v-if="!readonly && hasUnsavedChanges"
-          variant="primary"
-          size="sm"
-          @click="emit('save')"
-        >
-          <Save class="h-3 w-3" />
-          Spara
-        </Button>
+      <!-- Save Button (appears when there are changes) -->
+      <Button
+        v-if="!readonly && hasUnsavedChanges"
+        variant="primary"
+        size="sm"
+        @click="emit('save')"
+      >
+        <Save class="h-3 w-3" />
+        Spara
+      </Button>
 
-        <!-- Discard Changes Button (appears when there are changes) -->
-        <Button
-          v-if="!readonly && hasUnsavedChanges"
-          variant="secondary"
-          size="sm"
-          @click="emit('discard-changes')"
-        >
-          <Undo2 class="h-3 w-3" />
-          Ångra
-        </Button>
+      <!-- Discard Changes Button (appears when there are changes) -->
+      <Button
+        v-if="!readonly && hasUnsavedChanges"
+        variant="secondary"
+        size="sm"
+        @click="emit('discard-changes')"
+      >
+        <Undo2 class="h-3 w-3" />
+        Ångra
+      </Button>
       </div>
 
       <!-- Custom header actions slot -->
