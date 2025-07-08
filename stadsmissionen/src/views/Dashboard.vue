@@ -5,18 +5,31 @@
       title="Översikt"
       :breadcrumbs="[
         { label: 'Hem', to: '/' },
-        { label: 'Översikt', isCurrentPage: true }
+        { label: 'Översikt', isCurrentPage: true },
       ]"
       :stats="headerStats"
       :show-stats="true"
     />
 
     <!-- Changes notification bar -->
-    <div v-if="hasUnsavedChanges" class="mx-4 mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+    <div
+      v-if="hasUnsavedChanges"
+      class="mx-4 mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          <svg
+            class="w-5 h-5 text-yellow-600 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            ></path>
           </svg>
           <span class="text-yellow-800 font-medium">
             Du har {{ Object.keys(locationChanges).length }} osparade ändringar av markörer
@@ -24,15 +37,15 @@
         </div>
         <div class="flex gap-2">
           <button
-            @click="resetChanges"
             class="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+            @click="resetChanges"
           >
             Återställ
           </button>
           <button
-            @click="saveChanges"
             :disabled="isSaving"
             class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+            @click="saveChanges"
           >
             {{ isSaving ? 'Sparar...' : 'Spara ändringar' }}
           </button>
@@ -44,17 +57,36 @@
     <div v-if="isRelocateMode" class="mx-4 mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"></path>
+          <svg
+            class="w-5 h-5 text-blue-600 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"
+            ></path>
           </svg>
           <span class="text-blue-800 font-medium">
-            {{ relocateMode === 'add' ? 'Klicka på kartan för att lägga till ny lagringsplats' : `Klicka på kartan för att flytta "${relocateTargetName}"` }}
+            {{
+              relocateMode === 'add'
+                ? 'Klicka på kartan för att lägga till ny lagringsplats'
+                : `Klicka på kartan för att flytta "${relocateTargetName}"`
+            }}
           </span>
         </div>
         <button
-          @click="cancelRelocate"
           class="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+          @click="cancelRelocate"
         >
           Avbryt
         </button>
@@ -62,20 +94,38 @@
     </div>
 
     <!-- Highlight mode notification -->
-    <div v-if="isHighlightMode" class="mx-4 mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+    <div
+      v-if="isHighlightMode"
+      class="mx-4 mt-4 bg-green-50 border border-green-200 rounded-lg p-4"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+          <svg
+            class="w-5 h-5 text-green-600 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            ></path>
           </svg>
           <span class="text-green-800 font-medium">
             En lagringsplats är markerad på kartan - andra platser visas gråtonade
           </span>
         </div>
         <button
-          @click="clearHighlight"
           class="px-4 py-2 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+          @click="clearHighlight"
         >
           Rensa markering
         </button>
@@ -83,7 +133,7 @@
     </div>
 
     <!-- Map Content -->
-        <div class="mx-4 mt-4">
+    <div class="mx-4 mt-4">
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
         <!-- Storage List Panel - Narrower -->
         <div class="lg:col-span-1">
@@ -91,9 +141,9 @@
             <div class="p-3 border-b border-gray-200">
               <h3 class="text-base font-semibold text-gray-900 mb-2">Lagringsplatser</h3>
               <button
-                @click="startAddNewStorage"
                 :disabled="isRelocateMode"
                 class="w-full px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                @click="startAddNewStorage"
               >
                 + Lägg till ny
               </button>
@@ -101,29 +151,44 @@
             <!-- Flexible height container with proper scrolling -->
             <div class="max-h-[calc(100vh-300px)] min-h-[400px] overflow-y-auto">
               <div class="p-3 space-y-2">
-                <div v-for="location in combinedStorageData" :key="location.id"
-                     class="p-2 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div
+                  v-for="location in combinedStorageData"
+                  :key="location.id"
+                  class="p-2 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
                   <div class="flex items-start justify-between">
                     <div class="flex-1 min-w-0">
-                      <h4 class="font-medium text-gray-900 text-xs truncate">{{ location.name }}</h4>
+                      <h4 class="font-medium text-gray-900 text-xs truncate">
+                        {{ location.name }}
+                      </h4>
                       <p class="text-xs text-gray-600 mt-1">{{ location.Type }}</p>
-                      <p class="text-xs text-gray-500 mt-1 truncate">{{ location.Lat.toFixed(3) }}, {{ location.Long.toFixed(3) }}</p>
+                      <p class="text-xs text-gray-500 mt-1 truncate">
+                        {{ location.Lat.toFixed(3) }}, {{ location.Long.toFixed(3) }}
+                      </p>
                     </div>
                     <div class="flex flex-col items-end space-y-1 flex-shrink-0">
-                      <div class="w-2 h-2 rounded-full"
-                           :class="location.Type === 'Brygga' ? 'bg-green-500' : location.Type === 'Ny' ? 'bg-orange-500' : 'bg-red-500'"></div>
+                      <div
+                        class="w-2 h-2 rounded-full"
+                        :class="
+                          location.Type === 'Brygga'
+                            ? 'bg-green-500'
+                            : location.Type === 'Ny'
+                              ? 'bg-orange-500'
+                              : 'bg-red-500'
+                        "
+                      ></div>
                       <div class="flex space-x-1">
                         <button
-                          @click="highlightLocationOnMap(location.id, location.name)"
                           :disabled="isRelocateMode"
                           class="text-xs px-1.5 py-0.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
+                          @click="highlightLocationOnMap(location.id, location.name)"
                         >
                           Visa på karta
                         </button>
                         <button
-                          @click="startRelocate(location.id, location.name)"
                           :disabled="isRelocateMode"
                           class="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors disabled:opacity-50"
+                          @click="startRelocate(location.id, location.name)"
                         >
                           Flytta
                         </button>
@@ -143,105 +208,93 @@
             <div class="p-6 border-b border-gray-200">
               <h2 class="text-xl font-semibold text-gray-900 mb-2">Interaktiv karta</h2>
               <p class="text-gray-600 text-sm">
-                {{ companiesData[0]?.display_name }} - {{ companiesData[0]?.city }} • {{ currentStyleName }}
+                {{ companiesData[0]?.display_name }} - {{ companiesData[0]?.city }} •
+                {{ currentStyleName }}
               </p>
             </div>
 
-            <!-- Instructions Panel -->
-            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-green-50 border-b border-gray-200">
-              <div class="flex items-center text-sm">
-                <div class="flex-shrink-0 mr-3">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"></path>
-                  </svg>
+
+
+            <!-- Map container -->
+            <div class="relative">
+              <div
+                ref="mapContainer"
+                class="w-full h-[600px] md:h-[700px] lg:h-[800px]"
+                style="min-height: 600px"
+              />
+
+              <!-- Style Switcher -->
+              <div class="absolute top-2 right-16 bg-white p-2 rounded-lg shadow-lg border">
+                <h4 class="font-medium mb-1 text-gray-800 text-xs">Kartvy</h4>
+                <div class="space-y-1">
+                  <label class="flex items-center text-xs">
+                    <input
+                      v-model="selectedStyle"
+                      type="radio"
+                      value="streets"
+                      class="mr-1"
+                      @change="changeMapStyle"
+                    />
+                    <span class="text-gray-700">Gatukarta</span>
+                  </label>
+                  <label class="flex items-center text-xs">
+                    <input
+                      v-model="selectedStyle"
+                      type="radio"
+                      value="satellite"
+                      class="mr-1"
+                      @change="changeMapStyle"
+                    />
+                    <span class="text-gray-700">Satellitvy</span>
+                  </label>
+                  <label class="flex items-center text-xs">
+                    <input
+                      v-model="selectedStyle"
+                      type="radio"
+                      value="hybrid"
+                      class="mr-1"
+                      @change="changeMapStyle"
+                    />
+                    <span class="text-gray-700">Hybrid</span>
+                  </label>
                 </div>
-                <div class="text-blue-800">
-                  <strong>🗺️ Kartvy aktiv</strong> som standard •
-                  <strong>📋 Använd listan</strong> för att hantera lagringsplatser •
-                  <strong>🎯 Klicka "Flytta"</strong> för att flytta markörer
+              </div>
+
+              <!-- Legend -->
+              <div class="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-lg border max-w-xs">
+                <h4 class="text-sm font-medium mb-3 text-gray-800">Kartförklaring</h4>
+                <div class="space-y-1 text-xs">
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-gray-700">Bryggor</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                    <span class="text-gray-700">Lager</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
+                    <span class="text-gray-700">Nya platser</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+                    <span class="text-gray-700">Inaktiva (vid flytt)</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-        <!-- Map container -->
-        <div class="relative">
-          <div
-            ref="mapContainer"
-            class="w-full h-[600px] md:h-[700px] lg:h-[800px]"
-            style="min-height: 600px;"
-          />
-
-          <!-- Style Switcher -->
-          <div class="absolute top-4 right-4 bg-white p-3 rounded-lg shadow-lg border">
-            <h4 class="font-semibold mb-2 text-gray-800 text-sm">Kartvy</h4>
-            <div class="space-y-2">
-              <label class="flex items-center text-sm">
-                <input
-                  type="radio"
-                  value="streets"
-                  v-model="selectedStyle"
-                  @change="changeMapStyle"
-                  class="mr-2"
-                />
-                <span class="text-gray-700">🗺️ Gatukarta</span>
-              </label>
-              <label class="flex items-center text-sm">
-                <input
-                  type="radio"
-                  value="satellite"
-                  v-model="selectedStyle"
-                  @change="changeMapStyle"
-                  class="mr-2"
-                />
-                <span class="text-gray-700">🛰️ Satellitvy</span>
-              </label>
-              <label class="flex items-center text-sm">
-                <input
-                  type="radio"
-                  value="hybrid"
-                  v-model="selectedStyle"
-                  @change="changeMapStyle"
-                  class="mr-2"
-                />
-                <span class="text-gray-700">🌍 Hybrid</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Legend -->
-          <div class="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-lg border max-w-xs">
-            <h4 class="font-semibold mb-3 text-gray-800">Kartförklaring</h4>
-            <div class="space-y-2 text-sm">
-              <div class="flex items-center">
-                <div class="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
-                <span class="text-gray-700">Bryggor</span>
+              <!-- Loading overlay -->
+              <div
+                class="absolute inset-0 bg-gray-100 flex items-center justify-center"
+                :class="{ hidden: map }"
+              >
+                <div class="text-center">
+                  <div
+                    class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"
+                  ></div>
+                  <p class="text-gray-600">Laddar karta...</p>
+                </div>
               </div>
-              <div class="flex items-center">
-                <div class="w-4 h-4 bg-red-500 rounded-full mr-3"></div>
-                <span class="text-gray-700">Lager</span>
-              </div>
-              <div class="flex items-center">
-                <div class="w-4 h-4 bg-orange-500 rounded-full mr-3"></div>
-                <span class="text-gray-700">Nya platser</span>
-              </div>
-              <div class="flex items-center">
-                <div class="w-4 h-4 bg-gray-400 rounded-full mr-3"></div>
-                <span class="text-gray-700">Inaktiva (vid flytt)</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Loading overlay -->
-          <div
-            class="absolute inset-0 bg-gray-100 flex items-center justify-center"
-            :class="{ 'hidden': map }"
-          >
-            <div class="text-center">
-              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p class="text-gray-600">Laddar karta...</p>
-            </div>
-          </div>
             </div>
           </div>
         </div>
@@ -251,9 +304,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { Map, NavigationControl, Marker, Popup } from 'maplibre-gl';
+import { Map, Marker, NavigationControl, Popup } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useToast } from '@/composables/useToast';
 
@@ -273,7 +326,9 @@ const markers = ref<any[]>([]);
 const { addToast } = useToast();
 
 // Change tracking state
-const locationChanges = ref<Record<string, { id: number; lat: number; lng: number; type: 'storage' }>>({});
+const locationChanges = ref<
+  Record<string, { id: number; lat: number; lng: number; type: 'storage' }>
+>({});
 const hasUnsavedChanges = computed(() => Object.keys(locationChanges.value).length > 0);
 const isSaving = ref(false);
 
@@ -302,7 +357,7 @@ const resetChanges = () => {
   addToast({
     title: 'Ändringar återställda',
     message: 'Alla markörer har återställts till sina ursprungliga positioner',
-    type: 'success'
+    type: 'success',
   });
 };
 
@@ -330,7 +385,7 @@ const saveChanges = async () => {
       }
     });
 
-        // Clear changes
+    // Clear changes
     locationChanges.value = {};
 
     // Restore original marker colors after successful save
@@ -339,14 +394,13 @@ const saveChanges = async () => {
     addToast({
       title: 'Ändringar sparade',
       message: `${changesCount} markörer har uppdaterats med nya positioner`,
-      type: 'success'
+      type: 'success',
     });
-
   } catch (error) {
     addToast({
       title: 'Fel vid sparande',
       message: 'Kunde inte spara ändringarna. Försök igen.',
-      type: 'error'
+      type: 'error',
     });
   } finally {
     isSaving.value = false;
@@ -368,7 +422,7 @@ const cancelRelocate = () => {
   addToast({
     title: 'Flytt avbruten',
     message: 'Återgick till normalläge',
-    type: 'info'
+    type: 'info',
   });
 };
 
@@ -386,7 +440,7 @@ const startRelocate = (locationId: number, locationName: string) => {
   addToast({
     title: 'Flyttläge aktiverat',
     message: `Klicka på kartan för att flytta "${locationName}"`,
-    type: 'info'
+    type: 'info',
   });
 };
 
@@ -404,7 +458,7 @@ const startAddNewStorage = () => {
   addToast({
     title: 'Lägg till ny plats',
     message: 'Klicka på kartan för att lägga till en ny lagringsplats',
-    type: 'info'
+    type: 'info',
   });
 };
 
@@ -427,13 +481,13 @@ const highlightLocationOnMap = (locationId: number, locationName: string) => {
     map.value.flyTo({
       center: [location.Long, location.Lat],
       zoom: 17,
-      duration: 1000
+      duration: 1000,
     });
 
     // Open the popup for the highlighted marker after animation
     setTimeout(() => {
-      const highlightedMarker = markers.value.find(m =>
-        m.getElement().dataset['locationId'] === locationId.toString()
+      const highlightedMarker = markers.value.find(
+        m => m.getElement().dataset['locationId'] === locationId.toString()
       );
       if (highlightedMarker) {
         highlightedMarker.togglePopup();
@@ -444,7 +498,7 @@ const highlightLocationOnMap = (locationId: number, locationName: string) => {
   addToast({
     title: 'Plats markerad',
     message: `"${locationName}" är nu markerad på kartan`,
-    type: 'info'
+    type: 'info',
   });
 };
 
@@ -455,7 +509,7 @@ const clearHighlight = () => {
   addToast({
     title: 'Markering borttagen',
     message: 'Alla platser visas nu i normalläge',
-    type: 'info'
+    type: 'info',
   });
 };
 
@@ -463,16 +517,16 @@ const clearHighlight = () => {
 const mapStyles = {
   satellite: {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    name: 'Satellitvy'
+    name: 'Satellitvy',
   },
   streets: {
     url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    name: 'Gatukarta'
+    name: 'Gatukarta',
   },
   hybrid: {
     url: 'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
-    name: 'Hybrid (satellit + vägar)'
-  }
+    name: 'Hybrid (satellit + vägar)',
+  },
 };
 
 const currentStyleName = computed(() => {
@@ -490,50 +544,63 @@ const headerStats = computed(() => {
       label: 'Båtar totalt',
       value: totalBoats,
       variant: 'default' as const,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
     },
     {
       label: 'Bryggor',
       value: totalBryggor,
       variant: 'secondary' as const,
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
     {
       label: 'Lager',
       value: totalLager,
       variant: 'secondary' as const,
-      color: 'text-orange-600'
-    }
+      color: 'text-orange-600',
+    },
   ];
 });
 
 // Helper functions for colors and styling
 const getDockColor = (status: string): string => {
   switch (status) {
-    case 'operational': return '#10b981'; // Green
-    case 'maintenance': return '#f59e0b'; // Orange
-    case 'seasonal': return '#06b6d4'; // Cyan
-    default: return '#6b7280'; // Gray
+    case 'operational':
+      return '#10b981'; // Green
+    case 'maintenance':
+      return '#f59e0b'; // Orange
+    case 'seasonal':
+      return '#06b6d4'; // Cyan
+    default:
+      return '#6b7280'; // Gray
   }
 };
 
 const getWarehouseColor = (status: string): string => {
   switch (status) {
-    case 'available': return '#dc2626'; // Red
-    case 'full': return '#7c2d12'; // Dark red
-    case 'maintenance': return '#f59e0b'; // Orange
-    default: return '#6b7280'; // Gray
+    case 'available':
+      return '#dc2626'; // Red
+    case 'full':
+      return '#7c2d12'; // Dark red
+    case 'maintenance':
+      return '#f59e0b'; // Orange
+    default:
+      return '#6b7280'; // Gray
   }
 };
 
 const getStatusBadge = (status: string): string => {
   switch (status) {
     case 'operational':
-    case 'available': return 'bg-green-100 text-green-800';
-    case 'full': return 'bg-red-100 text-red-800';
-    case 'maintenance': return 'bg-orange-100 text-orange-800';
-    case 'seasonal': return 'bg-blue-100 text-blue-800';
-    default: return 'bg-gray-100 text-gray-800';
+    case 'available':
+      return 'bg-green-100 text-green-800';
+    case 'full':
+      return 'bg-red-100 text-red-800';
+    case 'maintenance':
+      return 'bg-orange-100 text-orange-800';
+    case 'seasonal':
+      return 'bg-blue-100 text-blue-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
   }
 };
 
@@ -554,8 +621,6 @@ const addAllMarkers = () => {
   });
 };
 
-
-
 // Function to add specific storage location marker
 const addStorageLocationMarker = (location: any) => {
   if (!map.value) return;
@@ -563,13 +628,15 @@ const addStorageLocationMarker = (location: any) => {
   const isDock = location.Type === 'Brygga';
   const isNewLocation = location.Type === 'Ny';
 
-    // Determine marker color based on relocation mode, highlighting, and unsaved changes
+  // Determine marker color based on relocation mode, highlighting, and unsaved changes
   let markerColor;
   let scale = isDock ? 1.1 : 1.0;
 
-  if ((isRelocateMode.value && relocateTargetId.value !== location.id) ||
-      (hasUnsavedChanges.value && !isRelocateMode.value) ||
-      (isHighlightMode.value && highlightedLocationId.value !== location.id)) {
+  if (
+    (isRelocateMode.value && relocateTargetId.value !== location.id) ||
+    (hasUnsavedChanges.value && !isRelocateMode.value) ||
+    (isHighlightMode.value && highlightedLocationId.value !== location.id)
+  ) {
     // Gray out other markers during relocation OR when there are unsaved changes OR during highlighting
     markerColor = '#9ca3af'; // Gray color
     scale = 0.8; // Slightly smaller
@@ -586,16 +653,15 @@ const addStorageLocationMarker = (location: any) => {
     scale = isDock ? 1.3 : 1.2;
   }
 
-  const titleColor = isNewLocation ? 'text-orange-700' : (isDock ? 'text-green-700' : 'text-red-700');
+  const titleColor = isNewLocation ? 'text-orange-700' : isDock ? 'text-green-700' : 'text-red-700';
 
   const locationMarker = new Marker({
     color: markerColor,
-    scale: scale
+    scale,
   })
     .setLngLat([location.Long, location.Lat])
     .setPopup(
-      new Popup({ offset: 25 })
-        .setHTML(`
+      new Popup({ offset: 25 }).setHTML(`
           <div class="p-4">
             <h3 class="font-semibold text-lg mb-1 ${titleColor}">${location.name}</h3>
             <p class="text-sm text-gray-600 mb-2">${location.Type}</p>
@@ -606,14 +672,18 @@ const addStorageLocationMarker = (location: any) => {
               ${relocateTargetId.value === location.id ? '<p class="text-blue-600 font-semibold mt-2">🎯 Denna plats flyttas</p>' : ''}
               ${highlightedLocationId.value === location.id ? '<p class="text-green-600 font-semibold mt-2">👁️ Denna plats är markerad</p>' : ''}
             </div>
-            ${relocateTargetId.value !== location.id && !isRelocateMode.value ? `
+            ${
+              relocateTargetId.value !== location.id && !isRelocateMode.value
+                ? `
               <div class="mt-3">
                 <button onclick="window.startRelocateFromPopup(${location.id}, '${location.name}')"
                         class="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors">
                   Flytta denna plats
                 </button>
               </div>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
         `)
     )
@@ -634,8 +704,6 @@ const addStorageLocationMarker = (location: any) => {
   return locationMarker;
 };
 
-
-
 // Function to handle adding new pins when map is clicked
 const addNewPin = (coordinates: [number, number]) => {
   if (relocateMode.value === 'add') {
@@ -649,7 +717,7 @@ const addNewPin = (coordinates: [number, number]) => {
       Long: coordinates[0],
       Height: 0,
       width: 0,
-      Comment: 'Nyskapad lagringsplats - uppdatera detaljer'
+      Comment: 'Nyskapad lagringsplats - uppdatera detaljer',
     };
 
     // Add to data
@@ -661,7 +729,7 @@ const addNewPin = (coordinates: [number, number]) => {
     // Track as change
     trackLocationChange(newId, coordinates[1], coordinates[0], 'storage');
 
-            // Exit add mode
+    // Exit add mode
     relocateMode.value = null;
 
     // Keep markers gray until changes are saved - don't refresh colors yet
@@ -670,19 +738,18 @@ const addNewPin = (coordinates: [number, number]) => {
     addToast({
       title: 'Ny plats tillagd',
       message: `"${newLocation.name}" har lagts till på kartan`,
-      type: 'success'
+      type: 'success',
     });
 
     // Open popup to show details
     setTimeout(() => {
-      const newMarker = markers.value.find(m =>
-        m.getElement().dataset['locationId'] === newLocation.id.toString()
+      const newMarker = markers.value.find(
+        m => m.getElement().dataset['locationId'] === newLocation.id.toString()
       );
       if (newMarker) {
         newMarker.togglePopup();
       }
     }, 300);
-
   } else if (relocateMode.value === 'relocate' && relocateTargetId.value) {
     // Relocate existing storage location
     const location = combinedStorageData.find(l => l.id === relocateTargetId.value);
@@ -695,14 +762,14 @@ const addNewPin = (coordinates: [number, number]) => {
       trackLocationChange(location.id, coordinates[1], coordinates[0], 'storage');
 
       // Update marker
-      const existingMarker = markers.value.find(m =>
-        m.getElement().dataset['locationId'] === location.id.toString()
+      const existingMarker = markers.value.find(
+        m => m.getElement().dataset['locationId'] === location.id.toString()
       );
       if (existingMarker) {
         existingMarker.setLngLat(coordinates);
       }
 
-                  // Exit relocate mode
+      // Exit relocate mode
       relocateMode.value = null;
       relocateTargetId.value = null;
 
@@ -712,7 +779,7 @@ const addNewPin = (coordinates: [number, number]) => {
       addToast({
         title: 'Plats flyttad',
         message: `"${location.name}" har flyttats till ny position`,
-        type: 'success'
+        type: 'success',
       });
     }
   }
@@ -775,13 +842,13 @@ const handleLocationFocus = async () => {
       map.value.flyTo({
         center: [longitude, latitude],
         zoom: zoomLevel,
-        duration: 1000
+        duration: 1000,
       });
 
       // Open popup for the highlighted marker after animation
       setTimeout(() => {
-        const highlightedMarker = markers.value.find(m =>
-          m.getElement().dataset['locationId'] === focusId.toString()
+        const highlightedMarker = markers.value.find(
+          m => m.getElement().dataset['locationId'] === focusId.toString()
         );
         if (highlightedMarker) {
           highlightedMarker.togglePopup();
@@ -792,7 +859,7 @@ const handleLocationFocus = async () => {
       addToast({
         title: 'Plats markerad',
         message: `"${locationToFocus.name}" är nu markerad på kartan`,
-        type: 'info'
+        type: 'info',
       });
     }
   } else if (lat && lng && map.value) {
@@ -804,7 +871,7 @@ const handleLocationFocus = async () => {
     map.value.flyTo({
       center: [longitude, latitude],
       zoom: zoomLevel,
-      duration: 1000
+      duration: 1000,
     });
   }
 };
@@ -833,10 +900,11 @@ const initializeMapLibre = () => {
           type: 'raster',
           tiles: [(styleConfig as any).url],
           tileSize: 256,
-          attribution: selectedStyle.value === 'satellite'
-            ? '© Esri, Maxar, Earthstar Geographics'
-            : '© OpenStreetMap contributors'
-        }
+          attribution:
+            selectedStyle.value === 'satellite'
+              ? '© Esri, Maxar, Earthstar Geographics'
+              : '© OpenStreetMap contributors',
+        },
       },
       layers: [
         {
@@ -844,9 +912,9 @@ const initializeMapLibre = () => {
           type: 'raster',
           source: 'raster-tiles',
           minzoom: 0,
-          maxzoom: 22
-        }
-      ]
+          maxzoom: 22,
+        },
+      ],
     };
   } else {
     mapStyle = (styleConfig as any).url;
@@ -854,18 +922,18 @@ const initializeMapLibre = () => {
 
   map.value = new Map({
     container: mapContainer.value,
-    style: mapStyle as any,
+    style: mapStyle,
     center: [company.longitude, company.latitude],
     zoom: 15,
     pitch: 0,
-    bearing: 0
+    bearing: 0,
   });
 
   // Add navigation controls
   map.value.addControl(new NavigationControl(), 'top-right');
 
   // Add click event for new pins
-  map.value.on('click', (e) => {
+  map.value.on('click', e => {
     const coordinates: [number, number] = [e.lngLat.lng, e.lngLat.lat];
     addNewPin(coordinates);
   });
@@ -898,11 +966,15 @@ onMounted(() => {
 });
 
 // Watch for route changes to handle deep linking to specific locations
-watch(() => route.query, () => {
-  if (map.value && markers.value.length > 0) {
-    handleLocationFocus();
-  }
-}, { deep: true });
+watch(
+  () => route.query,
+  () => {
+    if (map.value && markers.value.length > 0) {
+      handleLocationFocus();
+    }
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
@@ -923,7 +995,7 @@ watch(() => route.query, () => {
 }
 
 /* Style for radio buttons */
-input[type="radio"] {
+input[type='radio'] {
   accent-color: #3b82f6;
 }
 
