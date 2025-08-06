@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "boat_id": 1,
+    "storage_id": 1,
+    "storage_name": "Huvudlager A",
+    "storage_type": "warehouse",
+    "floor_number": 1,
+    "placement_type": "lager",
+    "status": "reserverad",
+    "position": {
+      "x": 15.2,
+      "y": 10.5,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-01-20T10:30:00Z",
+    "reservation_date": "2024-01-20T10:30:00Z",
+    "physical_placement_date": null,
+    "notes": "Reserverad för vinterförvaring",
+    "created_at": "2024-01-20T10:30:00Z",
+    "updated_at": "2024-01-20T10:30:00Z"
+  },
+  {
+    "id": 2,
+    "boat_id": 2,
+    "storage_id": 20,
+    "storage_name": "Huvudbrygga A",
+    "storage_type": "dock",
+    "floor_number": 1,
+    "placement_type": "brygga",
+    "status": "placerad",
+    "position": {
+      "x": 45.8,
+      "y": 0.1,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-04-15T08:00:00Z",
+    "reservation_date": "2024-04-10T14:00:00Z",
+    "physical_placement_date": "2024-04-15T08:00:00Z",
+    "notes": "Säsongsplats - stor segelbåt",
+    "created_at": "2024-04-10T14:00:00Z",
+    "updated_at": "2024-04-15T08:30:00Z"
+  },
+  {
+    "id": 3,
+    "boat_id": 5,
+    "storage_id": 4,
+    "storage_name": "Stockholm Centrallager",
+    "storage_type": "warehouse",
+    "floor_number": 2,
+    "placement_type": "lager",
+    "status": "placerad",
+    "position": {
+      "x": 25.3,
+      "y": 15.8,
+      "rotation": 90
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-11-01T09:15:00Z",
+    "reservation_date": "2024-10-25T12:00:00Z",
+    "physical_placement_date": "2024-11-01T09:15:00Z",
+    "notes": "Vinterförvaring våning 2",
+    "created_at": "2024-10-25T12:00:00Z",
+    "updated_at": "2024-11-01T09:30:00Z"
+  },
+  {
+    "id": 4,
+    "boat_id": 8,
+    "storage_id": 6,
+    "storage_name": "Båthall Nord",
+    "storage_type": "warehouse",
+    "floor_number": 1,
+    "placement_type": "lager",
+    "status": "reserverad",
+    "position": {
+      "x": 35.0,
+      "y": 20.2,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-01-25T11:45:00Z",
+    "reservation_date": "2024-01-25T11:45:00Z",
+    "physical_placement_date": null,
+    "notes": "Reserverad för kommande säsong",
+    "created_at": "2024-01-25T11:45:00Z",
+    "updated_at": "2024-01-25T11:45:00Z"
+  }
+]

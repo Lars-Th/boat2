@@ -2,11 +2,15 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import DetailPage from '@/components/shared/DetailPage.vue';
-import { MapPin, Warehouse, Save, Navigation } from 'lucide-vue-next';
+import StorageDesigner from '@/components/konva/StorageDesigner.vue';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { MapPin, Warehouse, Save, Navigation, FileText } from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 
-// Import combined storage data
-import combinedStorageData from '@/assets/data/combinedStorage.json';
+// Import storage units data
+import storageUnitsData from '@/assets/data/storageUnits.json';
 
 const route = useRoute();
 const router = useRouter();
@@ -47,8 +51,8 @@ const extractCapacityFromComment = (comment: string): string => {
 
 // Load storage location data
 const loadStorageLocation = () => {
-  const locationId = parseInt(route.params.id as string);
-  const rawLocation = combinedStorageData.find((l: any) => l['id'] === locationId);
+  const locationId = parseInt(route.params['id'] as string);
+  const rawLocation = storageUnitsData.find((l: any) => l['id'] === locationId);
 
   if (!rawLocation) {
     error('Lagringsplats hittades inte', 'Den begärda lagringsplatsen kunde inte hittas.');
@@ -56,23 +60,23 @@ const loadStorageLocation = () => {
     return;
   }
 
-  // Process the raw data same as in the list
+  // Process the raw data from storageUnits.json structure
   const processedLocation = {
     id: rawLocation['id'],
     name: rawLocation['name'],
-    category: rawLocation['Type'] === 'Brygga' ? 'dock' : 'warehouse',
-    type: rawLocation['Type'],
-    displayType: rawLocation['Type'],
-    latitude: rawLocation['Lat'],
-    longitude: rawLocation['Long'],
-    status: getStatusFromComment(rawLocation['Comment']),
-    displayStatus: getStatusDisplayFromComment(rawLocation['Comment']),
-    capacity: extractCapacityFromComment(rawLocation['Comment']),
-    details: `H: ${rawLocation['Height']}m, B: ${rawLocation['width']}m`,
-    location: `${rawLocation['Lat'].toFixed(4)}, ${rawLocation['Long'].toFixed(4)}`,
-    height: rawLocation['Height'],
+    category: rawLocation['unit_type'], // warehouse or dock directly
+    type: rawLocation['unit_type'] === 'dock' ? 'Brygga' : 'Lager', // For display purposes
+    displayType: rawLocation['unit_type'] === 'dock' ? 'Brygga' : 'Lager',
+    latitude: rawLocation['latitude'],
+    longitude: rawLocation['longitude'],
+    status: rawLocation['is_connected_to_land'] ? 'available' : 'maintenance', // Simple mapping
+    displayStatus: rawLocation['is_connected_to_land'] ? 'Tillgänglig' : 'Underhåll',
+    capacity: `${rawLocation['level_count']} våningar`, // Use level count as capacity info
+    details: `H: ${rawLocation['length']}m, B: ${rawLocation['width']}m`,
+    location: `${rawLocation['latitude'].toFixed(4)}, ${rawLocation['longitude'].toFixed(4)}`,
+    height: rawLocation['length'],
     width: rawLocation['width'],
-    comment: rawLocation['Comment'],
+    comment: `${rawLocation['unit_type']} med ${rawLocation['level_count']} våningar`, // Generate comment
   };
 
   originalData.value = { ...processedLocation };
@@ -87,15 +91,6 @@ const mainFields = [
     type: 'text' as const,
   },
   {
-    key: 'type',
-    label: 'Typ',
-    type: 'select' as const,
-    options: [
-      { value: 'Brygga', label: 'Brygga' },
-      { value: 'Lager', label: 'Lager' },
-    ],
-  },
-  {
     key: 'latitude',
     label: 'Latitud',
     type: 'number' as const,
@@ -103,16 +98,6 @@ const mainFields = [
   {
     key: 'longitude',
     label: 'Longitud',
-    type: 'number' as const,
-  },
-  {
-    key: 'height',
-    label: 'Höjd (m)',
-    type: 'number' as const,
-  },
-  {
-    key: 'width',
-    label: 'Bredd (m)',
     type: 'number' as const,
   },
   {
@@ -187,7 +172,13 @@ const stats = computed(() => {
 // Event handlers
 const handleFieldChange = (key: string, value: any) => {
   if (editableData.value) {
+    console.log(`🔄 DetailPage field change: ${key} = ${value} (type: ${typeof value})`);
+    console.log(`📊 Before change - editableData[${key}]: ${editableData.value[key]}`);
     editableData.value[key] = value;
+    console.log(`📊 After change - editableData[${key}]: ${editableData.value[key]}`);
+
+    // Force reactivity update
+    hasUnsavedChanges.value = true;
 
     // Update computed fields when base data changes
     if (key === 'latitude' || key === 'longitude') {
@@ -207,11 +198,14 @@ const handleFieldChange = (key: string, value: any) => {
     if (key === 'type') {
       editableData.value.category = value === 'Brygga' ? 'dock' : 'warehouse';
       editableData.value.displayType = value;
+      console.log(`🏗️ Type changed to: ${value} (category: ${editableData.value.category})`);
     }
 
     checkForChanges();
   }
 };
+
+
 
 const checkForChanges = () => {
   if (!originalData.value || !editableData.value) {
@@ -314,80 +308,58 @@ onMounted(() => {
         <!-- Custom main content -->
     <template #main-content="{ data }">
       <div class="space-y-4">
-        <!-- Basic Information -->
+        <!-- Grundläggande information (Unified Section) -->
         <div class="bg-background rounded-lg border p-4">
-          <h3 class="text-sm font-semibold flex items-center text-foreground/80 mb-3 gap-2">
-            <component :is="data['type'] === 'Brygga' ? MapPin : Warehouse" class="h-4 w-4" />
+          <h3 class="text-sm font-semibold flex items-center text-foreground/80 mb-2 gap-2">
+            <FileText class="h-4 w-4" />
             Grundläggande information
           </h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div v-for="field in mainFields.slice(0, 4)" :key="field.key" class="space-y-1">
-              <label class="text-xs font-medium text-foreground/80">{{ field.label }}</label>
-              <input
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 gap-x-4">
+            <div v-for="field in mainFields" :key="field.key" class="space-y-1" :class="{ 'md:col-span-2': field.type === 'textarea' }">
+              <Label class="text-[10px] font-medium text-foreground/80">{{ field.label }}</Label>
+
+              <Input
                 v-if="field.type === 'text'"
-                :value="data[field.key]"
-                class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                @input="handleFieldChange(field.key, ($event.target as HTMLInputElement).value)"
+                :model-value="(data[field.key] ?? '').toString()"
+                class="h-8 md:text-xs"
+                @update:model-value="handleFieldChange(field.key, $event)"
               />
-              <input
+              <Input
                 v-else-if="field.type === 'number'"
-                :value="data[field.key]"
+                :model-value="Number(data[field.key] ?? 0)"
                 type="number"
-                step="0.0001"
-                class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                @input="handleFieldChange(field.key, parseFloat(($event.target as HTMLInputElement).value))"
+                :step="field.key.includes('lat') || field.key.includes('long') ? '0.0001' : '0.1'"
+                class="h-8 md:text-xs"
+                @update:model-value="handleFieldChange(field.key, parseFloat($event.toString()))"
               />
-              <select
-                v-else-if="field.type === 'select'"
-                :value="data[field.key]"
-                class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                @change="handleFieldChange(field.key, ($event.target as HTMLSelectElement).value)"
-              >
-                <option v-for="option in field.options" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
+
+              <Textarea
+                v-else-if="field.type === 'textarea'"
+                :model-value="(data[field.key] ?? '').toString()"
+                rows="3"
+                class="md:text-xs resize-none"
+                placeholder="Ange kommentar om lagringsplatsen..."
+                @update:model-value="handleFieldChange(field.key, $event)"
+              />
             </div>
           </div>
         </div>
 
-        <!-- Dimensions -->
+        <!-- Storage Designer -->
         <div class="bg-background rounded-lg border p-4">
-          <h3 class="text-sm font-semibold flex items-center text-foreground/80 mb-3 gap-2">
+          <h3 class="text-sm font-semibold flex items-center text-foreground/80 mb-2 gap-2">
             <Warehouse class="h-4 w-4" />
-            Dimensioner
+            Layout Design
           </h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div v-for="field in mainFields.slice(4, 6)" :key="field.key" class="space-y-1">
-              <label class="text-xs font-medium text-foreground/80">{{ field.label }}</label>
-              <input
-                :value="data[field.key]"
-                type="number"
-                step="0.1"
-                class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                @input="handleFieldChange(field.key, parseFloat(($event.target as HTMLInputElement).value))"
-              />
-            </div>
-          </div>
-        </div>
-
-        <!-- Comment -->
-        <div class="bg-background rounded-lg border p-4">
-          <h3 class="text-sm font-semibold flex items-center text-foreground/80 mb-3 gap-2">
-            <Save class="h-4 w-4" />
-            Kommentar och detaljer
-          </h3>
-
-          <div class="space-y-1">
-            <label class="text-xs font-medium text-foreground/80">Kommentar</label>
-            <textarea
-              :value="String(data['comment'] || '')"
-              rows="4"
-              class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              placeholder="Ange kommentar om lagringsplatsen..."
-              @input="handleFieldChange('comment', ($event.target as HTMLTextAreaElement).value)"
+          <div class="w-full">
+            <StorageDesigner
+              :selectedStorageId="Number(data['id'])"
+              @update:length="handleFieldChange('height', $event)"
+              @update:width="handleFieldChange('width', $event)"
+              @update:name="handleFieldChange('name', $event)"
+              @update:type="handleFieldChange('type', $event)"
             />
           </div>
         </div>

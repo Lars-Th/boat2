@@ -1,6 +1,16 @@
 [
   {
     "id": 1,
+    "name": "Huvudlager A",
+    "Type": "Lager",
+    "Lat": 57.9040,
+    "Long": 16.6950,
+    "Height": 45,
+    "width": 28,
+    "Comment": "Huvudlager - 150 båtar - 1260 m² - Alla storlekar upp till 14m - 3 våningar - Kran, El, Säkerhet"
+  },
+  {
+    "id": 20,
     "name": "Huvudbrygga A",
     "Type": "Brygga",
     "Lat": 57.9014,
@@ -31,6 +41,16 @@
   },
   {
     "id": 4,
+    "name": "Stockholm Centrallager",
+    "Type": "Lager",
+    "Lat": 59.3295,
+    "Long": 18.0685,
+    "Height": 52,
+    "width": 32,
+    "Comment": "Centrallager Stockholm - 100 båtar - 1664 m² - Alla storlekar upp till 16m - 2 våningar - Kran, El, Säkerhet"
+  },
+  {
+    "id": 21,
     "name": "Servicebrygga D",
     "Type": "Brygga",
     "Lat": 57.9017,
@@ -97,7 +117,7 @@
     "Long": 16.6977,
     "Height": 61,
     "width": 35,
-    "Comment": "Inomhus - 120 båtar - 2000 m² - Alla storlekar upp till 12m - Kran, El, Säkerhet"
+    "Comment": "Inomhus - 120 båtar - 2000 m² - Alla storlekar upp till 12m - 4 våningar - Kran, El, Säkerhet"
   },
   {
     "id": 7,
@@ -107,7 +127,7 @@
     "Long": 16.6987,
     "Height": 38,
     "width": 25,
-    "Comment": "Utomhus - 80 båtar - 1500 m² - Alla storlekar upp till 15m - Kran, Säkerhet"
+    "Comment": "Utomhus - 80 båtar - 1500 m² - Alla storlekar upp till 15m - 2 våningar - Kran, Säkerhet"
   },
   {
     "id": 8,
@@ -117,7 +137,7 @@
     "Long": 16.6972,
     "Height": 28,
     "width": 11,
-    "Comment": "Delvis täckt - 60 båtar - 1200 m² - Medel till stora båtar (8-14m) - Kran, El"
+    "Comment": "Delvis täckt - 60 båtar - 1200 m² - Medel till stora båtar (8-14m) - 2 våningar - Kran, El"
   },
   {
     "id": 9,

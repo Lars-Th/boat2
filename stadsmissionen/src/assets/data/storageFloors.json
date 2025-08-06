@@ -1,0 +1,269 @@
+[
+  {
+    "id": 1,
+    "storage_id": 1,
+    "storage_name": "Huvudlager A",
+    "floor_number": 1,
+    "floor_name": "Våning 1",
+    "is_main_floor": true,
+    "floor_zones": [],
+    "storage_dimensions": {
+      "length": 45.0,
+      "width": 28.0
+    },
+    "created": "2024-01-15T10:00:00Z",
+    "modified": "2024-01-15T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "storage_id": 1,
+    "storage_name": "Huvudlager A",
+    "floor_number": 2,
+    "floor_name": "Våning 2",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 1,
+        "name": "V2-1",
+        "x": 5.0,
+        "y": 4.0,
+        "width": 35.0,
+        "height": 20.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 45.0,
+      "width": 28.0
+    },
+    "created": "2024-01-15T11:00:00Z",
+    "modified": "2024-01-15T15:30:00Z"
+  },
+  {
+    "id": 3,
+    "storage_id": 1,
+    "storage_name": "Huvudlager A",
+    "floor_number": 3,
+    "floor_name": "Våning 3",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 2,
+        "name": "V3-1",
+        "x": 8.0,
+        "y": 6.0,
+        "width": 29.0,
+        "height": 16.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 45.0,
+      "width": 28.0
+    },
+    "created": "2024-01-15T12:00:00Z",
+    "modified": "2024-01-15T16:45:00Z"
+  },
+  {
+    "id": 4,
+    "storage_id": 4,
+    "storage_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "floor_name": "Våning 1",
+    "is_main_floor": true,
+    "floor_zones": [],
+    "storage_dimensions": {
+      "length": 52.0,
+      "width": 32.0
+    },
+    "created": "2024-01-15T13:00:00Z",
+    "modified": "2024-01-15T13:00:00Z"
+  },
+  {
+    "id": 5,
+    "storage_id": 4,
+    "storage_name": "Stockholm Centrallager",
+    "floor_number": 2,
+    "floor_name": "Våning 2",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 3,
+        "name": "V2-1",
+        "x": 6.0,
+        "y": 5.0,
+        "width": 40.0,
+        "height": 22.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 52.0,
+      "width": 32.0
+    },
+    "created": "2024-01-15T14:00:00Z",
+    "modified": "2024-01-15T17:20:00Z"
+  },
+  {
+    "id": 6,
+    "storage_id": 6,
+    "storage_name": "Båthall Nord",
+    "floor_number": 1,
+    "floor_name": "Våning 1",
+    "is_main_floor": true,
+    "floor_zones": [],
+    "storage_dimensions": {
+      "length": 61.0,
+      "width": 35.0
+    },
+    "created": "2024-01-15T15:00:00Z",
+    "modified": "2024-01-15T15:00:00Z"
+  },
+  {
+    "id": 7,
+    "storage_id": 6,
+    "storage_name": "Båthall Nord",
+    "floor_number": 2,
+    "floor_name": "Våning 2",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 4,
+        "name": "V2-1",
+        "x": 8.0,
+        "y": 5.0,
+        "width": 45.0,
+        "height": 25.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 61.0,
+      "width": 35.0
+    },
+    "created": "2024-01-15T16:00:00Z",
+    "modified": "2024-01-15T18:30:00Z"
+  },
+  {
+    "id": 8,
+    "storage_id": 6,
+    "storage_name": "Båthall Nord",
+    "floor_number": 3,
+    "floor_name": "Våning 3",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 5,
+        "name": "V3-1",
+        "x": 10.0,
+        "y": 7.0,
+        "width": 41.0,
+        "height": 21.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 61.0,
+      "width": 35.0
+    },
+    "created": "2024-01-15T17:00:00Z",
+    "modified": "2024-01-15T19:45:00Z"
+  },
+  {
+    "id": 9,
+    "storage_id": 6,
+    "storage_name": "Båthall Nord",
+    "floor_number": 4,
+    "floor_name": "Våning 4",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 6,
+        "name": "V4-1",
+        "x": 12.0,
+        "y": 8.0,
+        "width": 37.0,
+        "height": 19.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 61.0,
+      "width": 35.0
+    },
+    "created": "2024-01-15T18:00:00Z",
+    "modified": "2024-01-15T20:15:00Z"
+  },
+  {
+    "id": 10,
+    "storage_id": 7,
+    "storage_name": "Utomhuslager Syd",
+    "floor_number": 1,
+    "floor_name": "Våning 1",
+    "is_main_floor": true,
+    "floor_zones": [],
+    "storage_dimensions": {
+      "length": 38.0,
+      "width": 25.0
+    },
+    "created": "2024-01-15T19:00:00Z",
+    "modified": "2024-01-15T19:00:00Z"
+  },
+  {
+    "id": 11,
+    "storage_id": 7,
+    "storage_name": "Utomhuslager Syd",
+    "floor_number": 2,
+    "floor_name": "Våning 2",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 7,
+        "name": "V2-1",
+        "x": 5.0,
+        "y": 3.0,
+        "width": 28.0,
+        "height": 19.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 38.0,
+      "width": 25.0
+    },
+    "created": "2024-01-15T20:00:00Z",
+    "modified": "2024-01-15T21:30:00Z"
+  },
+  {
+    "id": 12,
+    "storage_id": 8,
+    "storage_name": "Täckt lager Väst",
+    "floor_number": 1,
+    "floor_name": "Våning 1",
+    "is_main_floor": true,
+    "floor_zones": [],
+    "storage_dimensions": {
+      "length": 28.0,
+      "width": 11.0
+    },
+    "created": "2024-01-15T21:00:00Z",
+    "modified": "2024-01-15T21:00:00Z"
+  },
+  {
+    "id": 13,
+    "storage_id": 8,
+    "storage_name": "Täckt lager Väst",
+    "floor_number": 2,
+    "floor_name": "Våning 2",
+    "is_main_floor": false,
+    "floor_zones": [
+      {
+        "id": 8,
+        "name": "V2-1",
+        "x": 3.0,
+        "y": 2.0,
+        "width": 22.0,
+        "height": 7.0
+      }
+    ],
+    "storage_dimensions": {
+      "length": 28.0,
+      "width": 11.0
+    },
+    "created": "2024-01-15T22:00:00Z",
+    "modified": "2024-01-15T23:15:00Z"
+  }
+]
