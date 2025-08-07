@@ -2032,14 +2032,41 @@ const handleDrop = (event: DragEvent) => {
       }
     }
 
-    // Calculate drop position
+    // Calculate drop position with zoom and pan compensation
     const rect = canvasContainer.value!.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const canvasX = event.clientX - rect.left;
+    const canvasY = event.clientY - rect.top;
+
+    // När zoomad/pannad: placera båten i centrum av synliga området istället för musposition
+    let finalX = canvasX;
+    let finalY = canvasY;
+
+    if (stage.value) {
+      const currentZoom = stage.value.scaleX();
+      const currentPosition = stage.value.position();
+      
+      // Om zoomad (inte 100%), placera i centrum av synliga området
+      if (Math.abs(currentZoom - 1) > 0.1) {
+        const canvasCenter = {
+          x: stage.value.width() / 2,
+          y: stage.value.height() / 2
+        };
+        
+        // Konvertera canvas center till stage koordinater
+        finalX = (canvasCenter.x - currentPosition.x) / currentZoom;
+        finalY = (canvasCenter.y - currentPosition.y) / currentZoom;
+        
+        console.log(`🎯 Zoomad (${(currentZoom * 100).toFixed(0)}%): Placerar båt i synligt centrum istället för muspositionen`);
+      } else {
+        // Vid 100% zoom: använd musposition men kompensera för pan
+        finalX = (canvasX - currentPosition.x) / currentZoom;
+        finalY = (canvasY - currentPosition.y) / currentZoom;
+      }
+    }
 
     // Convert to storage coordinates (nu i DECIMETER)
-    const storageX = (x - 50); // x - offset = decimeter position
-    const storageY = (y - 50); // y - offset = decimeter position
+    const storageX = (finalX - 50); // x - offset = decimeter position
+    const storageY = (finalY - 50); // y - offset = decimeter position
 
     // Create new placement med vald status
     const newPlacement: BoatPlacement = {
@@ -2083,7 +2110,8 @@ const handleDrop = (event: DragEvent) => {
     const statusText = defaultPlacementStatus.value === 'oplacerad' ? 'oplacerad' :
                       defaultPlacementStatus.value === 'placerad' ? 'placerad' : 'reserverad';
     const collisionMessage = finalCollisionState ? ` - ${finalCollisionState} visas` : '';
-    console.log(`${boat.name} placerad som ${statusText} på (${storageX.toFixed(1)}, ${storageY.toFixed(1)}) decimeter${conflictMessage}${collisionMessage}`);
+    const positionNote = Math.abs(stage.value?.scaleX() || 1 - 1) > 0.1 ? ' (centrum av synligt område)' : ' (muspositionen)';
+    console.log(`${boat.name} placerad som ${statusText} på (${storageX.toFixed(1)}, ${storageY.toFixed(1)}) decimeter${positionNote}${conflictMessage}${collisionMessage}`);
 
     // AUTOMATISK SELECTION: Om båten placerades som oplacerad, välj den direkt för rotation
     if (defaultPlacementStatus.value === 'oplacerad') {
