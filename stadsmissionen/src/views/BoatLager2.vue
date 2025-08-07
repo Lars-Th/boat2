@@ -481,12 +481,6 @@ const stateStyles: Record<string, { hull: any; margin: any }> = {
     margin: { stroke: '#9ca3af', strokeWidth: 1, dash: [10, 5], fill: '#f9fafb', opacity: 0.7 }
   },
 
-  // SELECTION STATE - subtil blå istället för orange
-  selected: {
-    hull: { stroke: '#2563eb', strokeWidth: 3, fill: '#dbeafe' },
-    margin: { stroke: '#2563eb', strokeWidth: 2, dash: [3, 3], fill: '#eff6ff', opacity: 0.9 }
-  },
-
   // COLLISION DETECTION STATES (från BoatDetailCanvas)
   margin_collision: {
     hull: { stroke: '#27d07c', strokeWidth: 2, fill: '#fff' },
@@ -1007,22 +1001,18 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   const startX = 50;
   const startY = 50;
 
-      // Determine if boat is selected
-  const isSelected = selectedPlacedBoat.value?.id === boat.id;
-
-  // Check for collisions only if boat is oplacerad (flyttbar)
+      // Check for collisions only if boat is oplacerad (flyttbar)
   const collisionState = placement.status === 'oplacerad' ? checkBoatCollisions(boat, placement) : null;
 
-  // VIKTIGT: Oplacerade båtar behåller sin grön färg även när de är valda för rotation
-  // Detta förhindrar att de får blå "selected" färg under rotation
-  // Placerade/reserverade båtar kan visas som "selected" (blå) när de är valda
+  // VIKTIGT: Alla båtar behåller sina ursprungliga stateStyles UTAN modifikationer
+  // Inga extra tjocka linjer eller andra visuella ändringar när valda
   let displayStatus: string;
-  if (placement.status === 'oplacerad') {
-    // Oplacerade båtar: visa kollision eller ursprungsstatus (aldrig 'selected')
-    displayStatus = collisionState || placement.status;
+  if (placement.status === 'oplacerad' && collisionState) {
+    // Visa kollision för oplacerade båtar under drag
+    displayStatus = collisionState;
   } else {
-    // Placerade/reserverade båtar: visa 'selected' om de är valda
-    displayStatus = isSelected ? 'selected' : placement.status;
+    // Alla båtar: använd BARA ursprunglig status (oplacerad, placerad, reserverad)
+    displayStatus = placement.status;
   }
 
   // Create boat group - draggable endast om oplacerad
@@ -1098,15 +1088,29 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   boatGroup.add(hullPath);
   boatGroup.add(nameText);
 
-  // Add event handlers - toggle mellan placerad/oplacerad
+  // Add event handlers - olika beteende beroende på status
   boatGroup.on('click', () => {
     const boatFromPlacement = boats.value.find(b => b.id === placement.boat_id);
     if (boatFromPlacement) {
-      // Update selected boat and placement for rotation
+      // Update selected boat and placement for rotation (BARA för funktionalitet, INGEN visuell ändring)
       selectedPlacedBoat.value = boatFromPlacement;
       selectedPlacement.value = placement;
 
-      toggleBoatStatus(boatFromPlacement, placement);
+      // OLIKA BETEENDE PER STATUS:
+      if (placement.status === 'oplacerad') {
+        // Oplacerade båtar: bara selection för rotation, ingen automatisk statusändring
+        // Status ändras ENDAST via toolbar-knappar
+        drawStorage();
+        console.log(`Vald oplacerad båt för rotation: ${boatFromPlacement.name} (status ändras bara via knappar)`);
+      } else if (placement.status === 'placerad') {
+        // Placerade båtar: toggle status som tidigare
+        toggleBoatStatus(boatFromPlacement, placement);
+      } else if (placement.status === 'reserverad') {
+        // Reserverade båtar: bara selection för rotation, behåll grå stil
+        // Status ändras ENDAST via toolbar-knappar
+        drawStorage();
+        console.log(`Vald reserverad båt för rotation: ${boatFromPlacement.name} (behåller grå stil, status ändras bara via knappar)`);
+      }
     }
   });
 
