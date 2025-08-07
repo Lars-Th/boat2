@@ -877,11 +877,20 @@ const setupEventHandlers = () => {
   let lastPointerPosition = { x: 0, y: 0 };
 
   stage.value.on('mousedown', (e) => {
-    // Pan bara om vi är i pan-mode och klickar på tom yta (inte på båtar)
-    if (isPanMode.value && e.target === stage.value) {
-      isPanning = true;
-      lastPointerPosition = stage.value!.getPointerPosition() || { x: 0, y: 0 };
-      stage.value!.container().style.cursor = 'grabbing';
+    // Pan om vi är i pan-mode och INTE drar en båt
+    if (isPanMode.value) {
+      // Kolla om vi klickar på en draggable båt-group
+      const isDraggableBoat = e.target && 
+        e.target.parent && 
+        e.target.parent.getType() === 'Group' && 
+        e.target.parent.draggable();
+      
+      if (!isDraggableBoat) {
+        isPanning = true;
+        lastPointerPosition = stage.value!.getPointerPosition() || { x: 0, y: 0 };
+        stage.value!.container().style.cursor = 'grabbing';
+        console.log('🖱️ Pan started');
+      }
     }
   });
 
@@ -905,12 +914,13 @@ const setupEventHandlers = () => {
     lastPointerPosition = pointer;
   });
 
-  stage.value.on('mouseup', () => {
+  stage.value.on('mouseup mouseleave', () => {
     if (isPanning) {
       isPanning = false;
       if (stage.value) {
         stage.value.container().style.cursor = isPanMode.value ? 'grab' : 'default';
       }
+      console.log('🖱️ Pan stopped');
     }
   });
 
@@ -1249,6 +1259,14 @@ const selectStorage = (storage: Storage) => {
   console.log(`📦 Hittade ${placementsForStorage.length} placements för detta lager:`, placementsForStorage);
 
   drawStorage();
+  
+  // Auto-centrera lagret när det väljs (vänta tills rendering är klar)
+  nextTick(() => {
+    setTimeout(() => {
+      centerStorage();
+      console.log('📍 Lager auto-centrerat');
+    }, 50);
+  });
 };
 
 const selectBoat = (boat: Boat) => {
@@ -1325,12 +1343,12 @@ const toggleBoatStatus = (boat: Boat, placement: BoatPlacement) => {
 
 const togglePanMode = () => {
   isPanMode.value = !isPanMode.value;
-  
+
   // Uppdatera cursor style
   if (stage.value) {
     stage.value.container().style.cursor = isPanMode.value ? 'grab' : 'default';
   }
-  
+
   console.log(`🖱️ Pan mode ${isPanMode.value ? 'aktiverat' : 'inaktiverat'}`);
 };
 
@@ -1411,7 +1429,7 @@ const centerStorage = () => {
 
   stage.value.position(newPos);
   stage.value.batchDraw();
-  
+
   console.log('🎯 Lager centrerat');
 };
 
@@ -1421,9 +1439,9 @@ const resetCanvas = () => {
   stage.value.position({ x: 0, y: 0 });
   zoomLevel.value = 1;
   zoomPercentage.value = 100;
-  
+
   applyZoom(1); // Använd applyZoom för konsistent zoom-hantering
-  
+
   console.log('🔄 Canvas återställt');
 };
 
