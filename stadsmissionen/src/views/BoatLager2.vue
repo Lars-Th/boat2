@@ -237,15 +237,27 @@
 
           <div class="toolbar-separator"></div>
 
-          <!-- Statistics -->
-          <div class="toolbar-group">
-            <span class="toolbar-label">Stats:</span>
-            <div class="stats-display">
-              <span>{{ placedBoatCount }} totalt</span>
-              <span class="unplaced-count">{{ unplacedBoatCount }} oplacerade</span>
-              <span>{{ collisionCount }} kollisioner</span>
-            </div>
+                  <!-- Statistics -->
+        <div class="toolbar-group">
+          <span class="toolbar-label">Stats:</span>
+          <div class="stats-display">
+            <span>{{ placedBoatCount }} totalt</span>
+            <span class="unplaced-count">{{ unplacedBoatCount }} oplacerade</span>
+            <span>{{ collisionCount }} kollisioner</span>
           </div>
+        </div>
+
+        <div class="toolbar-separator"></div>
+
+        <!-- Live Coordinates -->
+        <div v-if="draggedBoatCoords" class="toolbar-group">
+          <span class="toolbar-label">Position (center):</span>
+          <div class="coords-display">
+            <span class="coord-value">X: {{ draggedBoatCoords.x }}dm</span>
+            <span class="coord-value">Y: {{ draggedBoatCoords.y }}dm</span>
+            <span class="coord-value">{{ draggedBoatCoords.rotation }}°</span>
+          </div>
+        </div>
 
           <div class="toolbar-separator"></div>
 
@@ -619,6 +631,9 @@ const customers = ref<Customer[]>(customersData as Customer[]);
 
 // Save state
 const lastSaved = ref<string>('');
+
+// Live coordinates during drag
+const draggedBoatCoords = ref<{x: number, y: number, rotation: number} | null>(null);
 
 // Load restriction zones for selected storage
 const loadRestrictionZones = async () => {
@@ -1833,12 +1848,22 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     // Update collision detection during drag for real-time feedback (only for oplacerad boats)
     if (placement.status === 'oplacerad') {
       const pos = boatGroup.position();
+      const storageX = (pos.x - 50); // Storage coordinates in decimeters
+      const storageY = (pos.y - 50);
+      
+      // Show live coordinates in toolbar
+      draggedBoatCoords.value = {
+        x: Math.round(storageX * 10) / 10, // Round to 1 decimal
+        y: Math.round(storageY * 10) / 10,
+        rotation: placement.position.rotation
+      };
+      
       const tempPlacement = {
         ...placement,
         position: {
           ...placement.position,
-          x: (pos.x - 50),
-          y: (pos.y - 50)
+          x: storageX,
+          y: storageY
         }
       };
 
@@ -1864,6 +1889,9 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     const pos = boatGroup.position();
     const newX = (pos.x - 50); // Position i decimeter
     const newY = (pos.y - 50); // Position i decimeter
+
+    // Clear live coordinates display
+    draggedBoatCoords.value = null;
 
     console.log(`Boat moved to: ${newX.toFixed(1)}, ${newY.toFixed(1)} decimeter`);
 
@@ -3298,6 +3326,25 @@ onMounted(async () => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Live Coordinates Display */
+.coords-display {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.coord-value {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  min-width: 60px;
+  text-align: center;
 }
 
 /* Konva Canvas */
