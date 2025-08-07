@@ -439,7 +439,7 @@
                   <MapPin class="inline w-3 h-3 mr-1" />
                   {{ getBoatStorageInfo(boat.id) }}
                 </p>
-                <button 
+                <button
                   v-if="boat.current_status !== 'oplacerad'"
                   @click.stop="navigateToBoatStorage(boat)"
                   class="map-button"
@@ -760,12 +760,12 @@ const filteredStorages = computed(() => {
 const isBoatCompatibleWithStorage = (boat: Boat, storage: Storage) => {
   const storageType = storage.Type.toLowerCase();
   const boatLocationStatus = boat.location_status.toLowerCase();
-  
+
   // lager = warehouse, brygga = dock
   if (storageType === 'lager' && (boatLocationStatus.includes('lager') || boatLocationStatus === 'lager')) return true;
   if (storageType === 'brygga' && (boatLocationStatus.includes('brygga') || boatLocationStatus === 'brygga')) return true;
   if (boatLocationStatus === 'lager_brygga') return true; // Can go anywhere
-  
+
   return false;
 };
 
@@ -780,19 +780,19 @@ const getBoatLocationCompatibility = (boat: Boat) => {
 
 // Smart boat filtering based on selected storage
 const filteredBoats = computed(() => {
-  let boats = boatSearchQuery.value
+  let filteredBoatList = boatSearchQuery.value
     ? boats.value.filter(boat =>
         boat.name.toLowerCase().includes(boatSearchQuery.value.toLowerCase()) ||
         boat.registreringsnummer.toLowerCase().includes(boatSearchQuery.value.toLowerCase())
       )
     : boats.value;
 
-  // Smart filtering based on selected storage
+    // Smart filtering based on selected storage
   if (selectedStorage.value) {
     // Show boats that are:
     // 1. Unplaced (oplacerad) AND compatible with this storage type
     // 2. Placed/Reserved in THIS specific storage
-    boats = boats.filter(boat => {
+    filteredBoatList = filteredBoatList.filter(boat => {
       if (boat.current_status === 'oplacerad') {
         return isBoatCompatibleWithStorage(boat, selectedStorage.value!);
       } else {
@@ -806,11 +806,11 @@ const filteredBoats = computed(() => {
     });
   } else {
     // No storage selected: show only unplaced boats
-    boats = boats.filter(boat => boat.current_status === 'oplacerad');
+    filteredBoatList = filteredBoatList.filter(boat => boat.current_status === 'oplacerad');
   }
 
   // Sort boats: oplacerad first, then by name
-  return boats.sort((a, b) => {
+  return filteredBoatList.sort((a, b) => {
     // First sort by status (oplacerad first)
     if (a.current_status === 'oplacerad' && b.current_status !== 'oplacerad') return -1;
     if (a.current_status !== 'oplacerad' && b.current_status === 'oplacerad') return 1;
@@ -2103,7 +2103,7 @@ const selectFloor = (floorNumber: number) => {
 const selectBoat = (boat: Boat) => {
   selectedBoat.value = boat;
   selectedBoatForNavigation.value = boat;
-  
+
   // If boat is placed/reserved, automatically navigate to its storage
   if (boat.current_status !== 'oplacerad') {
     const placement = placements.value.find(p => p.boat_id === boat.id);
@@ -2115,7 +2115,7 @@ const selectBoat = (boat: Boat) => {
       }
     }
   }
-  
+
   console.log('Selected boat:', boat.name);
 };
 
