@@ -1,245 +1,27 @@
 [
   {
     "id": 1,
-    "storage_id": 20,
-    "storage_name": "Huvudbrygga A",
-    "storage_type": "Brygga",
-    "restriction_zones": [
-      {
-        "id": 1,
-        "name": "BY 1",
-        "x": 25.0,
-        "y": 0.5,
-        "width": 4.0,
-        "height": 1.0
-      },
-      {
-        "id": 2,
-        "name": "BY 2",
-        "x": 55.0,
-        "y": 0.8,
-        "width": 6.0,
-        "height": 0.8
-      },
-      {
-        "id": 3,
-        "name": "BY 3",
-        "x": 85.0,
-        "y": 0.4,
-        "width": 3.0,
-        "height": 1.2
-      }
-    ],
-    "storage_dimensions": {
-      "length": 102.0,
-      "width": 2.0
-    },
-    "created": "2024-01-15T10:00:00Z",
-    "modified": "2024-01-15T14:30:00Z"
-  },
-  {
-    "id": 2,
-    "storage_id": 21,
-    "storage_name": "Servicebrygga D",
-    "storage_type": "Brygga",
-    "restriction_zones": [
-      {
-        "id": 1,
-        "name": "BY 1",
-        "x": 40.0,
-        "y": 0.3,
-        "width": 3.0,
-        "height": 1.0
-      },
-      {
-        "id": 2,
-        "name": "BY 2",
-        "x": 80.0,
-        "y": 0.6,
-        "width": 5.0,
-        "height": 0.8
-      }
-    ],
-    "storage_dimensions": {
-      "length": 120.6,
-      "width": 2.0
-    },
-    "created": "2024-01-15T11:15:00Z",
-    "modified": "2024-01-15T15:45:00Z"
-  },
-  {
-    "id": 3,
-    "storage_id": 2,
-    "storage_name": "Gästbrygga B",
-    "storage_type": "Brygga",
-    "restriction_zones": [
-      {
-        "id": 1,
-        "name": "BY 1",
-        "x": 50.0,
-        "y": 0.4,
-        "width": 4.0,
-        "height": 1.0
-      },
-      {
-        "id": 2,
-        "name": "BY 2",
-        "x": 90.0,
-        "y": 0.7,
-        "width": 6.0,
-        "height": 0.8
-      }
-    ],
-    "storage_dimensions": {
-      "length": 132.0,
-      "width": 2.0
-    },
-    "created": "2024-01-15T11:20:00Z",
-    "modified": "2024-01-15T15:50:00Z"
-  },
-  {
-    "id": 4,
-    "storage_id": 6,
-    "storage_name": "Båthall Nord",
-    "storage_type": "Lager",
-    "restriction_zones": [
-      {
-        "id": 1,
-        "name": "BY 1",
-        "x": 15.0,
-        "y": 8.0,
-        "width": 4.0,
-        "height": 3.0
-      },
-      {
-        "id": 2,
-        "name": "BY 2",
-        "x": 30.0,
-        "y": 18.0,
-        "width": 6.0,
-        "height": 4.0
-      },
-      {
-        "id": 3,
-        "name": "BY 3",
-        "x": 45.0,
-        "y": 5.0,
-        "width": 8.0,
-        "height": 6.0
-      },
-      {
-        "id": 4,
-        "name": "BY 4",
-        "x": 10.0,
-        "y": 25.0,
-        "width": 12.0,
-        "height": 3.0
-      }
-    ],
-    "storage_dimensions": {
-      "length": 61.0,
-      "width": 35.0
-    },
-    "created": "2024-01-15T12:30:00Z",
-    "modified": "2024-01-15T16:20:00Z"
-  },
-  {
-    "id": 5,
-    "storage_id": 7,
-    "storage_name": "Utomhuslager Syd",
-    "storage_type": "Lager",
-    "restriction_zones": [
-      {
-        "id": 1,
-        "name": "BY 1",
-        "x": 8.0,
-        "y": 5.0,
-        "width": 3.0,
-        "height": 4.0
-      },
-      {
-        "id": 2,
-        "name": "BY 2",
-        "x": 20.0,
-        "y": 12.0,
-        "width": 5.0,
-        "height": 2.5
-      },
-      {
-        "id": 3,
-        "name": "BY 3",
-        "x": 30.0,
-        "y": 8.0,
-        "width": 4.0,
-        "height": 6.0
-      }
-    ],
-    "storage_dimensions": {
-      "length": 38.0,
-      "width": 25.0
-    },
-    "created": "2024-01-15T13:45:00Z",
-    "modified": "2024-01-15T17:10:00Z"
-  },
-  {
-    "id": 6,
-    "storage_id": 8,
-    "storage_name": "Täckt lager Väst",
-    "storage_type": "Lager",
-    "restriction_zones": [
-      {
-        "id": 1,
-        "name": "BY 1",
-        "x": 12.0,
-        "y": 3.0,
-        "width": 2.5,
-        "height": 2.0
-      },
-      {
-        "id": 2,
-        "name": "BY 2",
-        "x": 20.0,
-        "y": 7.0,
-        "width": 3.0,
-        "height": 2.5
-      }
-    ],
-    "storage_dimensions": {
-      "length": 28.0,
-      "width": 11.0
-    },
-    "created": "2024-01-15T14:20:00Z",
-    "modified": "2024-01-15T18:00:00Z"
-  },
-  {
-    "id": 7,
     "storage_id": 1,
     "storage_name": "Huvudlager A",
     "storage_type": "Lager",
     "restriction_zones": [
       {
         "id": 1,
-        "name": "BY 1",
-        "x": 10.0,
-        "y": 6.0,
-        "width": 5.0,
-        "height": 3.0
+        "name": "Huvudingång",
+        "x": 0,
+        "y": 12,
+        "width": 4,
+        "height": 6,
+        "description": "Huvudingång till lagret"
       },
       {
         "id": 2,
-        "name": "BY 2",
-        "x": 25.0,
-        "y": 15.0,
-        "width": 8.0,
-        "height": 4.0
-      },
-      {
-        "id": 3,
-        "name": "BY 3",
-        "x": 35.0,
-        "y": 8.0,
-        "width": 6.0,
-        "height": 5.0
+        "name": "Nödutgång",
+        "x": 41,
+        "y": 8,
+        "width": 4,
+        "height": 4,
+        "description": "Nödutgång på motsatt sida"
       }
     ],
     "storage_dimensions": {
@@ -250,41 +32,172 @@
     "modified": "2024-01-15T13:45:00Z"
   },
   {
-    "id": 8,
+    "id": 2,
+    "storage_id": 2,
+    "storage_name": "Huvudlager B",
+    "storage_type": "Lager",
+    "restriction_zones": [
+      {
+        "id": 1,
+        "name": "Huvudingång",
+        "x": 0,
+        "y": 15,
+        "width": 3,
+        "height": 5,
+        "description": "Huvudingång från väster"
+      },
+      {
+        "id": 2,
+        "name": "Lastintag",
+        "x": 42,
+        "y": 10,
+        "width": 3,
+        "height": 8,
+        "description": "Stor lastintag för stora båtar"
+      }
+    ],
+    "storage_dimensions": {
+      "length": 45.0,
+      "width": 35.0
+    },
+    "created": "2024-01-15T09:30:00Z",
+    "modified": "2024-01-15T14:15:00Z"
+  },
+  {
+    "id": 3,
+    "storage_id": 3,
+    "storage_name": "Småbåtslager",
+    "storage_type": "Lager",
+    "restriction_zones": [
+      {
+        "id": 1,
+        "name": "Ingång",
+        "x": 0,
+        "y": 8,
+        "width": 3,
+        "height": 4,
+        "description": "Enda ingång för småbåtar"
+      }
+    ],
+    "storage_dimensions": {
+      "length": 40.0,
+      "width": 25.0
+    },
+    "created": "2024-01-15T10:00:00Z",
+    "modified": "2024-01-15T14:30:00Z"
+  },
+  {
+    "id": 4,
     "storage_id": 4,
     "storage_name": "Stockholm Centrallager",
     "storage_type": "Lager",
     "restriction_zones": [
       {
         "id": 1,
-        "name": "BY 1",
-        "x": 12.0,
-        "y": 8.0,
-        "width": 6.0,
-        "height": 4.0
+        "name": "Huvudingång",
+        "x": 0,
+        "y": 20,
+        "width": 4,
+        "height": 8,
+        "description": "Huvudingång södra sidan"
       },
       {
         "id": 2,
-        "name": "BY 2",
-        "x": 30.0,
-        "y": 18.0,
-        "width": 8.0,
-        "height": 5.0
+        "name": "Serviceingång",
+        "x": 56,
+        "y": 15,
+        "width": 4,
+        "height": 5,
+        "description": "Serviceingång norra sidan"
       },
       {
         "id": 3,
-        "name": "BY 3",
-        "x": 42.0,
-        "y": 12.0,
-        "width": 7.0,
-        "height": 6.0
+        "name": "Lastkai",
+        "x": 25,
+        "y": 0,
+        "width": 10,
+        "height": 3,
+        "description": "Lastkai för tunga båtar"
       }
     ],
     "storage_dimensions": {
-      "length": 52.0,
-      "width": 32.0
+      "length": 60.0,
+      "width": 40.0
     },
     "created": "2024-01-15T11:30:00Z",
     "modified": "2024-01-15T15:20:00Z"
+  },
+  {
+    "id": 5,
+    "storage_id": 5,
+    "storage_name": "Göteborg Hamn",
+    "storage_type": "Lager",
+    "restriction_zones": [
+      {
+        "id": 1,
+        "name": "Hamnport",
+        "x": 0,
+        "y": 10,
+        "width": 4,
+        "height": 8,
+        "description": "Hamnport mot kajkanten"
+      },
+      {
+        "id": 2,
+        "name": "Nödutgång",
+        "x": 51,
+        "y": 8,
+        "width": 4,
+        "height": 4,
+        "description": "Nödutgång mot landsidan"
+      }
+    ],
+    "storage_dimensions": {
+      "length": 55.0,
+      "width": 30.0
+    },
+    "created": "2024-01-15T12:00:00Z",
+    "modified": "2024-01-15T16:00:00Z"
+  },
+  {
+    "id": 6,
+    "storage_id": 6,
+    "storage_name": "Båthall Nord",
+    "storage_type": "Lager",
+    "restriction_zones": [
+      {
+        "id": 1,
+        "name": "Huvudingång",
+        "x": 0,
+        "y": 18,
+        "width": 5,
+        "height": 10,
+        "description": "Stora huvudingången"
+      },
+      {
+        "id": 2,
+        "name": "Sidoingång",
+        "x": 65,
+        "y": 15,
+        "width": 5,
+        "height": 6,
+        "description": "Sidoingång för mindre båtar"
+      },
+      {
+        "id": 3,
+        "name": "Kranport",
+        "x": 30,
+        "y": 0,
+        "width": 12,
+        "height": 4,
+        "description": "Port för kranlastning"
+      }
+    ],
+    "storage_dimensions": {
+      "length": 70.0,
+      "width": 45.0
+    },
+    "created": "2024-01-15T12:30:00Z",
+    "modified": "2024-01-15T16:20:00Z"
   }
 ]

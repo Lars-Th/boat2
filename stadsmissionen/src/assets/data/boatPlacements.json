@@ -1,82 +1,2002 @@
 [
   {
     "id": 1,
-    "boat_id": 1,
-    "storage_unit_id": 1,
-    "storage_unit_name": "Huvudlager A",
-    "floor_number": 1,
-    "status": "oplacerad",
-    "position": {
-      "x": 152,
-      "y": 105,
-      "rotation": 0
-    },
-    "placed_by_user_id": 1,
-    "placed_date": "2024-01-20T10:30:00Z",
-    "reservation_date": "2024-01-20T10:30:00Z",
-    "physical_placement_date": null,
-    "notes": "Reserverad för vinterförvaring",
-    "created_at": "2024-01-20T10:30:00Z",
-    "updated_at": "2024-01-20T10:30:00Z"
-  },
-  {
-    "id": 2,
-    "boat_id": 2,
-    "storage_unit_id": 20,
-    "storage_unit_name": "Huvudbrygga A",
+    "boat_id": 19,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 458,
-      "y": 1,
+      "x": 5.428742616520744,
+      "y": 1.978157146579122,
       "rotation": 0
     },
     "placed_by_user_id": 1,
-    "placed_date": "2024-04-15T08:00:00Z",
-    "reservation_date": "2024-04-10T14:00:00Z",
-    "physical_placement_date": "2024-04-15T08:00:00Z",
-    "notes": "Säsongsplats - stor segelbåt",
-    "created_at": "2024-04-10T14:00:00Z",
-    "updated_at": "2024-04-15T08:30:00Z"
+    "placed_date": "2024-11-15T15:14:13.866272Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-21T15:14:13.866287Z",
+    "notes": "Automatiskt genererad placement för Blue Diamond i Gästbrygga",
+    "created_at": "2024-08-04T15:14:13.866291Z",
+    "updated_at": "2025-07-11T15:14:13.866293Z"
+  },
+  {
+    "id": 2,
+    "boat_id": 6,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 11.972206338382266,
+      "y": 1.7500736494774303,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-06-08T15:14:13.866303Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-21T15:14:13.866306Z",
+    "notes": "Automatiskt genererad placement för Ocean Rider i Servicebrygga",
+    "created_at": "2025-01-14T15:14:13.866308Z",
+    "updated_at": "2025-07-19T15:14:13.866309Z"
   },
   {
     "id": 3,
+    "boat_id": 8,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 33.6,
+      "y": 9.8,
+      "rotation": 90
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-11-28T15:14:13.866326Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-18T15:14:13.866328Z",
+    "notes": "Automatiskt genererad placement för Sea Legend i Huvudlager A",
+    "created_at": "2024-11-07T15:14:13.866329Z",
+    "updated_at": "2025-07-17T15:14:13.866331Z"
+  },
+  {
+    "id": 4,
+    "boat_id": 24,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "oplacerad",
+    "position": {
+      "x": 3.904852895223602,
+      "y": 1.751545488733559,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-03-09T15:14:13.866336Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Nordic Star i Servicebrygga",
+    "created_at": "2024-08-22T15:14:13.866337Z",
+    "updated_at": "2025-07-22T15:14:13.866339Z"
+  },
+  {
+    "id": 5,
+    "boat_id": 28,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 15.5,
+      "y": 11.7,
+      "rotation": 90
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-06-28T15:14:13.866346Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-27T15:14:13.866347Z",
+    "notes": "Automatiskt genererad placement för Ocean Dream i Huvudlager B",
+    "created_at": "2025-01-14T15:14:13.866349Z",
+    "updated_at": "2025-07-22T15:14:13.866350Z"
+  },
+  {
+    "id": 6,
+    "boat_id": 4,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 12.9,
+      "y": 27.4,
+      "rotation": 90
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-03-05T15:14:13.866360Z",
+    "reservation_date": "2025-07-13T15:14:13.866361Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Dancer i Huvudlager B",
+    "created_at": "2024-09-14T15:14:13.866363Z",
+    "updated_at": "2025-07-24T15:14:13.866364Z"
+  },
+  {
+    "id": 7,
+    "boat_id": 23,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 21.47611693152999,
+      "y": 1.866416765437373,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-02-01T15:14:13.866368Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-13T15:14:13.866370Z",
+    "notes": "Automatiskt genererad placement för Ocean King i Gästbrygga",
+    "created_at": "2024-12-03T15:14:13.866371Z",
+    "updated_at": "2025-07-22T15:14:13.866373Z"
+  },
+  {
+    "id": 8,
+    "boat_id": 48,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "oplacerad",
+    "position": {
+      "x": 34.51600084349511,
+      "y": 1.1193750132944045,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-04-02T15:14:13.866377Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Star Hunter i Huvudbrygga A",
+    "created_at": "2025-06-11T15:14:13.866379Z",
+    "updated_at": "2025-07-24T15:14:13.866380Z"
+  },
+  {
+    "id": 9,
+    "boat_id": 11,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 3.6,
+      "y": 2.5,
+      "rotation": 90
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-03-26T15:14:13.866385Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-18T15:14:13.866387Z",
+    "notes": "Automatiskt genererad placement för Star Sailor i Stockholm Centrallager",
+    "created_at": "2025-01-14T15:14:13.866388Z",
+    "updated_at": "2025-07-22T15:14:13.866389Z"
+  },
+  {
+    "id": 10,
+    "boat_id": 14,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 9.6,
+      "y": 16.9,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-02-28T15:14:13.866394Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-21T15:14:13.866396Z",
+    "notes": "Automatiskt genererad placement för Ocean Pearl i Göteborg Hamn",
+    "created_at": "2025-06-17T15:14:13.866397Z",
+    "updated_at": "2025-07-18T15:14:13.866398Z"
+  },
+  {
+    "id": 11,
+    "boat_id": 33,
+    "storage_unit_id": 21,
+    "storage_unit_name": "Huvudbrygga B",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 7.72757169751607,
+      "y": 1.4378559624352114,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-06-22T15:14:13.866402Z",
+    "reservation_date": "2025-07-30T15:14:13.866403Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Ocean Crown i Huvudbrygga B",
+    "created_at": "2025-02-15T15:14:13.866405Z",
+    "updated_at": "2025-08-04T15:14:13.866406Z"
+  },
+  {
+    "id": 12,
+    "boat_id": 2,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 33.8,
+      "y": 3.3,
+      "rotation": 90
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-03-07T15:14:13.866413Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-23T15:14:13.866414Z",
+    "notes": "Automatiskt genererad placement för Storm Rider i Göteborg Hamn",
+    "created_at": "2025-06-21T15:14:13.866416Z",
+    "updated_at": "2025-07-21T15:14:13.866417Z"
+  },
+  {
+    "id": 13,
+    "boat_id": 8,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 2,
+    "status": "oplacerad",
+    "position": {
+      "x": 2.8,
+      "y": 2.9,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2024-09-13T15:14:13.866425Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sea Legend i Huvudlager B",
+    "created_at": "2025-03-04T15:14:13.866427Z",
+    "updated_at": "2025-07-29T15:14:13.866441Z"
+  },
+  {
+    "id": 14,
+    "boat_id": 26,
+    "storage_unit_id": 3,
+    "storage_unit_name": "Småbåtslager",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 3.7,
+      "y": 15.0,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-08-02T15:14:13.866448Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-20T15:14:13.866450Z",
+    "notes": "Automatiskt genererad placement för Windchaser i Småbåtslager",
+    "created_at": "2024-12-28T15:14:13.866451Z",
+    "updated_at": "2025-08-01T15:14:13.866453Z"
+  },
+  {
+    "id": 15,
+    "boat_id": 47,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 1.3,
+      "y": 3.7,
+      "rotation": 90
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-05-05T15:14:13.866461Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-01T15:14:13.866463Z",
+    "notes": "Automatiskt genererad placement för Stella Maris i Göteborg Hamn",
+    "created_at": "2025-05-17T15:14:13.866464Z",
+    "updated_at": "2025-07-12T15:14:13.866466Z"
+  },
+  {
+    "id": 16,
+    "boat_id": 42,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 30.348116908555433,
+      "y": 0.7026044357844652,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-08-04T15:14:13.866469Z",
+    "reservation_date": "2025-07-20T15:14:13.866471Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Green Leaf i Gästbrygga",
+    "created_at": "2025-05-07T15:14:13.866472Z",
+    "updated_at": "2025-07-23T15:14:13.866473Z"
+  },
+  {
+    "id": 17,
+    "boat_id": 8,
+    "storage_unit_id": 21,
+    "storage_unit_name": "Huvudbrygga B",
+    "floor_number": 0,
+    "status": "oplacerad",
+    "position": {
+      "x": 38.2176889936483,
+      "y": 1.7020970242554019,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-04-04T15:14:13.866477Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sea Legend i Huvudbrygga B",
+    "created_at": "2025-04-26T15:14:13.866478Z",
+    "updated_at": "2025-07-20T15:14:13.866480Z"
+  },
+  {
+    "id": 18,
+    "boat_id": 10,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 11.974505134991517,
+      "y": 0.8516248760963021,
+      "rotation": 180
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-08-19T15:14:13.866486Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-02T15:14:13.866488Z",
+    "notes": "Automatiskt genererad placement för Wind Song i Servicebrygga",
+    "created_at": "2024-10-16T15:14:13.866489Z",
+    "updated_at": "2025-07-19T15:14:13.866490Z"
+  },
+  {
+    "id": 19,
+    "boat_id": 49,
+    "storage_unit_id": 3,
+    "storage_unit_name": "Småbåtslager",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 22.8,
+      "y": 3.1,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-01-28T15:14:13.866496Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-14T15:14:13.866497Z",
+    "notes": "Automatiskt genererad placement för Wind Dancer i Småbåtslager",
+    "created_at": "2024-09-28T15:14:13.866499Z",
+    "updated_at": "2025-08-05T15:14:13.866500Z"
+  },
+  {
+    "id": 20,
+    "boat_id": 18,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 16.040664182939988,
+      "y": 1.5303602959018445,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-05-23T15:14:13.866504Z",
+    "reservation_date": "2025-07-14T15:14:13.866505Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Moon Shadow i Servicebrygga",
+    "created_at": "2024-12-01T15:14:13.866507Z",
+    "updated_at": "2025-08-06T15:14:13.866508Z"
+  },
+  {
+    "id": 21,
+    "boat_id": 25,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "oplacerad",
+    "position": {
+      "x": 14.848259244710137,
+      "y": 0.654279215148394,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-12-17T15:14:13.866512Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Star Hunter i Gästbrygga",
+    "created_at": "2024-10-14T15:14:13.866514Z",
+    "updated_at": "2025-07-25T15:14:13.866516Z"
+  },
+  {
+    "id": 22,
+    "boat_id": 35,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 13.158083636943346,
+      "y": 1.1804466227533796,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-07-30T15:14:13.866520Z",
+    "reservation_date": "2025-07-28T15:14:13.866522Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Moon Dancer i Gästbrygga",
+    "created_at": "2024-10-05T15:14:13.866524Z",
+    "updated_at": "2025-07-20T15:14:13.866526Z"
+  },
+  {
+    "id": 23,
+    "boat_id": 25,
+    "storage_unit_id": 3,
+    "storage_unit_name": "Småbåtslager",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 9.144489037558754,
+      "y": 16.020946294450795,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-02-08T15:14:13.866563Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Star Hunter i Småbåtslager",
+    "created_at": "2025-06-10T15:14:13.866565Z",
+    "updated_at": "2025-07-25T15:14:13.866566Z"
+  },
+  {
+    "id": 24,
+    "boat_id": 40,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 2,
+    "status": "reserverad",
+    "position": {
+      "x": 31.6,
+      "y": 23.5,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-07-11T15:14:13.866573Z",
+    "reservation_date": "2025-07-24T15:14:13.866575Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Viking Spirit i Båthall Nord",
+    "created_at": "2025-04-15T15:14:13.866576Z",
+    "updated_at": "2025-07-31T15:14:13.866577Z"
+  },
+  {
+    "id": 25,
+    "boat_id": 11,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 2.0706227551146323,
+      "y": 1.6403968262944415,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-01-21T15:14:13.866581Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-04T15:14:13.866583Z",
+    "notes": "Automatiskt genererad placement för Star Sailor i Servicebrygga",
+    "created_at": "2024-12-29T15:14:13.866584Z",
+    "updated_at": "2025-07-08T15:14:13.866585Z"
+  },
+  {
+    "id": 26,
+    "boat_id": 31,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 15.231444591142923,
+      "y": 8.700044323307093,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-04T15:14:13.866622Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-23T15:14:13.866623Z",
+    "notes": "Automatiskt genererad placement för Green Leaf i Göteborg Hamn",
+    "created_at": "2025-06-25T15:14:13.866625Z",
+    "updated_at": "2025-07-18T15:14:13.866626Z"
+  },
+  {
+    "id": 27,
+    "boat_id": 28,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 3,
+    "status": "reserverad",
+    "position": {
+      "x": 44.1,
+      "y": 24.6,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-07-01T15:14:13.866636Z",
+    "reservation_date": "2025-07-25T15:14:13.866638Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Ocean Dream i Göteborg Hamn",
+    "created_at": "2025-05-19T15:14:13.866639Z",
+    "updated_at": "2025-07-27T15:14:13.866641Z"
+  },
+  {
+    "id": 28,
+    "boat_id": 29,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 26.4,
+      "y": 22.4,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2024-10-04T15:14:13.866646Z",
+    "reservation_date": "2025-07-09T15:14:13.866648Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Captain's Pride i Huvudlager A",
+    "created_at": "2025-07-20T15:14:13.866649Z",
+    "updated_at": "2025-07-26T15:14:13.866650Z"
+  },
+  {
+    "id": 29,
+    "boat_id": 44,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 4.0,
+      "y": 6.2,
+      "rotation": 90
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2024-10-31T15:14:13.866672Z",
+    "reservation_date": "2025-07-16T15:14:13.866673Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sea Princess i Huvudlager A",
+    "created_at": "2025-01-06T15:14:13.866675Z",
+    "updated_at": "2025-08-03T15:14:13.866676Z"
+  },
+  {
+    "id": 30,
+    "boat_id": 29,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 11.747268776185951,
+      "y": 1.0356843494545993,
+      "rotation": 180
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-11-13T15:14:13.866679Z",
+    "reservation_date": "2025-07-28T15:14:13.866681Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Captain's Pride i Gästbrygga",
+    "created_at": "2025-04-12T15:14:13.866682Z",
+    "updated_at": "2025-08-02T15:14:13.866684Z"
+  },
+  {
+    "id": 31,
+    "boat_id": 20,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 41.38534926203127,
+      "y": 5.8647480977751,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-05-28T15:14:13.866726Z",
+    "reservation_date": "2025-08-01T15:14:13.866727Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Rose i Göteborg Hamn",
+    "created_at": "2024-11-17T15:14:13.866729Z",
+    "updated_at": "2025-08-03T15:14:13.866730Z"
+  },
+  {
+    "id": 32,
+    "boat_id": 49,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 29.992422185702832,
+      "y": 0.5110887199252205,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-05-04T15:14:13.866734Z",
+    "reservation_date": "2025-07-26T15:14:13.866735Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Dancer i Huvudbrygga A",
+    "created_at": "2025-04-15T15:14:13.866736Z",
+    "updated_at": "2025-08-06T15:14:13.866738Z"
+  },
+  {
+    "id": 33,
+    "boat_id": 39,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 19.362120625056455,
+      "y": 0.9097077736067088,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-08-16T15:14:13.866741Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-26T15:14:13.866743Z",
+    "notes": "Automatiskt genererad placement för Wind Walker i Gästbrygga",
+    "created_at": "2024-07-07T15:14:13.866746Z",
+    "updated_at": "2025-07-18T15:14:13.866747Z"
+  },
+  {
+    "id": 34,
     "boat_id": 5,
+    "storage_unit_id": 21,
+    "storage_unit_name": "Huvudbrygga B",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 39.1804952774893,
+      "y": 1.1149446152447386,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2024-08-23T15:14:13.866751Z",
+    "reservation_date": "2025-07-13T15:14:13.866753Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sun Ray i Huvudbrygga B",
+    "created_at": "2024-12-09T15:14:13.866754Z",
+    "updated_at": "2025-07-19T15:14:13.866756Z"
+  },
+  {
+    "id": 35,
+    "boat_id": 14,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 32.6,
+      "y": 1.4,
+      "rotation": 90
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-06-16T15:14:13.866763Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-23T15:14:13.866764Z",
+    "notes": "Automatiskt genererad placement för Ocean Pearl i Båthall Nord",
+    "created_at": "2024-10-28T15:14:13.866766Z",
+    "updated_at": "2025-07-12T15:14:13.866767Z"
+  },
+  {
+    "id": 36,
+    "boat_id": 32,
     "storage_unit_id": 4,
     "storage_unit_name": "Stockholm Centrallager",
     "floor_number": 2,
     "status": "placerad",
     "position": {
-      "x": 253,
-      "y": 158,
+      "x": 40.8,
+      "y": 6.9,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-08-07T15:14:13.866773Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-22T15:14:13.866774Z",
+    "notes": "Automatiskt genererad placement för Wind Walker i Stockholm Centrallager",
+    "created_at": "2024-12-03T15:14:13.866776Z",
+    "updated_at": "2025-07-26T15:14:13.866777Z"
+  },
+  {
+    "id": 37,
+    "boat_id": 2,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 16.29043290536581,
+      "y": 1.5683879846773556,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-03-06T15:14:13.866781Z",
+    "reservation_date": "2025-08-01T15:14:13.866782Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Rider i Gästbrygga",
+    "created_at": "2024-07-21T15:14:13.866784Z",
+    "updated_at": "2025-07-22T15:14:13.866785Z"
+  },
+  {
+    "id": 38,
+    "boat_id": 32,
+    "storage_unit_id": 21,
+    "storage_unit_name": "Huvudbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 18.25587025115705,
+      "y": 1.5620884397845627,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-07-09T15:14:13.866789Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-02T15:14:13.866790Z",
+    "notes": "Automatiskt genererad placement för Wind Walker i Huvudbrygga B",
+    "created_at": "2024-11-27T15:14:13.866792Z",
+    "updated_at": "2025-07-21T15:14:13.866793Z"
+  },
+  {
+    "id": 39,
+    "boat_id": 31,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 15.6,
+      "y": 23.1,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-11-09T15:14:13.866798Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-02-23T15:14:13.866800Z",
+    "notes": "Automatiskt genererad placement för Green Leaf i Stockholm Centrallager",
+    "created_at": "2024-09-10T15:14:13.866801Z",
+    "updated_at": "2025-07-15T15:14:13.866803Z"
+  },
+  {
+    "id": 40,
+    "boat_id": 39,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 19.3,
+      "y": 41.1,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-11-26T15:14:13.866814Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-02-26T15:14:13.866816Z",
+    "notes": "Automatiskt genererad placement för Wind Walker i Båthall Nord",
+    "created_at": "2025-05-30T15:14:13.866817Z",
+    "updated_at": "2025-08-01T15:14:13.866819Z"
+  },
+  {
+    "id": 41,
+    "boat_id": 38,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 1.1228321302606699,
+      "y": 8.65922822940843,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-04-12T15:14:13.866856Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-10T15:14:13.866858Z",
+    "notes": "Automatiskt genererad placement för Nordic Star i Huvudlager B",
+    "created_at": "2025-06-28T15:14:13.866860Z",
+    "updated_at": "2025-07-09T15:14:13.866861Z"
+  },
+  {
+    "id": 42,
+    "boat_id": 35,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 32.1,
+      "y": 4.2,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-05-08T15:14:13.866900Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-04T15:14:13.866902Z",
+    "notes": "Automatiskt genererad placement för Moon Dancer i Huvudlager B",
+    "created_at": "2025-04-23T15:14:13.866903Z",
+    "updated_at": "2025-07-09T15:14:13.866904Z"
+  },
+  {
+    "id": 43,
+    "boat_id": 32,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 29.12351254602133,
+      "y": 1.9355445144801373,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-10-03T15:14:13.866908Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-28T15:14:13.866909Z",
+    "notes": "Automatiskt genererad placement för Wind Walker i Huvudbrygga A",
+    "created_at": "2025-03-07T15:14:13.866911Z",
+    "updated_at": "2025-07-28T15:14:13.866912Z"
+  },
+  {
+    "id": 44,
+    "boat_id": 21,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 31.3,
+      "y": 1.1,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-01-12T15:14:13.866919Z",
+    "reservation_date": "2025-07-30T15:14:13.866921Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Rider i Huvudlager A",
+    "created_at": "2025-02-12T15:14:13.866922Z",
+    "updated_at": "2025-07-19T15:14:13.866924Z"
+  },
+  {
+    "id": 45,
+    "boat_id": 44,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 13.544159814009012,
+      "y": 1.9227468674686685,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-05-14T15:14:13.866927Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-05T15:14:13.866929Z",
+    "notes": "Automatiskt genererad placement för Sea Princess i Servicebrygga",
+    "created_at": "2025-04-30T15:14:13.866930Z",
+    "updated_at": "2025-07-14T15:14:13.866932Z"
+  },
+  {
+    "id": 46,
+    "boat_id": 20,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 16.728290491627305,
+      "y": 0.5675944918235591,
+      "rotation": 180
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-11-04T15:14:13.866935Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-12T15:14:13.866937Z",
+    "notes": "Automatiskt genererad placement för Wind Rose i Huvudbrygga A",
+    "created_at": "2025-06-12T15:14:13.866938Z",
+    "updated_at": "2025-08-04T15:14:13.866940Z"
+  },
+  {
+    "id": 47,
+    "boat_id": 2,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 32.5,
+      "y": 12.3,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2024-09-01T15:14:13.866947Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Rider i Huvudlager B",
+    "created_at": "2025-03-01T15:14:13.866948Z",
+    "updated_at": "2025-07-23T15:14:13.866950Z"
+  },
+  {
+    "id": 48,
+    "boat_id": 32,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 36.186037865091436,
+      "y": 17.086549579627203,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-08-10T15:14:13.866990Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Walker i Huvudlager B",
+    "created_at": "2025-05-12T15:14:13.866992Z",
+    "updated_at": "2025-07-18T15:14:13.866993Z"
+  },
+  {
+    "id": 49,
+    "boat_id": 26,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 3.9,
+      "y": 22.8,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-03-29T15:14:13.867005Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-06T15:14:13.867006Z",
+    "notes": "Automatiskt genererad placement för Windchaser i Huvudlager A",
+    "created_at": "2024-08-30T15:14:13.867008Z",
+    "updated_at": "2025-07-13T15:14:13.867009Z"
+  },
+  {
+    "id": 50,
+    "boat_id": 41,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 19.944533647970843,
+      "y": 1.6294802487470488,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-04-16T15:14:13.867013Z",
+    "reservation_date": "2025-07-16T15:14:13.867015Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Chaser i Gästbrygga",
+    "created_at": "2024-08-25T15:14:13.867016Z",
+    "updated_at": "2025-07-30T15:14:13.867017Z"
+  },
+  {
+    "id": 51,
+    "boat_id": 41,
+    "storage_unit_id": 21,
+    "storage_unit_name": "Huvudbrygga B",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 33.18335287024906,
+      "y": 0.5288084560053384,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-06-21T15:14:13.867021Z",
+    "reservation_date": "2025-07-15T15:14:13.867022Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Chaser i Huvudbrygga B",
+    "created_at": "2024-10-29T15:14:13.867023Z",
+    "updated_at": "2025-07-30T15:14:13.867025Z"
+  },
+  {
+    "id": 52,
+    "boat_id": 3,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 59.2,
+      "y": 35.8,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-02-02T15:14:13.867032Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-23T15:14:13.867034Z",
+    "notes": "Automatiskt genererad placement för Wave Master i Båthall Nord",
+    "created_at": "2025-06-23T15:14:13.867035Z",
+    "updated_at": "2025-07-19T15:14:13.867036Z"
+  },
+  {
+    "id": 53,
+    "boat_id": 47,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 46.1,
+      "y": 36.0,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-08-05T15:14:13.867046Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-05T15:14:13.867047Z",
+    "notes": "Automatiskt genererad placement för Stella Maris i Stockholm Centrallager",
+    "created_at": "2025-05-14T15:14:13.867048Z",
+    "updated_at": "2025-08-03T15:14:13.867050Z"
+  },
+  {
+    "id": 54,
+    "boat_id": 19,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 19.875070493747167,
+      "y": 19.624038474691616,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-11-10T15:14:13.867087Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Blue Diamond i Göteborg Hamn",
+    "created_at": "2025-07-30T15:14:13.867089Z",
+    "updated_at": "2025-07-16T15:14:13.867091Z"
+  },
+  {
+    "id": 55,
+    "boat_id": 22,
+    "storage_unit_id": 3,
+    "storage_unit_name": "Småbåtslager",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 9.700695572079457,
+      "y": 3.153228393642651,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-05-28T15:14:13.867131Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-28T15:14:13.867133Z",
+    "notes": "Automatiskt genererad placement för Sea Breeze i Småbåtslager",
+    "created_at": "2024-10-16T15:14:13.867134Z",
+    "updated_at": "2025-07-26T15:14:13.867136Z"
+  },
+  {
+    "id": 56,
+    "boat_id": 19,
+    "storage_unit_id": 3,
+    "storage_unit_name": "Småbåtslager",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 12.484249898184784,
+      "y": 7.540474832186842,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-06-10T15:14:13.867178Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-07T15:14:13.867179Z",
+    "notes": "Automatiskt genererad placement för Blue Diamond i Småbåtslager",
+    "created_at": "2025-01-09T15:14:13.867181Z",
+    "updated_at": "2025-07-29T15:14:13.867183Z"
+  },
+  {
+    "id": 57,
+    "boat_id": 45,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 11.081676137070623,
+      "y": 0.6626964682354762,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-02-05T15:14:13.867187Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-03T15:14:13.867189Z",
+    "notes": "Automatiskt genererad placement för Sea Legend i Gästbrygga",
+    "created_at": "2025-06-12T15:14:13.867190Z",
+    "updated_at": "2025-07-24T15:14:13.867192Z"
+  },
+  {
+    "id": 58,
+    "boat_id": 27,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 25.764122486199504,
+      "y": 26.17856998455389,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-08-03T15:14:13.867234Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Chaser i Huvudlager A",
+    "created_at": "2025-04-07T15:14:13.867236Z",
+    "updated_at": "2025-07-25T15:14:13.867237Z"
+  },
+  {
+    "id": 59,
+    "boat_id": 49,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 51.025570945243125,
+      "y": 0.7656690141469318,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-09-17T15:14:13.867241Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-25T15:14:13.867242Z",
+    "notes": "Automatiskt genererad placement för Wind Dancer i Huvudbrygga A",
+    "created_at": "2024-09-06T15:14:13.867244Z",
+    "updated_at": "2025-07-11T15:14:13.867245Z"
+  },
+  {
+    "id": 60,
+    "boat_id": 16,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 28.710716002401128,
+      "y": 19.37284788561318,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-07-12T15:14:13.867286Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Viking Spirit i Stockholm Centrallager",
+    "created_at": "2025-05-11T15:14:13.867288Z",
+    "updated_at": "2025-07-31T15:14:13.867289Z"
+  },
+  {
+    "id": 61,
+    "boat_id": 16,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 1.5535625450667492,
+      "y": 11.759227988888034,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-09-15T15:14:13.867331Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Viking Spirit i Stockholm Centrallager",
+    "created_at": "2025-05-10T15:14:13.867333Z",
+    "updated_at": "2025-07-10T15:14:13.867334Z"
+  },
+  {
+    "id": 62,
+    "boat_id": 42,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 67.72362567772424,
+      "y": 1.4105576586174626,
+      "rotation": 180
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-08-22T15:14:13.867338Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-14T15:14:13.867339Z",
+    "notes": "Automatiskt genererad placement för Green Leaf i Huvudbrygga A",
+    "created_at": "2025-01-30T15:14:13.867341Z",
+    "updated_at": "2025-07-15T15:14:13.867342Z"
+  },
+  {
+    "id": 63,
+    "boat_id": 20,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "oplacerad",
+    "position": {
+      "x": 32.52756815507269,
+      "y": 1.437389002496021,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-06-30T15:14:13.867345Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Rose i Huvudbrygga A",
+    "created_at": "2025-07-26T15:14:13.867347Z",
+    "updated_at": "2025-07-19T15:14:13.867348Z"
+  },
+  {
+    "id": 64,
+    "boat_id": 18,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 11.639711106159572,
+      "y": 0.7975866038387912,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-06-16T15:14:13.867452Z",
+    "reservation_date": "2025-07-22T15:14:13.867455Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Moon Shadow i Gästbrygga",
+    "created_at": "2024-12-21T15:14:13.867456Z",
+    "updated_at": "2025-07-20T15:14:13.867458Z"
+  },
+  {
+    "id": 65,
+    "boat_id": 11,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 16.61727158030901,
+      "y": 1.8156073763878764,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-03-09T15:14:13.867461Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-13T15:14:13.867463Z",
+    "notes": "Automatiskt genererad placement för Star Sailor i Huvudbrygga A",
+    "created_at": "2024-07-15T15:14:13.867464Z",
+    "updated_at": "2025-07-19T15:14:13.867466Z"
+  },
+  {
+    "id": 66,
+    "boat_id": 41,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 19.881100600794344,
+      "y": 1.8930318515699298,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-05-19T15:14:13.867470Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-13T15:14:13.867471Z",
+    "notes": "Automatiskt genererad placement för Storm Chaser i Servicebrygga",
+    "created_at": "2025-03-14T15:14:13.867473Z",
+    "updated_at": "2025-07-16T15:14:13.867474Z"
+  },
+  {
+    "id": 67,
+    "boat_id": 27,
+    "storage_unit_id": 3,
+    "storage_unit_name": "Småbåtslager",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 3.8496748356603816,
+      "y": 15.670280453815243,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-06-08T15:14:13.867513Z",
+    "reservation_date": "2025-08-01T15:14:13.867514Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Chaser i Småbåtslager",
+    "created_at": "2025-04-25T15:14:13.867516Z",
+    "updated_at": "2025-07-18T15:14:13.867517Z"
+  },
+  {
+    "id": 68,
+    "boat_id": 46,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 14.443705646028263,
+      "y": 1.2634810687740914,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-05-10T15:14:13.867521Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-06T15:14:13.867523Z",
+    "notes": "Automatiskt genererad placement för Wind Rose i Servicebrygga",
+    "created_at": "2025-05-06T15:14:13.867525Z",
+    "updated_at": "2025-07-18T15:14:13.867526Z"
+  },
+  {
+    "id": 69,
+    "boat_id": 2,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 3,
+    "status": "placerad",
+    "position": {
+      "x": 53.8,
+      "y": 12.9,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-08-25T15:14:13.867536Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-16T15:14:13.867537Z",
+    "notes": "Automatiskt genererad placement för Storm Rider i Båthall Nord",
+    "created_at": "2025-07-23T15:14:13.867539Z",
+    "updated_at": "2025-07-10T15:14:13.867540Z"
+  },
+  {
+    "id": 70,
+    "boat_id": 12,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 30.737418889213554,
+      "y": 18.13169439147582,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2024-08-08T15:14:13.867605Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-02-19T15:14:13.867636Z",
+    "notes": "Automatiskt genererad placement för Wind Song i Huvudlager A",
+    "created_at": "2025-04-12T15:14:13.867640Z",
+    "updated_at": "2025-07-31T15:14:13.867642Z"
+  },
+  {
+    "id": 71,
+    "boat_id": 26,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 41.55597386923993,
+      "y": 1.498730604538828,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-06-20T15:14:13.867655Z",
+    "reservation_date": "2025-07-16T15:14:13.867657Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Windchaser i Huvudbrygga A",
+    "created_at": "2025-01-26T15:14:13.867658Z",
+    "updated_at": "2025-07-17T15:14:13.867660Z"
+  },
+  {
+    "id": 72,
+    "boat_id": 10,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 68.96977732002577,
+      "y": 1.9836493407025104,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-07-30T15:14:13.867674Z",
+    "reservation_date": "2025-07-27T15:14:13.867676Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Song i Huvudbrygga A",
+    "created_at": "2025-02-01T15:14:13.867677Z",
+    "updated_at": "2025-07-17T15:14:13.867678Z"
+  },
+  {
+    "id": 73,
+    "boat_id": 14,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 1.6246504362392176,
+      "y": 1.3347039818147834,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-08-22T15:14:13.867873Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-31T15:14:13.867875Z",
+    "notes": "Automatiskt genererad placement för Ocean Pearl i Servicebrygga",
+    "created_at": "2025-08-02T15:14:13.867877Z",
+    "updated_at": "2025-07-13T15:14:13.867878Z"
+  },
+  {
+    "id": 74,
+    "boat_id": 27,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 5.788940150276031,
+      "y": 1.4548082419679087,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-06-28T15:14:13.867883Z",
+    "reservation_date": "2025-07-11T15:14:13.867884Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Chaser i Servicebrygga",
+    "created_at": "2025-05-03T15:14:13.867886Z",
+    "updated_at": "2025-07-18T15:14:13.867887Z"
+  },
+  {
+    "id": 75,
+    "boat_id": 25,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 40.37514105847013,
+      "y": 1.4916260843701594,
+      "rotation": 180
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-04-26T15:14:13.867890Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-21T15:14:13.867892Z",
+    "notes": "Automatiskt genererad placement för Star Hunter i Huvudbrygga A",
+    "created_at": "2024-10-12T15:14:13.867894Z",
+    "updated_at": "2025-07-29T15:14:13.867895Z"
+  },
+  {
+    "id": 76,
+    "boat_id": 46,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 24.505265778951575,
+      "y": 7.021661434192898,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-07-21T15:14:13.867936Z",
+    "reservation_date": "2025-07-27T15:14:13.867937Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Rose i Göteborg Hamn",
+    "created_at": "2025-06-02T15:14:13.867939Z",
+    "updated_at": "2025-07-31T15:14:13.867940Z"
+  },
+  {
+    "id": 77,
+    "boat_id": 41,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 38.7,
+      "y": 39.2,
       "rotation": 90
     },
     "placed_by_user_id": 2,
-    "placed_date": "2024-11-01T09:15:00Z",
-    "reservation_date": "2024-10-25T12:00:00Z",
-    "physical_placement_date": "2024-11-01T09:15:00Z",
-    "notes": "Vinterförvaring våning 2",
-    "created_at": "2024-10-25T12:00:00Z",
-    "updated_at": "2024-11-01T09:30:00Z"
+    "placed_date": "2024-08-18T15:14:13.867952Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Storm Chaser i Båthall Nord",
+    "created_at": "2025-05-22T15:14:13.867954Z",
+    "updated_at": "2025-07-14T15:14:13.867955Z"
   },
   {
-    "id": 4,
-    "boat_id": 8,
+    "id": 78,
+    "boat_id": 50,
     "storage_unit_id": 6,
     "storage_unit_name": "Båthall Nord",
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 350,
-      "y": 202,
+      "x": 12.7,
+      "y": 33.9,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-06-13T15:14:13.867983Z",
+    "reservation_date": "2025-07-12T15:14:13.867984Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Ocean Tiger i Båthall Nord",
+    "created_at": "2025-03-28T15:14:13.867986Z",
+    "updated_at": "2025-07-14T15:14:13.867987Z"
+  },
+  {
+    "id": 79,
+    "boat_id": 32,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 24.94568011821022,
+      "y": 27.548566083520186,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-07-15T15:14:13.868029Z",
+    "reservation_date": "2025-07-12T15:14:13.868031Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Wind Walker i Huvudlager B",
+    "created_at": "2025-06-28T15:14:13.868032Z",
+    "updated_at": "2025-07-26T15:14:13.868034Z"
+  },
+  {
+    "id": 80,
+    "boat_id": 30,
+    "storage_unit_id": 21,
+    "storage_unit_name": "Huvudbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 33.351977416096084,
+      "y": 0.8302375908763331,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-01-02T15:14:13.868037Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-02T15:14:13.868039Z",
+    "notes": "Automatiskt genererad placement för Storm Rider i Huvudbrygga B",
+    "created_at": "2025-02-19T15:14:13.868041Z",
+    "updated_at": "2025-07-13T15:14:13.868042Z"
+  },
+  {
+    "id": 81,
+    "boat_id": 14,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 19.232413759426407,
+      "y": 21.668471370065696,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-11-07T15:14:13.868078Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-04-22T15:14:13.868080Z",
+    "notes": "Automatiskt genererad placement för Ocean Pearl i Huvudlager B",
+    "created_at": "2024-08-19T15:14:13.868081Z",
+    "updated_at": "2025-08-05T15:14:13.868082Z"
+  },
+  {
+    "id": 82,
+    "boat_id": 1,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 57.47323078905966,
+      "y": 0.7208265602122756,
+      "rotation": 180
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-02-08T15:14:13.868096Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-07T15:14:13.868098Z",
+    "notes": "Automatiskt genererad placement för Midnight Sun i Huvudbrygga A",
+    "created_at": "2025-02-03T15:14:13.868099Z",
+    "updated_at": "2025-07-17T15:14:13.868101Z"
+  },
+  {
+    "id": 83,
+    "boat_id": 36,
+    "storage_unit_id": 3,
+    "storage_unit_name": "Småbåtslager",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 15.819070464335475,
+      "y": 5.708368444008589,
       "rotation": 0
     },
     "placed_by_user_id": 1,
-    "placed_date": "2024-01-25T11:45:00Z",
-    "reservation_date": "2024-01-25T11:45:00Z",
+    "placed_date": "2024-09-22T15:14:13.868136Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-05-18T15:14:13.868138Z",
+    "notes": "Automatiskt genererad placement för Blue Diamond i Småbåtslager",
+    "created_at": "2024-10-12T15:14:13.868139Z",
+    "updated_at": "2025-07-23T15:14:13.868141Z"
+  },
+  {
+    "id": 84,
+    "boat_id": 31,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 23.00407457053505,
+      "y": 25.610369063470785,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-07-22T15:14:13.868190Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-27T15:14:13.868192Z",
+    "notes": "Automatiskt genererad placement för Green Leaf i Stockholm Centrallager",
+    "created_at": "2024-08-24T15:14:13.868193Z",
+    "updated_at": "2025-07-24T15:14:13.868194Z"
+  },
+  {
+    "id": 85,
+    "boat_id": 27,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 26.380563055683783,
+      "y": 19.191389737738188,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-04-15T15:14:13.868233Z",
+    "reservation_date": "2025-07-20T15:14:13.868235Z",
     "physical_placement_date": null,
-    "notes": "Reserverad för kommande säsong",
-    "created_at": "2024-01-25T11:45:00Z",
-    "updated_at": "2024-01-25T11:45:00Z"
+    "notes": "Automatiskt genererad placement för Storm Chaser i Huvudlager A",
+    "created_at": "2024-08-17T15:14:13.868236Z",
+    "updated_at": "2025-07-19T15:14:13.868237Z"
+  },
+  {
+    "id": 86,
+    "boat_id": 22,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 1,
+    "status": "oplacerad",
+    "position": {
+      "x": 12.166821197004253,
+      "y": 11.254963366578941,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-07-15T15:14:13.868281Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sea Breeze i Huvudlager B",
+    "created_at": "2024-08-08T15:14:13.868282Z",
+    "updated_at": "2025-08-06T15:14:13.868284Z"
+  },
+  {
+    "id": 87,
+    "boat_id": 16,
+    "storage_unit_id": 22,
+    "storage_unit_name": "Gästbrygga",
+    "floor_number": 0,
+    "status": "oplacerad",
+    "position": {
+      "x": 8.112235709376867,
+      "y": 1.2198803934250195,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-09-08T15:14:13.868287Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Viking Spirit i Gästbrygga",
+    "created_at": "2024-07-18T15:14:13.868289Z",
+    "updated_at": "2025-07-18T15:14:13.868290Z"
+  },
+  {
+    "id": 88,
+    "boat_id": 18,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 2,
+    "status": "oplacerad",
+    "position": {
+      "x": 3.6732246448681587,
+      "y": 16.861635351591005,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-01-02T15:14:13.868327Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Moon Shadow i Göteborg Hamn",
+    "created_at": "2025-07-10T15:14:13.868329Z",
+    "updated_at": "2025-07-09T15:14:13.868330Z"
+  },
+  {
+    "id": 89,
+    "boat_id": 33,
+    "storage_unit_id": 21,
+    "storage_unit_name": "Huvudbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 25.850891841435,
+      "y": 1.1749596613426618,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-06T15:14:13.868334Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-14T15:14:13.868335Z",
+    "notes": "Automatiskt genererad placement för Ocean Crown i Huvudbrygga B",
+    "created_at": "2024-11-25T15:14:13.868336Z",
+    "updated_at": "2025-07-25T15:14:13.868338Z"
+  },
+  {
+    "id": 90,
+    "boat_id": 30,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 3,
+    "status": "placerad",
+    "position": {
+      "x": 12.517252721269838,
+      "y": 7.530898404542335,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-11-02T15:14:13.868374Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-31T15:14:13.868376Z",
+    "notes": "Automatiskt genererad placement för Storm Rider i Huvudlager B",
+    "created_at": "2025-01-12T15:14:13.868377Z",
+    "updated_at": "2025-07-20T15:14:13.868378Z"
+  },
+  {
+    "id": 91,
+    "boat_id": 5,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 12.59018454503831,
+      "y": 10.607647921277234,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-08-21T15:14:13.868421Z",
+    "reservation_date": "2025-08-02T15:14:13.868422Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sun Ray i Stockholm Centrallager",
+    "created_at": "2024-12-31T15:14:13.868424Z",
+    "updated_at": "2025-07-21T15:14:13.868425Z"
+  },
+  {
+    "id": 92,
+    "boat_id": 38,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 6.567287640026516,
+      "y": 24.568861466550892,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-04-02T15:14:13.868466Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-02-21T15:14:13.868467Z",
+    "notes": "Automatiskt genererad placement för Nordic Star i Stockholm Centrallager",
+    "created_at": "2024-12-23T15:14:13.868469Z",
+    "updated_at": "2025-08-01T15:14:13.868471Z"
+  },
+  {
+    "id": 93,
+    "boat_id": 44,
+    "storage_unit_id": 23,
+    "storage_unit_name": "Servicebrygga",
+    "floor_number": 0,
+    "status": "reserverad",
+    "position": {
+      "x": 9.74159641761546,
+      "y": 1.856855585002699,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-10-03T15:14:13.868475Z",
+    "reservation_date": "2025-07-10T15:14:13.868477Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sea Princess i Servicebrygga",
+    "created_at": "2025-02-24T15:14:13.868478Z",
+    "updated_at": "2025-07-22T15:14:13.868479Z"
+  },
+  {
+    "id": 94,
+    "boat_id": 8,
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 30.635647945630364,
+      "y": 34.101176024547605,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2024-12-20T15:14:13.868527Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-06-13T15:14:13.868529Z",
+    "notes": "Automatiskt genererad placement för Sea Legend i Stockholm Centrallager",
+    "created_at": "2025-03-15T15:14:13.868530Z",
+    "updated_at": "2025-07-13T15:14:13.868531Z"
+  },
+  {
+    "id": 95,
+    "boat_id": 23,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 3,
+    "status": "oplacerad",
+    "position": {
+      "x": 37.0,
+      "y": 12.6,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-01-05T15:14:13.868565Z",
+    "reservation_date": null,
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Ocean King i Båthall Nord",
+    "created_at": "2024-10-24T15:14:13.868567Z",
+    "updated_at": "2025-07-21T15:14:13.868568Z"
+  },
+  {
+    "id": 96,
+    "boat_id": 34,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "reserverad",
+    "position": {
+      "x": 25.889116135031564,
+      "y": 10.518236419719003,
+      "rotation": 0
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-01-10T15:14:13.868609Z",
+    "reservation_date": "2025-07-27T15:14:13.868610Z",
+    "physical_placement_date": null,
+    "notes": "Automatiskt genererad placement för Sea Legend i Huvudlager A",
+    "created_at": "2024-08-23T15:14:13.868612Z",
+    "updated_at": "2025-07-09T15:14:13.868613Z"
+  },
+  {
+    "id": 97,
+    "boat_id": 2,
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 6.0,
+      "y": 12.7,
+      "rotation": 90
+    },
+    "placed_by_user_id": 3,
+    "placed_date": "2025-05-28T15:14:13.868641Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-08-04T15:14:13.868643Z",
+    "notes": "Automatiskt genererad placement för Storm Rider i Båthall Nord",
+    "created_at": "2024-07-12T15:14:13.868644Z",
+    "updated_at": "2025-08-03T15:14:13.868645Z"
+  },
+  {
+    "id": 98,
+    "boat_id": 20,
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 9.210994203802757,
+      "y": 0.7802753520521402,
+      "rotation": 0
+    },
+    "placed_by_user_id": 2,
+    "placed_date": "2025-05-21T15:14:13.868649Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-26T15:14:13.868651Z",
+    "notes": "Automatiskt genererad placement för Wind Rose i Huvudbrygga A",
+    "created_at": "2025-05-12T15:14:13.868652Z",
+    "updated_at": "2025-07-11T15:14:13.868653Z"
+  },
+  {
+    "id": 99,
+    "boat_id": 33,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Huvudlager B",
+    "floor_number": 2,
+    "status": "placerad",
+    "position": {
+      "x": 11.855952067458455,
+      "y": 18.204948092653517,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-04-01T15:14:13.868690Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-03-25T15:14:13.868691Z",
+    "notes": "Automatiskt genererad placement för Ocean Crown i Huvudlager B",
+    "created_at": "2025-07-08T15:14:13.868693Z",
+    "updated_at": "2025-07-16T15:14:13.868694Z"
+  },
+  {
+    "id": 100,
+    "boat_id": 38,
+    "storage_unit_id": 5,
+    "storage_unit_name": "Göteborg Hamn",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 10.561389709043665,
+      "y": 3.9444834042807453,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2024-11-29T15:14:13.868729Z",
+    "reservation_date": null,
+    "physical_placement_date": "2025-07-10T15:14:13.868730Z",
+    "notes": "Automatiskt genererad placement för Nordic Star i Göteborg Hamn",
+    "created_at": "2025-03-18T15:14:13.868732Z",
+    "updated_at": "2025-07-21T15:14:13.868733Z"
   }
 ]
