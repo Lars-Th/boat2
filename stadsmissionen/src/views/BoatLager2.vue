@@ -204,7 +204,7 @@
               Vald: {{ selectedPlacedBoat.name }}
               <span v-if="selectedPlacement" class="boat-status-tag" :class="{
                 'status-oplacerad': selectedPlacement.status === 'oplacerad',
-                'status-placerad': selectedPlacement.status === 'placerad', 
+                'status-placerad': selectedPlacement.status === 'placerad',
                 'status-reserverad': selectedPlacement.status === 'reserverad'
               }">
                 {{ selectedPlacement.status }}
@@ -593,8 +593,8 @@ const collisionCount = computed(() => {
 
 // Computed property för rotation-tillgänglighet
 const canRotateSelectedBoat = computed(() => {
-  return selectedPlacedBoat.value && 
-         selectedPlacement.value && 
+  return selectedPlacedBoat.value &&
+         selectedPlacement.value &&
          selectedPlacement.value.status === 'oplacerad';
 });
 
@@ -962,6 +962,10 @@ const rotateBoat = (angleDelta: number) => {
   }
 
   console.log('✅ Roterar oplacerad båt - nuvarande rotation:', placement.position.rotation);
+  
+  // VIKTIGT: Oplacerade båtar kan roteras även med kollision detection
+  // Kollision påverkar bara visuell feedback, inte rotation-möjlighet
+  console.log('🔄 Rotation tillåten för oplacerad båt (oberoende av kollision)');
 
   // Calculate new rotation
   let newRotation = placement.position.rotation + angleDelta;
@@ -1171,10 +1175,20 @@ const drawPlacedBoats = () => {
     return;
   }
 
-  placementsInStorage.forEach(placement => {
+  // VIKTIGT: Sortera så att oplacerade båtar ritas sist (överst visuellt)
+  // Rita placerade/reserverade först, sedan oplacerade
+  const sortedPlacements = [...placementsInStorage].sort((a, b) => {
+    const statusPriority = { 'placerad': 0, 'reserverad': 0, 'oplacerad': 1 };
+    return statusPriority[a.status] - statusPriority[b.status];
+  });
+
+  console.log(`🎨 Ritar båtar i z-ordning: ${sortedPlacements.map(p => 
+    `${boats.value.find(b => b.id === p.boat_id)?.name}(${p.status})`
+  ).join(' → ')}`);
+
+  sortedPlacements.forEach(placement => {
     const boat = boats.value.find(b => b.id === placement.boat_id);
     if (boat) {
-      console.log(`🎨 Ritar båt: ${boat.name} (status: ${placement.status}) på position ${placement.position.x}, ${placement.position.y}`);
       drawBoat(boat, placement);
     } else {
       console.warn(`⚠️ Hittade inte båt med ID ${placement.boat_id}`);
@@ -1835,6 +1849,13 @@ const handleDrop = (event: DragEvent) => {
                       defaultPlacementStatus.value === 'placerad' ? 'placerad' : 'reserverad';
     const collisionMessage = finalCollisionState ? ` - ${finalCollisionState} visas` : '';
     console.log(`${boat.name} placerad som ${statusText} på (${storageX.toFixed(1)}, ${storageY.toFixed(1)}) decimeter${conflictMessage}${collisionMessage}`);
+
+    // AUTOMATISK SELECTION: Om båten placerades som oplacerad, välj den direkt för rotation
+    if (defaultPlacementStatus.value === 'oplacerad') {
+      selectedPlacedBoat.value = boat;
+      selectedPlacement.value = newPlacement;
+      console.log(`🎯 Oplacerad båt ${boat.name} automatiskt vald för rotation efter drop`);
+    }
 
   } catch (error) {
     console.error('Error handling drop:', error);
