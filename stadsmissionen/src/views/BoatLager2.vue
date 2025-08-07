@@ -111,6 +111,9 @@
             <button @click="centerStorage" class="toolbar-button" title="Centrera lagret">
               <Navigation2 class="button-icon" />
             </button>
+            <button @click="resetView" class="toolbar-button" title="Återställ zoom och pan">
+              <RotateCcw class="button-icon" />
+            </button>
             <button
               @click="togglePanMode"
               :class="['toolbar-button', { active: isPanMode }]"
@@ -724,7 +727,7 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
   // Check storage boundaries collision (använd margin för boundary check)
   const storageWidth = selectedStorage.value.Height * 10;
   const storageHeight = selectedStorage.value.width * 10;
-  
+
   if (isRectangleOutsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
     console.log(`🔴 Storage boundary collision: ${currentBoat.name} (${currentRotation * 180 / Math.PI}°) utanför lager`);
     return 'margin_collision';
@@ -795,10 +798,10 @@ interface RotatedRectangle {
 const createRotatedRectangle = (centerX: number, centerY: number, width: number, height: number, rotation: number): RotatedRectangle => {
   const cos = Math.cos(rotation);
   const sin = Math.sin(rotation);
-  
+
   const halfWidth = width / 2;
   const halfHeight = height / 2;
-  
+
   // Beräkna de fyra hörnen relativt center, sedan rotera dem
   const corners: Point[] = [
     // Top-left
@@ -822,7 +825,7 @@ const createRotatedRectangle = (centerX: number, centerY: number, width: number,
       y: centerY + (-halfWidth * sin + halfHeight * cos)
     }
   ];
-  
+
   return {
     corners,
     center: { x: centerX, y: centerY },
@@ -836,7 +839,7 @@ const createRotatedRectangle = (centerX: number, centerY: number, width: number,
 const rotatedRectanglesOverlap = (rect1: RotatedRectangle, rect2: RotatedRectangle): boolean => {
   // Få axlarna från båda rektanglarna (edge normals)
   const axes: Point[] = [];
-  
+
   // Axlar från rect1
   for (let i = 0; i < 4; i++) {
     const p1 = rect1.corners[i];
@@ -847,7 +850,7 @@ const rotatedRectanglesOverlap = (rect1: RotatedRectangle, rect2: RotatedRectang
       axes.push(normal);
     }
   }
-  
+
   // Axlar från rect2
   for (let i = 0; i < 4; i++) {
     const p1 = rect2.corners[i];
@@ -858,24 +861,24 @@ const rotatedRectanglesOverlap = (rect1: RotatedRectangle, rect2: RotatedRectang
       axes.push(normal);
     }
   }
-  
+
   // Testa varje axel för separation
   for (const axis of axes) {
     // Normalisera axeln
     const length = Math.sqrt(axis.x * axis.x + axis.y * axis.y);
     if (length === 0) continue;
     const normalizedAxis = { x: axis.x / length, y: axis.y / length };
-    
+
     // Projekta båda rektanglarna på denna axel
     const projection1 = projectRectangleOnAxis(rect1, normalizedAxis);
     const projection2 = projectRectangleOnAxis(rect2, normalizedAxis);
-    
+
     // Kolla om projectionerna överlappar
     if (projection1.max < projection2.min || projection2.max < projection1.min) {
       return false; // Separation found - inga kollisioner
     }
   }
-  
+
   return true; // Ingen separation hittad - kollision!
 };
 
@@ -883,14 +886,14 @@ const rotatedRectanglesOverlap = (rect1: RotatedRectangle, rect2: RotatedRectang
 const projectRectangleOnAxis = (rect: RotatedRectangle, axis: Point): { min: number; max: number } => {
   let min = Infinity;
   let max = -Infinity;
-  
+
   for (const corner of rect.corners) {
     // Dot product för att projekta punkt på axel
     const projection = corner.x * axis.x + corner.y * axis.y;
     min = Math.min(min, projection);
     max = Math.max(max, projection);
   }
-  
+
   return { min, max };
 };
 
@@ -898,7 +901,7 @@ const projectRectangleOnAxis = (rect: RotatedRectangle, axis: Point): { min: num
 const isRectangleOutsideStorage = (rect: RotatedRectangle, storageX: number, storageY: number, storageWidth: number, storageHeight: number): boolean => {
   // Kolla om någon corner är utanför storage
   for (const corner of rect.corners) {
-    if (corner.x < storageX || 
+    if (corner.x < storageX ||
         corner.x > storageX + storageWidth ||
         corner.y < storageY ||
         corner.y > storageY + storageHeight) {
@@ -1051,6 +1054,13 @@ const setupEventHandlers = () => {
 const drawStorage = () => {
   if (!selectedStorage.value || !layer.value) return;
 
+  // VIKTIGT: Behåll zoom och pan när vi ritar om lagret
+  const currentZoom = stage.value?.scaleX() || 1;
+  const currentPosition = stage.value?.position() || { x: 0, y: 0 };
+  
+  // Debugging: Logga nuvarande zoom/pan
+  console.log(`🎨 drawStorage() - Nuvarande zoom: ${(currentZoom * 100).toFixed(0)}%, position: (${currentPosition.x.toFixed(0)}, ${currentPosition.y.toFixed(0)})`);
+
   layer.value.destroyChildren();
 
   const storage = selectedStorage.value;
@@ -1076,6 +1086,13 @@ const drawStorage = () => {
   drawPlacedBoats();
 
   layer.value.batchDraw();
+  
+  // VERIFIERA: Kontrollera att zoom/pan inte ändrats
+  const afterZoom = stage.value?.scaleX() || 1;
+  const afterPosition = stage.value?.position() || { x: 0, y: 0 };
+  if (Math.abs(afterZoom - currentZoom) > 0.01 || Math.abs(afterPosition.x - currentPosition.x) > 1 || Math.abs(afterPosition.y - currentPosition.y) > 1) {
+    console.warn(`⚠️ drawStorage() ändrade zoom/pan! Före: zoom=${(currentZoom * 100).toFixed(0)}%, pos=(${currentPosition.x.toFixed(0)}, ${currentPosition.y.toFixed(0)}) | Efter: zoom=${(afterZoom * 100).toFixed(0)}%, pos=(${afterPosition.x.toFixed(0)}, ${afterPosition.y.toFixed(0)})`);
+  }
 };
 
 const drawGrid = (storage: Storage, pixelsPerMeter: number) => {
@@ -1359,7 +1376,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 };
 
 // UI event handlers
-const selectStorage = (storage: Storage) => {
+const selectStorage = (storage: Storage, autoCenter: boolean = false) => {
   selectedStorage.value = storage;
   console.log(`🏢 Väljer lager: ${storage.name} (ID: ${storage.id})`);
 
@@ -1368,14 +1385,16 @@ const selectStorage = (storage: Storage) => {
   console.log(`📦 Hittade ${placementsForStorage.length} placements för detta lager:`, placementsForStorage);
 
   drawStorage();
-
-  // Auto-centrera lagret när det väljs (vänta tills rendering är klar)
-  nextTick(() => {
-    setTimeout(() => {
-      centerStorage();
-      console.log('📍 Lager auto-centrerat');
-    }, 50);
-  });
+  
+  // Auto-centrera BARA vid första laddning eller om explicit begärt
+  if (autoCenter) {
+    nextTick(() => {
+      setTimeout(() => {
+        centerStorage();
+        console.log('📍 Lager auto-centrerat');
+      }, 50);
+    });
+  }
 };
 
 const selectBoat = (boat: Boat) => {
@@ -1542,15 +1561,21 @@ const centerStorage = () => {
   console.log('🎯 Lager centrerat');
 };
 
-const resetCanvas = () => {
+const resetView = () => {
   if (!stage.value) return;
 
+  // Återställ till ursprunglig zoom och position  
   stage.value.position({ x: 0, y: 0 });
   zoomLevel.value = 1;
   zoomPercentage.value = 100;
+  stage.value.scale({ x: 1, y: 1 });
+  stage.value.batchDraw();
+  
+  console.log('🔄 Zoom och pan återställt till ursprungsläge');
+};
 
-  applyZoom(1); // Använd applyZoom för konsistent zoom-hantering
-
+const resetCanvas = () => {
+  resetView();
   console.log('🔄 Canvas återställt');
 };
 
@@ -1801,9 +1826,9 @@ onMounted(async () => {
 
   initCanvas();
 
-  // Auto-select first storage for demo
+  // Auto-select first storage for demo (med auto-centrering vid första laddning)
   if (storages.value.length > 0) {
-    selectStorage(storages.value[0]);
+    selectStorage(storages.value[0], true); // true = auto-center
   }
 
   // Close tooltip when clicking outside
