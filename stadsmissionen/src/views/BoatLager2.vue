@@ -962,7 +962,7 @@ const rotateBoat = (angleDelta: number) => {
   }
 
   console.log('✅ Roterar oplacerad båt - nuvarande rotation:', placement.position.rotation);
-  
+
   // VIKTIGT: Oplacerade båtar kan roteras även med kollision detection
   // Kollision påverkar bara visuell feedback, inte rotation-möjlighet
   console.log('🔄 Rotation tillåten för oplacerad båt (oberoende av kollision)');
@@ -1182,7 +1182,7 @@ const drawPlacedBoats = () => {
     return statusPriority[a.status] - statusPriority[b.status];
   });
 
-  console.log(`🎨 Ritar båtar i z-ordning: ${sortedPlacements.map(p => 
+  console.log(`🎨 Ritar båtar i z-ordning: ${sortedPlacements.map(p =>
     `${boats.value.find(b => b.id === p.boat_id)?.name}(${p.status})`
   ).join(' → ')}`);
 
@@ -1310,11 +1310,11 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
         toggleBoatStatus(boatFromPlacement, placement);
         console.log(`🔵 Placerad båt klickad: ${boatFromPlacement.name} - tappar fokus, ändrar status`);
       } else if (placement.status === 'reserverad') {
-        // Reserverade båtar: rensa selektion (kan inte roteras)
+        // Reserverade båtar: rensa selektion och toggle status (precis som placerade)
         selectedPlacedBoat.value = null;
         selectedPlacement.value = null;
-        drawStorage();
-        console.log(`⚪ Reserverad båt klickad: ${boatFromPlacement.name} - tappar fokus (ingen rotation)`);
+        toggleBoatStatus(boatFromPlacement, placement);
+        console.log(`⚪ Reserverad båt klickad: ${boatFromPlacement.name} - tappar fokus, ändrar status`);
       }
     }
   });
