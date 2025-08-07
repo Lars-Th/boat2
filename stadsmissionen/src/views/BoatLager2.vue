@@ -249,6 +249,23 @@
 
           <div class="toolbar-separator"></div>
 
+          <!-- Save Placements -->
+          <div class="toolbar-group">
+            <span class="toolbar-label">
+              <Save class="inline w-4 h-4 mr-1" />
+              Data:
+            </span>
+            <button @click="savePlacements" class="toolbar-button save-btn" title="Spara alla båtpositioner till JSON-fil">
+              <Save class="button-icon" />
+              Spara JSON
+            </button>
+            <span v-if="lastSaved" class="save-status">
+              Sparad {{ lastSaved }}
+            </span>
+          </div>
+
+          <div class="toolbar-separator"></div>
+
           <!-- Reset -->
           <div class="toolbar-group">
             <button @click="resetCanvas" class="toolbar-button" title="Återställ vy">
@@ -421,7 +438,8 @@ import {
   Lightbulb,
   CircleDot,
   Trash2,
-  MapPin
+  MapPin,
+  Save
 } from 'lucide-vue-next';
 
 // Import JSON data
@@ -598,6 +616,9 @@ const boats = ref<Boat[]>(boatsData as Boat[]);
 const storages = ref<Storage[]>(storageData as Storage[]);
 const placements = ref<BoatPlacement[]>(placementsData as BoatPlacement[]);
 const customers = ref<Customer[]>(customersData as Customer[]);
+
+// Save state
+const lastSaved = ref<string>('');
 
 // Load restriction zones for selected storage
 const loadRestrictionZones = async () => {
@@ -2139,6 +2160,58 @@ const resetCanvas = () => {
   console.log('🔄 Canvas återställt');
 };
 
+// Save placements to JSON file
+const savePlacements = () => {
+  try {
+    // Create a formatted JSON string with current placements data
+    const placementsJson = JSON.stringify(placements.value, null, 2);
+    
+    // Create blob and download
+    const blob = new Blob([placementsJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create download link
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Generate filename with timestamp
+    const now = new Date();
+    const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
+    link.download = `boatPlacements_${timestamp}.json`;
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up blob URL
+    URL.revokeObjectURL(url);
+    
+    // Update last saved timestamp
+    const timeString = now.toLocaleString('sv-SE', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    lastSaved.value = timeString;
+    
+    console.log(`✅ Båtplacements sparade till boatPlacements_${timestamp}.json`);
+    console.log(`📊 ${placements.value.length} placements exporterade`);
+    
+    // Show success feedback briefly
+    setTimeout(() => {
+      if (lastSaved.value === timeString) {
+        lastSaved.value = '';
+      }
+    }, 5000); // Clear after 5 seconds
+    
+  } catch (error) {
+    console.error('❌ Fel vid sparning av placements:', error);
+    alert('Fel vid sparning av JSON-fil. Se konsolen för detaljer.');
+  }
+};
+
 // Drag & Drop handlers
 const handleBoatDragStart = (boat: Boat, event: DragEvent) => {
   if (!event.dataTransfer) return;
@@ -3171,6 +3244,43 @@ onMounted(async () => {
 .tooltip-action-btn.btn-remove:hover {
   background: rgba(220, 38, 38, 0.5);
   border-color: rgba(220, 38, 38, 0.7);
+}
+
+/* Save Button Styling */
+.save-btn {
+  background: linear-gradient(to bottom, #10b981, #059669) !important;
+  color: white !important;
+  border-color: #059669 !important;
+  font-weight: 600;
+}
+
+.save-btn:hover {
+  background: linear-gradient(to bottom, #059669, #047857) !important;
+  border-color: #047857 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.save-status {
+  font-size: 0.6875rem;
+  color: #059669;
+  font-weight: 500;
+  background: #d1fae5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #10b981;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Konva Canvas */
