@@ -185,8 +185,8 @@
             <button
               @click="rotateBoatLeft"
               class="toolbar-button rotation-btn"
-              :disabled="!selectedPlacedBoat"
-              title="Rotera vänster 22.5°"
+              :disabled="!canRotateSelectedBoat"
+              :title="canRotateSelectedBoat ? 'Rotera vänster 22.5°' : 'Välj en oplacerad båt för rotation'"
             >
               <RotateCcw class="w-4 h-4 mr-1" />
               Vänster
@@ -194,14 +194,24 @@
             <button
               @click="rotateBoatRight"
               class="toolbar-button rotation-btn"
-              :disabled="!selectedPlacedBoat"
-              title="Rotera höger 22.5°"
+              :disabled="!canRotateSelectedBoat"
+              :title="canRotateSelectedBoat ? 'Rotera höger 22.5°' : 'Välj en oplacerad båt för rotation'"
             >
               <RotateCw class="w-4 h-4 mr-1" />
               Höger
             </button>
             <div v-if="selectedPlacedBoat" class="selected-boat-info">
               Vald: {{ selectedPlacedBoat.name }}
+              <span v-if="selectedPlacement" class="boat-status-tag" :class="{
+                'status-oplacerad': selectedPlacement.status === 'oplacerad',
+                'status-placerad': selectedPlacement.status === 'placerad', 
+                'status-reserverad': selectedPlacement.status === 'reserverad'
+              }">
+                {{ selectedPlacement.status }}
+              </span>
+              <span v-if="!canRotateSelectedBoat" class="rotation-hint">
+                (endast oplacerade kan roteras)
+              </span>
             </div>
           </div>
 
@@ -581,6 +591,13 @@ const collisionCount = computed(() => {
   return collisions;
 });
 
+// Computed property för rotation-tillgänglighet
+const canRotateSelectedBoat = computed(() => {
+  return selectedPlacedBoat.value && 
+         selectedPlacement.value && 
+         selectedPlacement.value.status === 'oplacerad';
+});
+
 const tooltipCustomer = computed(() => {
   if (!tooltipData.value) return null;
   return customers.value.find(c => c.id === tooltipData.value!.boat.customer_id) || null;
@@ -921,10 +938,10 @@ const rotateBoatRight = () => {
 };
 
 const rotateBoat = (angleDelta: number) => {
-    console.log('Rotation attempt - selectedPlacedBoat:', selectedPlacedBoat.value?.name);
+  console.log('Rotation attempt - selectedPlacedBoat:', selectedPlacedBoat.value?.name);
 
   if (!selectedPlacedBoat.value) {
-    console.warn('Ingen båt vald för rotation - klicka på en båt först!');
+    console.warn('❌ Ingen båt vald för rotation - klicka på en OPLACERAD båt först!');
     return;
   }
 
@@ -935,7 +952,16 @@ const rotateBoat = (angleDelta: number) => {
     return;
   }
 
-    console.log('Nuvarande rotation:', placement.position.rotation);
+  // VIKTIGT: Kontrollera att båten är oplacerad innan rotation
+  if (placement.status !== 'oplacerad') {
+    console.warn(`❌ Kan inte rotera ${selectedPlacedBoat.value.name} - bara oplacerade båtar kan roteras! (nuvarande status: ${placement.status})`);
+    // Rensa selektion för att förhindra förvirring
+    selectedPlacedBoat.value = null;
+    selectedPlacement.value = null;
+    return;
+  }
+
+  console.log('✅ Roterar oplacerad båt - nuvarande rotation:', placement.position.rotation);
 
   // Calculate new rotation
   let newRotation = placement.position.rotation + angleDelta;
@@ -1057,7 +1083,7 @@ const drawStorage = () => {
   // VIKTIGT: Behåll zoom och pan när vi ritar om lagret
   const currentZoom = stage.value?.scaleX() || 1;
   const currentPosition = stage.value?.position() || { x: 0, y: 0 };
-  
+
   // Debugging: Logga nuvarande zoom/pan
   console.log(`🎨 drawStorage() - Nuvarande zoom: ${(currentZoom * 100).toFixed(0)}%, position: (${currentPosition.x.toFixed(0)}, ${currentPosition.y.toFixed(0)})`);
 
@@ -1086,7 +1112,7 @@ const drawStorage = () => {
   drawPlacedBoats();
 
   layer.value.batchDraw();
-  
+
   // VERIFIERA: Kontrollera att zoom/pan inte ändrats
   const afterZoom = stage.value?.scaleX() || 1;
   const afterPosition = stage.value?.position() || { x: 0, y: 0 };
@@ -1255,24 +1281,26 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   boatGroup.on('click', () => {
     const boatFromPlacement = boats.value.find(b => b.id === placement.boat_id);
     if (boatFromPlacement) {
-      // Update selected boat and placement for rotation (BARA för funktionalitet, INGEN visuell ändring)
-      selectedPlacedBoat.value = boatFromPlacement;
-      selectedPlacement.value = placement;
 
       // OLIKA BETEENDE PER STATUS:
       if (placement.status === 'oplacerad') {
-        // Oplacerade båtar: bara selection för rotation, ingen automatisk statusändring
-        // Status ändras ENDAST via toolbar-knappar
+        // BARA oplacerade båtar kan väljas för rotation
+        selectedPlacedBoat.value = boatFromPlacement;
+        selectedPlacement.value = placement;
         drawStorage();
-        console.log(`Vald oplacerad båt för rotation: ${boatFromPlacement.name} (status ändras bara via knappar)`);
+        console.log(`✅ Vald oplacerad båt för rotation: ${boatFromPlacement.name}`);
       } else if (placement.status === 'placerad') {
-        // Placerade båtar: toggle status som tidigare
+        // Placerade båtar: rensa selektion och toggle status
+        selectedPlacedBoat.value = null;
+        selectedPlacement.value = null;
         toggleBoatStatus(boatFromPlacement, placement);
+        console.log(`🔵 Placerad båt klickad: ${boatFromPlacement.name} - tappar fokus, ändrar status`);
       } else if (placement.status === 'reserverad') {
-        // Reserverade båtar: bara selection för rotation, behåll grå stil
-        // Status ändras ENDAST via toolbar-knappar
+        // Reserverade båtar: rensa selektion (kan inte roteras)
+        selectedPlacedBoat.value = null;
+        selectedPlacement.value = null;
         drawStorage();
-        console.log(`Vald reserverad båt för rotation: ${boatFromPlacement.name} (behåller grå stil, status ändras bara via knappar)`);
+        console.log(`⚪ Reserverad båt klickad: ${boatFromPlacement.name} - tappar fokus (ingen rotation)`);
       }
     }
   });
@@ -1385,7 +1413,7 @@ const selectStorage = (storage: Storage, autoCenter: boolean = false) => {
   console.log(`📦 Hittade ${placementsForStorage.length} placements för detta lager:`, placementsForStorage);
 
   drawStorage();
-  
+
   // Auto-centrera BARA vid första laddning eller om explicit begärt
   if (autoCenter) {
     nextTick(() => {
@@ -1564,13 +1592,13 @@ const centerStorage = () => {
 const resetView = () => {
   if (!stage.value) return;
 
-  // Återställ till ursprunglig zoom och position  
+  // Återställ till ursprunglig zoom och position
   stage.value.position({ x: 0, y: 0 });
   zoomLevel.value = 1;
   zoomPercentage.value = 100;
   stage.value.scale({ x: 1, y: 1 });
   stage.value.batchDraw();
-  
+
   console.log('🔄 Zoom och pan återställt till ursprungsläge');
 };
 
@@ -2258,6 +2286,42 @@ onMounted(async () => {
   border: 1px solid #bfdbfe;
   margin-top: 4px;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.boat-status-tag {
+  font-size: 0.6rem;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-oplacerad {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-placerad {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.status-reserverad {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.rotation-hint {
+  font-size: 0.6rem;
+  color: #6b7280;
+  font-style: italic;
 }
 
 /* Boat Info Tooltip */
