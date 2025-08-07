@@ -1178,16 +1178,8 @@ const drawStorage = () => {
     strokeWidth: 2
   };
 
-  // Draw white canvas background
-  const canvasBackground = new Konva.Rect({
-    x: 0,
-    y: 0,
-    width: stage.value?.width() || 800,
-    height: stage.value?.height() || 600,
-    fill: '#ffffff',
-    listening: false,
-  });
-  layer.value.add(canvasBackground);
+  // NOTE: Canvas background removed - using CSS background instead
+  // (The .konva-canvas CSS class already provides background styling)
 
   // Draw storage area with StorageDesigner styling
   const storageRect = new Konva.Rect({
@@ -2846,7 +2838,7 @@ onMounted(async () => {
 /* Konva Canvas */
 .konva-canvas {
   flex: 1;
-  background: #f8fafc;
+  background: #ffffff; /* White background like StorageDesigner */
   cursor: crosshair;
 }
 
