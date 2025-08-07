@@ -62,6 +62,9 @@
                   ({{ getStorageStatusCounts(storage.id).placerad }}P/{{ getStorageStatusCounts(storage.id).reserverad }}R/{{ getStorageStatusCounts(storage.id).oplacerad }}O)
                 </span>
               </p>
+              <p v-if="storage.Type === 'Lager' && getStorageFloorCount(storage.id) > 1" class="storage-floors">
+                🏢 {{ getStorageFloorCount(storage.id) }} våningar (Lager = V1)
+              </p>
             </div>
           </div>
         </div>
@@ -76,6 +79,23 @@
             <span class="toolbar-label">Lager:</span>
             <div class="info-display">
               {{ selectedStorage?.name || 'Inget valt' }}
+            </div>
+          </div>
+
+          <!-- Floor Selector (only for warehouses with multiple floors) -->
+          <div v-if="selectedStorage?.Type === 'Lager' && availableFloors.length > 1" class="toolbar-group">
+            <span class="toolbar-label">Våning:</span>
+            <div class="floor-tabs">
+              <button
+                v-for="floor in availableFloors"
+                :key="floor.id"
+                @click="selectFloor(floor.floor_number)"
+                class="floor-tab"
+                :class="{ active: selectedFloor === floor.floor_number }"
+                :title="`${floor.floor_name} - ${floor.floor_zones.length} zoner`"
+              >
+                {{ floor.floor_number }}
+              </button>
             </div>
           </div>
 
@@ -544,6 +564,36 @@ interface RestrictionZone {
 
 const restrictionZones = ref<RestrictionZone[]>([]);
 
+// Floor system state
+interface FloorZone {
+  id: number;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface StorageFloor {
+  id: number;
+  storage_id: number;
+  storage_name: string;
+  floor_number: number;
+  floor_name: string;
+  is_main_floor: boolean;
+  floor_zones: FloorZone[];
+  storage_dimensions: {
+    length: number;
+    width: number;
+  };
+  created: string;
+  modified: string;
+}
+
+const storageFloors = ref<StorageFloor[]>([]);
+const selectedFloor = ref<number>(1); // Default till våning 1 (main floor)
+const availableFloors = ref<StorageFloor[]>([]);
+
 const boats = ref<Boat[]>(boatsData as Boat[]);
 const storages = ref<Storage[]>(storageData as Storage[]);
 const placements = ref<BoatPlacement[]>(placementsData as BoatPlacement[]);
@@ -588,6 +638,49 @@ const loadRestrictionZones = async () => {
   }
 };
 
+// Load storage floors data
+const loadStorageFloors = async () => {
+  try {
+    const response = await fetch('/src/assets/data/storageFloors.json');
+    const floorsData = await response.json();
+    
+    storageFloors.value = floorsData;
+    console.log(`🏢 Laddat ${storageFloors.value.length} vånings-poster från storageFloors.json`);
+    
+    // Update available floors for current storage if selected
+    if (selectedStorage.value) {
+      updateAvailableFloors();
+    }
+  } catch (error) {
+    console.error('❌ Kunde inte ladda våningsdata:', error);
+    storageFloors.value = [];
+  }
+};
+
+// Update available floors for current storage
+const updateAvailableFloors = () => {
+  if (!selectedStorage.value) {
+    availableFloors.value = [];
+    return;
+  }
+
+  // Find all floors for this storage
+  const floorsForStorage = storageFloors.value.filter(floor => 
+    floor.storage_id === selectedStorage.value!.id
+  );
+
+  availableFloors.value = floorsForStorage.sort((a, b) => a.floor_number - b.floor_number);
+  
+  console.log(`🏢 Hittade ${availableFloors.value.length} våningar för lager ${selectedStorage.value.name}:`, 
+    availableFloors.value.map(f => `V${f.floor_number}`));
+
+  // Reset to floor 1 if current floor doesn't exist for this storage
+  if (selectedFloor.value > availableFloors.value.length) {
+    selectedFloor.value = 1;
+    console.log(`🔄 Återställde till våning 1 (max: ${availableFloors.value.length})`);
+  }
+};
+
 // Computed properties
 const filteredStorages = computed(() => {
   if (storageFilter.value === 'all') {
@@ -609,7 +702,12 @@ const filteredBoats = computed(() => {
 
 const currentStoragePlacements = computed(() => {
   if (!selectedStorage.value) return [];
-  return placements.value.filter(p => p.storage_unit_id === selectedStorage.value!.id);
+  
+  // Filter by storage and floor number
+  return placements.value.filter(p => 
+    p.storage_unit_id === selectedStorage.value!.id &&
+    (p.floor_number || 1) === selectedFloor.value
+  );
 });
 
 const placedBoatCount = computed(() => {
@@ -691,6 +789,11 @@ const getStorageStatusCounts = (storageId: number) => {
   };
 
   return counts;
+};
+
+const getStorageFloorCount = (storageId: number) => {
+  const floorsForStorage = storageFloors.value.filter(floor => floor.storage_id === storageId);
+  return Math.max(1, floorsForStorage.length); // Minst 1 våning (grundvåningen)
 };
 
 // Tooltip interaction functions
@@ -1660,6 +1763,9 @@ const selectStorage = async (storage: Storage, autoCenter: boolean = false) => {
 
   // Load restriction zones for this storage
   await loadRestrictionZones();
+  
+  // Update available floors for this storage
+  updateAvailableFloors();
 
   drawStorage();
 
@@ -1672,6 +1778,15 @@ const selectStorage = async (storage: Storage, autoCenter: boolean = false) => {
       }, 50);
     });
   }
+};
+
+// Select floor function
+const selectFloor = (floorNumber: number) => {
+  selectedFloor.value = floorNumber;
+  console.log(`🏢 Väljer våning ${floorNumber} för lager ${selectedStorage.value?.name}`);
+  
+  // Redraw to show boats for this floor
+  drawStorage();
 };
 
 const selectBoat = (boat: Boat) => {
@@ -2044,18 +2159,18 @@ const handleDrop = (event: DragEvent) => {
     if (stage.value) {
       const currentZoom = stage.value.scaleX();
       const currentPosition = stage.value.position();
-      
+
       // Om zoomad (inte 100%), placera i centrum av synliga området
       if (Math.abs(currentZoom - 1) > 0.1) {
         const canvasCenter = {
           x: stage.value.width() / 2,
           y: stage.value.height() / 2
         };
-        
+
         // Konvertera canvas center till stage koordinater
         finalX = (canvasCenter.x - currentPosition.x) / currentZoom;
         finalY = (canvasCenter.y - currentPosition.y) / currentZoom;
-        
+
         console.log(`🎯 Zoomad (${(currentZoom * 100).toFixed(0)}%): Placerar båt i synligt centrum istället för muspositionen`);
       } else {
         // Vid 100% zoom: använd musposition men kompensera för pan
@@ -2074,7 +2189,7 @@ const handleDrop = (event: DragEvent) => {
       boat_id: boat.id,
       storage_unit_id: selectedStorage.value.id,
       storage_unit_name: selectedStorage.value.name,
-      floor_number: 1,
+      floor_number: selectedFloor.value,
       status: defaultPlacementStatus.value, // Använd vald status från dropdown
       position: {
         x: storageX,
@@ -2135,6 +2250,9 @@ onMounted(async () => {
   console.log(`Laddade ${boats.value.length} båtar:`, boats.value.map(b => `${b.name} (ID: ${b.id})`));
   console.log(`Laddade ${placements.value.length} placements:`, placements.value.map(p => `Båt ${p.boat_id} i lager ${p.storage_unit_id}`));
   console.log(`Laddade ${customers.value.length} kunder:`, customers.value.map(c => `${c.display_name} (ID: ${c.id})`));
+
+  // Load floor data
+  await loadStorageFloors();
 
   initCanvas();
 
@@ -2382,12 +2500,18 @@ onMounted(async () => {
 .storage-type,
 .storage-size,
 .storage-boats,
+.storage-floors,
 .boat-reg,
 .boat-dims,
 .boat-status {
   font-size: 0.625rem;
   color: #6b7280;
   margin: 0;
+}
+
+.storage-floors {
+  color: #2563eb;
+  font-weight: 500;
 }
 
 
@@ -2924,5 +3048,41 @@ onMounted(async () => {
 .boat-list::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 2px;
+}
+
+/* Floor navigation styling (from StorageDesigner) */
+.floor-tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.floor-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.floor-tab:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.floor-tab.active {
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: white;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 </style>
