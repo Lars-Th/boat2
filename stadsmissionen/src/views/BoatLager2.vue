@@ -826,9 +826,9 @@ const validateBookshelfPlacement = (boat: Boat, x: number, y: number): { isValid
 
   // Kontrollera båtstorlek - max 5m för bokhyllor
   if (boat.length > 5.0) {
-    return { 
-      isValid: false, 
-      reason: `Båten är ${boat.length}m lång - för stor för bokhyllor (max 5m)` 
+    return {
+      isValid: false,
+      reason: `Båten är ${boat.length}m lång - för stor för bokhyllor (max 5m)`
     };
   }
 
@@ -838,36 +838,36 @@ const validateBookshelfPlacement = (boat: Boat, x: number, y: number): { isValid
 
   // Kolla om positionen är inom någon bokhylla (floor zone)
   for (const zone of currentFloorDesign.value.floor_zones) {
-    if (positionX >= zone.x && 
+    if (positionX >= zone.x &&
         positionX <= zone.x + zone.width &&
-        positionY >= zone.y && 
+        positionY >= zone.y &&
         positionY <= zone.y + zone.height) {
-      
+
       // Kontrollera att båten får plats inom hyllan (inkl säkerhetsmarginal)
       const boatLength = boat.length;
       const boatWidth = boat.width;
       const safetyMargin = boat.safety_margin;
-      
+
       // Hyllan är 5m bred - kontrollera att båten + marginal får plats
       const maxBoatDimension = Math.max(boatLength, boatWidth) + safetyMargin;
       if (maxBoatDimension > 5.0) {
-        return { 
-          isValid: false, 
-          reason: `Båten + säkerhetsmarginal (${maxBoatDimension.toFixed(1)}m) för stor för 5m bred hylla` 
+        return {
+          isValid: false,
+          reason: `Båten + säkerhetsmarginal (${maxBoatDimension.toFixed(1)}m) för stor för 5m bred hylla`
         };
       }
 
-      return { 
-        isValid: true, 
-        shelfName: zone.name 
+      return {
+        isValid: true,
+        shelfName: zone.name
       };
     }
   }
 
   // Inte inom någon bokhylla
-  return { 
-    isValid: false, 
-    reason: "Positionen är inte inom någon bokhylla - små båtar måste placeras i de blå hyllorna" 
+  return {
+    isValid: false,
+    reason: "Positionen är inte inom någon bokhylla - små båtar måste placeras i de blå hyllorna"
   };
 };
 
@@ -1852,13 +1852,13 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
       if (!validationResult.isValid) {
         console.warn(`❌ BOKHYLLE-DRAG MISSLYCKAD: ${validationResult.reason}`);
         alert(`❌ Kan inte placera båt här!\n\n${validationResult.reason}\n\nBåten återställs till förra positionen.`);
-        
+
         // Återställ till förra positionen
         boatGroup.position({
           x: 50 + placement.position.x,
           y: 50 + placement.position.y
         });
-        
+
         // Redraw för att återställa visuellt
         drawStorage();
         return;

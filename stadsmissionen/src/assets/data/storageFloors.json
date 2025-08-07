@@ -24,51 +24,11 @@
     "floor_zones": [
       {
         "id": 1,
-        "name": "Hylla A",
-        "x": 2,
-        "y": 2,
+        "name": "Våning 2",
+        "x": 0,
+        "y": 0,
         "width": 5,
-        "height": 24
-      },
-      {
-        "id": 2,
-        "name": "Hylla B",
-        "x": 9,
-        "y": 2,
-        "width": 5,
-        "height": 24
-      },
-      {
-        "id": 3,
-        "name": "Hylla C",
-        "x": 16,
-        "y": 2,
-        "width": 5,
-        "height": 24
-      },
-      {
-        "id": 4,
-        "name": "Hylla D",
-        "x": 23,
-        "y": 2,
-        "width": 5,
-        "height": 24
-      },
-      {
-        "id": 5,
-        "name": "Hylla E",
-        "x": 30,
-        "y": 2,
-        "width": 5,
-        "height": 24
-      },
-      {
-        "id": 6,
-        "name": "Hylla F",
-        "x": 37,
-        "y": 2,
-        "width": 5,
-        "height": 24
+        "height": 28
       }
     ],
     "storage_dimensions": {
@@ -87,44 +47,12 @@
     "is_main_floor": false,
     "floor_zones": [
       {
-        "id": 7,
-        "name": "Hylla G",
-        "x": 5,
-        "y": 4,
+        "id": 2,
+        "name": "Våning 3",
+        "x": 0,
+        "y": 0,
         "width": 5,
-        "height": 20
-      },
-      {
-        "id": 8,
-        "name": "Hylla H",
-        "x": 12,
-        "y": 4,
-        "width": 5,
-        "height": 20
-      },
-      {
-        "id": 9,
-        "name": "Hylla I",
-        "x": 19,
-        "y": 4,
-        "width": 5,
-        "height": 20
-      },
-      {
-        "id": 10,
-        "name": "Hylla J",
-        "x": 26,
-        "y": 4,
-        "width": 5,
-        "height": 20
-      },
-      {
-        "id": 11,
-        "name": "Hylla K",
-        "x": 33,
-        "y": 4,
-        "width": 5,
-        "height": 20
+        "height": 28
       }
     ],
     "storage_dimensions": {
@@ -158,68 +86,12 @@
     "is_main_floor": false,
     "floor_zones": [
       {
-        "id": 12,
-        "name": "Hylla A",
-        "x": 3,
-        "y": 3,
+        "id": 3,
+        "name": "Våning 2",
+        "x": 0,
+        "y": 0,
         "width": 5,
-        "height": 34
-      },
-      {
-        "id": 13,
-        "name": "Hylla B",
-        "x": 10,
-        "y": 3,
-        "width": 5,
-        "height": 34
-      },
-      {
-        "id": 14,
-        "name": "Hylla C",
-        "x": 17,
-        "y": 3,
-        "width": 5,
-        "height": 34
-      },
-      {
-        "id": 15,
-        "name": "Hylla D",
-        "x": 24,
-        "y": 3,
-        "width": 5,
-        "height": 34
-      },
-      {
-        "id": 16,
-        "name": "Hylla E",
-        "x": 31,
-        "y": 3,
-        "width": 5,
-        "height": 34
-      },
-      {
-        "id": 17,
-        "name": "Hylla F",
-        "x": 38,
-        "y": 3,
-        "width": 5,
-        "height": 34
-      },
-      {
-        "id": 18,
-        "name": "Hylla G",
-        "x": 45,
-        "y": 3,
-        "width": 5,
-        "height": 34
-      },
-      {
-        "id": 19,
-        "name": "Hylla H",
-        "x": 52,
-        "y": 3,
-        "width": 5,
-        "height": 34
+        "height": 40
       }
     ],
     "storage_dimensions": {
@@ -253,76 +125,12 @@
     "is_main_floor": false,
     "floor_zones": [
       {
-        "id": 20,
-        "name": "Hylla A",
-        "x": 5,
-        "y": 3,
+        "id": 4,
+        "name": "Våning 2",
+        "x": 0,
+        "y": 0,
         "width": 5,
-        "height": 39
-      },
-      {
-        "id": 21,
-        "name": "Hylla B",
-        "x": 12,
-        "y": 3,
-        "width": 5,
-        "height": 39
-      },
-      {
-        "id": 22,
-        "name": "Hylla C",
-        "x": 19,
-        "y": 3,
-        "width": 5,
-        "height": 39
-      },
-      {
-        "id": 23,
-        "name": "Hylla D",
-        "x": 26,
-        "y": 3,
-        "width": 5,
-        "height": 39
-      },
-      {
-        "id": 24,
-        "name": "Hylla E",
-        "x": 33,
-        "y": 3,
-        "width": 5,
-        "height": 39
-      },
-      {
-        "id": 25,
-        "name": "Hylla F",
-        "x": 40,
-        "y": 3,
-        "width": 5,
-        "height": 39
-      },
-      {
-        "id": 26,
-        "name": "Hylla G",
-        "x": 47,
-        "y": 3,
-        "width": 5,
-        "height": 39
-      },
-      {
-        "id": 27,
-        "name": "Hylla H",
-        "x": 54,
-        "y": 3,
-        "width": 5,
-        "height": 39
-      },
-      {
-        "id": 28,
-        "name": "Hylla I",
-        "x": 61,
-        "y": 3,
-        "width": 5,
-        "height": 39
+        "height": 45
       }
     ],
     "storage_dimensions": {
@@ -341,68 +149,12 @@
     "is_main_floor": false,
     "floor_zones": [
       {
-        "id": 29,
-        "name": "Hylla J",
-        "x": 8,
-        "y": 5,
+        "id": 5,
+        "name": "Våning 3",
+        "x": 0,
+        "y": 0,
         "width": 5,
-        "height": 35
-      },
-      {
-        "id": 30,
-        "name": "Hylla K",
-        "x": 15,
-        "y": 5,
-        "width": 5,
-        "height": 35
-      },
-      {
-        "id": 31,
-        "name": "Hylla L",
-        "x": 22,
-        "y": 5,
-        "width": 5,
-        "height": 35
-      },
-      {
-        "id": 32,
-        "name": "Hylla M",
-        "x": 29,
-        "y": 5,
-        "width": 5,
-        "height": 35
-      },
-      {
-        "id": 33,
-        "name": "Hylla N",
-        "x": 36,
-        "y": 5,
-        "width": 5,
-        "height": 35
-      },
-      {
-        "id": 34,
-        "name": "Hylla O",
-        "x": 43,
-        "y": 5,
-        "width": 5,
-        "height": 35
-      },
-      {
-        "id": 35,
-        "name": "Hylla P",
-        "x": 50,
-        "y": 5,
-        "width": 5,
-        "height": 35
-      },
-      {
-        "id": 36,
-        "name": "Hylla Q",
-        "x": 57,
-        "y": 5,
-        "width": 5,
-        "height": 35
+        "height": 45
       }
     ],
     "storage_dimensions": {
@@ -436,60 +188,12 @@
     "is_main_floor": false,
     "floor_zones": [
       {
-        "id": 37,
-        "name": "Hylla A",
-        "x": 4,
-        "y": 2,
+        "id": 6,
+        "name": "Våning 2",
+        "x": 0,
+        "y": 0,
         "width": 5,
-        "height": 26
-      },
-      {
-        "id": 38,
-        "name": "Hylla B",
-        "x": 11,
-        "y": 2,
-        "width": 5,
-        "height": 26
-      },
-      {
-        "id": 39,
-        "name": "Hylla C",
-        "x": 18,
-        "y": 2,
-        "width": 5,
-        "height": 26
-      },
-      {
-        "id": 40,
-        "name": "Hylla D",
-        "x": 25,
-        "y": 2,
-        "width": 5,
-        "height": 26
-      },
-      {
-        "id": 41,
-        "name": "Hylla E",
-        "x": 32,
-        "y": 2,
-        "width": 5,
-        "height": 26
-      },
-      {
-        "id": 42,
-        "name": "Hylla F",
-        "x": 39,
-        "y": 2,
-        "width": 5,
-        "height": 26
-      },
-      {
-        "id": 43,
-        "name": "Hylla G",
-        "x": 46,
-        "y": 2,
-        "width": 5,
-        "height": 26
+        "height": 30
       }
     ],
     "storage_dimensions": {
