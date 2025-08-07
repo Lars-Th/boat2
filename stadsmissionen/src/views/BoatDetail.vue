@@ -6,6 +6,7 @@ import DetailPage from '@/components/shared/DetailPage.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, MessageSquare, Send, Calendar, Ship, User, MapPin } from 'lucide-vue-next';
+import BoatDetailCanvas from '@/components/konva/BoatDetailCanvas.vue';
 
 // Import data
 import boatsData from '@/assets/data/boats.json';
@@ -324,8 +325,8 @@ const navigateBack = () => {
   if (fromCustomerId.value) {
     router.push(`/customers/${fromCustomerId.value}`);
   } else {
-    router.push('/boats');
-  }
+      router.push('/boats');
+    }
 };
 
 const handleDiscardChanges = () => {
@@ -344,36 +345,36 @@ const handleDiscardChanges = () => {
 const handleFieldChange = (key: string, value: any) => {
   if (!boat.value) return;
 
-  if (key === 'customer_id') {
+    if (key === 'customer_id') {
     boat.value.customer_id = parseInt(value);
 
     // Update customer info
-    const customer = customersData.find(c => c.id === boat.value!.customer_id);
-    if (customer) {
-      boat.value.customer_name = customer.display_name;
-      boat.value.customer_type = customer.first_name ? 'individual' : 'company';
-    }
-  } else if (key === 'sms_notifications' || key === 'email_notifications') {
-    (boat.value as any)[key] = value === 'true';
-  } else {
-    (boat.value as any)[key] = value;
+      const customer = customersData.find(c => c.id === boat.value!.customer_id);
+      if (customer) {
+        boat.value.customer_name = customer.display_name;
+        boat.value.customer_type = customer.first_name ? 'individual' : 'company';
+      }
+    } else if (key === 'sms_notifications' || key === 'email_notifications') {
+      (boat.value as any)[key] = value === 'true';
+    } else {
+      (boat.value as any)[key] = value;
 
     // Update computed fields
     if (key === 'length' || key === 'width') {
       boat.value.dimensions = `${boat.value.length} × ${boat.value.width} m`;
       boat.value.area = `${(boat.value.length * boat.value.width).toFixed(1)} m²`;
-    } else if (key === 'weight') {
-      boat.value.weight_display = boat.value.weight ? `${boat.value.weight} kg` : '-';
-    } else if (key === 'current_status') {
+      } else if (key === 'weight') {
+        boat.value.weight_display = boat.value.weight ? `${boat.value.weight} kg` : '-';
+      } else if (key === 'current_status') {
       boat.value.current_status_text = getStatusText(value);
-    } else if (key === 'location_status') {
+      } else if (key === 'location_status') {
       boat.value.location_status_text = getLocationStatusText(value);
+      }
     }
-  }
 
-  if (!isInitialLoad.value) {
-    hasUnsavedChanges.value = true;
-  }
+    if (!isInitialLoad.value) {
+      hasUnsavedChanges.value = true;
+    }
 };
 
 // Initialize data
@@ -457,7 +458,7 @@ watch(
       setTimeout(() => {
         isInitialLoad.value = false;
       }, 100);
-    }
+  }
   }
 );
 </script>
@@ -478,6 +479,77 @@ watch(
     @discard-changes="handleDiscardChanges"
     @field-change="handleFieldChange"
   >
+    <template #main-content>
+      <!-- Default form fields -->
+      <div class="bg-background rounded-lg border p-4">
+        <h3 class="text-sm font-semibold flex items-center text-foreground/80 mb-2 gap-2">
+          <Ship class="h-4 w-4" />
+          Grundläggande information
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 gap-x-4">
+          <div v-for="field in mainFields" :key="field.key" class="space-y-1">
+            <label class="text-[10px] font-medium text-foreground/80">{{ field.label }}</label>
+            <input
+              v-if="field.type === 'text'"
+              :value="(boat[field.key] ?? '').toString()"
+              class="h-8 md:text-xs w-full px-2 border rounded"
+              @input="handleFieldChange(field.key, ($event.target as HTMLInputElement).value)"
+            />
+            <input
+              v-else-if="field.type === 'number'"
+              :value="Number(boat[field.key] ?? 0)"
+              type="number"
+              class="h-8 text-xs w-full px-2 border rounded"
+              @input="handleFieldChange(field.key, Number(($event.target as HTMLInputElement).value))"
+            />
+            <input
+              v-else-if="field.type === 'date'"
+              :value="(boat[field.key] ?? '').toString()"
+              type="date"
+              class="h-8 text-xs w-full px-2 border rounded"
+              @input="handleFieldChange(field.key, ($event.target as HTMLInputElement).value)"
+            />
+            <textarea
+              v-else-if="field.type === 'textarea'"
+              :value="(boat[field.key] ?? '').toString()"
+              rows="3"
+              class="md:text-xs resize-none w-full px-2 border rounded"
+              @input="handleFieldChange(field.key, ($event.target as HTMLTextAreaElement).value)"
+            />
+            <select
+              v-else-if="field.type === 'select'"
+              :value="boat[field.key]"
+              class="h-8 text-xs w-full px-2 border rounded"
+              @change="handleFieldChange(field.key, ($event.target as HTMLSelectElement).value)"
+            >
+              <option value="">Välj alternativ...</option>
+              <option v-for="option in field.options" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boat Canvas - Interactive 3D Preview -->
+      <div class="mt-6">
+        <div class="bg-white rounded-lg border p-6">
+          <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-700">
+            <Ship class="h-5 w-5" />
+            Båtvisualisering
+          </h3>
+          <div class="text-sm text-gray-600 mb-4">
+            Interaktiv förhandsvisning av båten med dimensioner och visuella tillstånd
+          </div>
+          <BoatDetailCanvas
+            :initial-boat-data="boat as any"
+            class="w-full"
+          />
+        </div>
+      </div>
+    </template>
+
     <template #header-actions>
       <!-- Action buttons -->
       <div class="flex items-center gap-2">
@@ -504,11 +576,11 @@ watch(
           size="sm"
           :disabled="!boat.sms_notifications && !boat.email_notifications"
           @click="sendNotification('both')"
-        >
+                      >
           <Bell class="h-3 w-3 mr-1" />
           Båda
         </Button>
-      </div>
+                        </div>
     </template>
 
     <template #sidebar-content>
@@ -528,9 +600,9 @@ watch(
                     new Date(boat[field.key]).toLocaleDateString('sv-SE') :
                     boat[field.key] || '-' }}
               </div>
-            </div>
-          </div>
-        </div>
+              </div>
+              </div>
+              </div>
 
         <!-- Contact Information -->
         <div class="bg-white rounded-lg border p-4" v-if="boat.customer_id">
@@ -539,32 +611,32 @@ watch(
             Kontaktinformation
           </h3>
           <div class="space-y-2">
-            <div class="space-y-1">
+              <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Ägare</label>
               <div class="text-xs text-gray-700">{{ boat.customer_name }}</div>
-            </div>
-            <div class="space-y-1">
+              </div>
+              <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Typ</label>
               <div class="text-xs text-gray-700">
                 <Badge :variant="boat.customer_type === 'individual' ? 'default' : 'secondary'">
                   {{ boat.customer_type === 'individual' ? 'Privatperson' : 'Företag' }}
                 </Badge>
               </div>
+              </div>
             </div>
           </div>
-        </div>
 
         <!-- Placement Information -->
         <div class="bg-white rounded-lg border p-4">
           <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
             <MapPin class="h-4 w-4" />
             Placeringsinformation
-          </h3>
+            </h3>
           <div class="space-y-2">
             <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Aktuell plats</label>
               <div class="text-xs text-gray-700">{{ boat.storage_location }}</div>
-            </div>
+              </div>
             <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Status</label>
               <div class="text-xs">
@@ -578,44 +650,44 @@ watch(
 
         <!-- Notifications -->
         <div class="bg-white rounded-lg border p-4">
-          <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
+            <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
             <Bell class="h-4 w-4" />
             Notifieringar
-          </h3>
-          <div class="space-y-2">
-            <div class="space-y-1">
+            </h3>
+            <div class="space-y-2">
+              <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">SMS</label>
               <div class="text-xs">
                 <Badge :variant="boat.sms_notifications ? 'default' : 'secondary'">
                   {{ boat.sms_notifications ? 'Aktiverat' : 'Inaktiverat' }}
                 </Badge>
               </div>
-            </div>
-            <div class="space-y-1">
+              </div>
+              <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">E-post</label>
               <div class="text-xs">
                 <Badge :variant="boat.email_notifications ? 'default' : 'secondary'">
                   {{ boat.email_notifications ? 'Aktiverat' : 'Inaktiverat' }}
                 </Badge>
               </div>
+              </div>
             </div>
           </div>
-        </div>
 
         <!-- Timestamps -->
         <div class="bg-white rounded-lg border p-4">
-          <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
+            <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
             <Calendar class="h-4 w-4" />
             Tidsstämplar
-          </h3>
-          <div class="space-y-2">
-            <div class="space-y-1">
+            </h3>
+            <div class="space-y-2">
+              <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Skapad</label>
               <div class="text-xs text-gray-700">
                 {{ new Date(boat.created_at).toLocaleDateString('sv-SE') }}
               </div>
-            </div>
-            <div class="space-y-1">
+              </div>
+              <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Uppdaterad</label>
               <div class="text-xs text-gray-700">
                 {{ new Date(boat.updated_at).toLocaleDateString('sv-SE') }}

@@ -8,7 +8,9 @@
     "is_connected_to_land": true,
     "connected_unit_id": null,
     "latitude": 57.709,
-    "longitude": 11.9745
+    "longitude": 11.9745,
+    "length": 45.0,
+    "width": 28.0
   },
   {
     "id": 2,
@@ -19,7 +21,9 @@
     "is_connected_to_land": true,
     "connected_unit_id": 3,
     "latitude": 57.7088,
-    "longitude": 11.9745
+    "longitude": 11.9745,
+    "length": 35.0,
+    "width": 15.0
   },
   {
     "id": 3,
@@ -30,7 +34,9 @@
     "is_connected_to_land": false,
     "connected_unit_id": 2,
     "latitude": 57.7085,
-    "longitude": 11.9748
+    "longitude": 11.9748,
+    "length": 30.0,
+    "width": 12.0
   },
   {
     "id": 4,
@@ -41,7 +47,9 @@
     "is_connected_to_land": true,
     "connected_unit_id": null,
     "latitude": 59.3295,
-    "longitude": 18.0685
+    "longitude": 18.0685,
+    "length": 52.0,
+    "width": 32.0
   },
   {
     "id": 5,
@@ -52,7 +60,9 @@
     "is_connected_to_land": true,
     "connected_unit_id": null,
     "latitude": 59.3292,
-    "longitude": 18.0685
+    "longitude": 18.0685,
+    "length": 42.0,
+    "width": 18.0
   },
   {
     "id": 6,
@@ -63,7 +73,9 @@
     "is_connected_to_land": true,
     "connected_unit_id": null,
     "latitude": 55.605,
-    "longitude": 13.0035
+    "longitude": 13.0035,
+    "length": 61.0,
+    "width": 35.0
   },
   {
     "id": 7,
@@ -74,7 +86,9 @@
     "is_connected_to_land": true,
     "connected_unit_id": 8,
     "latitude": 55.6048,
-    "longitude": 13.0035
+    "longitude": 13.0035,
+    "length": 38.0,
+    "width": 25.0
   },
   {
     "id": 8,
@@ -85,6 +99,8 @@
     "is_connected_to_land": false,
     "connected_unit_id": 7,
     "latitude": 55.605,
-    "longitude": 13.0038
+    "longitude": 13.0038,
+    "length": 28.0,
+    "width": 11.0
   }
 ]

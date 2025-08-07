@@ -9,6 +9,7 @@ export interface BoatData {
   id: number;
   customer_id: number;
   name: string;
+  registreringsnummer?: string; // Optional since some boats might not have it
   length: number;
   width: number;
   safety_margin: number;
