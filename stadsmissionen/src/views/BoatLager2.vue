@@ -643,10 +643,10 @@ const loadStorageFloors = async () => {
   try {
     const response = await fetch('/src/assets/data/storageFloors.json');
     const floorsData = await response.json();
-    
+
     storageFloors.value = floorsData;
     console.log(`🏢 Laddat ${storageFloors.value.length} vånings-poster från storageFloors.json`);
-    
+
     // Update available floors for current storage if selected
     if (selectedStorage.value) {
       updateAvailableFloors();
@@ -665,13 +665,13 @@ const updateAvailableFloors = () => {
   }
 
   // Find all floors for this storage
-  const floorsForStorage = storageFloors.value.filter(floor => 
+  const floorsForStorage = storageFloors.value.filter(floor =>
     floor.storage_id === selectedStorage.value!.id
   );
 
   availableFloors.value = floorsForStorage.sort((a, b) => a.floor_number - b.floor_number);
-  
-  console.log(`🏢 Hittade ${availableFloors.value.length} våningar för lager ${selectedStorage.value.name}:`, 
+
+  console.log(`🏢 Hittade ${availableFloors.value.length} våningar för lager ${selectedStorage.value.name}:`,
     availableFloors.value.map(f => `V${f.floor_number}`));
 
   // Reset to floor 1 if current floor doesn't exist for this storage
@@ -702,9 +702,9 @@ const filteredBoats = computed(() => {
 
 const currentStoragePlacements = computed(() => {
   if (!selectedStorage.value) return [];
-  
+
   // Filter by storage and floor number
-  return placements.value.filter(p => 
+  return placements.value.filter(p =>
     p.storage_unit_id === selectedStorage.value!.id &&
     (p.floor_number || 1) === selectedFloor.value
   );
@@ -795,6 +795,27 @@ const getStorageFloorCount = (storageId: number) => {
   const floorsForStorage = storageFloors.value.filter(floor => floor.storage_id === storageId);
   return Math.max(1, floorsForStorage.length); // Minst 1 våning (grundvåningen)
 };
+
+// Floor logic (from StorageDesigner)
+const isMainFloor = computed(() => {
+  // Main floor (level 1) shows restriction zones
+  return selectedFloor.value === 1;
+});
+
+const isStorageFloor = computed(() => {
+  // Storage floors (2+) show floor zones
+  return selectedStorage.value?.Type === 'Lager' && selectedFloor.value > 1;
+});
+
+const currentFloorDesign = computed(() => {
+  if (!selectedStorage.value) return null;
+  
+  // Find the floor design for current storage and floor
+  return availableFloors.value.find(floor => 
+    floor.storage_id === selectedStorage.value!.id && 
+    floor.floor_number === selectedFloor.value
+  ) || null;
+});
 
 // Tooltip interaction functions
 let tooltipHideTimeout: number | null = null;
@@ -1290,6 +1311,9 @@ const drawStorage = () => {
   // NOTE: Canvas background removed - using CSS background instead
   // (The .konva-canvas CSS class already provides background styling)
 
+  // Determine if storage should be dimmed (when on floors 2+)
+  const shouldDimStorage = !isMainFloor.value;
+
   // Draw storage area with StorageDesigner styling
   const storageRect = new Konva.Rect({
     x: storageOffsetX,
@@ -1297,18 +1321,23 @@ const drawStorage = () => {
     width: storage.Height * pixelsPerMeter,
     height: storage.width * pixelsPerMeter,
     ...storageStyle,
+    opacity: shouldDimStorage ? 0.3 : 1.0, // Dim when editing upper floors
     listening: false,
   });
   layer.value.add(storageRect);
 
   // Add storage label above the storage area (like StorageDesigner)
   const fontSize = Math.max(12, pixelsPerMeter * 1.2);
+  const labelText = selectedFloor.value === 1
+    ? (isWarehouse ? `${storage.name} våning 1` : storage.name)
+    : `${storage.name} våning ${selectedFloor.value}`;
+
   const storageLabel = new Konva.Text({
     x: storageOffsetX,
     y: storageOffsetY - fontSize - 10,
-    text: storage.name,
+    text: labelText,
     fontSize: fontSize,
-    fill: '#1f2937',
+    fill: shouldDimStorage ? '#9ca3af' : '#1f2937', // Dimmed text for upper floors
     fontFamily: 'Arial',
     fontStyle: 'bold',
     listening: false,
@@ -1323,8 +1352,16 @@ const drawStorage = () => {
   // Draw grid with StorageDesigner styling
   drawGrid(storage, pixelsPerMeter, storageOffsetX, storageOffsetY);
 
-  // Draw restriction zones
-  drawRestrictionZones(pixelsPerMeter, storageOffsetX, storageOffsetY);
+  // Draw zones based on floor (like StorageDesigner)
+  if (isMainFloor.value) {
+    // Main floor - show restriction zones
+    drawRestrictionZones(pixelsPerMeter, storageOffsetX, storageOffsetY);
+    console.log('🏢 Displaying main floor - restriction zones');
+  } else if (isStorageFloor.value) {
+    // Upper floor - show floor zones  
+    drawFloorZones(pixelsPerMeter, storageOffsetX, storageOffsetY);
+    console.log('🏢 Displaying storage floor - floor zones');
+  }
 
   // Draw placed boats
   drawPlacedBoats();
@@ -1493,6 +1530,62 @@ const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, st
     });
 
     // Center the text properly
+    zoneText.offsetX(zoneText.width() / 2);
+    layer.value.add(zoneText);
+  });
+};
+
+// Draw floor zones (from StorageDesigner)
+const drawFloorZones = (pixelsPerMeter: number, storageOffsetX: number, storageOffsetY: number) => {
+  if (!layer.value || !currentFloorDesign.value) return;
+
+  const floorZones = currentFloorDesign.value.floor_zones;
+  if (floorZones.length === 0) return;
+
+  console.log(`🏢 Drawing ${floorZones.length} floor zones for våning ${selectedFloor.value}...`);
+
+  floorZones.forEach((zone, index) => {
+    console.log(`📦 Drawing floor zone ${index + 1}: ${zone.name} at (${zone.x}, ${zone.y}) size ${zone.width}x${zone.height}m`);
+
+    // Convert zone coordinates from meters to pixels
+    const zoneX = storageOffsetX + (zone.x * pixelsPerMeter);
+    const zoneY = storageOffsetY + (zone.y * pixelsPerMeter);
+    const zoneWidth = zone.width * pixelsPerMeter;
+    const zoneHeight = zone.height * pixelsPerMeter;
+
+    // Create floor zone rectangle (from StorageDesigner styling)
+    const zoneRect = new Konva.Rect({
+      x: zoneX,
+      y: zoneY,
+      width: zoneWidth,
+      height: zoneHeight,
+      fill: '#EBF3FF',     // Light blue fill
+      stroke: '#2563eb',   // Blue border
+      strokeWidth: 1,
+      dash: [5, 2],        // Dashed border
+      opacity: 1.0,
+      listening: false,    // Non-interactive for now
+    });
+    layer.value.add(zoneRect);
+
+    // Add zone label (centered in the middle of the zone)
+    const fontSize = Math.max(10, pixelsPerMeter * 1.5);
+    const zoneText = new Konva.Text({
+      x: zoneX + (zoneWidth / 2),
+      y: zoneY + (zoneHeight / 2),
+      text: zone.name,
+      fontSize: fontSize,
+      fill: '#2563eb', // Same blue as border
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      align: 'center',
+      verticalAlign: 'middle',
+      offsetX: 0, // Will be set based on text width
+      offsetY: fontSize / 2, // Half of fontSize to center vertically
+      listening: false,
+    });
+
+    // Center the text properly by setting offsetX to half the text width
     zoneText.offsetX(zoneText.width() / 2);
     layer.value.add(zoneText);
   });
@@ -1763,7 +1856,7 @@ const selectStorage = async (storage: Storage, autoCenter: boolean = false) => {
 
   // Load restriction zones for this storage
   await loadRestrictionZones();
-  
+
   // Update available floors for this storage
   updateAvailableFloors();
 
@@ -1784,7 +1877,7 @@ const selectStorage = async (storage: Storage, autoCenter: boolean = false) => {
 const selectFloor = (floorNumber: number) => {
   selectedFloor.value = floorNumber;
   console.log(`🏢 Väljer våning ${floorNumber} för lager ${selectedStorage.value?.name}`);
-  
+
   // Redraw to show boats for this floor
   drawStorage();
 };
