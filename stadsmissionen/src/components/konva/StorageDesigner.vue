@@ -2,7 +2,7 @@
   <div class="storage-designer-container">
     <!-- Toolbar -->
     <div class="canvas-toolbar">
-      <!-- Storage Basic Settings -->
+      <!-- Row 1: Basic Settings (Namn, Typ, Höjd, Bredd) -->
       <div class="toolbar-group">
         <span class="toolbar-label">Namn:</span>
         <div class="input-group">
@@ -419,20 +419,6 @@
         </div>
       </div>
 
-      <!-- Save/Load Group -->
-      <div class="toolbar-separator"></div>
-
-      <div class="toolbar-group">
-        <span class="toolbar-label">Spara:</span>
-        <button @click="isMainFloor ? saveStorageDesign() : saveFloorDesign()" class="toolbar-button save-button icon-button" :title="isMainFloor ? 'Spara begränsningsytor' : 'Spara våningsdesign'">
-          <SaveIcon class="button-icon" />
-        </button>
-        <button @click="downloadFloorConfig" class="toolbar-button icon-button" title="Ladda ner JSON">
-          <DownloadIcon class="button-icon" />
-        </button>
-      </div>
-
-
     </div>
 
     <!-- Canvas Container -->
@@ -453,8 +439,6 @@ import {
   Grid3x3,
   Plus as PlusIcon,
   Trash2 as Trash2Icon,
-  Save as SaveIcon,
-  Download as DownloadIcon,
   ZoomOut,
   ZoomIn,
   Navigation2,

@@ -6,7 +6,7 @@ import StorageDesigner from '@/components/konva/StorageDesigner.vue';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { MapPin, Warehouse, Save, Navigation, FileText } from 'lucide-vue-next';
+import { Navigation, FileText, Warehouse } from 'lucide-vue-next';
 import { useToast } from '@/composables/useToast';
 
 // Import storage units data
@@ -107,33 +107,7 @@ const mainFields = [
   },
 ];
 
-const sidebarFields = [
-  {
-    key: 'id',
-    label: 'ID',
-    type: 'text' as const,
-  },
-  {
-    key: 'displayStatus',
-    label: 'Status',
-    type: 'text' as const,
-  },
-  {
-    key: 'capacity',
-    label: 'Kapacitet',
-    type: 'text' as const,
-  },
-  {
-    key: 'location',
-    label: 'Position',
-    type: 'text' as const,
-  },
-  {
-    key: 'details',
-    label: 'Dimensioner',
-    type: 'text' as const,
-  },
-];
+// Sidebar fields removed - using hideSidebar prop instead
 
 // Computed properties
 const title = computed(() => {
@@ -281,11 +255,11 @@ onMounted(() => {
     :readonly="false"
     :has-unsaved-changes="hasUnsavedChanges"
     :main-fields="mainFields"
-    :sidebar-fields="sidebarFields"
     :title="title"
     :breadcrumbs="breadcrumbs"
     :show-stats="true"
     :stats="stats"
+    :hide-sidebar="true"
     @save="handleSave"
     @back="handleBack"
     @discard-changes="handleDiscardChanges"
@@ -322,7 +296,7 @@ onMounted(() => {
               <Input
                 v-if="field.type === 'text'"
                 :model-value="(data[field.key] ?? '').toString()"
-                class="h-8 md:text-xs"
+                class="h-8 text-base md:text-xs"
                 @update:model-value="handleFieldChange(field.key, $event)"
               />
               <Input
@@ -330,7 +304,7 @@ onMounted(() => {
                 :model-value="Number(data[field.key] ?? 0)"
                 type="number"
                 :step="field.key.includes('lat') || field.key.includes('long') ? '0.0001' : '0.1'"
-                class="h-8 md:text-xs"
+                class="h-8 text-base md:text-xs"
                 @update:model-value="handleFieldChange(field.key, parseFloat($event.toString()))"
               />
 
@@ -338,7 +312,7 @@ onMounted(() => {
                 v-else-if="field.type === 'textarea'"
                 :model-value="(data[field.key] ?? '').toString()"
                 rows="3"
-                class="md:text-xs resize-none"
+                class="text-base md:text-xs resize-none"
                 placeholder="Ange kommentar om lagringsplatsen..."
                 @update:model-value="handleFieldChange(field.key, $event)"
               />
@@ -356,6 +330,10 @@ onMounted(() => {
           <div class="w-full">
             <StorageDesigner
               :selectedStorageId="Number(data['id'])"
+              :externalName="String(data['name'] || '')"
+              :externalLength="Number(data['height'] || 0)"
+              :externalWidth="Number(data['width'] || 0)"
+              :externalType="String(data['type'] || 'Lager')"
               @update:length="handleFieldChange('height', $event)"
               @update:width="handleFieldChange('width', $event)"
               @update:name="handleFieldChange('name', $event)"
@@ -366,82 +344,7 @@ onMounted(() => {
       </div>
     </template>
 
-    <!-- Custom sidebar content -->
-    <template #sidebar-content="{ data }">
-      <div class="space-y-4">
-                 <!-- Status Overview -->
-         <div class="bg-background rounded-lg border p-4">
-           <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-secondary-foreground">
-             <component :is="data['type'] === 'Brygga' ? MapPin : Warehouse" class="h-4 w-4" />
-             Status översikt
-           </h3>
-
-           <div class="space-y-3">
-             <div class="flex justify-between items-center">
-               <span class="text-xs text-secondary-foreground">Status</span>
-               <span
-                 class="text-xs font-medium px-2 py-1 rounded-full"
-                 :class="{
-                   'bg-green-100 text-green-800': data['status'] === 'available',
-                   'bg-yellow-100 text-yellow-800': data['status'] === 'maintenance',
-                   'bg-blue-100 text-blue-800': data['status'] === 'seasonal',
-                   'bg-red-100 text-red-800': data['status'] === 'full'
-                 }"
-               >
-                 {{ data['displayStatus'] }}
-               </span>
-             </div>
-
-             <div class="flex justify-between items-center">
-               <span class="text-xs text-secondary-foreground">Kapacitet</span>
-               <span class="text-xs font-medium">{{ data['capacity'] }}</span>
-             </div>
-
-             <div class="flex justify-between items-center">
-               <span class="text-xs text-secondary-foreground">Dimensioner</span>
-               <span class="text-xs font-medium">{{ data['details'] }}</span>
-             </div>
-           </div>
-         </div>
-
-        <!-- Location Information -->
-        <div class="bg-background rounded-lg border p-4">
-          <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-secondary-foreground">
-            <MapPin class="h-4 w-4" />
-            Position
-          </h3>
-
-                     <div class="space-y-2">
-             <div>
-               <span class="text-xs text-secondary-foreground">Koordinater</span>
-               <div class="text-xs font-mono">{{ data['location'] }}</div>
-             </div>
-
-             <div>
-               <span class="text-xs text-secondary-foreground">Kategori</span>
-               <div class="text-xs font-medium capitalize">
-                 {{ data['category'] === 'dock' ? 'Brygga' : 'Lager' }}
-               </div>
-             </div>
-           </div>
-        </div>
-
-        <!-- System Information -->
-        <div class="bg-background rounded-lg border p-4">
-          <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-secondary-foreground">
-            <Save class="h-4 w-4" />
-            System information
-          </h3>
-
-                     <div class="space-y-2">
-             <div class="flex justify-between items-center">
-               <span class="text-xs text-secondary-foreground">ID</span>
-               <span class="text-xs font-mono">{{ data['id'] }}</span>
-             </div>
-           </div>
-        </div>
-      </div>
-    </template>
+    <!-- Sidebar content removed - using hideSidebar prop -->
   </DetailPage>
 
   <!-- Loading state -->

@@ -36,6 +36,7 @@ interface Props {
   breadcrumbs?: Array<{ label: string; to: string; isCurrentPage?: boolean }>;
   showStats?: boolean;
   stats?: Array<{ label: string; value: string | number; color?: string; variant?: string }>;
+  hideSidebar?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -47,6 +48,7 @@ const props = withDefaults(defineProps<Props>(), {
   breadcrumbs: () => [],
   showStats: false,
   stats: () => [],
+  hideSidebar: false,
 });
 
 const emit = defineEmits<{
@@ -189,9 +191,9 @@ onUnmounted(() => {
     </div>
 
     <!-- Form Content -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 m-4">
-      <!-- Main Content (2/3 width) -->
-      <div class="lg:col-span-2">
+    <div class="m-4" :class="hideSidebar ? 'space-y-4' : 'grid grid-cols-1 lg:grid-cols-3 gap-4'">
+      <!-- Main Content (2/3 width or full width if hideSidebar) -->
+      <div :class="hideSidebar ? 'w-full' : 'lg:col-span-2'">
         <slot name="main-content" :data="data" :readonly="readonly">
           <!-- Default form fields -->
           <div class="bg-background rounded-lg border p-4">
@@ -215,7 +217,7 @@ onUnmounted(() => {
                   :model-value="Number(data[field.key] ?? 0)"
                   :readonly="readonly"
                   type="number"
-                  class="h-8 text-xs"
+                  class="h-8 text-base md:text-xs"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Input
@@ -223,7 +225,7 @@ onUnmounted(() => {
                   :model-value="(data[field.key] ?? '').toString()"
                   :readonly="readonly"
                   type="date"
-                  class="h-8 text-xs"
+                  class="h-8 text-base md:text-xs"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Textarea
@@ -231,7 +233,7 @@ onUnmounted(() => {
                   :model-value="(data[field.key] ?? '').toString()"
                   :readonly="readonly"
                   rows="3"
-                  class="md:text-xs resize-none"
+                  class="text-base md:text-xs resize-none"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Combobox
@@ -243,7 +245,7 @@ onUnmounted(() => {
                 >
                   <ComboboxAnchor as-child>
                     <ComboboxTrigger as-child>
-                      <Button variant="outline" class="font-normal text-xs">
+                      <Button variant="outline" class="font-normal text-base md:text-xs">
                         {{
                           getSelectedOption(field, data[field.key])?.label ?? 'Välj alternativ...'
                         }}
@@ -281,7 +283,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Sidebar Content (1/3 width) -->
-      <div class="space-y-4">
+      <div v-if="!hideSidebar" class="space-y-4">
         <slot name="sidebar-content" :data="data" :readonly="readonly">
           <!-- Default sidebar -->
           <div class="bg-white rounded-lg border p-4">

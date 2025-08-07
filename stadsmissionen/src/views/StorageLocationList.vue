@@ -6,8 +6,8 @@ import { Plus, Warehouse, MapPin, Edit, Trash2, Navigation } from 'lucide-vue-ne
 
 const router = useRouter();
 
-// Import combined storage data
-import combinedStorageData from '@/assets/data/combinedStorage.json';
+// Import storage units data (enligt DataHandlingGuidelines.md)
+import storageUnitsData from '@/assets/data/storageUnits.json';
 
 // State
 const searchQuery = ref('');
@@ -46,24 +46,24 @@ const extractCapacityFromComment = (comment: string): string => {
   return 'Okänd kapacitet';
 };
 
-// Process combined storage data
+// Process storage units data
 const storageLocations = computed(() => {
-  return combinedStorageData.map((location: any) => ({
+  return storageUnitsData.map((location: any) => ({
     id: location.id,
     name: location.name,
-    category: location.Type === 'Brygga' ? 'dock' : 'warehouse',
-    type: location.Type,
-    displayType: location.Type,
-    latitude: location.Lat,
-    longitude: location.Long,
-    status: getStatusFromComment(location.Comment),
-    displayStatus: getStatusDisplayFromComment(location.Comment),
-    capacity: extractCapacityFromComment(location.Comment),
-    details: `H: ${location.Height}m, B: ${location.width}m`,
-    location: `${location.Lat.toFixed(4)}, ${location.Long.toFixed(4)}`,
-    height: location.Height,
+    category: location.unit_type, // warehouse or dock directly
+    type: location.unit_type === 'dock' ? 'Brygga' : 'Lager',
+    displayType: location.unit_type === 'dock' ? 'Brygga' : 'Lager',
+    latitude: location.latitude,
+    longitude: location.longitude,
+    status: location.is_connected_to_land ? 'available' : 'maintenance',
+    displayStatus: location.is_connected_to_land ? 'Tillgänglig' : 'Underhåll',
+    capacity: `${location.level_count} våningar`,
+    details: `H: ${location.length}m, B: ${location.width}m`,
+    location: `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}`,
+    height: location.length,
     width: location.width,
-    comment: location.Comment,
+    comment: `${location.unit_type === 'dock' ? 'Brygga' : 'Lager'} med ${location.level_count} våningar`,
   }));
 });
 

@@ -74,19 +74,19 @@
       <!-- Visual State Test Buttons -->
       <div class="toolbar-group">
         <span class="test-label">Visuella tillstånd:</span>
-        <button @click="setVisualState('can_place')" class="test-button" title="Kan placeras (normal)">
+        <button @click="setVisualState('oplacerad')" class="test-button" title="Oplacerad (kan placeras)">
           <div class="test-icon green-test">✓</div>
         </button>
-        <button @click="setVisualState('margin_collision')" class="test-button" title="Marginalkollision">
+        <button @click="setVisualState('margin_collision')" class="test-button" title="Kollision säkerhetsmarginal">
           <div class="test-icon orange-test">⚠</div>
         </button>
-        <button @click="setVisualState('hull_collision')" class="test-button" title="Skrovkollision">
+        <button @click="setVisualState('hull_collision')" class="test-button" title="Kollision skrov">
           <div class="test-icon red-test">✗</div>
         </button>
-        <button @click="setVisualState('placed')" class="test-button" title="Placerad fysiskt">
+        <button @click="setVisualState('placerad')" class="test-button" title="Placerad fysiskt">
           <div class="test-icon blue-test">■</div>
         </button>
-        <button @click="setVisualState('reserved')" class="test-button" title="Reserverad (ej fysiskt)">
+        <button @click="setVisualState('reserverad')" class="test-button" title="Reserverad plats">
           <div class="test-icon light-gray-test">◐</div>
         </button>
         <button @click="resetVisualState" class="test-button" title="Återställ till normal">
@@ -306,29 +306,23 @@ const SVG_CONSTANTS = {
   areaM: { w: 80, h: 15 }
 };
 
-// State styles from HTML prototype + test states
+// KORREKTA Visual States - använder TEST STATES som grunden
 const stateStyles = {
+  // PLACEMENT STATUS (de korrekta från tidigare TEST STATES)
   oplacerad: {
     hull: { stroke: '#27d07c', strokeWidth: 2, fill: '#fff' },
     margin: { stroke: '#27d07c', strokeWidth: 1, dash: [5, 5], fill: '#E9FBF3' }
   },
-  i_lager: {
-    hull: { stroke: '#A8A8A8', strokeWidth: 2, fill: '#fff' },
-    margin: { stroke: '#A8A8A8', strokeWidth: 1, dash: [5, 5], fill: '#F5F5F8' }
+  placerad: {
+    hull: { stroke: '#1e40af', strokeWidth: 2, fill: '#dbeafe' },
+    margin: { stroke: '#1e40af', strokeWidth: 1, dash: [5, 5], fill: '#eff6ff' }
   },
-  vid_brygga: {
-    hull: { stroke: '#3b82f6', strokeWidth: 2, fill: '#fff' },
-    margin: { stroke: '#3b82f6', strokeWidth: 1, dash: [5, 5], fill: '#eff6ff' }
+  reserverad: {
+    hull: { stroke: '#9ca3af', strokeWidth: 2, fill: '#ffffff', opacity: 0.7, dash: [8, 4] },
+    margin: { stroke: '#9ca3af', strokeWidth: 1, dash: [10, 5], fill: '#f9fafb', opacity: 0.7 }
   },
-  service: {
-    hull: { stroke: '#f59e0b', strokeWidth: 2, fill: '#fff' },
-    margin: { stroke: '#f59e0b', strokeWidth: 1, dash: [5, 5], fill: '#fef3c7' }
-  },
-  // TEST STATES
-  can_place: {
-    hull: { stroke: '#27d07c', strokeWidth: 2, fill: '#fff' },
-    margin: { stroke: '#27d07c', strokeWidth: 1, dash: [5, 5], fill: '#E9FBF3' }
-  },
+
+  // COLLISION DETECTION STATES
   margin_collision: {
     hull: { stroke: '#27d07c', strokeWidth: 2, fill: '#fff' },
     margin: { stroke: '#dc2626', strokeWidth: 1, dash: [5, 5], fill: '#fef2f2' }
@@ -336,6 +330,12 @@ const stateStyles = {
   hull_collision: {
     hull: { stroke: '#dc2626', strokeWidth: 2, fill: '#fef2f2' },
     margin: { stroke: '#dc2626', strokeWidth: 1, dash: [5, 5], fill: '#fef2f2' }
+  },
+
+  // LEGACY STATES (för bakåtkompatibilitet, mappas till korrekta)
+  can_place: {
+    hull: { stroke: '#27d07c', strokeWidth: 2, fill: '#fff' },
+    margin: { stroke: '#27d07c', strokeWidth: 1, dash: [5, 5], fill: '#E9FBF3' }
   },
   placed: {
     hull: { stroke: '#1e40af', strokeWidth: 2, fill: '#dbeafe' },

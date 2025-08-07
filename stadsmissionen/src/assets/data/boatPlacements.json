@@ -2,15 +2,13 @@
   {
     "id": 1,
     "boat_id": 1,
-    "storage_id": 1,
-    "storage_name": "Huvudlager A",
-    "storage_type": "warehouse",
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
     "floor_number": 1,
-    "placement_type": "lager",
-    "status": "reserverad",
+    "status": "oplacerad",
     "position": {
-      "x": 15.2,
-      "y": 10.5,
+      "x": 152,
+      "y": 105,
       "rotation": 0
     },
     "placed_by_user_id": 1,
@@ -24,15 +22,13 @@
   {
     "id": 2,
     "boat_id": 2,
-    "storage_id": 20,
-    "storage_name": "Huvudbrygga A",
-    "storage_type": "dock",
-    "floor_number": 1,
-    "placement_type": "brygga",
+    "storage_unit_id": 20,
+    "storage_unit_name": "Huvudbrygga A",
+    "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 45.8,
-      "y": 0.1,
+      "x": 458,
+      "y": 1,
       "rotation": 0
     },
     "placed_by_user_id": 1,
@@ -46,15 +42,13 @@
   {
     "id": 3,
     "boat_id": 5,
-    "storage_id": 4,
-    "storage_name": "Stockholm Centrallager",
-    "storage_type": "warehouse",
+    "storage_unit_id": 4,
+    "storage_unit_name": "Stockholm Centrallager",
     "floor_number": 2,
-    "placement_type": "lager",
     "status": "placerad",
     "position": {
-      "x": 25.3,
-      "y": 15.8,
+      "x": 253,
+      "y": 158,
       "rotation": 90
     },
     "placed_by_user_id": 2,
@@ -68,15 +62,13 @@
   {
     "id": 4,
     "boat_id": 8,
-    "storage_id": 6,
-    "storage_name": "Båthall Nord",
-    "storage_type": "warehouse",
+    "storage_unit_id": 6,
+    "storage_unit_name": "Båthall Nord",
     "floor_number": 1,
-    "placement_type": "lager",
     "status": "reserverad",
     "position": {
-      "x": 35.0,
-      "y": 20.2,
+      "x": 350,
+      "y": 202,
       "rotation": 0
     },
     "placed_by_user_id": 1,

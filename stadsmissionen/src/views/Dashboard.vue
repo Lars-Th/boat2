@@ -260,9 +260,9 @@ import { useToast } from '@/composables/useToast';
 // Components
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 
-// Import data
+// Import data (enligt DataHandlingGuidelines.md)
 import companiesData from '@/assets/data/companies.json';
-import combinedStorageData from '@/assets/data/combinedStorage.json';
+import storageUnitsData from '@/assets/data/storageUnits.json';
 import boatsData from '@/assets/data/boats.json';
 
 const route = useRoute();
@@ -316,36 +316,37 @@ const saveChanges = async () => {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // In a real implementation, this would make API calls to update the JSON files
-    // For now, we'll simulate successful saves and update our local data
+    // In a real app, you would send the changes to your backend API
+    console.log('Saving changes:', locationChanges.value);
 
     const changesCount = Object.keys(locationChanges.value).length;
 
     // Update local data with new positions
     Object.values(locationChanges.value).forEach(change => {
-      const location = combinedStorageData.find(l => l.id === change.id);
+      const location = combinedStorageData.value.find(l => l.id === change.id);
       if (location) {
         location.Lat = change.lat;
         location.Long = change.lng;
       }
     });
 
-        // Clear changes
+    // Reset changes after successful save
     locationChanges.value = {};
 
-    // Restore original marker colors after successful save
+    // Refresh marker colors to remove gray state
     refreshMarkerColors();
 
     addToast({
       title: 'Ändringar sparade',
-      message: `${changesCount} markörer har uppdaterats med nya positioner`,
+      message: `${changesCount} ändringar har sparats`,
       type: 'success'
     });
 
   } catch (error) {
+    console.error('Failed to save changes:', error);
     addToast({
       title: 'Fel vid sparande',
-      message: 'Kunde inte spara ändringarna. Försök igen.',
+      message: 'Ändringar kunde inte sparas. Försök igen.',
       type: 'error'
     });
   } finally {
@@ -422,7 +423,7 @@ const highlightLocationOnMap = (locationId: number, locationName: string) => {
   refreshMarkerColors();
 
   // Center map on the highlighted location
-  const location = combinedStorageData.find(l => l.id === locationId);
+  const location = combinedStorageData.value.find(l => l.id === locationId);
   if (location && map.value) {
     map.value.flyTo({
       center: [location.Long, location.Lat],
@@ -479,11 +480,25 @@ const currentStyleName = computed(() => {
   return mapStyles[selectedStyle.value as keyof typeof mapStyles]?.name || 'Okänd stil';
 });
 
+// Map new storage data structure to old format for compatibility
+const combinedStorageData = computed(() => {
+  return storageUnitsData.map((unit: any) => ({
+    id: unit.id,
+    name: unit.name,
+    Type: unit.unit_type === 'dock' ? 'Brygga' : 'Lager',
+    Lat: unit.latitude,
+    Long: unit.longitude,
+    Height: unit.length,
+    width: unit.width,
+    Comment: `${unit.unit_type === 'dock' ? 'Brygga' : 'Lager'} med ${unit.level_count} våningar`
+  }));
+});
+
 // Statistics for header
 const headerStats = computed(() => {
   const totalBoats = boatsData.length;
-  const totalBryggor = combinedStorageData.filter(l => l.Type === 'Brygga').length;
-  const totalLager = combinedStorageData.filter(l => l.Type === 'Lager').length;
+  const totalBryggor = combinedStorageData.value.filter(l => l.Type === 'Brygga').length;
+  const totalLager = combinedStorageData.value.filter(l => l.Type === 'Lager').length;
 
   return [
     {
@@ -549,7 +564,7 @@ const addAllMarkers = () => {
   if (!map.value) return;
 
   // Add all storage location markers
-  combinedStorageData.forEach(location => {
+  combinedStorageData.value.forEach(location => {
     addStorageLocationMarker(location);
   });
 };
@@ -640,7 +655,7 @@ const addStorageLocationMarker = (location: any) => {
 const addNewPin = (coordinates: [number, number]) => {
   if (relocateMode.value === 'add') {
     // Add new storage location
-    const newId = Math.max(...combinedStorageData.map(l => l.id)) + 1;
+    const newId = Math.max(...combinedStorageData.value.map(l => l.id)) + 1;
     const newLocation = {
       id: newId,
       name: `Ny lagringsplats ${newId}`,
@@ -653,15 +668,17 @@ const addNewPin = (coordinates: [number, number]) => {
     };
 
     // Add to data
-    combinedStorageData.push(newLocation);
+    // Note: Since combinedStorageData is now computed, we need to update the source data
+    // For now, we'll track as a change instead of directly modifying
+    // In a real app, this would be handled by the API
 
     // Add marker
     const newMarker = addStorageLocationMarker(newLocation);
 
-    // Track as change
+        // Track as change
     trackLocationChange(newId, coordinates[1], coordinates[0], 'storage');
 
-            // Exit add mode
+    // Exit add mode
     relocateMode.value = null;
 
     // Keep markers gray until changes are saved - don't refresh colors yet
@@ -685,7 +702,7 @@ const addNewPin = (coordinates: [number, number]) => {
 
   } else if (relocateMode.value === 'relocate' && relocateTargetId.value) {
     // Relocate existing storage location
-    const location = combinedStorageData.find(l => l.id === relocateTargetId.value);
+    const location = combinedStorageData.value.find(l => l.id === relocateTargetId.value);
     if (location) {
       // Update position
       location.Lat = coordinates[1];
@@ -702,7 +719,7 @@ const addNewPin = (coordinates: [number, number]) => {
         existingMarker.setLngLat(coordinates);
       }
 
-                  // Exit relocate mode
+      // Exit relocate mode
       relocateMode.value = null;
       relocateTargetId.value = null;
 
@@ -748,64 +765,29 @@ const refreshMarkerColors = () => {
 };
 
 // Function to focus on a specific location
-const handleLocationFocus = async () => {
-  const { lat, lng, zoom, focus, name } = route.query;
-
+const handleLocationFocus = () => {
+  const { focus, name } = route.query;
   if (focus && map.value) {
     const focusId = parseInt(focus.toString());
-    const locationToFocus = combinedStorageData.find(loc => loc.id === focusId);
+    const locationToFocus = combinedStorageData.value.find(loc => loc.id === focusId);
 
     if (locationToFocus) {
-      // Use the highlighting functionality instead of showing only one marker
-      highlightedLocationId.value = focusId;
+      // Clear existing markers first
+      clearAllMarkers();
 
-      // Clear any existing modes
-      relocateMode.value = null;
-      relocateTargetId.value = null;
-      relocateTargetName.value = '';
+      // Add all markers
+      addAllMarkers();
 
-      // Refresh markers to apply highlighting
-      refreshMarkerColors();
+      // Highlight the specific location
+      highlightLocationOnMap(focusId, name?.toString() || locationToFocus.name);
 
-      // Center and zoom to the location
-      const latitude = lat ? parseFloat(lat as string) : locationToFocus.Lat;
-      const longitude = lng ? parseFloat(lng as string) : locationToFocus.Long;
-      const zoomLevel = zoom ? parseInt(zoom as string) : 17;
-
-      map.value.flyTo({
-        center: [longitude, latitude],
-        zoom: zoomLevel,
-        duration: 1000
-      });
-
-      // Open popup for the highlighted marker after animation
-      setTimeout(() => {
-        const highlightedMarker = markers.value.find(m =>
-          m.getElement().dataset['locationId'] === focusId.toString()
-        );
-        if (highlightedMarker) {
-          highlightedMarker.togglePopup();
-        }
-      }, 1100);
-
-      // Show toast notification
+      // Show success message
       addToast({
-        title: 'Plats markerad',
-        message: `"${locationToFocus.name}" är nu markerad på kartan`,
-        type: 'info'
+        title: 'Navigerat till plats',
+        message: `Visar "${name || locationToFocus.name}" på kartan`,
+        type: 'success'
       });
     }
-  } else if (lat && lng && map.value) {
-    // Handle general location focus without specific marker
-    const latitude = parseFloat(lat as string);
-    const longitude = parseFloat(lng as string);
-    const zoomLevel = zoom ? parseInt(zoom as string) : 17;
-
-    map.value.flyTo({
-      center: [longitude, latitude],
-      zoom: zoomLevel,
-      duration: 1000
-    });
   }
 };
 

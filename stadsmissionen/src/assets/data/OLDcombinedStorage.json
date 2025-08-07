@@ -10,6 +10,16 @@
     "Comment": "Huvudlager - 150 båtar - 1260 m² - Alla storlekar upp till 14m - 3 våningar - Kran, El, Säkerhet"
   },
   {
+    "id": 20,
+    "name": "Huvudbrygga A",
+    "Type": "Brygga",
+    "Lat": 57.9014,
+    "Long": 16.6954,
+    "Height": 102,
+    "width": 2,
+    "Comment": "Större båtar (8-15m) - 25 platser - Djup: 3.5m - El, Vatten, Avfall"
+  },
+  {
     "id": 2,
     "name": "Gästbrygga B",
     "Type": "Brygga",
@@ -40,6 +50,16 @@
     "Comment": "Centrallager Stockholm - 100 båtar - 1664 m² - Alla storlekar upp till 16m - 2 våningar - Kran, El, Säkerhet"
   },
   {
+    "id": 21,
+    "name": "Servicebrygga D",
+    "Type": "Brygga",
+    "Lat": 57.9017,
+    "Long": 16.6960,
+    "Height": 120.60,
+    "width": 2,
+    "Comment": "Service och reparationer - 8 platser - Djup: 4.0m - El, Vatten, Kran, Verkstad"
+  },
+  {
     "id": 5,
     "name": "Vinterbrygga E",
     "Type": "Brygga",
@@ -48,46 +68,6 @@
     "Height": 112,
     "width": 2,
     "Comment": "Vinterförvaring flytande - 20 platser - Djup: 3.0m - El, Säkerhet"
-  },
-  {
-    "id": 6,
-    "name": "Båthall Nord",
-    "Type": "Lager",
-    "Lat": 57.9039,
-    "Long": 16.6977,
-    "Height": 61,
-    "width": 35,
-    "Comment": "Inomhus - 120 båtar - 2000 m² - Alla storlekar upp till 12m - 4 våningar - Kran, El, Säkerhet"
-  },
-  {
-    "id": 7,
-    "name": "Utomhuslager Syd",
-    "Type": "Lager",
-    "Lat": 57.9036,
-    "Long": 16.6987,
-    "Height": 38,
-    "width": 25,
-    "Comment": "Utomhus - 80 båtar - 1500 m² - Alla storlekar upp till 15m - 2 våningar - Kran, Säkerhet"
-  },
-  {
-    "id": 8,
-    "name": "Täckt lager Väst",
-    "Type": "Lager",
-    "Lat": 57.9036,
-    "Long": 16.6972,
-    "Height": 28,
-    "width": 11,
-    "Comment": "Delvis täckt - 60 båtar - 1200 m² - Medel till stora båtar (8-14m) - 2 våningar - Kran, El"
-  },
-  {
-    "id": 9,
-    "name": "Släp- och trailerplats",
-    "Type": "Lager",
-    "Lat": 57.9035,
-    "Long": 16.6992,
-    "Height": 38,
-    "width": 25,
-    "Comment": "Trailer - 45 platser - 800 m² - Trailerbara båtar upp till 8m - Säkerhet, Belysning"
   },
   {
     "id": 10,
@@ -130,23 +110,43 @@
     "Comment": "Vinterförvaring flytande - 20 platser - Djup: 3.0m - El, Säkerhet"
   },
   {
-    "id": 20,
-    "name": "Huvudbrygga A",
-    "Type": "Brygga",
-    "Lat": 57.9014,
-    "Long": 16.6954,
-    "Height": 102,
-    "width": 2,
-    "Comment": "Större båtar (8-15m) - 25 platser - Djup: 3.5m - El, Vatten, Avfall"
+    "id": 6,
+    "name": "Båthall Nord",
+    "Type": "Lager",
+    "Lat": 57.9039,
+    "Long": 16.6977,
+    "Height": 61,
+    "width": 35,
+    "Comment": "Inomhus - 120 båtar - 2000 m² - Alla storlekar upp till 12m - 4 våningar - Kran, El, Säkerhet"
   },
   {
-    "id": 21,
-    "name": "Servicebrygga D",
-    "Type": "Brygga",
-    "Lat": 57.9017,
-    "Long": 16.6960,
-    "Height": 120.60,
-    "width": 2,
-    "Comment": "Service och reparationer - 8 platser - Djup: 4.0m - El, Vatten, Kran, Verkstad"
+    "id": 7,
+    "name": "Utomhuslager Syd",
+    "Type": "Lager",
+    "Lat": 57.9036,
+    "Long": 16.6987,
+    "Height": 38,
+    "width": 25,
+    "Comment": "Utomhus - 80 båtar - 1500 m² - Alla storlekar upp till 15m - 2 våningar - Kran, Säkerhet"
+  },
+  {
+    "id": 8,
+    "name": "Täckt lager Väst",
+    "Type": "Lager",
+    "Lat": 57.9036,
+    "Long": 16.6972,
+    "Height": 28,
+    "width": 11,
+    "Comment": "Delvis täckt - 60 båtar - 1200 m² - Medel till stora båtar (8-14m) - 2 våningar - Kran, El"
+  },
+  {
+    "id": 9,
+    "name": "Släp- och trailerplats",
+    "Type": "Lager",
+    "Lat": 57.9035,
+    "Long": 16.6992,
+    "Height": 38,
+    "width": 25,
+    "Comment": "Trailer - 45 platser - 800 m² - Trailerbara båtar upp till 8m - Säkerhet, Belysning"
   }
 ]

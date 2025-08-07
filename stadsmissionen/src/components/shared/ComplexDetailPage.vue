@@ -225,7 +225,7 @@ onUnmounted(() => {
                   v-if="field.type === 'text'"
                   :model-value="data[field.key]"
                   :readonly="readonly"
-                  class="h-8 text-xs"
+                  class="h-8 text-base md:text-xs"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Input
@@ -233,7 +233,7 @@ onUnmounted(() => {
                   :model-value="data[field.key]"
                   :readonly="readonly"
                   type="number"
-                  class="h-8 text-xs"
+                  class="h-8 text-base md:text-xs"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Input
@@ -241,7 +241,7 @@ onUnmounted(() => {
                   :model-value="data[field.key]"
                   :readonly="readonly"
                   type="date"
-                  class="h-8 text-xs"
+                  class="h-8 text-base md:text-xs"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Textarea
@@ -249,7 +249,7 @@ onUnmounted(() => {
                   :model-value="data[field.key]"
                   :readonly="readonly"
                   rows="3"
-                  class="text-xs resize-none"
+                  class="text-base md:text-xs resize-none"
                   @update:model-value="updateField(field.key, $event)"
                 />
                 <Select
@@ -258,7 +258,7 @@ onUnmounted(() => {
                   :disabled="readonly"
                   @update:model-value="updateField(field.key, $event)"
                 >
-                  <SelectTrigger size="sm" class="text-xs">
+                  <SelectTrigger size="sm" class="text-base md:text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

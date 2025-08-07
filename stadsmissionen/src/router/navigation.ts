@@ -78,6 +78,12 @@ export const mainNavigationItems: MainNavigationItem[] = [
             icon: Package,
             permissions: ['H', 'A', 'SA'],
           },
+          {
+            name: 'Båtlager 2.0',
+            path: '/boat-lager2',
+            icon: Package,
+            permissions: ['H', 'A', 'SA'],
+          },
         ],
       },
     ],

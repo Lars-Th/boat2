@@ -105,11 +105,11 @@ const customerOptions = computed(() => {
   }));
 });
 
-// Status options
+// Status options - KORREKTA status-värden
 const statusOptions = [
   { value: 'oplacerad', label: 'Oplacerad' },
-  { value: 'i_lager', label: 'I lager' },
-  { value: 'vid_brygga', label: 'Vid brygga' },
+  { value: 'placerad', label: 'Placerad' },
+  { value: 'reserverad', label: 'Reserverad' },
 ];
 
 const locationStatusOptions = [
@@ -207,8 +207,11 @@ const stats = computed(() => {
 const getStatusText = (status: string) => {
   const statusMap: { [key: string]: string } = {
     oplacerad: 'Oplacerad',
-    i_lager: 'I lager',
-    vid_brygga: 'Vid brygga',
+    placerad: 'Placerad',
+    reserverad: 'Reserverad',
+    // Legacy support (gamla felaktiga värden)
+    i_lager: 'Placerad (i lager)',
+    vid_brygga: 'Placerad (vid brygga)',
   };
   return statusMap[status] || status;
 };
@@ -224,9 +227,12 @@ const getLocationStatusText = (status: string) => {
 
 const getStatusColor = (status: string) => {
   const colorMap: { [key: string]: string } = {
-    oplacerad: 'gray',
+    oplacerad: 'green',     // Grön för oplacerad (kan placeras)
+    placerad: 'blue',       // Blå för placerad fysiskt
+    reserverad: 'gray',     // Grå för reserverad plats
+    // Legacy support (gamla felaktiga värden)
     i_lager: 'blue',
-    vid_brygga: 'green',
+    vid_brygga: 'blue',
   };
   return colorMap[status] || 'gray';
 };

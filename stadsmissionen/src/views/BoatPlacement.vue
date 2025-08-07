@@ -235,14 +235,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Warehouse, Anchor, Eye, Edit, ExternalLink } from 'lucide-vue-next';
+import { Warehouse, Anchor, Eye, Edit } from 'lucide-vue-next';
 import BoatPlacementCanvas from '@/components/konva/BoatPlacementCanvas.vue';
 
 // Router
 const router = useRouter();
 
-// Import data
-import combinedStorageData from '@/assets/data/combinedStorage.json';
+// Import data (enligt DataHandlingGuidelines.md)
+import storageUnitsData from '@/assets/data/storageUnits.json';
 import boatsData from '@/assets/data/boats.json';
 import placementsData from '@/assets/data/boatPlacements.json';
 
@@ -311,31 +311,21 @@ const boatSearchQuery = ref('');
 
 // Data processing
 const processedStorages = computed<StorageUnit[]>(() => {
-  return combinedStorageData.map((storage: any) => {
-    const type = storage.Type === 'Brygga' ? 'dock' : 'warehouse';
-
-    // Extract level count from comment for warehouses
-    let levelCount = 1;
-    if (type === 'warehouse' && storage.Comment) {
-      const levelMatch = storage.Comment.match(/(\d+)\s+våningar?/i);
-      if (levelMatch) {
-        levelCount = parseInt(levelMatch[1]);
-      }
-    }
+  return storageUnitsData.map((storage: any) => {
+    const type = storage.unit_type; // warehouse or dock directly
 
     return {
       id: storage.id,
       name: storage.name,
       type,
-      type_display: type === 'dock' ? 'Brygga' : 'Lager',
-      dimensions: `${storage.Height}m × ${storage.width}m`,
-      level_count: levelCount,
-      lat: storage.Lat,
-      long: storage.Long,
-      // Fix: Height should be length (X-axis), width should be width (Y-axis)
+      type_display: storage.unit_type === 'dock' ? 'Brygga' : 'Lager',
+      dimensions: `${storage.length}m × ${storage.width}m`,
+      level_count: storage.level_count,
+      lat: storage.latitude,
+      long: storage.longitude,
       height: storage.width,  // Y-dimension
-      width: storage.Height,  // X-dimension (length)
-      comment: storage.Comment
+      width: storage.length,  // X-dimension (length)
+      comment: `${storage.unit_type === 'dock' ? 'Brygga' : 'Lager'} med ${storage.level_count} våningar`
     };
   });
 });
@@ -517,9 +507,7 @@ const handleBoatPlaced = (event: any) => {
     placed_date: new Date().toISOString(),
     reservation_date: new Date().toISOString(),
     physical_placement_date: null,
-    notes: `Placerad via drag & drop i ${selectedStorage.value.name}`,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    notes: `Placerad via drag & drop i ${selectedStorage.value.name}`
   };
 
   // Add to placements (in a real app, this would be API call)
@@ -571,7 +559,6 @@ const handlePlacementUpdated = (event: any) => {
   const placement = allPlacements.value.find(p => p.id === event.placement.id);
   if (placement) {
     placement.position = event.newPosition;
-    placement.updated_at = new Date().toISOString();
 
     console.log(`✅ Placement updated for boat at (${event.newPosition.x.toFixed(1)}, ${event.newPosition.y.toFixed(1)})`);
   }
@@ -590,7 +577,6 @@ const handleStatusUpdated = (event: any) => {
   if (placement) {
     const oldStatus = placement.status;
     placement.status = event.newStatus;
-    placement.updated_at = new Date().toISOString();
 
     // Update physical placement date if changing to 'placerad'
     if (event.newStatus === 'placerad' && oldStatus !== 'placerad') {
