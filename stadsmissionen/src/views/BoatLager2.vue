@@ -700,7 +700,7 @@ const removeBoatFromStorage = (boat: Boat, placement: BoatPlacement) => {
   console.log(`${boat.name} borttagen från lagret`);
 };
 
-// Collision detection function
+// Collision detection function - NU MED ROTATION SUPPORT!
 const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement): string | null => {
   if (!selectedStorage.value) return null;
 
@@ -708,38 +708,25 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
   const startX = 50;
   const startY = 50;
 
-  // Calculate current boat bounds (hull and margin)
+  // Calculate current boat position
   const currentX = startX + currentPlacement.position.x * pixelsPerDecimeter;
   const currentY = startY + currentPlacement.position.y * pixelsPerDecimeter;
+  const currentRotation = (currentPlacement.position.rotation || 0) * Math.PI / 180; // Convert to radians
 
   const hullWidth = currentBoat.length * SVG_CONSTANTS.PX_PER_M;
   const hullHeight = currentBoat.width * SVG_CONSTANTS.PX_PER_M;
   const marginSize = currentBoat.safety_margin * SVG_CONSTANTS.PX_PER_M;
 
-  // Current boat hull bounds
-  const currentHull = {
-    x1: currentX - hullWidth / 2,
-    y1: currentY - hullHeight / 2,
-    x2: currentX + hullWidth / 2,
-    y2: currentY + hullHeight / 2
-  };
+  // Create rotated rectangles for current boat
+  const currentHullRect = createRotatedRectangle(currentX, currentY, hullWidth, hullHeight, currentRotation);
+  const currentMarginRect = createRotatedRectangle(currentX, currentY, hullWidth + marginSize, hullHeight + marginSize, currentRotation);
 
-  // Current boat margin bounds (includes safety margin)
-  const currentMargin = {
-    x1: currentX - (hullWidth + marginSize) / 2,
-    y1: currentY - (hullHeight + marginSize) / 2,
-    x2: currentX + (hullWidth + marginSize) / 2,
-    y2: currentY + (hullHeight + marginSize) / 2
-  };
-
-  // Check storage boundaries collision
-  const storageWidth = selectedStorage.value.Height * 10; // Convert to pixels
-  const storageHeight = selectedStorage.value.width * 10; // Convert to pixels
-
-  if (currentMargin.x1 < startX ||
-      currentMargin.y1 < startY ||
-      currentMargin.x2 > startX + storageWidth ||
-      currentMargin.y2 > startY + storageHeight) {
+  // Check storage boundaries collision (använd margin för boundary check)
+  const storageWidth = selectedStorage.value.Height * 10;
+  const storageHeight = selectedStorage.value.width * 10;
+  
+  if (isRectangleOutsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
+    console.log(`🔴 Storage boundary collision: ${currentBoat.name} (${currentRotation * 180 / Math.PI}°) utanför lager`);
     return 'margin_collision';
   }
 
@@ -753,37 +740,28 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
     const otherBoat = boats.value.find(b => b.id === otherPlacement.boat_id);
     if (!otherBoat) continue;
 
-    // Calculate other boat bounds
+    // Calculate other boat position and rotation
     const otherX = startX + otherPlacement.position.x * pixelsPerDecimeter;
     const otherY = startY + otherPlacement.position.y * pixelsPerDecimeter;
+    const otherRotation = (otherPlacement.position.rotation || 0) * Math.PI / 180;
 
     const otherHullWidth = otherBoat.length * SVG_CONSTANTS.PX_PER_M;
     const otherHullHeight = otherBoat.width * SVG_CONSTANTS.PX_PER_M;
     const otherMarginSize = otherBoat.safety_margin * SVG_CONSTANTS.PX_PER_M;
 
-    // Other boat hull bounds
-    const otherHull = {
-      x1: otherX - otherHullWidth / 2,
-      y1: otherY - otherHullHeight / 2,
-      x2: otherX + otherHullWidth / 2,
-      y2: otherY + otherHullHeight / 2
-    };
+    // Create rotated rectangles for other boat
+    const otherHullRect = createRotatedRectangle(otherX, otherY, otherHullWidth, otherHullHeight, otherRotation);
+    const otherMarginRect = createRotatedRectangle(otherX, otherY, otherHullWidth + otherMarginSize, otherHullHeight + otherMarginSize, otherRotation);
 
-    // Other boat margin bounds
-    const otherMargin = {
-      x1: otherX - (otherHullWidth + otherMarginSize) / 2,
-      y1: otherY - (otherHullHeight + otherMarginSize) / 2,
-      x2: otherX + (otherHullWidth + otherMarginSize) / 2,
-      y2: otherY + (otherHullHeight + otherMarginSize) / 2
-    };
-
-    // Check hull collision first (most critical)
-    if (rectanglesOverlap(currentHull, otherHull)) {
+    // Check hull collision first (most critical) - rotated rectangles!
+    if (rotatedRectanglesOverlap(currentHullRect, otherHullRect)) {
+      console.log(`🔴 Hull collision: ${currentBoat.name} (${currentRotation * 180 / Math.PI}°) ↔ ${otherBoat.name} (${otherRotation * 180 / Math.PI}°)`);
       return 'hull_collision';
     }
 
-    // Check margin collision (safety zone)
-    if (rectanglesOverlap(currentMargin, otherMargin)) {
+    // Check margin collision (safety zone) - rotated rectangles!
+    if (rotatedRectanglesOverlap(currentMarginRect, otherMarginRect)) {
+      console.log(`🟡 Margin collision: ${currentBoat.name} (${currentRotation * 180 / Math.PI}°) ↔ ${otherBoat.name} (${otherRotation * 180 / Math.PI}°)`);
       return 'margin_collision';
     }
   }
@@ -791,12 +769,143 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
   return null; // No collision
 };
 
-// Helper function for rectangle overlap detection
+// Helper function for rectangle overlap detection (legacy - för icke-roterade)
 const rectanglesOverlap = (rect1: any, rect2: any): boolean => {
   return !(rect1.x2 < rect2.x1 ||
            rect2.x2 < rect1.x1 ||
            rect1.y2 < rect2.y1 ||
            rect2.y2 < rect1.y1);
+};
+
+// ROTATED COLLISION DETECTION FUNCTIONS
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface RotatedRectangle {
+  corners: Point[];
+  center: Point;
+  width: number;
+  height: number;
+  rotation: number;
+}
+
+// Skapa en roterad rektangel från center, dimensioner och rotation
+const createRotatedRectangle = (centerX: number, centerY: number, width: number, height: number, rotation: number): RotatedRectangle => {
+  const cos = Math.cos(rotation);
+  const sin = Math.sin(rotation);
+  
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
+  
+  // Beräkna de fyra hörnen relativt center, sedan rotera dem
+  const corners: Point[] = [
+    // Top-left
+    {
+      x: centerX + (-halfWidth * cos - (-halfHeight) * sin),
+      y: centerY + (-halfWidth * sin + (-halfHeight) * cos)
+    },
+    // Top-right
+    {
+      x: centerX + (halfWidth * cos - (-halfHeight) * sin),
+      y: centerY + (halfWidth * sin + (-halfHeight) * cos)
+    },
+    // Bottom-right
+    {
+      x: centerX + (halfWidth * cos - halfHeight * sin),
+      y: centerY + (halfWidth * sin + halfHeight * cos)
+    },
+    // Bottom-left
+    {
+      x: centerX + (-halfWidth * cos - halfHeight * sin),
+      y: centerY + (-halfWidth * sin + halfHeight * cos)
+    }
+  ];
+  
+  return {
+    corners,
+    center: { x: centerX, y: centerY },
+    width,
+    height,
+    rotation
+  };
+};
+
+// Kolla om två roterade rektanglar överlappar (Separating Axis Theorem)
+const rotatedRectanglesOverlap = (rect1: RotatedRectangle, rect2: RotatedRectangle): boolean => {
+  // Få axlarna från båda rektanglarna (edge normals)
+  const axes: Point[] = [];
+  
+  // Axlar från rect1
+  for (let i = 0; i < 4; i++) {
+    const p1 = rect1.corners[i];
+    const p2 = rect1.corners[(i + 1) % 4];
+    if (p1 && p2) {
+      const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
+      const normal = { x: -edge.y, y: edge.x }; // Perpendicular
+      axes.push(normal);
+    }
+  }
+  
+  // Axlar från rect2
+  for (let i = 0; i < 4; i++) {
+    const p1 = rect2.corners[i];
+    const p2 = rect2.corners[(i + 1) % 4];
+    if (p1 && p2) {
+      const edge = { x: p2.x - p1.x, y: p2.y - p1.y };
+      const normal = { x: -edge.y, y: edge.x }; // Perpendicular
+      axes.push(normal);
+    }
+  }
+  
+  // Testa varje axel för separation
+  for (const axis of axes) {
+    // Normalisera axeln
+    const length = Math.sqrt(axis.x * axis.x + axis.y * axis.y);
+    if (length === 0) continue;
+    const normalizedAxis = { x: axis.x / length, y: axis.y / length };
+    
+    // Projekta båda rektanglarna på denna axel
+    const projection1 = projectRectangleOnAxis(rect1, normalizedAxis);
+    const projection2 = projectRectangleOnAxis(rect2, normalizedAxis);
+    
+    // Kolla om projectionerna överlappar
+    if (projection1.max < projection2.min || projection2.max < projection1.min) {
+      return false; // Separation found - inga kollisioner
+    }
+  }
+  
+  return true; // Ingen separation hittad - kollision!
+};
+
+// Projekta en roterad rektangel på en axel
+const projectRectangleOnAxis = (rect: RotatedRectangle, axis: Point): { min: number; max: number } => {
+  let min = Infinity;
+  let max = -Infinity;
+  
+  for (const corner of rect.corners) {
+    // Dot product för att projekta punkt på axel
+    const projection = corner.x * axis.x + corner.y * axis.y;
+    min = Math.min(min, projection);
+    max = Math.max(max, projection);
+  }
+  
+  return { min, max };
+};
+
+// Kolla om en roterad rektangel är utanför storage boundaries
+const isRectangleOutsideStorage = (rect: RotatedRectangle, storageX: number, storageY: number, storageWidth: number, storageHeight: number): boolean => {
+  // Kolla om någon corner är utanför storage
+  for (const corner of rect.corners) {
+    if (corner.x < storageX || 
+        corner.x > storageX + storageWidth ||
+        corner.y < storageY ||
+        corner.y > storageY + storageHeight) {
+      return true;
+    }
+  }
+  return false;
 };
 
 // Simple rotation functions
@@ -880,11 +989,11 @@ const setupEventHandlers = () => {
     // Pan om vi är i pan-mode och INTE drar en båt
     if (isPanMode.value) {
       // Kolla om vi klickar på en draggable båt-group
-      const isDraggableBoat = e.target && 
-        e.target.parent && 
-        e.target.parent.getType() === 'Group' && 
+      const isDraggableBoat = e.target &&
+        e.target.parent &&
+        e.target.parent.getType() === 'Group' &&
         e.target.parent.draggable();
-      
+
       if (!isDraggableBoat) {
         isPanning = true;
         lastPointerPosition = stage.value!.getPointerPosition() || { x: 0, y: 0 };
@@ -1259,7 +1368,7 @@ const selectStorage = (storage: Storage) => {
   console.log(`📦 Hittade ${placementsForStorage.length} placements för detta lager:`, placementsForStorage);
 
   drawStorage();
-  
+
   // Auto-centrera lagret när det väljs (vänta tills rendering är klar)
   nextTick(() => {
     setTimeout(() => {
