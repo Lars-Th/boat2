@@ -108,6 +108,9 @@
 
           <!-- Pan Mode -->
           <div class="toolbar-group">
+            <button @click="centerStorage" class="toolbar-button" title="Centrera lagret">
+              <Navigation2 class="button-icon" />
+            </button>
             <button
               @click="togglePanMode"
               :class="['toolbar-button', { active: isPanMode }]"
@@ -378,6 +381,7 @@ import {
   ZoomOut,
   ZoomIn,
   Move,
+  Navigation2,
   RotateCcw,
   RotateCw,
   Package,
@@ -868,36 +872,59 @@ const initCanvas = () => {
 const setupEventHandlers = () => {
   if (!stage.value) return;
 
-  // Pan mode handling
-  stage.value.on('mousedown touchstart', (e) => {
+  // Pan handling med mouse drag (liknande AdvancedKonvaCanvas)
+  let isPanning = false;
+  let lastPointerPosition = { x: 0, y: 0 };
+
+  stage.value.on('mousedown', (e) => {
+    // Pan bara om vi är i pan-mode och klickar på tom yta (inte på båtar)
     if (isPanMode.value && e.target === stage.value) {
-      stage.value?.draggable(true);
+      isPanning = true;
+      lastPointerPosition = stage.value!.getPointerPosition() || { x: 0, y: 0 };
+      stage.value!.container().style.cursor = 'grabbing';
     }
   });
 
-  stage.value.on('mouseup touchend', () => {
-    if (isPanMode.value) {
-      stage.value?.draggable(false);
+  stage.value.on('mousemove', (e) => {
+    if (!isPanning) return;
+
+    const pointer = stage.value!.getPointerPosition();
+    if (!pointer) return;
+
+    const dx = pointer.x - lastPointerPosition.x;
+    const dy = pointer.y - lastPointerPosition.y;
+
+    const newPos = {
+      x: stage.value!.x() + dx,
+      y: stage.value!.y() + dy
+    };
+
+    stage.value!.position(newPos);
+    stage.value!.batchDraw();
+
+    lastPointerPosition = pointer;
+  });
+
+  stage.value.on('mouseup', () => {
+    if (isPanning) {
+      isPanning = false;
+      if (stage.value) {
+        stage.value.container().style.cursor = isPanMode.value ? 'grab' : 'default';
+      }
     }
   });
 
-  // Zoom with wheel
+  // Zoom with wheel från center av canvas
   stage.value.on('wheel', (e) => {
     e.evt.preventDefault();
 
     const scaleBy = 1.1;
-    const stage = e.target.getStage();
-    if (!stage) return;
-
-    const oldScale = stage.scaleX();
-    const pointer = stage.getPointerPosition();
-    if (!pointer) return;
-
+    const oldScale = stage.value!.scaleX();
     const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
     const clampedScale = Math.max(0.25, Math.min(3, newScale));
 
     if (clampedScale !== oldScale) {
-      setZoom(clampedScale);
+      applyZoom(clampedScale);
     }
   });
 };
@@ -1298,42 +1325,106 @@ const toggleBoatStatus = (boat: Boat, placement: BoatPlacement) => {
 
 const togglePanMode = () => {
   isPanMode.value = !isPanMode.value;
+  
+  // Uppdatera cursor style
+  if (stage.value) {
+    stage.value.container().style.cursor = isPanMode.value ? 'grab' : 'default';
+  }
+  
+  console.log(`🖱️ Pan mode ${isPanMode.value ? 'aktiverat' : 'inaktiverat'}`);
 };
 
 const zoomIn = () => {
   const newZoom = Math.min(3, zoomLevel.value * 1.2);
-  setZoom(newZoom);
+  applyZoom(newZoom);
 };
 
 const zoomOut = () => {
   const newZoom = Math.max(0.25, zoomLevel.value / 1.2);
-  setZoom(newZoom);
+  applyZoom(newZoom);
 };
 
-const setZoom = (zoom: number) => {
+const applyZoom = (newScale: number) => {
   if (!stage.value) return;
 
-  zoomLevel.value = zoom;
-  zoomPercentage.value = Math.round(zoom * 100);
+  const oldScale = zoomLevel.value;
 
-  stage.value.scale({ x: zoom, y: zoom });
+  // Beräkna canvas center
+  const canvasCenter = {
+    x: stage.value.width() / 2,
+    y: stage.value.height() / 2
+  };
+
+  // Beräkna nuvarande stage position
+  const currentPos = stage.value.position();
+
+  // Beräkna punkten vi vill zooma runt (canvas center i stage-koordinater)
+  const zoomPoint = {
+    x: (canvasCenter.x - currentPos.x) / oldScale,
+    y: (canvasCenter.y - currentPos.y) / oldScale
+  };
+
+  // Sätt ny scale
+  zoomLevel.value = newScale;
+  zoomPercentage.value = Math.round(newScale * 100);
+  stage.value.scale({ x: newScale, y: newScale });
+
+  // Beräkna ny position för att behålla center
+  const newPos = {
+    x: canvasCenter.x - zoomPoint.x * newScale,
+    y: canvasCenter.y - zoomPoint.y * newScale
+  };
+
+  stage.value.position(newPos);
   stage.value.batchDraw();
 };
 
+
+
 const setZoomFromPercentage = () => {
   const zoom = zoomPercentage.value / 100;
-  setZoom(zoom);
+  applyZoom(zoom);
+};
+
+const centerStorage = () => {
+  if (!stage.value || !selectedStorage.value) return;
+
+  // Beräkna lager center i dess lokala koordinater (offset + storlek/2)
+  const pixelsPerMeter = 10;
+  const storageCenter = {
+    x: 50 + (selectedStorage.value.Height * pixelsPerMeter) / 2,
+    y: 50 + (selectedStorage.value.width * pixelsPerMeter) / 2
+  };
+
+  // Beräkna canvas center
+  const canvasCenter = {
+    x: stage.value.width() / 2,
+    y: stage.value.height() / 2
+  };
+
+  // Beräkna position för att centrera lagret
+  const currentScale = zoomLevel.value;
+  const newPos = {
+    x: canvasCenter.x - storageCenter.x * currentScale,
+    y: canvasCenter.y - storageCenter.y * currentScale
+  };
+
+  stage.value.position(newPos);
+  stage.value.batchDraw();
+  
+  console.log('🎯 Lager centrerat');
 };
 
 const resetCanvas = () => {
   if (!stage.value) return;
 
   stage.value.position({ x: 0, y: 0 });
-  stage.value.scale({ x: 1, y: 1 });
   zoomLevel.value = 1;
   zoomPercentage.value = 100;
-
-  stage.value.batchDraw();
+  
+  applyZoom(1); // Använd applyZoom för konsistent zoom-hantering
+  
+  console.log('🔄 Canvas återställt');
 };
 
 // Drag & Drop handlers
