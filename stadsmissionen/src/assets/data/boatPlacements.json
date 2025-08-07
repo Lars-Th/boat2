@@ -27,8 +27,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 25.0,
-      "y": 15.0,
+      "x": 150.0,
+      "y": 100.0,
       "rotation": 0
     },
     "placed_by_user_id": 3,
@@ -107,8 +107,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 52.0,
-      "y": 18.0,
+      "x": 520.0,
+      "y": 200.0,
       "rotation": 90
     },
     "placed_by_user_id": 2,
@@ -167,8 +167,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 15.0,
-      "y": 20.0,
+      "x": 80.0,
+      "y": 180.0,
       "rotation": 0
     },
     "placed_by_user_id": 1,
@@ -247,8 +247,8 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 50.0,
-      "y": 15.0,
+      "x": 450.0,
+      "y": 160.0,
       "rotation": 90
     },
     "placed_by_user_id": 2,
@@ -287,8 +287,8 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 35.0,
-      "y": 22.0,
+      "x": 300.0,
+      "y": 250.0,
       "rotation": 0
     },
     "placed_by_user_id": 1,
@@ -347,8 +347,8 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 30.0,
-      "y": 30.0,
+      "x": 250.0,
+      "y": 320.0,
       "rotation": 0
     },
     "placed_by_user_id": 2,
@@ -387,8 +387,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 45.0,
-      "y": 25.0,
+      "x": 480.0,
+      "y": 280.0,
       "rotation": 0
     },
     "placed_by_user_id": 3,
@@ -427,8 +427,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 45.0,
-      "y": 8.0,
+      "x": 450.0,
+      "y": 50.0,
       "rotation": 0
     },
     "placed_by_user_id": 1,

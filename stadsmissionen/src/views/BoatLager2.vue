@@ -2165,32 +2165,32 @@ const savePlacements = async () => {
   try {
     // Create a formatted JSON string with current placements data
     const placementsJson = JSON.stringify(placements.value, null, 2);
-    
+
     // Show what we're about to save in console
     console.log('📊 Sparar placements:', {
       count: placements.value.length,
       data: placements.value.slice(0, 3) // Show first 3 for verification
     });
-    
+
     // Since we can't directly write to files in browser, we'll show the data
     // and provide both download and copy-to-clipboard options
-    
+
     // Option 1: Download file (as before)
     const blob = new Blob([placementsJson], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = 'boatPlacements.json'; // Direct filename for easy replacement
-    
+
     // Trigger download
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     // Clean up blob URL
     URL.revokeObjectURL(url);
-    
+
     // Option 2: Copy to clipboard for easy pasting
     try {
       await navigator.clipboard.writeText(placementsJson);
@@ -2198,7 +2198,7 @@ const savePlacements = async () => {
     } catch (clipboardError) {
       console.warn('⚠️ Kunde inte kopiera till clipboard:', clipboardError);
     }
-    
+
     // Update last saved timestamp
     const now = new Date();
     const timeString = now.toLocaleString('sv-SE', {
@@ -2208,21 +2208,21 @@ const savePlacements = async () => {
       minute: '2-digit'
     });
     lastSaved.value = timeString;
-    
+
     console.log(`✅ boatPlacements.json genererad och nedladdad`);
     console.log(`📊 ${placements.value.length} placements exporterade`);
     console.log(`📋 JSON-data kopierat till clipboard - klistra in i boatPlacements.json`);
-    
+
     // Show instruction alert
     alert(`✅ Placements sparade!\n\n📁 Nedladdning: boatPlacements.json\n📋 JSON kopierat till clipboard\n\n🔄 För att uppdatera:\n1. Ersätt innehållet i src/assets/data/boatPlacements.json\n2. Refresha sidan`);
-    
+
     // Show success feedback briefly
     setTimeout(() => {
       if (lastSaved.value === timeString) {
         lastSaved.value = '';
       }
     }, 8000); // Clear after 8 seconds (longer for instructions)
-    
+
   } catch (error) {
     console.error('❌ Fel vid sparning av placements:', error);
     alert('Fel vid sparning av JSON-fil. Se konsolen för detaljer.');
