@@ -1095,22 +1095,63 @@ const drawStorage = () => {
 
   const storage = selectedStorage.value;
   const pixelsPerMeter = 10;
+  const storageOffsetX = 50;
+  const storageOffsetY = 50;
 
-  // Draw storage background
-  const background = new Konva.Rect({
-    x: 50,
-    y: 50,
+  // Determine storage type and apply StorageDesigner styling
+  const isWarehouse = storage.Type === 'Lager';
+  const isDock = storage.Type === 'Brygga';
+  
+  // StorageDesigner exact colors
+  const storageStyle = {
+    fill: isWarehouse ? '#FDFAF0' : '#E7F3FF', // Light cream for warehouse, light blue for dock
+    stroke: isWarehouse ? '#B46100' : '#2563eb', // Brown for warehouse, blue for dock
+    strokeWidth: 2
+  };
+
+  // Draw white canvas background
+  const canvasBackground = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: stage.value?.width() || 800,
+    height: stage.value?.height() || 600,
+    fill: '#ffffff',
+    listening: false,
+  });
+  layer.value.add(canvasBackground);
+
+  // Draw storage area with StorageDesigner styling
+  const storageRect = new Konva.Rect({
+    x: storageOffsetX,
+    y: storageOffsetY,
     width: storage.Height * pixelsPerMeter,
     height: storage.width * pixelsPerMeter,
-    fill: '#f8fafc',
-    stroke: '#cbd5e1',
-    strokeWidth: 2,
+    ...storageStyle,
+    listening: false,
   });
+  layer.value.add(storageRect);
 
-  layer.value.add(background);
+  // Add storage label above the storage area (like StorageDesigner)
+  const fontSize = Math.max(12, pixelsPerMeter * 1.2);
+  const storageLabel = new Konva.Text({
+    x: storageOffsetX,
+    y: storageOffsetY - fontSize - 10,
+    text: storage.name,
+    fontSize: fontSize,
+    fill: '#1f2937',
+    fontFamily: 'Arial',
+    fontStyle: 'bold',
+    listening: false,
+  });
+  layer.value.add(storageLabel);
 
-  // Draw grid
-  drawGrid(storage, pixelsPerMeter);
+  // Draw dock endpoints if it's a dock (like StorageDesigner)
+  if (isDock) {
+    drawDockEndpoints(storage, pixelsPerMeter, storageOffsetX, storageOffsetY);
+  }
+
+  // Draw grid with StorageDesigner styling
+  drawGrid(storage, pixelsPerMeter, storageOffsetX, storageOffsetY);
 
   // Draw placed boats
   drawPlacedBoats();
@@ -1125,40 +1166,102 @@ const drawStorage = () => {
   }
 };
 
-const drawGrid = (storage: Storage, pixelsPerMeter: number) => {
+// Draw dock endpoints (from StorageDesigner)
+const drawDockEndpoints = (storage: Storage, pixelsPerMeter: number, storageOffsetX: number, storageOffsetY: number) => {
   if (!layer.value) return;
 
-  const startX = 50;
-  const startY = 50;
+  const endpointWidth = 8; // Width of endpoint indicator
+  const endpointHeight = storage.width * pixelsPerMeter; // Full height of dock
+
+  // For now, default endpoints (can be made configurable later)
+  const leftEndpoint = 'water';  // water, land, or dock
+  const rightEndpoint = 'land';
+
+  // Get colors for dock endpoints
+  const getEndpointColor = (endpointType: string) => {
+    switch (endpointType) {
+      case 'water':
+        return { fill: '#3B82F6', stroke: '#1E40AF' }; // Blue for water
+      case 'land':
+        return { fill: '#16A34A', stroke: '#15803D' }; // Green for land
+      case 'dock':
+        return { fill: '#F59E0B', stroke: '#D97706' }; // Orange for dock connection
+      default:
+        return { fill: '#6B7280', stroke: '#4B5563' }; // Gray fallback
+    }
+  };
+
+  // Left endpoint
+  const leftColor = getEndpointColor(leftEndpoint);
+  const leftRect = new Konva.Rect({
+    x: storageOffsetX - endpointWidth,
+    y: storageOffsetY,
+    width: endpointWidth,
+    height: endpointHeight,
+    fill: leftColor.fill,
+    stroke: leftColor.stroke,
+    strokeWidth: 2,
+    listening: false,
+  });
+  layer.value.add(leftRect);
+
+  // Right endpoint
+  const rightColor = getEndpointColor(rightEndpoint);
+  const rightRect = new Konva.Rect({
+    x: storageOffsetX + storage.Height * pixelsPerMeter,
+    y: storageOffsetY,
+    width: endpointWidth,
+    height: endpointHeight,
+    fill: rightColor.fill,
+    stroke: rightColor.stroke,
+    strokeWidth: 2,
+    listening: false,
+  });
+  layer.value.add(rightRect);
+};
+
+const drawGrid = (storage: Storage, pixelsPerMeter: number, storageOffsetX: number, storageOffsetY: number) => {
+  if (!layer.value) return;
+
+  const startX = storageOffsetX;
+  const startY = storageOffsetY;
   const storageWidth = storage.Height * pixelsPerMeter;
   const storageHeight = storage.width * pixelsPerMeter;
+  const gridSize = 1; // Grid size in meters (configurable)
+  const gridSpacing = gridSize * pixelsPerMeter;
 
-  // Vertical lines
-  for (let x = 0; x <= storage.Height; x += 5) {
+  // StorageDesigner grid styling
+  const gridStyle = {
+    stroke: '#FFDEB7', // Light orange grid like StorageDesigner
+    strokeWidth: 0.5,
+    opacity: 0.8,
+    listening: false,
+  };
+
+  // Vertical lines within storage
+  for (let x = gridSpacing; x < storageWidth; x += gridSpacing) {
     const line = new Konva.Line({
       points: [
-        startX + x * pixelsPerMeter,
+        startX + x,
         startY,
-        startX + x * pixelsPerMeter,
-        startY + storageHeight,
+        startX + x,
+        startY + storageHeight
       ],
-      stroke: '#e2e8f0',
-      strokeWidth: 0.5,
+      ...gridStyle,
     });
     layer.value.add(line);
   }
 
-  // Horizontal lines
-  for (let y = 0; y <= storage.width; y += 5) {
+  // Horizontal lines within storage
+  for (let y = gridSpacing; y < storageHeight; y += gridSpacing) {
     const line = new Konva.Line({
       points: [
         startX,
-        startY + y * pixelsPerMeter,
+        startY + y,
         startX + storageWidth,
-        startY + y * pixelsPerMeter,
+        startY + y
       ],
-      stroke: '#e2e8f0',
-      strokeWidth: 0.5,
+      ...gridStyle,
     });
     layer.value.add(line);
   }
@@ -1201,6 +1304,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 
   // Position är nu i DECIMETER (inte meter)
   const pixelsPerDecimeter = 1; // 1 decimeter = 1 pixel
+  // Använd samma offset som i drawStorage för konsistens
   const startX = 50;
   const startY = 50;
 
