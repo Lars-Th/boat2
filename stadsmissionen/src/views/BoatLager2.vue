@@ -259,6 +259,17 @@
           </div>
         </div>
 
+        <!-- Last Moved Position -->
+        <div v-if="lastMovedPosition && !draggedBoatCoords" class="toolbar-group">
+          <span class="toolbar-label">Senast flyttad:</span>
+          <div class="coords-display">
+            <span class="coord-boat">{{ lastMovedPosition.boatName }} ({{ lastMovedPosition.boatId }})</span>
+            <span class="coord-value">X: {{ lastMovedPosition.x }}dm</span>
+            <span class="coord-value">Y: {{ lastMovedPosition.y }}dm</span>
+            <span class="coord-value">{{ lastMovedPosition.rotation }}°</span>
+          </div>
+        </div>
+
           <div class="toolbar-separator"></div>
 
           <!-- Save Placements -->
@@ -418,14 +429,26 @@
             ]"
           >
             <div class="boat-info">
-              <h4 class="boat-name">{{ boat.name }}</h4>
+              <h4 class="boat-name">{{ boat.name }} ({{ boat.id }})</h4>
               <p class="boat-reg">{{ boat.registreringsnummer }}</p>
               <p class="boat-dims">{{ boat.length }}m × {{ boat.width }}m</p>
               <p class="boat-status">{{ getStatusText(boat.current_status) }}</p>
-              <p v-if="getBoatStorageInfo(boat.id)" class="boat-storage">
-                <MapPin class="inline w-3 h-3 mr-1" />
-                {{ getBoatStorageInfo(boat.id) }}
-              </p>
+              <p class="boat-compatibility">{{ getBoatLocationCompatibility(boat) }}</p>
+              <div v-if="getBoatStorageInfo(boat.id)" class="boat-storage-container">
+                <p class="boat-storage">
+                  <MapPin class="inline w-3 h-3 mr-1" />
+                  {{ getBoatStorageInfo(boat.id) }}
+                </p>
+                <button 
+                  v-if="boat.current_status !== 'oplacerad'"
+                  @click.stop="navigateToBoatStorage(boat)"
+                  class="map-button"
+                  title="Visa på karta"
+                >
+                  <Navigation class="w-3 h-3" />
+                  Karta
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -436,6 +459,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
 import Konva from 'konva';
 import {
   Warehouse,
@@ -444,6 +468,7 @@ import {
   ZoomIn,
   Move,
   Navigation2,
+  Navigation,
   RotateCcw,
   RotateCw,
   Package,
@@ -632,8 +657,14 @@ const customers = ref<Customer[]>(customersData as Customer[]);
 // Save state
 const lastSaved = ref<string>('');
 
+// Selected boat for navigation
+const selectedBoatForNavigation = ref<Boat | null>(null);
+
 // Live coordinates during drag
 const draggedBoatCoords = ref<{x: number, y: number, rotation: number} | null>(null);
+
+// Last moved position for JSON adjustment
+const lastMovedPosition = ref<{boatName: string, boatId: number, x: number, y: number, rotation: number} | null>(null);
 
 // Load restriction zones for selected storage
 const loadRestrictionZones = async () => {
@@ -725,15 +756,68 @@ const filteredStorages = computed(() => {
   return storages.value.filter(s => s.Type === storageFilter.value);
 });
 
+// Storage compatibility check
+const isBoatCompatibleWithStorage = (boat: Boat, storage: Storage) => {
+  const storageType = storage.Type.toLowerCase();
+  const boatLocationStatus = boat.location_status.toLowerCase();
+  
+  // lager = warehouse, brygga = dock
+  if (storageType === 'lager' && (boatLocationStatus.includes('lager') || boatLocationStatus === 'lager')) return true;
+  if (storageType === 'brygga' && (boatLocationStatus.includes('brygga') || boatLocationStatus === 'brygga')) return true;
+  if (boatLocationStatus === 'lager_brygga') return true; // Can go anywhere
+  
+  return false;
+};
+
+// Get boat location compatibility display
+const getBoatLocationCompatibility = (boat: Boat) => {
+  const status = boat.location_status.toLowerCase();
+  if (status === 'lager') return '🏠 Lager';
+  if (status === 'brygga') return '⚓ Brygga';
+  if (status === 'lager_brygga') return '🏠⚓ Båda';
+  return '❓ Okänd';
+};
+
+// Smart boat filtering based on selected storage
 const filteredBoats = computed(() => {
-  if (!boatSearchQuery.value) {
-    return boats.value;
+  let boats = boatSearchQuery.value
+    ? boats.value.filter(boat =>
+        boat.name.toLowerCase().includes(boatSearchQuery.value.toLowerCase()) ||
+        boat.registreringsnummer.toLowerCase().includes(boatSearchQuery.value.toLowerCase())
+      )
+    : boats.value;
+
+  // Smart filtering based on selected storage
+  if (selectedStorage.value) {
+    // Show boats that are:
+    // 1. Unplaced (oplacerad) AND compatible with this storage type
+    // 2. Placed/Reserved in THIS specific storage
+    boats = boats.filter(boat => {
+      if (boat.current_status === 'oplacerad') {
+        return isBoatCompatibleWithStorage(boat, selectedStorage.value!);
+      } else {
+        // Check if boat is placed/reserved in this storage
+        const placement = placements.value.find(p => 
+          p.boat_id === boat.id && 
+          p.storage_unit_id === selectedStorage.value!.id
+        );
+        return !!placement;
+      }
+    });
+  } else {
+    // No storage selected: show only unplaced boats
+    boats = boats.filter(boat => boat.current_status === 'oplacerad');
   }
-  const query = boatSearchQuery.value.toLowerCase();
-  return boats.value.filter(boat =>
-    boat.name.toLowerCase().includes(query) ||
-    boat.registreringsnummer.toLowerCase().includes(query)
-  );
+
+  // Sort boats: oplacerad first, then by name
+  return boats.sort((a, b) => {
+    // First sort by status (oplacerad first)
+    if (a.current_status === 'oplacerad' && b.current_status !== 'oplacerad') return -1;
+    if (a.current_status !== 'oplacerad' && b.current_status === 'oplacerad') return 1;
+
+    // Then sort by name
+    return a.name.localeCompare(b.name);
+  });
 });
 
 const currentStoragePlacements = computed(() => {
@@ -1789,11 +1873,11 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     y: SVG_CONSTANTS.MARGIN_VB.h / 2
   });
 
-  // Add boat name
+  // Add boat name with ID
   const nameText = new Konva.Text({
     x: 0,
     y: 0,
-    text: boat.name,
+    text: `${boat.name} (${boat.id})`,
     fontSize: 10,
     fill: '#374151', // Tailwind gray-700
     align: 'center',
@@ -1850,14 +1934,14 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
       const pos = boatGroup.position();
       const storageX = (pos.x - 50); // Storage coordinates in decimeters
       const storageY = (pos.y - 50);
-      
+
       // Show live coordinates in toolbar
       draggedBoatCoords.value = {
         x: Math.round(storageX * 10) / 10, // Round to 1 decimal
         y: Math.round(storageY * 10) / 10,
         rotation: placement.position.rotation
       };
-      
+
       const tempPlacement = {
         ...placement,
         position: {
@@ -1890,10 +1974,20 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     const newX = (pos.x - 50); // Position i decimeter
     const newY = (pos.y - 50); // Position i decimeter
 
+    // Save last moved position for JSON adjustment
+    lastMovedPosition.value = {
+      boatName: boat.name,
+      boatId: boat.id,
+      x: Math.round(newX * 10) / 10,
+      y: Math.round(newY * 10) / 10,
+      rotation: placement.position.rotation
+    };
+
     // Clear live coordinates display
     draggedBoatCoords.value = null;
 
     console.log(`Boat moved to: ${newX.toFixed(1)}, ${newY.toFixed(1)} decimeter`);
+    console.log(`📍 Position saved for JSON adjustment: ${boat.name} (${boat.id}) at (${lastMovedPosition.value.x}, ${lastMovedPosition.value.y})`);
 
     // BOKHYLLE-VALIDERING för våning 2+ (endast när båten flyttas)
     if (isStorageFloor.value && currentFloorDesign.value) {
@@ -2008,7 +2102,47 @@ const selectFloor = (floorNumber: number) => {
 
 const selectBoat = (boat: Boat) => {
   selectedBoat.value = boat;
+  selectedBoatForNavigation.value = boat;
+  
+  // If boat is placed/reserved, automatically navigate to its storage
+  if (boat.current_status !== 'oplacerad') {
+    const placement = placements.value.find(p => p.boat_id === boat.id);
+    if (placement) {
+      const storage = storages.value.find(s => s.id === placement.storage_unit_id);
+      if (storage && storage.id !== selectedStorage.value?.id) {
+        console.log(`🧭 Navigating to ${boat.name}'s storage: ${storage.name}`);
+        selectStorage(storage, true); // Auto-center
+      }
+    }
+  }
+  
   console.log('Selected boat:', boat.name);
+};
+
+// Initialize router
+const router = useRouter();
+
+// Navigate to boat's storage location
+const navigateToBoatStorage = (boat: Boat) => {
+  const placement = placements.value.find(p => p.boat_id === boat.id);
+  if (placement) {
+    const storage = storages.value.find(s => s.id === placement.storage_unit_id);
+    if (storage) {
+      // Router navigation to dashboard with coordinates
+      router.push({
+        path: '/dashboard',
+        query: {
+          lat: storage.Lat.toString(),
+          lng: storage.Long.toString(),
+          zoom: '17',
+          focus: storage.id.toString(),
+          name: storage.name,
+          boat: boat.name,
+          boatId: boat.id.toString()
+        }
+      });
+    }
+  }
 };
 
 // Boat selection is now handled directly in the click event
@@ -3167,6 +3301,39 @@ onMounted(async () => {
   font-weight: 500;
 }
 
+.boat-compatibility {
+  font-size: 0.625rem;
+  color: #4b5563;
+  margin: 0;
+  font-weight: 500;
+}
+
+.boat-storage-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.map-button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  min-width: fit-content;
+}
+
+.map-button:hover {
+  background: #2563eb;
+}
+
 .boat-count {
   font-weight: 600;
   color: #374151;
@@ -3345,6 +3512,21 @@ onMounted(async () => {
   border: 1px solid #d1d5db;
   min-width: 60px;
   text-align: center;
+}
+
+.coord-boat {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+  background: #d1fae5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #10b981;
+  text-align: center;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Konva Canvas */
