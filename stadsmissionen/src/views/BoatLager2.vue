@@ -724,7 +724,8 @@ const collisionCount = computed(() => {
   let collisions = 0;
   const placementsInStorage = placements.value.filter(p =>
     p.storage_unit_id === selectedStorage.value!.id &&
-    p.status === 'oplacerad' // Bara räkna kollisioner för flyttbara båtar
+    (p.floor_number || 1) === selectedFloor.value &&
+    p.status === 'oplacerad' // Bara räkna kollisioner för flyttbara båtar på aktuell våning
   );
 
   for (const placement of placementsInStorage) {
@@ -816,6 +817,59 @@ const currentFloorDesign = computed(() => {
     floor.floor_number === selectedFloor.value
   ) || null;
 });
+
+// Bokhylle-validering för våningar 2+
+const validateBookshelfPlacement = (boat: Boat, x: number, y: number): { isValid: boolean; reason?: string; shelfName?: string } => {
+  if (!currentFloorDesign.value || currentFloorDesign.value.floor_zones.length === 0) {
+    return { isValid: false, reason: "Inga bokhyllor definierade för denna våning" };
+  }
+
+  // Kontrollera båtstorlek - max 5m för bokhyllor
+  if (boat.length > 5.0) {
+    return { 
+      isValid: false, 
+      reason: `Båten är ${boat.length}m lång - för stor för bokhyllor (max 5m)` 
+    };
+  }
+
+  // Konvertera position från decimeter till meter för jämförelse med floor zones
+  const positionX = x / 10; // decimeter -> meter
+  const positionY = y / 10; // decimeter -> meter
+
+  // Kolla om positionen är inom någon bokhylla (floor zone)
+  for (const zone of currentFloorDesign.value.floor_zones) {
+    if (positionX >= zone.x && 
+        positionX <= zone.x + zone.width &&
+        positionY >= zone.y && 
+        positionY <= zone.y + zone.height) {
+      
+      // Kontrollera att båten får plats inom hyllan (inkl säkerhetsmarginal)
+      const boatLength = boat.length;
+      const boatWidth = boat.width;
+      const safetyMargin = boat.safety_margin;
+      
+      // Hyllan är 5m bred - kontrollera att båten + marginal får plats
+      const maxBoatDimension = Math.max(boatLength, boatWidth) + safetyMargin;
+      if (maxBoatDimension > 5.0) {
+        return { 
+          isValid: false, 
+          reason: `Båten + säkerhetsmarginal (${maxBoatDimension.toFixed(1)}m) för stor för 5m bred hylla` 
+        };
+      }
+
+      return { 
+        isValid: true, 
+        shelfName: zone.name 
+      };
+    }
+  }
+
+  // Inte inom någon bokhylla
+  return { 
+    isValid: false, 
+    reason: "Positionen är inte inom någon bokhylla - små båtar måste placeras i de blå hyllorna" 
+  };
+};
 
 // Tooltip interaction functions
 let tooltipHideTimeout: number | null = null;
@@ -926,10 +980,11 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
     return 'margin_collision';
   }
 
-  // Check collisions with other boats
+  // Check collisions with other boats (ENDAST SAMMA VÅNING!)
   const otherPlacements = placements.value.filter(p =>
     p.boat_id !== currentBoat.id &&
-    p.storage_unit_id === currentPlacement.storage_unit_id
+    p.storage_unit_id === currentPlacement.storage_unit_id &&
+    (p.floor_number || 1) === (currentPlacement.floor_number || 1)
   );
 
   for (const otherPlacement of otherPlacements) {
@@ -1791,6 +1846,26 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 
     console.log(`Boat moved to: ${newX.toFixed(1)}, ${newY.toFixed(1)} decimeter`);
 
+    // BOKHYLLE-VALIDERING för våning 2+ (endast när båten flyttas)
+    if (isStorageFloor.value && currentFloorDesign.value) {
+      const validationResult = validateBookshelfPlacement(boat, newX, newY);
+      if (!validationResult.isValid) {
+        console.warn(`❌ BOKHYLLE-DRAG MISSLYCKAD: ${validationResult.reason}`);
+        alert(`❌ Kan inte placera båt här!\n\n${validationResult.reason}\n\nBåten återställs till förra positionen.`);
+        
+        // Återställ till förra positionen
+        boatGroup.position({
+          x: 50 + placement.position.x,
+          y: 50 + placement.position.y
+        });
+        
+        // Redraw för att återställa visuellt
+        drawStorage();
+        return;
+      }
+      console.log(`✅ BOKHYLLE-DRAG OK: ${boat.name} flyttad till ${validationResult.shelfName}`);
+    }
+
     // Update placement data
     const placementIndex = placements.value.findIndex(p => p.id === placement.id);
     if (placementIndex !== -1) {
@@ -2275,6 +2350,18 @@ const handleDrop = (event: DragEvent) => {
     // Convert to storage coordinates (nu i DECIMETER)
     const storageX = (finalX - 50); // x - offset = decimeter position
     const storageY = (finalY - 50); // y - offset = decimeter position
+
+    // BOKHYLLE-VALIDERING för våning 2+
+    if (isStorageFloor.value && currentFloorDesign.value) {
+      const validationResult = validateBookshelfPlacement(boat, storageX, storageY);
+      if (!validationResult.isValid) {
+        console.warn(`❌ BOKHYLLE-VALIDERING MISSLYCKAD: ${validationResult.reason}`);
+        console.warn(`📚 Båten ${boat.name} (${boat.length}m) kan inte placeras på våning ${selectedFloor.value}`);
+        alert(`❌ Kan inte placera båt här!\n\n${validationResult.reason}\n\nPå våning ${selectedFloor.value} kan bara båtar ≤5m placeras i bokhyllorna.`);
+        return;
+      }
+      console.log(`✅ BOKHYLLE-VALIDERING OK: ${boat.name} kan placeras i ${validationResult.shelfName}`);
+    }
 
     // Create new placement med vald status
     const newPlacement: BoatPlacement = {
