@@ -532,10 +532,61 @@ const tooltipData = ref<{boat: Boat; placement: BoatPlacement} | null>(null);
 const tooltipPosition = ref<{x: number; y: number}>({x: 0, y: 0});
 const defaultPlacementStatus = ref<'oplacerad' | 'placerad' | 'reserverad'>('oplacerad');
 
+// Restriction zones state
+interface RestrictionZone {
+  id: number;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+const restrictionZones = ref<RestrictionZone[]>([]);
+
 const boats = ref<Boat[]>(boatsData as Boat[]);
 const storages = ref<Storage[]>(storageData as Storage[]);
 const placements = ref<BoatPlacement[]>(placementsData as BoatPlacement[]);
 const customers = ref<Customer[]>(customersData as Customer[]);
+
+// Load restriction zones for selected storage
+const loadRestrictionZones = async () => {
+  if (!selectedStorage.value) {
+    restrictionZones.value = [];
+    return;
+  }
+
+  try {
+    const response = await fetch('/src/assets/data/storageRestrictions.json');
+    const restrictionData = await response.json();
+
+    // Find restriction zones for current storage
+    const storageRestrictions = restrictionData.find((entry: any) =>
+      entry.storage_id === selectedStorage.value!.id
+    );
+
+    if (storageRestrictions && storageRestrictions.restriction_zones) {
+      // Load existing restriction zones
+      restrictionZones.value = storageRestrictions.restriction_zones.map((zone: any) => ({
+        id: zone.id,
+        name: zone.name,
+        x: zone.x,
+        y: zone.y,
+        width: zone.width,
+        height: zone.height
+      }));
+
+      console.log(`🛡️ Loaded ${restrictionZones.value.length} restriction zones for storage ${selectedStorage.value!.id} (${selectedStorage.value!.name})`);
+    } else {
+      // No restriction zones found - start with empty array
+      restrictionZones.value = [];
+      console.log(`🛡️ No restriction zones found for storage ${selectedStorage.value!.id} (${selectedStorage.value!.name})`);
+    }
+  } catch (error) {
+    console.error('❌ Failed to load restriction zones:', error);
+    restrictionZones.value = [];
+  }
+};
 
 // Computed properties
 const filteredStorages = computed(() => {
@@ -1101,7 +1152,7 @@ const drawStorage = () => {
   // Determine storage type and apply StorageDesigner styling
   const isWarehouse = storage.Type === 'Lager';
   const isDock = storage.Type === 'Brygga';
-  
+
   // StorageDesigner exact colors
   const storageStyle = {
     fill: isWarehouse ? '#FDFAF0' : '#E7F3FF', // Light cream for warehouse, light blue for dock
@@ -1152,6 +1203,9 @@ const drawStorage = () => {
 
   // Draw grid with StorageDesigner styling
   drawGrid(storage, pixelsPerMeter, storageOffsetX, storageOffsetY);
+
+  // Draw restriction zones
+  drawRestrictionZones(pixelsPerMeter, storageOffsetX, storageOffsetY);
 
   // Draw placed boats
   drawPlacedBoats();
@@ -1265,6 +1319,64 @@ const drawGrid = (storage: Storage, pixelsPerMeter: number, storageOffsetX: numb
     });
     layer.value.add(line);
   }
+};
+
+// Draw restriction zones (from StorageDesigner styling)
+const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, storageOffsetY: number) => {
+  if (!layer.value || restrictionZones.value.length === 0) return;
+
+  console.log(`🛡️ Drawing ${restrictionZones.value.length} restriction zones...`);
+
+  // StorageDesigner exact zone styling
+  const zoneStyle = {
+    fill: '#FDE7E7',    // Light red fill
+    stroke: '#800000',  // Dark red border
+    strokeWidth: 1,
+    opacity: 1.0,
+    dash: [3, 3]        // Dashed border
+  };
+
+  restrictionZones.value.forEach((zone, index) => {
+    console.log(`📦 Drawing zone ${index + 1}: ${zone.name} at (${zone.x}, ${zone.y}) size ${zone.width}x${zone.height}m`);
+    
+    // Convert zone coordinates from meters to pixels
+    const zoneX = storageOffsetX + (zone.x * pixelsPerMeter);
+    const zoneY = storageOffsetY + (zone.y * pixelsPerMeter);
+    const zoneWidth = zone.width * pixelsPerMeter;
+    const zoneHeight = zone.height * pixelsPerMeter;
+
+    // Create restriction zone rectangle
+    const zoneRect = new Konva.Rect({
+      x: zoneX,
+      y: zoneY,
+      width: zoneWidth,
+      height: zoneHeight,
+      ...zoneStyle,
+      listening: false, // Non-interactive for now
+    });
+    layer.value.add(zoneRect);
+
+    // Add zone label (centered in the middle of the zone)
+    const fontSize = Math.min(10, Math.max(8, pixelsPerMeter * 0.8));
+    const zoneText = new Konva.Text({
+      x: zoneX + (zoneWidth / 2),
+      y: zoneY + (zoneHeight / 2),
+      text: zone.name,
+      fontSize: fontSize,
+      fill: '#800000', // Same dark red as border
+      fontFamily: 'Arial',
+      fontStyle: 'bold',
+      align: 'center',
+      verticalAlign: 'middle',
+      offsetX: 0, // Will be set based on text width
+      offsetY: fontSize / 2, // Center vertically
+      listening: false,
+    });
+
+    // Center the text properly
+    zoneText.offsetX(zoneText.width() / 2);
+    layer.value.add(zoneText);
+  });
 };
 
 const drawPlacedBoats = () => {
@@ -1522,13 +1634,16 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 };
 
 // UI event handlers
-const selectStorage = (storage: Storage, autoCenter: boolean = false) => {
+const selectStorage = async (storage: Storage, autoCenter: boolean = false) => {
   selectedStorage.value = storage;
   console.log(`🏢 Väljer lager: ${storage.name} (ID: ${storage.id})`);
 
   // Debug: Visa alla placements för detta lager
   const placementsForStorage = placements.value.filter(p => p.storage_unit_id === storage.id);
   console.log(`📦 Hittade ${placementsForStorage.length} placements för detta lager:`, placementsForStorage);
+
+  // Load restriction zones for this storage
+  await loadRestrictionZones();
 
   drawStorage();
 
