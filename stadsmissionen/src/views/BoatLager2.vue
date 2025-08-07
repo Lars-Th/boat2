@@ -633,7 +633,8 @@ const collisionCount = computed(() => {
     const boat = boats.value.find(b => b.id === placement.boat_id);
     if (boat) {
       const collisionState = checkBoatCollisions(boat, placement);
-      if (collisionState === 'hull_collision' || collisionState === 'margin_collision') {
+      // Hull collision är kommenterad bort, så vi räknar bara margin_collision
+      if (collisionState === 'margin_collision') {
         collisions++;
       }
     }
@@ -824,11 +825,16 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
     const otherHullRect = createRotatedRectangle(otherX, otherY, otherHullWidth, otherHullHeight, otherRotation);
     const otherMarginRect = createRotatedRectangle(otherX, otherY, otherHullWidth + otherMarginSize, otherHullHeight + otherMarginSize, otherRotation);
 
+    // HULL COLLISION TEMPORÄRT KOMMENTERAD BORT (2024-12-27)
+    // Kommenteras bort för att ge mer frihet i placering utan stress av helt röda båtar
+    // Kan aktiveras igen vid behov genom att avkommentera nedan:
+    /*
     // Check hull collision first (most critical) - rotated rectangles!
     if (rotatedRectanglesOverlap(currentHullRect, otherHullRect)) {
       console.log(`🔴 Hull collision: ${currentBoat.name} (${currentRotation * 180 / Math.PI}°) ↔ ${otherBoat.name} (${otherRotation * 180 / Math.PI}°)`);
       return 'hull_collision';
     }
+    */
 
     // Check margin collision (safety zone) - rotated rectangles!
     if (rotatedRectanglesOverlap(currentMarginRect, otherMarginRect)) {
