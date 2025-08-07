@@ -809,10 +809,10 @@ const isStorageFloor = computed(() => {
 
 const currentFloorDesign = computed(() => {
   if (!selectedStorage.value) return null;
-  
+
   // Find the floor design for current storage and floor
-  return availableFloors.value.find(floor => 
-    floor.storage_id === selectedStorage.value!.id && 
+  return availableFloors.value.find(floor =>
+    floor.storage_id === selectedStorage.value!.id &&
     floor.floor_number === selectedFloor.value
   ) || null;
 });
@@ -1358,7 +1358,7 @@ const drawStorage = () => {
     drawRestrictionZones(pixelsPerMeter, storageOffsetX, storageOffsetY);
     console.log('🏢 Displaying main floor - restriction zones');
   } else if (isStorageFloor.value) {
-    // Upper floor - show floor zones  
+    // Upper floor - show floor zones
     drawFloorZones(pixelsPerMeter, storageOffsetX, storageOffsetY);
     console.log('🏢 Displaying storage floor - floor zones');
   }
