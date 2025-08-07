@@ -1045,11 +1045,29 @@ const rotateBoat = (angleDelta: number) => {
 const initCanvas = () => {
   if (!canvasContainer.value) return;
 
+  // Calculate initial canvas size properly (same logic as resize)
+  const canvasArea = canvasContainer.value.closest('.canvas-area') as HTMLElement;
+  let initialWidth = 800; // fallback
+  let initialHeight = 600; // fallback
+
+  if (canvasArea) {
+    const rect = canvasArea.getBoundingClientRect();
+    const toolbarHeight = 60;
+    initialWidth = Math.max(300, rect.width - 20);
+    initialHeight = Math.max(200, rect.height - toolbarHeight - 20);
+  }
+
+  console.log(`🎬 Initializing canvas with size: ${initialWidth}x${initialHeight}px`);
+
+  // Set container size explicitly
+  canvasContainer.value.style.width = `${initialWidth}px`;
+  canvasContainer.value.style.height = `${initialHeight}px`;
+
   // Create Konva stage
   stage.value = new Konva.Stage({
     container: canvasContainer.value,
-    width: canvasContainer.value.clientWidth,
-    height: canvasContainer.value.clientHeight,
+    width: initialWidth,
+    height: initialHeight,
   });
 
   // Create layer
@@ -1059,7 +1077,7 @@ const initCanvas = () => {
   // Setup event handlers
   setupEventHandlers();
 
-  console.log('Canvas initialized');
+  console.log('✅ Canvas initialized');
 };
 
 const setupEventHandlers = () => {
@@ -1338,7 +1356,7 @@ const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, st
 
   restrictionZones.value.forEach((zone, index) => {
     console.log(`📦 Drawing zone ${index + 1}: ${zone.name} at (${zone.x}, ${zone.y}) size ${zone.width}x${zone.height}m`);
-    
+
     // Convert zone coordinates from meters to pixels
     const zoneX = storageOffsetX + (zone.x * pixelsPerMeter);
     const zoneY = storageOffsetY + (zone.y * pixelsPerMeter);
@@ -2109,15 +2127,48 @@ onMounted(async () => {
 
   document.addEventListener('click', handleDocumentClick);
 
-  // Handle window resize
+  // Handle window resize (improved with debouncing like StorageDesigner)
   const handleResize = () => {
-    if (canvasContainer.value && stage.value) {
+    // Debounce resize calls to prevent performance issues
+    setTimeout(() => {
+      if (!canvasContainer.value || !stage.value) return;
+
+      console.log('🔄 Handling canvas resize...');
+
+      // Get the parent canvas-area element for proper sizing
+      const canvasArea = canvasContainer.value.closest('.canvas-area') as HTMLElement;
+      if (!canvasArea) {
+        console.warn('❌ Could not find canvas-area parent element');
+        return;
+      }
+
+      // Calculate available space, accounting for toolbar
+      const rect = canvasArea.getBoundingClientRect();
+      const toolbarHeight = 60; // Approximate toolbar height
+      const availableWidth = Math.max(300, rect.width - 20); // Min width with padding
+      const availableHeight = Math.max(200, rect.height - toolbarHeight - 20); // Min height with padding
+
+      console.log(`📐 Calculated canvas size: ${availableWidth}x${availableHeight}px`);
+
+      // Update container styling to handle both expansion and contraction
+      canvasContainer.value.style.width = `${availableWidth}px`;
+      canvasContainer.value.style.height = `${availableHeight}px`;
+
+      // Update stage size
       stage.value.size({
-        width: canvasContainer.value.clientWidth,
-        height: canvasContainer.value.clientHeight,
+        width: availableWidth,
+        height: availableHeight,
       });
-      stage.value.batchDraw();
-    }
+
+      // Ensure we redraw to update visual elements
+      if (selectedStorage.value) {
+        drawStorage();
+      } else {
+        stage.value.batchDraw();
+      }
+
+      console.log(`✅ Canvas resized to: ${availableWidth}x${availableHeight}px`);
+    }, 150); // Slightly longer debounce for stability
   };
 
   window.addEventListener('resize', handleResize);
