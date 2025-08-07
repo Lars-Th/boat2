@@ -255,9 +255,9 @@
               <Save class="inline w-4 h-4 mr-1" />
               Data:
             </span>
-            <button @click="savePlacements" class="toolbar-button save-btn" title="Spara alla båtpositioner till JSON-fil">
+            <button @click="savePlacements" class="toolbar-button save-btn" title="Spara alla båtpositioner till boatPlacements.json">
               <Save class="button-icon" />
-              Spara JSON
+              Uppdatera JSON
             </button>
             <span v-if="lastSaved" class="save-status">
               Sparad {{ lastSaved }}
@@ -2160,24 +2160,28 @@ const resetCanvas = () => {
   console.log('🔄 Canvas återställt');
 };
 
-// Save placements to JSON file
-const savePlacements = () => {
+// Save placements directly to boatPlacements.json
+const savePlacements = async () => {
   try {
     // Create a formatted JSON string with current placements data
     const placementsJson = JSON.stringify(placements.value, null, 2);
     
-    // Create blob and download
+    // Show what we're about to save in console
+    console.log('📊 Sparar placements:', {
+      count: placements.value.length,
+      data: placements.value.slice(0, 3) // Show first 3 for verification
+    });
+    
+    // Since we can't directly write to files in browser, we'll show the data
+    // and provide both download and copy-to-clipboard options
+    
+    // Option 1: Download file (as before)
     const blob = new Blob([placementsJson], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     
-    // Create download link
     const link = document.createElement('a');
     link.href = url;
-    
-    // Generate filename with timestamp
-    const now = new Date();
-    const timestamp = now.toISOString().slice(0, 19).replace(/[:-]/g, '').replace('T', '_');
-    link.download = `boatPlacements_${timestamp}.json`;
+    link.download = 'boatPlacements.json'; // Direct filename for easy replacement
     
     // Trigger download
     document.body.appendChild(link);
@@ -2187,7 +2191,16 @@ const savePlacements = () => {
     // Clean up blob URL
     URL.revokeObjectURL(url);
     
+    // Option 2: Copy to clipboard for easy pasting
+    try {
+      await navigator.clipboard.writeText(placementsJson);
+      console.log('📋 JSON kopierat till clipboard');
+    } catch (clipboardError) {
+      console.warn('⚠️ Kunde inte kopiera till clipboard:', clipboardError);
+    }
+    
     // Update last saved timestamp
+    const now = new Date();
     const timeString = now.toLocaleString('sv-SE', {
       month: 'short',
       day: 'numeric',
@@ -2196,15 +2209,19 @@ const savePlacements = () => {
     });
     lastSaved.value = timeString;
     
-    console.log(`✅ Båtplacements sparade till boatPlacements_${timestamp}.json`);
+    console.log(`✅ boatPlacements.json genererad och nedladdad`);
     console.log(`📊 ${placements.value.length} placements exporterade`);
+    console.log(`📋 JSON-data kopierat till clipboard - klistra in i boatPlacements.json`);
+    
+    // Show instruction alert
+    alert(`✅ Placements sparade!\n\n📁 Nedladdning: boatPlacements.json\n📋 JSON kopierat till clipboard\n\n🔄 För att uppdatera:\n1. Ersätt innehållet i src/assets/data/boatPlacements.json\n2. Refresha sidan`);
     
     // Show success feedback briefly
     setTimeout(() => {
       if (lastSaved.value === timeString) {
         lastSaved.value = '';
       }
-    }, 5000); // Clear after 5 seconds
+    }, 8000); // Clear after 8 seconds (longer for instructions)
     
   } catch (error) {
     console.error('❌ Fel vid sparning av placements:', error);
