@@ -550,7 +550,9 @@ import {
     X,
     User,
     Ship,
-    Bookmark
+    Bookmark,
+    Type,
+    Hash
 } from 'lucide-vue-next';
 
 // Import JSON data
@@ -2916,6 +2918,46 @@ const handleDrop = (event: DragEvent) => {
         return;
       }
       console.log(`✅ BOKHYLLE-VALIDERING OK: ${boat.name} kan placeras i ${validationResult.shelfName}`);
+    }
+
+    // Om listscope = "alla" och båten redan har en placering av SAMMA TYP i annat lager/brygga → erbjud flytt
+    const dropType = getStorageType(currentStorageRef.id); // 'warehouse' | 'dock' | 'unknown'
+    const existingSameType = placements.value.find(p =>
+      p.boat_id === boat.id &&
+      p.storage_unit_id !== currentStorageRef.id &&
+      getStorageType(p.storage_unit_id) === dropType
+    );
+
+    if (boatListScope.value === 'all' && existingSameType) {
+      const oldStorage = storages.value.find(s => s.id === existingSameType.storage_unit_id);
+      const confirmed = confirm(`Vill du flytta "${boat.name}" från ${oldStorage?.name || 'nuvarande lager'} till ${currentStorageRef.name}?`);
+      if (!confirmed) return;
+
+      // När vi flyttar: respektera regeln "en oplacerad per lager"
+      if (existingSameType.status === 'oplacerad') {
+        const otherUnplaced = getUnplacedBoatInStorage(currentStorageRef.id);
+        if (otherUnplaced && otherUnplaced.id !== existingSameType.id) {
+          const removeIndex = placements.value.findIndex(p => p.id === otherUnplaced.id);
+          if (removeIndex !== -1) placements.value.splice(removeIndex, 1);
+          const oldBoatIdx = boats.value.findIndex(b => b.id === otherUnplaced.boat_id);
+          if (oldBoatIdx !== -1) boats.value[oldBoatIdx].current_status = 'oplacerad';
+        }
+      }
+
+      // Flytta placeringen
+      existingSameType.storage_unit_id = currentStorageRef.id;
+      existingSameType.storage_unit_name = currentStorageRef.name;
+      existingSameType.floor_number = selectedFloor.value;
+      existingSameType.position = { x: storageX, y: storageY, rotation: 0 };
+      existingSameType.updated_at = new Date().toISOString();
+
+      // Uppdatera båtens status (behåll befintlig status)
+      const boatIdx = boats.value.findIndex(b => b.id === boat.id);
+      if (boatIdx !== -1) boats.value[boatIdx].current_status = existingSameType.status;
+
+      drawStorage();
+      info('Båt flyttad', `${boat.name} flyttad till ${currentStorageRef.name}.`);
+      return;
     }
 
     // Regelverk: kontrollera location_status och befintliga placeringar
