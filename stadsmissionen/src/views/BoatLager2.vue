@@ -371,21 +371,17 @@
             <div class="tooltip-row"><span>Pos</span><span>X {{ tooltipData.placement.position.x }}, Y {{ tooltipData.placement.position.y }}, {{ tooltipData.placement.position.rotation }}°</span></div>
           </div>
           <div class="tooltip-actions">
-            <button class="tooltip-btn danger" @click="removeBoatFromStorage(tooltipData.boat, tooltipData.placement)">Ta bort</button>
-            <button class="tooltip-btn" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'oplacerad')">Flytta (gör oplacerad)</button>
-            <button
-              class="tooltip-btn"
-              @click="goToCustomer(tooltipData.boat)"
-              title="Gå till kundkort"
-            >
-              Kundkort
+            <button class="tooltip-btn icon danger" @click="removeBoatFromStorage(tooltipData.boat, tooltipData.placement)" title="Ta bort">
+              <Trash2 class="button-icon" />
             </button>
-            <button
-              class="tooltip-btn"
-              @click="goToBoatDetail(tooltipData.boat)"
-              title="Gå till båtkort"
-            >
-              Båtkort
+            <button class="tooltip-btn icon" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'oplacerad')" title="Flytta (gör oplacerad)">
+              <Move class="button-icon" />
+            </button>
+            <button class="tooltip-btn icon" @click="goToCustomer(tooltipData.boat)" title="Kundkort">
+              <User class="button-icon" />
+            </button>
+            <button class="tooltip-btn icon" @click="goToBoatDetail(tooltipData.boat)" title="Båtkort">
+              <Ship class="button-icon" />
             </button>
           </div>
         </div>
@@ -3573,9 +3569,10 @@ onMounted(async () => {
 .badge.reserverad {background: rgba(156,163,175,.15); color: #d1d5db;}
 
 .tooltip-actions {padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; gap: 6px;}
-.tooltip-btn {flex: 1; padding: 4px 6px; border-radius: 6px; background: #1f2937; color: #e5e7eb; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; font-weight: 600; font-size: 10px;}
+.tooltip-btn {padding: 4px 6px; border-radius: 6px; background: #1f2937; color: #e5e7eb; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; font-weight: 600; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;}
+.tooltip-btn.icon { width: 28px; height: 28px; padding: 0; }
 .tooltip-btn:hover {background: #374151;}
-.tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);}
+.tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);} 
 .tooltip-btn.danger:hover {background: #991b1b;}
 
 /* Båtlista - Originalklasser */
