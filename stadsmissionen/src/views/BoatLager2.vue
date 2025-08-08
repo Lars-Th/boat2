@@ -3,6 +3,21 @@
     <!-- Standard Header (shadcn/ui style) -->
     <StandardHeader :title="'Båtlager 2.0'" :show-stats="false" />
 
+    <!-- Global search bar (aligned with ListPage ViewControls minimal) -->
+    <div class="global-search">
+      <div class="search-input-wrapper">
+        <Search class="search-icon" />
+        <input
+          v-model="boatSearchQuery"
+          placeholder="Sök alla båtar i systemet…"
+          class="search-input has-icon"
+        />
+        <button v-if="boatSearchQuery" class="clear-btn" @click="boatSearchQuery = ''" title="Rensa sök">
+          <X class="w-3 h-3" />
+        </button>
+      </div>
+    </div>
+
     <!-- Status Legend under header -->
     <div class="status-legend">
       <div class="legend-item">
@@ -422,7 +437,8 @@ import {
   Save,
   Search,
   Layers,
-  Building2
+  Building2,
+  X
 } from 'lucide-vue-next';
 
 // Import JSON data
@@ -2768,6 +2784,9 @@ onMounted(async () => {
   position: sticky;
   top: 0;
   z-index: 20;
+}
+.global-search {
+  padding: 0 1rem 0.5rem 1rem;
 }
 .panel-title {
   position: sticky;
