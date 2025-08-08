@@ -3,20 +3,15 @@
     <!-- Standard Header (shadcn/ui style) -->
     <StandardHeader :title="'Båtlager 2.0'" :show-stats="false" />
 
-    <!-- Global search bar (aligned with ListPage ViewControls minimal) -->
-    <div class="global-search">
-      <div class="search-input-wrapper">
-        <Search class="search-icon" />
-        <input
-          v-model="boatSearchQuery"
-          placeholder="Sök alla båtar i systemet…"
-          class="search-input has-icon"
-        />
-        <button v-if="boatSearchQuery" class="clear-btn" @click="boatSearchQuery = ''" title="Rensa sök">
-          <X class="w-3 h-3" />
-        </button>
-      </div>
-    </div>
+    <!-- View Controls (shadcn standard) -->
+    <ViewControls
+      :search-query="boatSearchQuery"
+      search-placeholder="Sök alla båtar i systemet…"
+      :show-search="true"
+      :show-view-switcher="false"
+      @update:searchQuery="val => boatSearchQuery = val"
+      @update:search-query="val => boatSearchQuery = val"
+    />
 
     <!-- Status Legend under header -->
     <div class="status-legend">
@@ -418,6 +413,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
+import ViewControls from '@/components/shared/ViewControls.vue';
 import Konva from 'konva';
 import {
   Warehouse,
