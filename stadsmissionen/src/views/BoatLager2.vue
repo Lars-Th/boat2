@@ -2086,10 +2086,9 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     verticalAlign: 'middle'
   });
 
-  nameText.offset({
-    x: nameText.width() / 2,
-    y: nameText.height() / 2
-  });
+  nameText.offset({ x: nameText.width() / 2, y: nameText.height() / 2 });
+  // Håll text horisontell vid rotation
+  nameText.rotation(-placement.position.rotation);
 
   // Add to group
   boatGroup.add(marginPath);
