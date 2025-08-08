@@ -82,10 +82,10 @@
                   ({{ getStorageStatusCounts(storage.id).placerad }}P/{{ getStorageStatusCounts(storage.id).reserverad }}R/{{ getStorageStatusCounts(storage.id).oplacerad }}O)
                 </span>
               </div>
-              <div v-if="storage.Type === 'Lager' && getStorageFloorCount(storage.id) > 1" class="storage-floors-row">
+              <div v-if="storage.Type === 'Lager' && getStorageFloorCount(storage.id) > 1 && storageFloors && storageFloors.value" class="storage-floors-row">
                 <span class="meta-label">Våningar:</span>
                 <button
-                  v-for="floor in storageFloors.value.filter(f => f.storage_id === storage.id)"
+                  v-for="floor in (storageFloors?.value?.filter(f => f.storage_id === storage.id) || [])"
                   :key="'stfloor-'+floor.id"
                   class="floor-chip"
                   :class="{ active: selectedStorage?.id === storage.id && selectedFloor === floor.floor_number }"
@@ -1012,6 +1012,12 @@ const tooltipCustomer = computed(() => {
   };
   const goToBoatDetail = (boat: Boat) => {
     router.push({ name: 'boat-detail', params: { id: boat.id } });
+  };
+
+  // Helper: Select storage and floor from left list
+  const selectStorageAndFloor = (storage: Storage, floorNumber: number) => {
+    selectStorage(storage, true);
+    nextTick(() => selectFloor(floorNumber));
   };
 
 // Helper functions
