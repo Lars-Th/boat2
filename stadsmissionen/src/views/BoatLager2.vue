@@ -8,31 +8,17 @@
       :stats="headerStats"
     />
 
-    <!-- View Controls (shadcn standard) -->
+    <!-- View Controls (search disabled per request) -->
     <ViewControls
       :search-query="boatSearchQuery"
-      search-placeholder="Sök alla båtar i systemet…"
-      :show-search="true"
+      search-placeholder=""
+      :show-search="false"
       :show-view-switcher="false"
       @update:searchQuery="val => boatSearchQuery = val"
       @update:search-query="val => boatSearchQuery = val"
     />
 
-    <!-- Status Legend under header -->
-    <div class="status-legend">
-      <div class="legend-item">
-        <div class="status-indicator green"></div>
-        <span>Oplacerad</span>
-      </div>
-      <div class="legend-item">
-        <div class="status-indicator blue"></div>
-        <span>Placerad</span>
-      </div>
-      <div class="legend-item">
-        <div class="status-indicator gray"></div>
-        <span>Reserverad</span>
-      </div>
-    </div>
+    <!-- Status legend removed per request -->
 
     <div class="main-layout">
       <!-- Left Panel: Storage Selection -->
@@ -109,6 +95,7 @@
       <!-- Main Canvas Area -->
       <div class="canvas-area">
         <!-- Canvas Toolbar (same style as StorageDesigner) -->
+        <div class="hairline-top"></div>
         <div class="canvas-toolbar">
           <!-- Storage Info -->
           <div class="toolbar-group">
@@ -118,7 +105,7 @@
             </div>
           </div>
 
-          <!-- Floor Selector (only for warehouses with multiple floors) -->
+          <!-- Floor Selector (icon buttons) -->
           <div v-if="selectedStorage?.Type === 'Lager' && availableFloors.length > 1" class="toolbar-group">
             <span class="toolbar-label">Våning:</span>
             <div class="floor-tabs">
@@ -126,7 +113,7 @@
                 v-for="floor in availableFloors"
                 :key="floor.id"
                 @click="selectFloor(floor.floor_number)"
-                class="floor-tab"
+                class="toolbar-button"
                 :class="{ active: selectedFloor === floor.floor_number }"
                 :title="`${floor.floor_name} - ${floor.floor_zones.length} zoner`"
               >
@@ -137,83 +124,46 @@
 
           <div class="toolbar-separator"></div>
 
-          <!-- View Controls -->
+          <!-- View Controls as icon buttons -->
           <div class="toolbar-group">
-            <span class="toolbar-label">Zoom:</span>
-            <button @click="zoomOut" class="toolbar-button" title="Zooma ut">
-              <ZoomOut class="button-icon" />
-            </button>
+            <button @click="zoomOut" class="toolbar-button" title="Zooma ut"><ZoomOut class="button-icon" /></button>
+            <button @click="zoomIn" class="toolbar-button" title="Zooma in"><ZoomIn class="button-icon" /></button>
             <div class="input-group">
-              <input
-                v-model="zoomPercentage"
-                @change="setZoomFromPercentage"
-                class="toolbar-input zoom-input"
-                type="number"
-                min="25"
-                max="300"
-                step="25"
-              />
+              <input v-model="zoomPercentage" @change="setZoomFromPercentage" class="toolbar-input zoom-input" type="number" min="25" max="300" step="25" />
               <span class="input-unit">%</span>
             </div>
-            <button @click="zoomIn" class="toolbar-button" title="Zooma in">
-              <ZoomIn class="button-icon" />
-            </button>
           </div>
 
           <div class="toolbar-separator"></div>
 
-          <!-- Pan Mode -->
+          <!-- Pan/center/reset as icons -->
           <div class="toolbar-group">
-            <button @click="centerStorage" class="toolbar-button" title="Centrera lagret">
-              <Navigation2 class="button-icon" />
-            </button>
-            <button @click="resetView" class="toolbar-button" title="Återställ zoom och pan">
-              <RotateCcw class="button-icon" />
-            </button>
-            <button
-              @click="togglePanMode"
-              :class="['toolbar-button', { active: isPanMode }]"
-              title="Panoreringsläge"
-            >
-              <Move class="button-icon" />
-              {{ isPanMode ? 'PAN PÅ' : 'PAN AV' }}
-            </button>
+            <button @click="centerStorage" class="toolbar-button" title="Centrera lagret"><Navigation2 class="button-icon" /></button>
+            <button @click="resetView" class="toolbar-button" title="Återställ vy"><RotateCcw class="button-icon" /></button>
+            <button @click="togglePanMode" :class="['toolbar-button', { active: isPanMode }]" title="Panoreringsläge"><Move class="button-icon" /></button>
           </div>
 
           <div class="toolbar-separator"></div>
 
-          <!-- Info om klick-funktionalitet -->
-          <div class="toolbar-group">
-            <span class="toolbar-label">Klicka på båt:</span>
-            <div class="info-display">
-              <span class="status-info placerad">Blå → Grön</span>
-              <span class="status-info reserverad">Grå → Grön</span>
-              <span class="status-info oplacerad">Grön → Blå</span>
-            </div>
-          </div>
+          <!-- Removed extra legend/info to declutter toolbar -->
 
           <div class="toolbar-separator"></div>
 
-          <!-- Snabba status-knappar -->
+          <!-- Status select (shadcn select to be wired later) -->
           <div class="toolbar-group">
-            <span class="toolbar-label">Placerings-status:</span>
+            <span class="toolbar-label">Status:</span>
             <select v-model="defaultPlacementStatus" class="status-select">
-              <option value="oplacerad">Oplacerad (grön)</option>
-              <option value="placerad">Placerad (blå)</option>
-              <option value="reserverad">Reserverad (grå)</option>
+              <option value="oplacerad">Oplacerad</option>
+              <option value="placerad">Placerad</option>
+              <option value="reserverad">Reserverad</option>
             </select>
           </div>
 
           <div class="toolbar-separator"></div>
 
           <div class="toolbar-group">
-            <span class="toolbar-label">Snabb-status:</span>
-            <button @click="setAllBoatsAsPlaced" class="toolbar-button status-action" title="Sätt alla OPLACERADE båtar som placerade (blå, låsta). Andra båtar behåller sin status.">
-              Placera oplacerade
-            </button>
-            <button @click="setAllBoatsAsReserved" class="toolbar-button status-action" title="Sätt alla OPLACERADE båtar som reserverade (grå). Andra båtar behåller sin status.">
-              Reservera oplacerade
-            </button>
+            <button @click="setAllBoatsAsPlaced" class="toolbar-button" title="Placera oplacerade"><Bookmark class="button-icon place-icon" /></button>
+            <button @click="setAllBoatsAsReserved" class="toolbar-button" title="Reservera oplacerade"><Bookmark class="button-icon reserve-icon" /></button>
           </div>
 
           <div class="toolbar-separator"></div>
@@ -401,28 +351,18 @@
         </div>
 
         <!-- Boat Filter -->
-        <div class="filter-section">
+          <div class="filter-section">
           <div class="filter-row">
             <label class="filter-label">Visa:</label>
             <select v-model="boatListScope" class="filter-select">
-              <option value="default">Standard (smart per lager)</option>
-              <option value="all">Alla båtar</option>
-              <option value="placed">Endast placerade</option>
-              <option value="reserved">Endast reserverade</option>
-              <option value="partial">Delvis placerade (lager_brygga som saknar ena)</option>
+              <option value="default">Standard</option>
+              <option value="all">Alla</option>
+              <option value="placed">Placerade</option>
+              <option value="reserved">Reserverade</option>
+              <option value="partial">Delvis placerade</option>
             </select>
           </div>
-            <div class="search-input-wrapper">
-              <Search class="search-icon" />
-              <input
-                v-model="boatSearchQuery"
-                placeholder="Sök alla båtar i systemet…"
-                class="search-input has-icon"
-              />
-              <button v-if="boatSearchQuery" class="clear-btn" @click="boatSearchQuery = ''" title="Rensa sök">
-                <X class="w-3 h-3" />
-              </button>
-            </div>
+          <!-- Search input removed per request -->
           <div class="list-meta">Visar {{ filteredBoats.length }} av {{ boats.length }}</div>
         </div>
 
@@ -677,6 +617,12 @@ const zoomLevel = ref<number>(1);
 const zoomPercentage = ref<number>(100);
 const isPanMode = ref<boolean>(false);
 const isDragging = ref<boolean>(false);
+
+  // Boat label controls
+  const boatLabelName = ref<boolean>(true);
+  const boatLabelReg = ref<boolean>(false);
+  const boatLabelOwner = ref<boolean>(false);
+  const boatLabelFont = ref<number>(9);
 
 // Tooltip state
 const showTooltip = ref<boolean>(false);
@@ -2122,13 +2068,20 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     y: SVG_CONSTANTS.MARGIN_VB.h / 2
   });
 
-  // Add boat name with ID
+  // Build label text per toolbar selection
+  const ownerName = customers.value.find(c => c.id === boat.customer_id)?.display_name || '';
+  const labelParts: string[] = [];
+  if (boatLabelName.value) labelParts.push(`${boat.name} (${boat.id})`);
+  if (boatLabelReg.value) labelParts.push(boat.registreringsnummer);
+  if (boatLabelOwner.value) labelParts.push(ownerName);
+  const labelText = labelParts.join(' • ');
+
   const nameText = new Konva.Text({
     x: 0,
     y: 0,
-    text: `${boat.name} (${boat.id})`,
-    fontSize: 10,
-    fill: '#374151', // Tailwind gray-700
+    text: labelText,
+    fontSize: Math.max(6, Math.min(14, boatLabelFont.value)),
+    fill: '#374151',
     align: 'center',
     verticalAlign: 'middle'
   });
@@ -3182,6 +3135,20 @@ onMounted(async () => {
   top: 0;
   z-index: 10;
   background: #fff;
+}
+.hairline-top {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  height: 0;
+}
+.hairline-top::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  border-top: 1px solid rgba(0,0,0,.12);
+  transform: scaleY(0.5);
+  transform-origin: 0 0;
 }
 .canvas-toolbar {
   position: sticky;
