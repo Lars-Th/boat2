@@ -415,6 +415,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import ViewControls from '@/components/shared/ViewControls.vue';
+import { useToast } from '@/composables/useToast';
 import Konva from 'konva';
 import {
   Warehouse,
@@ -649,6 +650,9 @@ const draggedBoatCoords = ref<{x: number, y: number, rotation: number} | null>(n
 const lastMovedPosition = ref<{boatName: string, boatId: number, x: number, y: number, rotation: number} | null>(null);
 
 // Load restriction zones for selected storage
+// Toast API
+const { warning, success, info } = useToast();
+
 const loadRestrictionZones = async () => {
   if (!selectedStorage.value) {
     restrictionZones.value = [];
@@ -2010,6 +2014,19 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     console.log(`Boat moved to: ${newX.toFixed(1)}, ${newY.toFixed(1)} decimeter`);
     console.log(`📍 Position saved for JSON adjustment: ${boat.name} (${boat.id}) at (${lastMovedPosition.value.x}, ${lastMovedPosition.value.y})`);
 
+    // Regelverk: lager_brygga-hint även på flytt
+    const boatLoc = String(boat.location_status || '').toLowerCase();
+    if (boatLoc === 'lager_brygga') {
+      const hasWarehouse = placements.value.some(p => p.boat_id === boat.id && storages.value.find(s => s.id === p.storage_unit_id)?.Type === 'Lager');
+      const hasDock = placements.value.some(p => p.boat_id === boat.id && storages.value.find(s => s.id === p.storage_unit_id)?.Type === 'Brygga');
+      if (selectedStorage.value?.Type === 'Lager' && !hasDock) {
+        info('Tips', `"${boat.name}" saknar ännu brygg-reservation.`);
+      }
+      if (selectedStorage.value?.Type === 'Brygga' && !hasWarehouse) {
+        info('Tips', `"${boat.name}" saknar ännu lagerplacering.`);
+      }
+    }
+
     // BOKHYLLE-VALIDERING för våning 2+ (endast när båten flyttas)
     if (isStorageFloor.value && currentFloorDesign.value) {
       const validationResult = validateBookshelfPlacement(boat, newX, newY);
@@ -2623,7 +2640,7 @@ const handleDrop = (event: DragEvent) => {
     );
 
     if (existingPlacement) {
-      console.warn('Boat is already placed in this storage');
+      warning('Redan placerad', `${boat.name} finns redan i detta lager.`);
       return;
     }
 
@@ -2697,6 +2714,31 @@ const handleDrop = (event: DragEvent) => {
         return;
       }
       console.log(`✅ BOKHYLLE-VALIDERING OK: ${boat.name} kan placeras i ${validationResult.shelfName}`);
+    }
+
+    // Regelverk: kontrollera location_status och befintliga placeringar
+    const boatLocation = String(boat.location_status || '').toLowerCase();
+    const boatPlacements = placements.value.filter(p => p.boat_id === boat.id);
+
+    // Om båt har lager_brygga ska den ha både en lager- och en brygg-placering
+    if (boatLocation === 'lager_brygga') {
+      const hasWarehouse = boatPlacements.some(p => storages.value.find(s => s.id === p.storage_unit_id)?.Type === 'Lager');
+      const hasDock = boatPlacements.some(p => storages.value.find(s => s.id === p.storage_unit_id)?.Type === 'Brygga');
+
+      // Om vi placerar i lager men ingen brygga finns – visa varning (men tillåt placering)
+      if (selectedStorage.value?.Type === 'Lager' && !hasDock) {
+        warning(
+          'Bryggplats saknas',
+          `"${boat.name}" kräver även en brygg-reservation. Lägg gärna en plats på en brygga efter lagret.`,
+        );
+      }
+      // Om vi placerar i brygga men ingen lager finns – visa varning
+      if (selectedStorage.value?.Type === 'Brygga' && !hasWarehouse) {
+        warning(
+          'Lagerplats saknas',
+          `"${boat.name}" kräver även en lagerplacering. Lägg gärna en plats i ett lager.`,
+        );
+      }
     }
 
     // Create new placement med vald status
