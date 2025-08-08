@@ -377,6 +377,12 @@
             <button class="tooltip-btn icon" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'oplacerad')" title="Flytta (gör oplacerad)">
               <Move class="button-icon" />
             </button>
+            <button class="tooltip-btn icon" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'placerad')" title="Placera (blå)">
+              <Bookmark class="button-icon place-icon" />
+            </button>
+            <button class="tooltip-btn icon" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'reserverad')" title="Reservera (grå)">
+              <Bookmark class="button-icon reserve-icon" />
+            </button>
             <button class="tooltip-btn icon" @click="goToCustomer(tooltipData.boat)" title="Kundkort">
               <User class="button-icon" />
             </button>
@@ -543,7 +549,8 @@ import {
   Building2,
     X,
     User,
-    Ship
+    Ship,
+    Bookmark
 } from 'lucide-vue-next';
 
 // Import JSON data
@@ -3614,6 +3621,8 @@ onMounted(async () => {
 .tooltip-btn:hover {background: #374151;}
 .tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);}
 .tooltip-btn.danger:hover {background: #991b1b;}
+.place-icon { color: #2563eb; }
+.reserve-icon { color: #9ca3af; }
 
 /* Båtlista - Originalklasser */
 .boat-name {
