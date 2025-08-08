@@ -396,6 +396,16 @@
 
         <!-- Boat Filter -->
         <div class="filter-section">
+          <div class="filter-row">
+            <label class="filter-label">Visa:</label>
+            <select v-model="boatListScope" class="filter-select">
+              <option value="default">Standard (smart per lager)</option>
+              <option value="all">Alla båtar</option>
+              <option value="placed">Endast placerade</option>
+              <option value="reserved">Endast reserverade</option>
+              <option value="partial">Delvis placerade (lager_brygga som saknar ena)</option>
+            </select>
+          </div>
             <div class="search-input-wrapper">
               <Search class="search-icon" />
               <input
@@ -411,7 +421,7 @@
         </div>
 
         <!-- Boat List -->
-        <div class="boat-list">
+        <div class="boat-list" :class="{ 'default-scope': boatListScope === 'default' }">
           <div v-if="filteredBoats.length === 0" class="empty-state">Inga båtar matchar filtret</div>
           <div
             v-for="boat in filteredBoats"
@@ -424,7 +434,8 @@
               {
                 active: selectedBoat?.id === boat.id,
                 placed: isBoatPlaced(boat.id),
-                [boat.current_status]: true
+                [boat.current_status]: true,
+                dimmed: shouldDimBoat(boat)
               }
             ]"
           >
@@ -651,6 +662,7 @@ const selectedPlacedBoat = ref<Boat | null>(null);
 const selectedPlacement = ref<BoatPlacement | null>(null);
 const storageFilter = ref<string>('all');
 const boatSearchQuery = ref<string>('');
+  const boatListScope = ref<'default'|'all'|'placed'|'reserved'|'partial'>('default');
 
 const zoomLevel = ref<number>(1);
 const zoomPercentage = ref<number>(100);
@@ -869,8 +881,22 @@ const filteredBoats = computed(() => {
       )
     : boats.value;
 
-    // Smart filtering based on selected storage
-  if (selectedStorage.value) {
+  // Smart filtering based on selected storage
+  if (boatListScope.value === 'all') {
+    // no extra filtering here beyond search
+  } else if (boatListScope.value === 'placed') {
+    filteredBoatList = filteredBoatList.filter(b => getBoatDisplayStatus(b) === 'placerad');
+  } else if (boatListScope.value === 'reserved') {
+    filteredBoatList = filteredBoatList.filter(b => getBoatDisplayStatus(b) === 'reserverad');
+  } else if (boatListScope.value === 'partial') {
+    // lager_brygga som saknar ena sidan
+    filteredBoatList = filteredBoatList.filter(b => {
+      if (b.location_status !== 'lager_brygga') return false;
+      const hasWh = placements.value.some(p => p.boat_id === b.id && getStorageType(p.storage_unit_id) === 'warehouse');
+      const hasDk = placements.value.some(p => p.boat_id === b.id && getStorageType(p.storage_unit_id) === 'dock');
+      return (hasWh && !hasDk) || (!hasWh && hasDk);
+    });
+  } else if (selectedStorage.value) {
     // Show boats that are:
     // 1. Unplaced (oplacerad) AND compatible with this storage type
     // 2. Placed/Reserved in THIS specific storage
@@ -1018,6 +1044,14 @@ const tooltipCustomer = computed(() => {
   const selectStorageAndFloor = (storage: Storage, floorNumber: number) => {
     selectStorage(storage, true);
     nextTick(() => selectFloor(floorNumber));
+  };
+
+  // Dim logic: when scope is default and boat is not in current storage, make it semi-transparent
+  const shouldDimBoat = (boat: Boat): boolean => {
+    if (boatListScope.value !== 'default') return false;
+    if (!selectedStorage.value) return false; // already filtered to unplaced only
+    const inThisStorage = placements.value.some(p => p.boat_id === boat.id && p.storage_unit_id === selectedStorage.value!.id);
+    return !inThisStorage;
   };
 
 // Helper functions
@@ -3186,6 +3220,8 @@ onMounted(async () => {
   padding: 0.75rem;
   border-bottom: 1px solid #f1f5f9;
 }
+.filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.filter-label { font-size: 0.7rem; color: #6b7280; }
 
 .filter-select,
 .search-input {
@@ -3249,13 +3285,9 @@ onMounted(async () => {
   background: #eff6ff;
 }
 
-.boat-item.placed {
-  opacity: 0.6;
-}
+.boat-item.placed { opacity: 1; }
 
-.boat-item.oplacerad {
-  border-left: 3px solid #27d07c;
-}
+.boat-item.oplacerad { border-left: 3px solid #10b981; }
 
 .boat-item.placerad {
   border-left: 3px solid #1e40af;
@@ -3264,6 +3296,10 @@ onMounted(async () => {
 .boat-item.reserverad {
   border-left: 3px solid #9ca3af;
 }
+
+/* Dim boats not in current canvas storage when scope=default */
+.boat-list.default-scope .boat-item.dimmed { opacity: 0.5; }
+.boat-list .boat-item .icon-btn { opacity: 1 !important; }
 
 .storage-info,
 .boat-info {
