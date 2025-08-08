@@ -788,13 +788,12 @@ const filteredBoats = computed(() => {
     filteredBoatList = filteredBoatList.filter(boat => boat.current_status === 'oplacerad');
   }
 
-  // Sort boats: oplacerad first, then by name
+  // Sort boats by computed display status, then by name
   return filteredBoatList.sort((a, b) => {
-    // First sort by status (oplacerad first)
-    if (a.current_status === 'oplacerad' && b.current_status !== 'oplacerad') return -1;
-    if (a.current_status !== 'oplacerad' && b.current_status === 'oplacerad') return 1;
-
-    // Then sort by name
+    const sa = getBoatDisplayStatus(a);
+    const sb = getBoatDisplayStatus(b);
+    if (sa === 'oplacerad' && sb !== 'oplacerad') return -1;
+    if (sa !== 'oplacerad' && sb === 'oplacerad') return 1;
     return a.name.localeCompare(b.name);
   });
 });
@@ -869,6 +868,34 @@ const getStatusText = (status: string): string => {
     'reserverad': 'Reserverad'
   };
   return statusMap[status] || status;
+};
+
+// Placements for a specific boat (all storages)
+const getPlacementsForBoat = (boatId: number): BoatPlacement[] => {
+  return placements.value.filter(p => p.boat_id === boatId);
+};
+
+// Compute the effective status for a boat
+// Priority: placerad > reserverad > oplacerad; if selected storage is chosen and boat has a
+// placement there, use that status to reflect context
+const getBoatDisplayStatus = (boat: Boat): 'oplacerad' | 'placerad' | 'reserverad' => {
+  if (selectedStorage.value) {
+    const p = placements.value.find(pp => pp.boat_id === boat.id && pp.storage_unit_id === selectedStorage.value!.id);
+    if (p) return p.status;
+  }
+
+  const all = getPlacementsForBoat(boat.id);
+  if (all.some(p => p.status === 'placerad')) return 'placerad';
+  if (all.some(p => p.status === 'reserverad')) return 'reserverad';
+  return 'oplacerad';
+};
+
+// Sync boats.json statuses in-memory from placements on load, so list/status aligns
+const reconcileBoatStatuses = () => {
+  boats.value = boats.value.map(b => ({
+    ...b,
+    current_status: getBoatDisplayStatus(b)
+  }));
 };
 
 const getBoatStorageInfo = (boatId: number): string | null => {
@@ -2711,6 +2738,9 @@ onMounted(async () => {
 
   // Load floor data
   await loadStorageFloors();
+
+  // Reconcile list statuses with placements
+  reconcileBoatStatuses();
 
   initCanvas();
 
