@@ -7,7 +7,7 @@
     "floor_number": 0,
     "status": "reserverad",
     "position": {
-      "x": 80.0,
+      "x": 80,
       "y": 8.1,
       "rotation": 0
     },
@@ -67,7 +67,7 @@
     "floor_number": 0,
     "status": "reserverad",
     "position": {
-      "x": 150.0,
+      "x": 150,
       "y": 9.2,
       "rotation": 0
     },
@@ -107,8 +107,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 520.0,
-      "y": 200.0,
+      "x": 520,
+      "y": 200,
       "rotation": 90
     },
     "placed_by_user_id": 2,
@@ -128,7 +128,7 @@
     "status": "placerad",
     "position": {
       "x": 266.7,
-      "y": 10.0,
+      "y": 10,
       "rotation": 180
     },
     "placed_by_user_id": 1,
@@ -167,8 +167,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 80.0,
-      "y": 180.0,
+      "x": 80,
+      "y": 180,
       "rotation": 0
     },
     "placed_by_user_id": 1,
@@ -207,7 +207,7 @@
     "floor_number": 0,
     "status": "reserverad",
     "position": {
-      "x": 400.0,
+      "x": 400,
       "y": 8.7,
       "rotation": 0
     },
@@ -227,7 +227,7 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 111.0,
+      "x": 111,
       "y": 79.5,
       "rotation": 90
     },
@@ -247,8 +247,8 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 450.0,
-      "y": 160.0,
+      "x": 450,
+      "y": 160,
       "rotation": 90
     },
     "placed_by_user_id": 2,
@@ -267,7 +267,7 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 160.0,
+      "x": 160,
       "y": 8.3,
       "rotation": 180
     },
@@ -287,8 +287,8 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 300.0,
-      "y": 250.0,
+      "x": 300,
+      "y": 250,
       "rotation": 0
     },
     "placed_by_user_id": 1,
@@ -307,7 +307,7 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 200.0,
+      "x": 200,
       "y": 7.2,
       "rotation": 0
     },
@@ -347,8 +347,8 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 250.0,
-      "y": 320.0,
+      "x": 250,
+      "y": 320,
       "rotation": 0
     },
     "placed_by_user_id": 2,
@@ -387,8 +387,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 480.0,
-      "y": 280.0,
+      "x": 428,
+      "y": 291,
       "rotation": 0
     },
     "placed_by_user_id": 3,
@@ -407,7 +407,7 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 240.0,
+      "x": 240,
       "y": 14.1,
       "rotation": 0
     },
@@ -427,8 +427,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 450.0,
-      "y": 50.0,
+      "x": 450,
+      "y": 50,
       "rotation": 0
     },
     "placed_by_user_id": 1,
@@ -527,7 +527,7 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 400.0,
+      "x": 400,
       "y": 7.4,
       "rotation": 180
     },
@@ -568,7 +568,7 @@
     "status": "placerad",
     "position": {
       "x": 403.8,
-      "y": 92.0,
+      "y": 92,
       "rotation": 45
     },
     "placed_by_user_id": 1,
@@ -627,7 +627,7 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 320.0,
+      "x": 320,
       "y": 12.7,
       "rotation": 180
     },
@@ -638,5 +638,245 @@
     "notes": "Automatiskt genererad placement för Ocean King i Gästbrygga",
     "created_at": "2024-08-13T15:54:59.677027Z",
     "updated_at": "2025-07-20T15:54:59.677029Z"
+  },
+  {
+    "id": 33,
+    "boat_id": 25,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 153,
+      "y": 64,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Huvudlager A",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 34,
+    "boat_id": 31,
+    "storage_unit_id": 1,
+    "storage_unit_name": "Huvudlager A",
+    "floor_number": 1,
+    "status": "placerad",
+    "position": {
+      "x": 153,
+      "y": 162,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Huvudlager A",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 35,
+    "boat_id": 31,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 153,
+      "y": 10,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 36,
+    "boat_id": 14,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 152,
+      "y": 10,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 37,
+    "boat_id": 9,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 434,
+      "y": 10,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 38,
+    "boat_id": 19,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 430,
+      "y": 10,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 39,
+    "boat_id": 16,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 705,
+      "y": 10,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 40,
+    "boat_id": 36,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 698,
+      "y": 10,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 41,
+    "boat_id": 33,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 955,
+      "y": 10,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 42,
+    "boat_id": 24,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 943,
+      "y": 10,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 43,
+    "boat_id": 12,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 1173,
+      "y": 10,
+      "rotation": 0
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
+  },
+  {
+    "id": 44,
+    "boat_id": 6,
+    "storage_unit_id": 2,
+    "storage_unit_name": "Gästbrygga B",
+    "floor_number": 0,
+    "status": "placerad",
+    "position": {
+      "x": 1151,
+      "y": 10,
+      "rotation": 180
+    },
+    "placed_by_user_id": 1,
+    "placed_date": "2025-08-08T07:30:34.545Z",
+    "reservation_date": "2025-08-08T07:30:34.545Z",
+    "physical_placement_date": "2025-08-08T07:30:34.545Z",
+    "notes": "Auto placerad för test i Gästbrygga B",
+    "created_at": "2025-08-08T07:30:34.545Z",
+    "updated_at": "2025-08-08T07:30:34.545Z"
   }
 ]
