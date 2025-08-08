@@ -66,18 +66,41 @@
             ]"
           >
             <div class="storage-info">
-              <h4 class="storage-name">{{ storage.name }}</h4>
+              <div class="storage-header-row">
+                <div class="storage-type-icon" :class="{ dock: storage.Type !== 'Lager' }">
+                  <Building2 v-if="storage.Type === 'Lager'" class="w-4 h-4" />
+                  <Anchor v-else class="w-4 h-4" />
+                </div>
+                <h4 class="storage-name">{{ storage.name }}</h4>
+              </div>
               <p class="storage-type">{{ storage.Type }}</p>
               <p class="storage-size">{{ storage.Height }}m × {{ storage.width }}m</p>
-              <p class="storage-boats">
-                <span class="boat-count">{{ getStorageBoatCount(storage.id) }}</span> båtar
+              <div class="storage-meta-row">
+                <span class="boat-count">{{ getStorageBoatCount(storage.id) }}</span>
+                <span class="meta-label">båtar</span>
                 <span v-if="getStorageStatusCounts(storage.id).total > 0" class="status-breakdown">
                   ({{ getStorageStatusCounts(storage.id).placerad }}P/{{ getStorageStatusCounts(storage.id).reserverad }}R/{{ getStorageStatusCounts(storage.id).oplacerad }}O)
                 </span>
-              </p>
-              <p v-if="storage.Type === 'Lager' && getStorageFloorCount(storage.id) > 1" class="storage-floors">
-                🏢 {{ getStorageFloorCount(storage.id) }} våningar (Lager = V1)
-              </p>
+              </div>
+              <div v-if="storage.Type === 'Lager' && getStorageFloorCount(storage.id) > 1" class="storage-floors-row">
+                <span class="meta-label">Våningar:</span>
+                <button
+                  v-for="floor in storageFloors.value.filter(f => f.storage_id === storage.id)"
+                  :key="'stfloor-'+floor.id"
+                  class="floor-chip"
+                  :class="{ active: selectedStorage?.id === storage.id && selectedFloor === floor.floor_number }"
+                  @click.stop="selectStorageAndFloor(storage, floor.floor_number)"
+                  :title="`${floor.floor_name}`"
+                >
+                  {{ floor.floor_number }}
+                </button>
+              </div>
+              <div class="storage-actions">
+                <button class="map-button" @click.stop="navigateToStorageOnMap(storage)">
+                  <MapPin class="w-3 h-3" />
+                  Karta
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -350,6 +373,20 @@
           <div class="tooltip-actions">
             <button class="tooltip-btn danger" @click="removeBoatFromStorage(tooltipData.boat, tooltipData.placement)">Ta bort</button>
             <button class="tooltip-btn" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'oplacerad')">Flytta (gör oplacerad)</button>
+            <button
+              class="tooltip-btn"
+              @click="goToCustomer(tooltipData.boat)"
+              title="Gå till kundkort"
+            >
+              Kundkort
+            </button>
+            <button
+              class="tooltip-btn"
+              @click="goToBoatDetail(tooltipData.boat)"
+              title="Gå till båtkort"
+            >
+              Båtkort
+            </button>
           </div>
         </div>
       </div>
@@ -400,6 +437,24 @@
               <p class="boat-reg">{{ boat.registreringsnummer }}</p>
               <p class="boat-dims">{{ boat.length }}m × {{ boat.width }}m</p>
               <p class="boat-status">{{ getStatusText(boat.current_status) }}</p>
+              <div class="boat-owner-row">
+                <User class="w-3 h-3 mr-1" />
+                <RouterLink
+                  class="owner-link"
+                  :to="{ name: 'customer-detail', params: { id: getBoatCustomer(boat)?.id } }"
+                  @click.stop
+                >
+                  {{ getBoatCustomer(boat)?.display_name || 'Okänd ägare' }}
+                </RouterLink>
+                <span class="owner-sep">•</span>
+                <RouterLink
+                  class="owner-link"
+                  :to="{ name: 'boat-detail', params: { id: boat.id } }"
+                  @click.stop
+                >
+                  Båtkort
+                </RouterLink>
+              </div>
               <div class="compatibility-row" v-if="true">
                 <div class="compatibility-icons" :title="getBoatLocationCompatibility(boat)">
                   <Building2 :class="['compat-icon', allowsWarehouse(boat) ? 'on' : 'off']" />
@@ -475,7 +530,9 @@ import {
   Search,
   Layers,
   Building2,
-  X
+    X,
+    User,
+    Ship
 } from 'lucide-vue-next';
 
 // Import JSON data
@@ -897,6 +954,7 @@ const tooltipCustomer = computed(() => {
   if (!tooltipData.value) return null;
   return customers.value.find(c => c.id === tooltipData.value!.boat.customer_id) ?? null;
 });
+  const getBoatCustomer = (boat: Boat) => customers.value.find(c => c.id === boat.customer_id) ?? null;
 
   // Compatibility helpers for list actions
   const allowsWarehouse = (boat: Boat): boolean => {
@@ -931,6 +989,29 @@ const tooltipCustomer = computed(() => {
       const floorNum = placement.floor_number || 1;
       if (selectedFloor.value !== floorNum) selectFloor(floorNum);
     }
+  };
+
+  const navigateToStorageOnMap = (storage: Storage) => {
+    router.push({
+      path: '/dashboard',
+      query: {
+        lat: (storage.Lat ?? 0).toString(),
+        lng: (storage.Long ?? 0).toString(),
+        zoom: '17',
+        focus: (storage.id ?? '').toString(),
+        name: storage.name
+      }
+    });
+  };
+
+  // Deep links
+  const goToCustomer = (boat: Boat) => {
+    const customer = customers.value.find(c => c.id === boat.customer_id);
+    if (!customer) return;
+    router.push({ name: 'customer-detail', params: { id: customer.id } });
+  };
+  const goToBoatDetail = (boat: Boat) => {
+    router.push({ name: 'boat-detail', params: { id: boat.id } });
   };
 
 // Helper functions
@@ -3545,6 +3626,12 @@ onMounted(async () => {
 .map-button:hover {
   background: #2563eb;
 }
+
+/* Boat owner row */
+.boat-owner-row { display: flex; align-items: center; gap: 6px; margin: 4px 0; font-size: 0.625rem; color: #4b5563; }
+.owner-link { color: #2563eb; text-decoration: none; }
+.owner-link:hover { text-decoration: underline; }
+.owner-sep { opacity: .5; }
 
 /* Compatibility row styles */
 .compatibility-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; gap: 8px; }
