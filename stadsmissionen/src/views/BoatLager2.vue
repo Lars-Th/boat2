@@ -1,26 +1,21 @@
 <template>
   <div class="boat-lager2-container">
-    <!-- Header -->
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Båtlager 2.0</h1>
-        <p class="page-subtitle">Avancerat system för båtplacering med korrekt visualisering</p>
-      </div>
+    <!-- Standard Header (shadcn/ui style) -->
+    <StandardHeader :title="'Båtlager 2.0'" :show-stats="false" />
 
-      <!-- Status Legend -->
-      <div class="status-legend">
-        <div class="legend-item">
-          <div class="status-indicator green"></div>
-          <span>Oplacerad</span>
-        </div>
-        <div class="legend-item">
-          <div class="status-indicator blue"></div>
-          <span>Placerad</span>
-        </div>
-        <div class="legend-item">
-          <div class="status-indicator gray"></div>
-          <span>Reserverad</span>
-        </div>
+    <!-- Status Legend under header -->
+    <div class="status-legend">
+      <div class="legend-item">
+        <div class="status-indicator green"></div>
+        <span>Oplacerad</span>
+      </div>
+      <div class="legend-item">
+        <div class="status-indicator blue"></div>
+        <span>Placerad</span>
+      </div>
+      <div class="legend-item">
+        <div class="status-indicator gray"></div>
+        <span>Reserverad</span>
       </div>
     </div>
 
@@ -28,7 +23,7 @@
       <!-- Left Panel: Storage Selection -->
       <div class="storage-panel">
         <div class="panel-title sticky-header">
-          <Layers class="panel-icon" />
+          <Building2 class="panel-icon" />
           Lager & Bryggor
         </div>
 
@@ -350,6 +345,9 @@
               placeholder="Sök alla båtar i systemet…"
               class="search-input has-icon"
             />
+            <button v-if="boatSearchQuery" class="clear-btn" @click="boatSearchQuery = ''" title="Rensa sök">
+              ✕
+            </button>
           </div>
           <div class="list-meta">Visar {{ filteredBoats.length }} av {{ boats.length }}</div>
         </div>
@@ -404,6 +402,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
+import StandardHeader from '@/components/layout/StandardHeader.vue';
 import Konva from 'konva';
 import {
   Warehouse,
@@ -2797,6 +2796,24 @@ onMounted(async () => {
 }
 .search-input.has-icon {
   padding-left: 30px;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  background: #fff;
+  font-size: 12px;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* List meta and empty states */
