@@ -363,17 +363,17 @@
 
         <!-- Boat Filter -->
         <div class="filter-section">
-          <div class="search-input-wrapper">
-            <Search class="search-icon" />
-            <input
-              v-model="boatSearchQuery"
-              placeholder="Sök alla båtar i systemet…"
-              class="search-input has-icon"
-            />
-            <button v-if="boatSearchQuery" class="clear-btn" @click="boatSearchQuery = ''" title="Rensa sök">
-              ✕
-            </button>
-          </div>
+            <div class="search-input-wrapper">
+              <Search class="search-icon" />
+              <input
+                v-model="boatSearchQuery"
+                placeholder="Sök alla båtar i systemet…"
+                class="search-input has-icon"
+              />
+              <button v-if="boatSearchQuery" class="clear-btn" @click="boatSearchQuery = ''" title="Rensa sök">
+                <X class="w-3 h-3" />
+              </button>
+            </div>
           <div class="list-meta">Visar {{ filteredBoats.length }} av {{ boats.length }}</div>
         </div>
 
@@ -400,7 +400,32 @@
               <p class="boat-reg">{{ boat.registreringsnummer }}</p>
               <p class="boat-dims">{{ boat.length }}m × {{ boat.width }}m</p>
               <p class="boat-status">{{ getStatusText(boat.current_status) }}</p>
-              <p class="boat-compatibility">{{ getBoatLocationCompatibility(boat) }}</p>
+              <div class="compatibility-row" v-if="true">
+                <div class="compatibility-icons" :title="getBoatLocationCompatibility(boat)">
+                  <Building2 :class="['compat-icon', allowsWarehouse(boat) ? 'on' : 'off']" />
+                  <Anchor :class="['compat-icon', allowsDock(boat) ? 'on' : 'off']" />
+                </div>
+                <div class="compat-actions">
+                  <button
+                    v-if="getWarehousePlacement(boat)"
+                    class="compat-btn"
+                    @click.stop="navigateToBoatStorageType(boat, 'warehouse')"
+                    title="Gå till lager/våning"
+                  >
+                    <Building2 class="w-3 h-3" />
+                    Lager
+                  </button>
+                  <button
+                    v-if="getDockPlacement(boat)"
+                    class="compat-btn"
+                    @click.stop="navigateToBoatStorageType(boat, 'dock')"
+                    title="Gå till brygga"
+                  >
+                    <Anchor class="w-3 h-3" />
+                    Brygga
+                  </button>
+                </div>
+              </div>
               <div v-if="getBoatStorageInfo(boat.id)" class="boat-storage-container">
                 <p class="boat-storage">
                   <MapPin class="inline w-3 h-3 mr-1" />
@@ -872,6 +897,41 @@ const tooltipCustomer = computed(() => {
   if (!tooltipData.value) return null;
   return customers.value.find(c => c.id === tooltipData.value!.boat.customer_id) ?? null;
 });
+
+  // Compatibility helpers for list actions
+  const allowsWarehouse = (boat: Boat): boolean => {
+    return boat.location_status === 'lager' || boat.location_status === 'lager_brygga';
+  };
+  const allowsDock = (boat: Boat): boolean => {
+    return boat.location_status === 'brygga' || boat.location_status === 'lager_brygga';
+  };
+  const getWarehousePlacement = (boat: Boat): BoatPlacement | null => {
+    return placements.value.find(p => p.boat_id === boat.id && getStorageType(p.storage_unit_id) === 'warehouse') ?? null;
+  };
+  const getDockPlacement = (boat: Boat): BoatPlacement | null => {
+    return placements.value.find(p => p.boat_id === boat.id && getStorageType(p.storage_unit_id) === 'dock') ?? null;
+  };
+  const getStorageType = (storageId: number): 'warehouse' | 'dock' | 'unknown' => {
+    const s = storages.value.find(ss => ss.id === storageId);
+    const t = String((s?.Type ?? (s as any)?.type) ?? '').toLowerCase();
+    if (!t) return 'unknown';
+    if (t.includes('lager') || t.includes('hall') || t.includes('warehouse')) return 'warehouse';
+    if (t.includes('brygga') || t.includes('dock') || t.includes('hamn')) return 'dock';
+    return 'unknown';
+  };
+  const navigateToBoatStorageType = (boat: Boat, type: 'warehouse'|'dock') => {
+    const placement = (type === 'warehouse') ? getWarehousePlacement(boat) : getDockPlacement(boat);
+    if (!placement) return;
+    const storage = storages.value.find(s => s.id === placement.storage_unit_id);
+    if (!storage) return;
+    if (!selectedStorage.value || selectedStorage.value.id !== storage.id) {
+      selectStorage(storage, true);
+    }
+    if (type === 'warehouse') {
+      const floorNum = placement.floor_number || 1;
+      if (selectedFloor.value !== floorNum) selectFloor(floorNum);
+    }
+  };
 
 // Helper functions
 const getStorageBoatCount = (storageId: number): number => {
@@ -3009,7 +3069,8 @@ onMounted(async () => {
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+    overflow: hidden;
+    min-height: 0; /* critical for nested flex scroll */
 }
 
 .boat-panel {
@@ -3072,10 +3133,11 @@ onMounted(async () => {
 /* Storage List */
 .storage-list,
 .boat-list {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding: 0.5rem;
-  max-height: calc(100vh - 180px);
+  /* allow full height inside flex without hard max-height */
 }
 
 .storage-item,
@@ -3411,8 +3473,8 @@ onMounted(async () => {
   }
 }
 
-.tooltip-header {padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08);} 
-.tooltip-title {font-size: 12px; font-weight: 600; margin: 0; color: #fff;} 
+.tooltip-header {padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08);}
+.tooltip-title {font-size: 12px; font-weight: 600; margin: 0; color: #fff;}
 .tooltip-sub {font-size: 10px; opacity: .7; letter-spacing: .2px;}
 
 .tooltip-body {padding: 8px 10px; display: grid; gap: 4px;}
@@ -3483,6 +3545,16 @@ onMounted(async () => {
 .map-button:hover {
   background: #2563eb;
 }
+
+/* Compatibility row styles */
+.compatibility-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; gap: 8px; }
+.compatibility-icons { display: flex; gap: 6px; align-items: center; }
+.compat-icon { width: 14px; height: 14px; opacity: .35; color: #6b7280; }
+.compat-icon.on { opacity: 1; color: #111827; }
+.compat-icon.off { opacity: .3; }
+.compat-actions { display: flex; gap: 6px; }
+.compat-btn { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; color: #374151; font-size: 10px; }
+.compat-btn:hover { background: #f9fafb; border-color: #d1d5db; }
 
 .boat-count {
   font-weight: 600;

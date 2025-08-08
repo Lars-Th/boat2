@@ -15,6 +15,23 @@ Detta dokument säkerställer konsistent användning av UI-komponenter och texts
 3. **Sista utvägen:** Skapa nya komponenter (endast efter godkännande)
 
 ### 2. Textstorlekar måste matcha shared-komponenter
+### 3. Ikoner (KRAV)
+
+**KRITISK REGEL:** Använd ALLTID Lucide-ikoner via `lucide-vue-next` i hela projektet. Inga emojis eller andra ikonbibliotek.
+
+Rekommenderade imports:
+
+```ts
+import { Building2, Anchor, MapPin, Navigation, Search, X } from 'lucide-vue-next'
+```
+
+Användningsexempel i listor:
+
+```vue
+<Building2 class="w-3 h-3" />
+<Anchor class="w-3 h-3" />
+```
+
 
 **KRITISK REGEL:** När du använder shadcn/ui komponenter ska de ha samma textstorlekar som motsvarande element i shared-komponenterna.
 
