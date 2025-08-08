@@ -617,19 +617,19 @@ const headerBreadcrumbs = computed(() => [
 ]);
 
 const headerStats = computed(() => {
-  // Per valt lager (och aktiv våning via currentStoragePlacements)
-  const total = currentStoragePlacements.value.length;
-  const placed = currentStoragePlacements.value.filter(p => p.status === 'placerad').length;
-  const reserved = currentStoragePlacements.value.filter(p => p.status === 'reserverad').length;
-  const unplaced = currentStoragePlacements.value.filter(p => p.status === 'oplacerad').length;
-  const collisions = collisionCount.value;
+  // GLOBALA totaler enligt JSON-datan (boats.json + boatPlacements.json)
+  const totalBoats = boats.value.length;
+  const placedBoats = boats.value.filter(b => b.current_status === 'placerad').length;
+  const reservedBoats = boats.value.filter(b => b.current_status === 'reserverad').length;
+  const unplacedBoats = boats.value.filter(b => b.current_status === 'oplacerad').length;
+  const totalPlacements = placements.value.length; // informationsvärde från boatPlacements.json
 
   return [
-    { label: 'Totalt i lagret', value: total, variant: 'default' },
-    { label: 'Placerade', value: placed, color: 'text-blue-600' },
-    { label: 'Reserverade', value: reserved, variant: 'outline' },
-    { label: 'Oplacerade', value: unplaced, color: 'text-green-600' },
-    { label: 'Kollisioner', value: collisions, color: 'text-orange-600' },
+    { label: 'Totalt antal båtar', value: totalBoats, variant: 'default' },
+    { label: 'Placerade', value: placedBoats, color: 'text-blue-600' },
+    { label: 'Reserverade', value: reservedBoats, variant: 'outline' },
+    { label: 'Oplacerade', value: unplacedBoats, color: 'text-green-600' },
+    { label: 'Placeringar', value: totalPlacements, color: 'text-blue-600' }
   ];
 });
 
