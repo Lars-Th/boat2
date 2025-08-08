@@ -288,6 +288,9 @@
               <Save class="button-icon" />
               Uppdatera JSON
             </button>
+            <button @click="syncBoatsFile" class="toolbar-button" title="Synka statusfält i boats.json med aktuella placeringar">
+              Synka status
+            </button>
             <span v-if="lastSaved" class="save-status">
               Sparad {{ lastSaved }}
             </span>
@@ -408,7 +411,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import StandardHeader from '@/components/layout/StandardHeader.vue';
 import ViewControls from '@/components/shared/ViewControls.vue';
@@ -2415,6 +2418,37 @@ const savePlacements = async () => {
   } catch (error) {
     console.error('❌ Fel vid sparning av placements:', error);
     alert('Fel vid sparning av JSON-fil. Se konsolen för detaljer.');
+  }
+};
+
+// Sync boats.json current_status with computed display status from placements
+const syncBoatsFile = async () => {
+  try {
+    const updatedBoats = boats.value.map(b => ({
+      ...b,
+      current_status: getBoatDisplayStatus(b)
+    }));
+
+    const boatsJson = JSON.stringify(updatedBoats, null, 2);
+
+    const blob = new Blob([boatsJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'boats.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    try {
+      await navigator.clipboard.writeText(boatsJson);
+    } catch {}
+
+    alert('✅ boats.json genererad och kopierad till urklipp.\n\nErsätt src/assets/data/boats.json och refresha.');
+  } catch (e) {
+    console.error('Sync boats.json failed', e);
+    alert('Fel vid synk av boats.json');
   }
 };
 
