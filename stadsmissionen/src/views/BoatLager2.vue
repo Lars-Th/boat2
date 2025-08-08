@@ -1,7 +1,12 @@
 <template>
   <div class="boat-lager2-container">
     <!-- Standard Header (shadcn/ui style) -->
-    <StandardHeader :title="'Båtlager 2.0'" :show-stats="false" />
+    <StandardHeader
+      :title="'Båtlager 2.0'"
+      :breadcrumbs="headerBreadcrumbs"
+      :show-stats="true"
+      :stats="headerStats"
+    />
 
     <!-- View Controls (shadcn standard) -->
     <ViewControls
@@ -611,6 +616,21 @@ const boats = ref<Boat[]>(boatsData as Boat[]);
 const storages = ref<Storage[]>(storageData as Storage[]);
 const placements = ref<BoatPlacement[]>(placementsData as BoatPlacement[]);
 const customers = ref<Customer[]>(customersData as Customer[]);
+// Header breadcrumbs & stats (to match ListPage look)
+const headerBreadcrumbs = computed(() => [
+  { label: 'Start', to: '/dashboard' },
+  { label: 'Båtlager', to: '/storage' },
+  { label: 'Båtlager 2.0', isCurrentPage: true },
+]);
+
+const headerStats = computed(() => {
+  const totalBoats = boats.value.length;
+  const totalPlacements = placements.value.length;
+  return [
+    { label: 'Totalt antal båtar', value: totalBoats, variant: 'default' },
+    { label: 'Placeringar', value: totalPlacements, variant: 'secondary' },
+  ];
+});
 
 // Save state
 const lastSaved = ref<string>('');
@@ -2772,7 +2792,7 @@ onMounted(async () => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f8fafc;
+  background: #ffffff; /* match ListPage white background */
 }
 
 /* Sticky headers & toolbar */
