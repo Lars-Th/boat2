@@ -459,21 +459,33 @@
                 <div class="compat-actions">
                   <button
                     v-if="getWarehousePlacement(boat)"
-                    class="compat-btn"
+                    class="icon-btn"
                     @click.stop="navigateToBoatStorageType(boat, 'warehouse')"
                     title="Gå till lager/våning"
                   >
-                    <Building2 class="w-3 h-3" />
-                    Lager
+                    <Building2 class="button-icon" />
                   </button>
                   <button
                     v-if="getDockPlacement(boat)"
-                    class="compat-btn"
+                    class="icon-btn"
                     @click.stop="navigateToBoatStorageType(boat, 'dock')"
                     title="Gå till brygga"
                   >
-                    <Anchor class="w-3 h-3" />
-                    Brygga
+                    <Anchor class="button-icon" />
+                  </button>
+                  <button class="icon-btn" @click.stop="goToCustomer(boat)" title="Kundkort">
+                    <User class="button-icon" />
+                  </button>
+                  <button class="icon-btn" @click.stop="goToBoatDetail(boat)" title="Båtkort">
+                    <Ship class="button-icon" />
+                  </button>
+                  <button
+                    v-if="boat.current_status !== 'oplacerad'"
+                    class="icon-btn"
+                    @click.stop="navigateToBoatStorage(boat)"
+                    title="Visa på karta"
+                  >
+                    <Navigation class="button-icon" />
                   </button>
                 </div>
               </div>
@@ -482,15 +494,7 @@
                   <MapPin class="inline w-3 h-3 mr-1" />
                   {{ getBoatStorageInfo(boat.id) }}
                 </p>
-                <button
-                  v-if="boat.current_status !== 'oplacerad'"
-                  @click.stop="navigateToBoatStorage(boat)"
-                  class="map-button"
-                  title="Visa på karta"
-                >
-                  <Navigation class="w-3 h-3" />
-                  Karta
-                </button>
+                <!-- map action moved to icon-only in compatibility-row -->
               </div>
             </div>
           </div>
@@ -3572,7 +3576,7 @@ onMounted(async () => {
 .tooltip-btn {padding: 4px 6px; border-radius: 6px; background: #1f2937; color: #e5e7eb; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; font-weight: 600; font-size: 10px; display: inline-flex; align-items: center; justify-content: center;}
 .tooltip-btn.icon { width: 28px; height: 28px; padding: 0; }
 .tooltip-btn:hover {background: #374151;}
-.tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);} 
+.tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);}
 .tooltip-btn.danger:hover {background: #991b1b;}
 
 /* Båtlista - Originalklasser */
@@ -3643,8 +3647,8 @@ onMounted(async () => {
 .compat-icon.on { opacity: 1; color: #111827; }
 .compat-icon.off { opacity: .3; }
 .compat-actions { display: flex; gap: 6px; }
-.compat-btn { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; color: #374151; font-size: 10px; }
-.compat-btn:hover { background: #f9fafb; border-color: #d1d5db; }
+.icon-btn { width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; color: #374151; }
+.icon-btn:hover { background: #f9fafb; border-color: #d1d5db; }
 
 .boat-count {
   font-weight: 600;
