@@ -650,6 +650,11 @@ const isDragging = ref<boolean>(false);
   const boatLabelOwner = ref<boolean>(false);
   const boatLabelFont = ref<number>(9);
 
+  // Redraw canvas when label settings change
+  watch([boatLabelName, boatLabelReg, boatLabelOwner, boatLabelFont], () => {
+    drawStorage();
+  });
+
 // Tooltip state
 const showTooltip = ref<boolean>(false);
 const tooltipData = ref<{boat: Boat; placement: BoatPlacement} | null>(null);
@@ -2096,11 +2101,11 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 
   // Build label text per toolbar selection
   const ownerName = customers.value.find(c => c.id === boat.customer_id)?.display_name || '';
-  const labelParts: string[] = [];
-  if (boatLabelName.value) labelParts.push(`${boat.name} (${boat.id})`);
-  if (boatLabelReg.value) labelParts.push(boat.registreringsnummer);
-  if (boatLabelOwner.value) labelParts.push(ownerName);
-  const labelText = labelParts.join(' • ');
+  const lines: string[] = [];
+  if (boatLabelName.value) lines.push(`${boat.name} (${boat.id})`);
+  if (boatLabelReg.value) lines.push(boat.registreringsnummer);
+  if (boatLabelOwner.value) lines.push(ownerName);
+  const labelText = lines.join('\n');
 
   const nameText = new Konva.Text({
     x: 0,
@@ -2113,8 +2118,11 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   });
 
   nameText.offset({ x: nameText.width() / 2, y: nameText.height() / 2 });
-  // Håll text horisontell vid rotation
-  nameText.rotation(-placement.position.rotation);
+  // Text roterar med båten, men flippar 180° när vinkel > 90° och < 270° för läsbarhet
+  const angle = placement.position.rotation % 360;
+  const normalized = angle < 0 ? angle + 360 : angle;
+  const shouldFlip = normalized > 90 && normalized < 270;
+  nameText.rotation(shouldFlip ? 180 : 0);
 
   // Add to group
   boatGroup.add(marginPath);
