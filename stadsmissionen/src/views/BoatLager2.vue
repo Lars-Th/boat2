@@ -341,7 +341,7 @@
             <div class="tooltip-sub">{{ tooltipData.boat.registreringsnummer }}</div>
           </div>
           <div class="tooltip-body">
-            <div class="tooltip-row"><span>Ägare</span><span>{{ customers.value.find(c => c.id === tooltipData.boat.customer_id)?.display_name || '—' }}</span></div>
+            <div class="tooltip-row"><span>Ägare</span><span>{{ tooltipCustomer?.display_name || '—' }}</span></div>
             <div class="tooltip-row"><span>Storlek</span><span>{{ tooltipData.boat.length }} × {{ tooltipData.boat.width }} m</span></div>
             <div class="tooltip-row"><span>Status</span><span class="badge" :class="tooltipData.placement.status">{{ getStatusText(tooltipData.placement.status) }}</span></div>
             <div class="tooltip-row"><span>Lager</span><span>{{ tooltipData.placement.storage_unit_name }}</span></div>
