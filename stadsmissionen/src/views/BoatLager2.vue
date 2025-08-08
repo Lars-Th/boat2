@@ -3398,7 +3398,7 @@ onMounted(async () => {
 }
 
 /* Boat Info Tooltip */
-.boat-tooltip { position: fixed; z-index: 9999; pointer-events: auto; width: 260px; background: #111827; color: #f9fafb; border-radius: 10px; box-shadow: 0 12px 28px rgba(0,0,0,.4); overflow: hidden; animation: tooltipIn .15s ease-out; font-size: 12px; border: 1px solid rgba(255,255,255,.08); }
+.boat-tooltip { position: fixed; z-index: 9999; pointer-events: auto; width: 220px; background: #111827; color: #f9fafb; border-radius: 8px; box-shadow: 0 10px 24px rgba(0,0,0,.35); overflow: hidden; animation: tooltipIn .15s ease-out; font-size: 11px; border: 1px solid rgba(255,255,255,.08); }
 
 @keyframes tooltipIn {
   from {
@@ -3411,20 +3411,20 @@ onMounted(async () => {
   }
 }
 
-.tooltip-header {padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08);}
-.tooltip-title {font-size: 13px; font-weight: 700; margin: 0; color: #fff;}
-.tooltip-sub {font-size: 11px; opacity: .7; letter-spacing: .2px;}
+.tooltip-header {padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08);} 
+.tooltip-title {font-size: 12px; font-weight: 600; margin: 0; color: #fff;} 
+.tooltip-sub {font-size: 10px; opacity: .7; letter-spacing: .2px;}
 
-.tooltip-body {padding: 10px 12px; display: grid; gap: 6px;}
+.tooltip-body {padding: 8px 10px; display: grid; gap: 4px;}
 .tooltip-row {display: flex; justify-content: space-between; align-items: center;}
 .tooltip-row span:first-child {opacity: .8;}
-.badge {padding: 2px 6px; border-radius: 6px; font-weight: 600; font-size: 11px;}
+.badge {padding: 1px 5px; border-radius: 6px; font-weight: 600; font-size: 10px;}
 .badge.oplacerad {background: rgba(16,185,129,.15); color: #10b981;}
 .badge.placerad {background: rgba(59,130,246,.15); color: #60a5fa;}
 .badge.reserverad {background: rgba(156,163,175,.15); color: #d1d5db;}
 
-.tooltip-actions {padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; gap: 8px;}
-.tooltip-btn {flex: 1; padding: 6px 8px; border-radius: 8px; background: #1f2937; color: #e5e7eb; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; font-weight: 600;}
+.tooltip-actions {padding: 8px 10px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; gap: 6px;}
+.tooltip-btn {flex: 1; padding: 4px 6px; border-radius: 6px; background: #1f2937; color: #e5e7eb; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; font-weight: 600; font-size: 10px;}
 .tooltip-btn:hover {background: #374151;}
 .tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);}
 .tooltip-btn.danger:hover {background: #991b1b;}
@@ -3562,51 +3562,7 @@ onMounted(async () => {
   background: rgba(156, 163, 175, 0.3);
 }
 
-/* Tooltip Actions */
-.tooltip-actions {
-  padding: 8px 10px 6px 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-}
-
-.tooltip-action-btn {
-  padding: 4px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 0.6rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-align: center;
-  line-height: 1;
-}
-
-.tooltip-action-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-1px);
-}
-
-.tooltip-action-btn.active {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
-  font-weight: 600;
-}
-
-.tooltip-action-btn.btn-remove {
-  grid-column: 1 / -1;
-  background: rgba(220, 38, 38, 0.3);
-  border-color: rgba(220, 38, 38, 0.5);
-}
-
-.tooltip-action-btn.btn-remove:hover {
-  background: rgba(220, 38, 38, 0.5);
-  border-color: rgba(220, 38, 38, 0.7);
-}
+/* removed old tooltip-actions/action-btn styles */
 
 /* Save Button Styling */
 .save-btn {
