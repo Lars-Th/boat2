@@ -336,7 +336,21 @@
           @mouseenter="keepTooltipOpen"
           @mouseleave="hideTooltipDelayed"
         >
-          <!-- content unchanged -->
+          <div class="tooltip-header">
+            <div class="tooltip-title">{{ tooltipData.boat.name }} ({{ tooltipData.boat.id }})</div>
+            <div class="tooltip-sub">{{ tooltipData.boat.registreringsnummer }}</div>
+          </div>
+          <div class="tooltip-body">
+            <div class="tooltip-row"><span>Ägare</span><span>{{ customers.value.find(c => c.id === tooltipData.boat.customer_id)?.display_name || '—' }}</span></div>
+            <div class="tooltip-row"><span>Storlek</span><span>{{ tooltipData.boat.length }} × {{ tooltipData.boat.width }} m</span></div>
+            <div class="tooltip-row"><span>Status</span><span class="badge" :class="tooltipData.placement.status">{{ getStatusText(tooltipData.placement.status) }}</span></div>
+            <div class="tooltip-row"><span>Lager</span><span>{{ tooltipData.placement.storage_unit_name }}</span></div>
+            <div class="tooltip-row"><span>Pos</span><span>X {{ tooltipData.placement.position.x }}, Y {{ tooltipData.placement.position.y }}, {{ tooltipData.placement.position.rotation }}°</span></div>
+          </div>
+          <div class="tooltip-actions">
+            <button class="tooltip-btn danger" @click="removeBoatFromStorage(tooltipData.boat, tooltipData.placement)">Ta bort</button>
+            <button class="tooltip-btn" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'oplacerad')">Flytta (gör oplacerad)</button>
+          </div>
         </div>
       </div>
 
@@ -3384,21 +3398,7 @@ onMounted(async () => {
 }
 
 /* Boat Info Tooltip */
-.boat-tooltip {
-  position: fixed;
-  z-index: 9999;
-  pointer-events: auto;
-  max-width: 180px;
-  min-width: 160px;
-  background: rgba(0, 0, 0, 0.92);
-  color: white;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  animation: tooltipIn 0.15s ease-out;
-  font-size: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
+.boat-tooltip { position: fixed; z-index: 9999; pointer-events: auto; width: 260px; background: #111827; color: #f9fafb; border-radius: 10px; box-shadow: 0 12px 28px rgba(0,0,0,.4); overflow: hidden; animation: tooltipIn .15s ease-out; font-size: 12px; border: 1px solid rgba(255,255,255,.08); }
 
 @keyframes tooltipIn {
   from {
@@ -3411,59 +3411,23 @@ onMounted(async () => {
   }
 }
 
-.tooltip-header {
-  padding: 8px 10px 6px 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
+.tooltip-header {padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08);}
+.tooltip-title {font-size: 13px; font-weight: 700; margin: 0; color: #fff;}
+.tooltip-sub {font-size: 11px; opacity: .7; letter-spacing: .2px;}
 
-.tooltip-header-main {
-  margin-bottom: 3px;
-}
+.tooltip-body {padding: 10px 12px; display: grid; gap: 6px;}
+.tooltip-row {display: flex; justify-content: space-between; align-items: center;}
+.tooltip-row span:first-child {opacity: .8;}
+.badge {padding: 2px 6px; border-radius: 6px; font-weight: 600; font-size: 11px;}
+.badge.oplacerad {background: rgba(16,185,129,.15); color: #10b981;}
+.badge.placerad {background: rgba(59,130,246,.15); color: #60a5fa;}
+.badge.reserverad {background: rgba(156,163,175,.15); color: #d1d5db;}
 
-.tooltip-boat-name {
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin: 0 0 1px 0;
-  line-height: 1.1;
-  color: white;
-}
-
-.tooltip-boat-reg {
-  font-size: 0.65rem;
-  opacity: 0.7;
-  font-weight: 400;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  color: white;
-}
-
-.tooltip-owner-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding-top: 3px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.tooltip-owner-label {
-  font-size: 0.55rem;
-  opacity: 0.8;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  font-weight: 400;
-  color: white;
-}
-
-.tooltip-owner-name {
-  font-size: 0.7rem;
-  font-weight: 500;
-  opacity: 0.9;
-  color: white;
-}
-
-.tooltip-content {
-  padding: 6px 10px 8px 10px;
-}
+.tooltip-actions {padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; gap: 8px;}
+.tooltip-btn {flex: 1; padding: 6px 8px; border-radius: 8px; background: #1f2937; color: #e5e7eb; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; font-weight: 600;}
+.tooltip-btn:hover {background: #374151;}
+.tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);}
+.tooltip-btn.danger:hover {background: #991b1b;}
 
 /* Båtlista - Originalklasser */
 .boat-name {
