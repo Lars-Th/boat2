@@ -85,9 +85,8 @@
                 </button>
               </div>
               <div class="storage-actions">
-                <button class="map-button" @click.stop="navigateToStorageOnMap(storage)">
-                  <MapPin class="w-3 h-3" />
-                  Karta
+                <button class="icon-btn" @click.stop="navigateToStorageOnMap(storage)" title="Karta">
+                  <MapPin class="button-icon" />
                 </button>
               </div>
             </div>
@@ -214,24 +213,8 @@
               <RotateCw class="inline w-4 h-4 mr-1" />
               Rotation:
             </span>
-            <button
-              @click="rotateBoatLeft"
-              class="toolbar-button rotation-btn"
-              :disabled="!canRotateSelectedBoat"
-              :title="canRotateSelectedBoat ? 'Rotera vänster 22.5°' : 'Välj en oplacerad båt för rotation'"
-            >
-              <RotateCcw class="w-4 h-4 mr-1" />
-              Vänster
-            </button>
-            <button
-              @click="rotateBoatRight"
-              class="toolbar-button rotation-btn"
-              :disabled="!canRotateSelectedBoat"
-              :title="canRotateSelectedBoat ? 'Rotera höger 22.5°' : 'Välj en oplacerad båt för rotation'"
-            >
-              <RotateCw class="w-4 h-4 mr-1" />
-              Höger
-            </button>
+            <button @click="rotateBoatLeft" class="toolbar-button rotation-btn" :disabled="!canRotateSelectedBoat" :title="canRotateSelectedBoat ? 'Rotera vänster 22.5°' : 'Välj en oplacerad båt för rotation'"><RotateCcw class="button-icon" /></button>
+            <button @click="rotateBoatRight" class="toolbar-button rotation-btn" :disabled="!canRotateSelectedBoat" :title="canRotateSelectedBoat ? 'Rotera höger 22.5°' : 'Välj en oplacerad båt för rotation'"><RotateCw class="button-icon" /></button>
             <div v-if="selectedPlacedBoat" class="selected-boat-info">
               Vald: {{ selectedPlacedBoat.name }}
               <span v-if="selectedPlacement" class="boat-status-tag" :class="{
@@ -2139,6 +2122,8 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
         // BARA oplacerade båtar kan väljas för rotation
         selectedPlacedBoat.value = boatFromPlacement;
         selectedPlacement.value = placement;
+        // Säkerställ att toolbar-knappar aktiveras direkt
+        nextTick(() => { /* force reactive update */ });
         drawStorage();
         console.log(`✅ Vald oplacerad båt för rotation: ${boatFromPlacement.name}`);
       } else if (placement.status === 'placerad') {
@@ -3596,10 +3581,8 @@ onMounted(async () => {
 
 /* Rotation Controls */
 .rotation-btn {
-  font-size: 0.75rem !important;
-  padding: 6px 12px !important;
+  padding: 6px 8px !important;
   min-width: auto !important;
-  font-weight: 500;
   margin-right: 4px;
 }
 
@@ -3914,7 +3897,8 @@ onMounted(async () => {
 
 /* Konva Canvas */
 .konva-canvas {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 520px; /* säkerställ höjd i avlånga vyer för bryggor */
   background: #ffffff; /* White background like StorageDesigner */
   cursor: crosshair;
 }
