@@ -27,18 +27,18 @@
     <div class="main-layout">
       <!-- Left Panel: Storage Selection -->
       <div class="storage-panel">
-        <h3 class="panel-title">
-          <Warehouse class="panel-icon" />
+        <div class="panel-title sticky-header">
+          <Layers class="panel-icon" />
           Lager & Bryggor
-        </h3>
+        </div>
 
         <!-- Storage Filter -->
         <div class="filter-section">
-          <select v-model="storageFilter" class="filter-select">
-            <option value="all">Alla</option>
-            <option value="Lager">Lager</option>
-            <option value="Brygga">Bryggor</option>
-          </select>
+          <div class="toggle-group">
+            <button :class="['toggle-btn', { active: storageFilter === 'all' }]" @click="storageFilter = 'all'">Alla</button>
+            <button :class="['toggle-btn', { active: storageFilter === 'Lager' }]" @click="storageFilter = 'Lager'">Lager</button>
+            <button :class="['toggle-btn', { active: storageFilter === 'Brygga' }]" @click="storageFilter = 'Brygga'">Bryggor</button>
+          </div>
         </div>
 
         <!-- Storage List -->
@@ -120,7 +120,7 @@
                 max="300"
                 step="25"
               />
-              <span class="input-unit">%</nspan>
+              <span class="input-unit">%</span>
             </div>
             <button @click="zoomIn" class="toolbar-button" title="Zooma in">
               <ZoomIn class="button-icon" />
@@ -336,10 +336,10 @@
 
       <!-- Right Panel: Boat List -->
       <div class="boat-panel">
-        <h3 class="panel-title">
+        <div class="panel-title sticky-header">
           <Anchor class="panel-icon" />
           Tillgängliga Båtar
-        </h3>
+        </div>
 
         <!-- Boat Filter -->
         <div class="filter-section">
@@ -347,7 +347,7 @@
             <Search class="search-icon" />
             <input
               v-model="boatSearchQuery"
-              placeholder="Sök båtar…"
+              placeholder="Sök alla båtar i systemet…"
               class="search-input has-icon"
             />
           </div>
@@ -383,7 +383,7 @@
                   <MapPin class="inline w-3 h-3 mr-1" />
                   {{ getBoatStorageInfo(boat.id) }}
                 </p>
-                <button 
+                <button
                   v-if="boat.current_status !== 'oplacerad'"
                   @click.stop="navigateToBoatStorage(boat)"
                   class="map-button"
@@ -421,7 +421,9 @@ import {
   Trash2,
   MapPin,
   Save,
-  Search
+  Search,
+  Layers,
+  Building2
 } from 'lucide-vue-next';
 
 // Import JSON data
@@ -766,7 +768,7 @@ const filteredBoats = computed(() => {
 });
 
 const currentStoragePlacements = computed(() => {
-  if (!selectedStorage.value) return [];
+  if (!selectedStorage.value) return [] as BoatPlacement[];
 
   // Filter by storage and floor number
   return placements.value.filter(p =>
@@ -816,7 +818,7 @@ const canRotateSelectedBoat = computed(() => {
 
 const tooltipCustomer = computed(() => {
   if (!tooltipData.value) return null;
-  return customers.value.find(c => c.id === tooltipData.value!.boat.customer_id) || null;
+  return customers.value.find(c => c.id === tooltipData.value!.boat.customer_id) ?? null;
 });
 
 // Helper functions
@@ -966,7 +968,10 @@ const setBoatStatusFromTooltip = (boat: Boat, placement: BoatPlacement, newStatu
   // Update placement status
   const placementIndex = placements.value.findIndex(p => p.id === placement.id);
   if (placementIndex !== -1) {
-    placements.value[placementIndex].status = newStatus;
+    const targetPlacement = placements.value[placementIndex];
+    if (targetPlacement) {
+      targetPlacement.status = newStatus;
+    }
 
     // Handle "only one unplaced boat per storage" rule
     if (newStatus === 'oplacerad') {
@@ -977,7 +982,10 @@ const setBoatStatusFromTooltip = (boat: Boat, placement: BoatPlacement, newStatu
   // Update boat status
   const boatIndex = boats.value.findIndex(b => b.id === boat.id);
   if (boatIndex !== -1) {
-    boats.value[boatIndex].current_status = newStatus;
+    const targetBoat = boats.value[boatIndex];
+    if (targetBoat) {
+      targetBoat.current_status = newStatus;
+    }
   }
 
   // Update tooltip data to reflect changes
@@ -1002,7 +1010,10 @@ const removeBoatFromStorage = (boat: Boat, placement: BoatPlacement) => {
   // Update boat status back to unplaced
   const boatIndex = boats.value.findIndex(b => b.id === boat.id);
   if (boatIndex !== -1) {
-    boats.value[boatIndex].current_status = 'oplacerad';
+    const targetBoat = boats.value[boatIndex];
+    if (targetBoat) {
+      targetBoat.current_status = 'oplacerad';
+    }
   }
 
   // Hide tooltip
@@ -1322,7 +1333,8 @@ const initCanvas = () => {
 
   // Create layer
   layer.value = new Konva.Layer();
-  stage.value.add(layer.value);
+  // Konva typings sometimes mismatch; cast to any to satisfy TS while keeping runtime correct
+  (stage.value as any).add(layer.value as any);
 
   // Setup event handlers
   setupEventHandlers();
@@ -1444,7 +1456,7 @@ const drawStorage = () => {
     opacity: shouldDimStorage ? 0.3 : 1.0, // Dim when editing upper floors
     listening: false,
   });
-  layer.value.add(storageRect);
+  layer.value!.add(storageRect);
 
   // Add storage label above the storage area (like StorageDesigner)
   const fontSize = Math.max(12, pixelsPerMeter * 1.2);
@@ -1462,7 +1474,7 @@ const drawStorage = () => {
     fontStyle: 'bold',
     listening: false,
   });
-  layer.value.add(storageLabel);
+  layer.value!.add(storageLabel);
 
   // Draw dock endpoints if it's a dock (like StorageDesigner)
   if (isDock) {
@@ -1533,7 +1545,7 @@ const drawDockEndpoints = (storage: Storage, pixelsPerMeter: number, storageOffs
     strokeWidth: 2,
     listening: false,
   });
-  layer.value.add(leftRect);
+  layer.value!.add(leftRect);
 
   // Right endpoint
   const rightColor = getEndpointColor(rightEndpoint);
@@ -1547,7 +1559,7 @@ const drawDockEndpoints = (storage: Storage, pixelsPerMeter: number, storageOffs
     strokeWidth: 2,
     listening: false,
   });
-  layer.value.add(rightRect);
+  layer.value!.add(rightRect);
 };
 
 const drawGrid = (storage: Storage, pixelsPerMeter: number, storageOffsetX: number, storageOffsetY: number) => {
@@ -1630,7 +1642,7 @@ const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, st
       ...zoneStyle,
       listening: false, // Non-interactive for now
     });
-    layer.value.add(zoneRect);
+    layer.value!.add(zoneRect);
 
     // Add zone label (centered in the middle of the zone)
     const fontSize = Math.min(10, Math.max(8, pixelsPerMeter * 0.8));
@@ -1651,7 +1663,7 @@ const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, st
 
     // Center the text properly
     zoneText.offsetX(zoneText.width() / 2);
-    layer.value.add(zoneText);
+    layer.value!.add(zoneText);
   });
 };
 
@@ -1686,7 +1698,7 @@ const drawFloorZones = (pixelsPerMeter: number, storageOffsetX: number, storageO
       opacity: 1.0,
       listening: false,    // Non-interactive for now
     });
-    layer.value.add(zoneRect);
+    layer.value!.add(zoneRect);
 
     // Add zone label (centered in the middle of the zone)
     const fontSize = Math.max(10, pixelsPerMeter * 1.5);
@@ -1707,7 +1719,7 @@ const drawFloorZones = (pixelsPerMeter: number, storageOffsetX: number, storageO
 
     // Center the text properly by setting offsetX to half the text width
     zoneText.offsetX(zoneText.width() / 2);
-    layer.value.add(zoneText);
+    layer.value!.add(zoneText);
   });
 };
 
@@ -1782,7 +1794,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     data: SVG_CONSTANTS.MARGIN_PATH,
     strokeScaleEnabled: false,
     name: 'margin-path',
-    ...(stateStyles[displayStatus] || stateStyles['oplacerad']).margin
+    ...((stateStyles[displayStatus] ?? stateStyles['oplacerad'])!.margin)
   });
 
   // Create hull path - med fallback till oplacerad om status saknas
@@ -1790,7 +1802,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     data: SVG_CONSTANTS.HULL_PATH,
     strokeScaleEnabled: false,
     name: 'hull-path',
-    ...(stateStyles[displayStatus] || stateStyles['oplacerad']).hull
+    ...((stateStyles[displayStatus] ?? stateStyles['oplacerad'])!.hull)
   });
 
   // Calculate scaling
@@ -1898,7 +1910,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 
       // Check collisions at current drag position
       const collisionState = checkBoatCollisions(boat, tempPlacement);
-      const dragDisplayStatus = collisionState || placement.status;
+      const dragDisplayStatus = collisionState ?? placement.status;
 
       // Update visual feedback during drag
       const marginPath = boatGroup.findOne('.margin-path') as Konva.Path;
@@ -1906,9 +1918,11 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 
       if (marginPath && hullPath) {
         // Apply collision state styles - med fallback till oplacerad om status saknas
-        const style = stateStyles[dragDisplayStatus] || stateStyles['oplacerad'];
-        marginPath.setAttrs(style.margin);
-        hullPath.setAttrs(style.hull);
+        const style = stateStyles[dragDisplayStatus] ?? stateStyles['oplacerad'];
+        if (style) {
+          marginPath.setAttrs(style.margin);
+          hullPath.setAttrs(style.hull);
+        }
         layer.value?.batchDraw();
       }
     }
@@ -1957,8 +1971,11 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
     // Update placement data
     const placementIndex = placements.value.findIndex(p => p.id === placement.id);
     if (placementIndex !== -1) {
-      placements.value[placementIndex].position.x = newX;
-      placements.value[placementIndex].position.y = newY;
+      const targetPlacement = placements.value[placementIndex];
+      if (targetPlacement) {
+        targetPlacement.position.x = newX;
+        targetPlacement.position.y = newY;
+      }
     }
 
     // Redraw all boats to update collision states
@@ -2077,13 +2094,13 @@ const navigateToBoatStorage = (boat: Boat) => {
       router.push({
         path: '/dashboard',
         query: {
-          lat: storage.Lat.toString(),
-          lng: storage.Long.toString(),
+          lat: (storage.Lat ?? 0).toString(),
+          lng: (storage.Long ?? 0).toString(),
           zoom: '17',
-          focus: storage.id.toString(),
+          focus: (storage.id ?? '').toString(),
           name: storage.name,
           boat: boat.name,
-          boatId: boat.id.toString()
+          boatId: (boat.id ?? '').toString()
         }
       });
     }
@@ -2121,7 +2138,10 @@ const toggleBoatStatus = (boat: Boat, placement: BoatPlacement) => {
   // Update placement status
   const placementIndex = placements.value.findIndex(p => p.id === placement.id);
   if (placementIndex !== -1) {
-    placements.value[placementIndex].status = newStatus;
+    const targetPlacement = placements.value[placementIndex];
+    if (targetPlacement) {
+      targetPlacement.status = newStatus;
+    }
     // Update selectedPlacement with the new status
     if (selectedPlacement.value && selectedPlacement.value.id === placement.id) {
       selectedPlacement.value.status = newStatus;
@@ -2131,7 +2151,10 @@ const toggleBoatStatus = (boat: Boat, placement: BoatPlacement) => {
   // Update boat status
   const boatIndex = boats.value.findIndex(b => b.id === boat.id);
   if (boatIndex !== -1) {
-    boats.value[boatIndex].current_status = newStatus;
+    const targetBoat = boats.value[boatIndex];
+    if (targetBoat) {
+      targetBoat.current_status = newStatus;
+    }
   }
 
   // Keep the boat selected for rotation after status change
@@ -2379,13 +2402,19 @@ const setAllOtherBoatsAsPlaced = (storageUnitId: number, excludePlacementId: num
   otherUnplacedBoats.forEach(placement => {
     const placementIndex = placements.value.findIndex(p => p.id === placement.id);
     if (placementIndex !== -1) {
-      placements.value[placementIndex].status = 'placerad';
+      const targetPlacement = placements.value[placementIndex];
+      if (targetPlacement) {
+        targetPlacement.status = 'placerad';
+      }
     }
 
     // Uppdatera även båt-data
     const boatIndex = boats.value.findIndex(b => b.id === placement.boat_id);
     if (boatIndex !== -1) {
-      boats.value[boatIndex].current_status = 'placerad';
+      const targetBoat = boats.value[boatIndex];
+      if (targetBoat) {
+        targetBoat.current_status = 'placerad';
+      }
     }
   });
 
@@ -2418,12 +2447,18 @@ const setAllBoatsAsPlaced = () => {
   unplacedBoats.forEach(placement => {
     const placementIndex = placements.value.findIndex(p => p.id === placement.id);
     if (placementIndex !== -1) {
-      placements.value[placementIndex].status = 'placerad';
+      const targetPlacement = placements.value[placementIndex];
+      if (targetPlacement) {
+        targetPlacement.status = 'placerad';
+      }
     }
 
     const boatIndex = boats.value.findIndex(b => b.id === placement.boat_id);
     if (boatIndex !== -1) {
-      boats.value[boatIndex].current_status = 'placerad';
+      const targetBoat = boats.value[boatIndex];
+      if (targetBoat) {
+        targetBoat.current_status = 'placerad';
+      }
     }
   });
 
@@ -2455,12 +2490,18 @@ const setAllBoatsAsReserved = () => {
   unplacedBoats.forEach(placement => {
     const placementIndex = placements.value.findIndex(p => p.id === placement.id);
     if (placementIndex !== -1) {
-      placements.value[placementIndex].status = 'reserverad';
+      const targetPlacement = placements.value[placementIndex];
+      if (targetPlacement) {
+        targetPlacement.status = 'reserverad';
+      }
     }
 
     const boatIndex = boats.value.findIndex(b => b.id === placement.boat_id);
     if (boatIndex !== -1) {
-      boats.value[boatIndex].current_status = 'reserverad';
+      const targetBoat = boats.value[boatIndex];
+      if (targetBoat) {
+        targetBoat.current_status = 'reserverad';
+      }
     }
   });
 
@@ -2478,6 +2519,7 @@ const handleDrop = (event: DragEvent) => {
   isDragging.value = false;
 
   if (!event.dataTransfer || !selectedStorage.value) return;
+  const currentStorageRef = selectedStorage.value as Storage;
 
   try {
     const boat = JSON.parse(event.dataTransfer.getData('application/json'));
@@ -2493,7 +2535,7 @@ const handleDrop = (event: DragEvent) => {
     }
 
     // SMART KONFLIKT-HANTERING: Bara för oplacerade båtar (en oplacerad per lager)
-    const unplacedBoat = getUnplacedBoatInStorage(selectedStorage.value.id);
+    const unplacedBoat = getUnplacedBoatInStorage(currentStorageRef.id);
     if (unplacedBoat && defaultPlacementStatus.value === 'oplacerad') {
       const conflictBoat = boats.value.find(b => b.id === unplacedBoat.boat_id);
       console.warn(`KONFLIKT: ${conflictBoat?.name} är redan oplacerad i detta lager!`);
@@ -2508,14 +2550,18 @@ const handleDrop = (event: DragEvent) => {
       // Uppdatera båt-status för den borttagna båten
       const oldBoatIndex = boats.value.findIndex(b => b.id === unplacedBoat.boat_id);
       if (oldBoatIndex !== -1) {
-        boats.value[oldBoatIndex].current_status = 'oplacerad'; // Tillbaka till pool
+        const oldBoat = boats.value[oldBoatIndex];
+        if (oldBoat) {
+          oldBoat.current_status = 'oplacerad'; // Tillbaka till pool
+        }
       }
     }
 
     // Calculate drop position with zoom and pan compensation
-    const rect = canvasContainer.value!.getBoundingClientRect();
-    const canvasX = event.clientX - rect.left;
-    const canvasY = event.clientY - rect.top;
+    const rect = canvasContainer.value?.getBoundingClientRect();
+    if (!rect) return;
+    const canvasX = event.clientX - (rect as DOMRect).left;
+    const canvasY = event.clientY - (rect as DOMRect).top;
 
     // När zoomad/pannad: placera båten i centrum av synliga området istället för musposition
     let finalX = canvasX;
@@ -2564,8 +2610,8 @@ const handleDrop = (event: DragEvent) => {
     const newPlacement: BoatPlacement = {
       id: Date.now(), // Temporary ID
       boat_id: boat.id,
-      storage_unit_id: selectedStorage.value.id,
-      storage_unit_name: selectedStorage.value.name,
+      storage_unit_id: currentStorageRef.id,
+      storage_unit_name: currentStorageRef.name,
       floor_number: selectedFloor.value,
       status: defaultPlacementStatus.value, // Använd vald status från dropdown
       position: {
@@ -2587,7 +2633,10 @@ const handleDrop = (event: DragEvent) => {
         // Update boat status till vald status
     const boatIndex = boats.value.findIndex(b => b.id === boat.id);
     if (boatIndex !== -1) {
-      boats.value[boatIndex].current_status = defaultPlacementStatus.value;
+      const targetBoat = boats.value[boatIndex];
+      if (targetBoat) {
+        targetBoat.current_status = defaultPlacementStatus.value;
+      }
     }
 
         drawStorage();
@@ -2634,8 +2683,8 @@ onMounted(async () => {
   initCanvas();
 
   // Auto-select first storage for demo (med auto-centrering vid första laddning)
-  if (storages.value.length > 0) {
-    selectStorage(storages.value[0], true); // true = auto-center
+  if (storages.value.length > 0 && storages.value[0]) {
+    selectStorage(storages.value[0] as Storage, true); // true = auto-center
   }
 
   // Close tooltip when clicking outside
@@ -2775,7 +2824,7 @@ onMounted(async () => {
 .main-layout {
   flex: 1;
   display: grid;
-  grid-template-columns: 250px 1fr 250px;
+  grid-template-columns: 280px 1fr 300px;
   gap: 0;
   overflow: hidden;
 }
@@ -2826,12 +2875,34 @@ onMounted(async () => {
   font-size: 0.75rem;
 }
 
+/* Toggle buttons for Lager/Brygga */
+.toggle-group {
+  display: inline-flex;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #f8fafc;
+}
+.toggle-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+}
+.toggle-btn.active {
+  background: #2563eb;
+  color: #fff;
+}
+
 /* Storage List */
 .storage-list,
 .boat-list {
   flex: 1;
   overflow-y: auto;
   padding: 0.5rem;
+  max-height: calc(100vh - 180px);
 }
 
 .storage-item,
