@@ -251,14 +251,7 @@
           <div class="toolbar-separator"></div>
 
           <!-- Statistics -->
-          <div class="toolbar-group">
-            <span class="toolbar-label">Stats:</span>
-            <div class="stats-display">
-              <span>{{ placedBoatCount }} totalt</span>
-              <span class="unplaced-count">{{ unplacedBoatCount }} oplacerade</span>
-              <span>{{ collisionCount }} kollisioner</span>
-            </div>
-          </div>
+          <!-- Stats flyttade till header (StandardHeader stats) -->
 
           <div class="toolbar-separator"></div>
 
@@ -624,11 +617,19 @@ const headerBreadcrumbs = computed(() => [
 ]);
 
 const headerStats = computed(() => {
-  const totalBoats = boats.value.length;
-  const totalPlacements = placements.value.length;
+  // Per valt lager (och aktiv våning via currentStoragePlacements)
+  const total = currentStoragePlacements.value.length;
+  const placed = currentStoragePlacements.value.filter(p => p.status === 'placerad').length;
+  const reserved = currentStoragePlacements.value.filter(p => p.status === 'reserverad').length;
+  const unplaced = currentStoragePlacements.value.filter(p => p.status === 'oplacerad').length;
+  const collisions = collisionCount.value;
+
   return [
-    { label: 'Totalt antal båtar', value: totalBoats, variant: 'default' },
-    { label: 'Placeringar', value: totalPlacements, variant: 'secondary' },
+    { label: 'Totalt i lagret', value: total, variant: 'default' },
+    { label: 'Placerade', value: placed, color: 'text-blue-600' },
+    { label: 'Reserverade', value: reserved, variant: 'outline' },
+    { label: 'Oplacerade', value: unplaced, color: 'text-green-600' },
+    { label: 'Kollisioner', value: collisions, color: 'text-orange-600' },
   ];
 });
 
