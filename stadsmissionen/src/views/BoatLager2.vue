@@ -18,6 +18,9 @@
       @update:search-query="val => boatSearchQuery = val"
     />
 
+    <!-- Global hairline under header across lists and canvas -->
+    <div class="global-hairline"></div>
+
     <!-- Status legend removed per request -->
 
     <div class="main-layout">
@@ -145,11 +148,19 @@
 
           <div class="toolbar-separator"></div>
 
-          <!-- Removed extra legend/info to declutter toolbar -->
+          <!-- Rotation (icons only) -->
+          <div class="toolbar-group">
+            <button @click="rotateBoatLeft" class="toolbar-button" :disabled="!canRotateSelectedBoat" :title="canRotateSelectedBoat ? 'Rotera vänster 22.5°' : 'Välj en oplacerad båt'">
+              <RotateCcw class="button-icon" />
+            </button>
+            <button @click="rotateBoatRight" class="toolbar-button" :disabled="!canRotateSelectedBoat" :title="canRotateSelectedBoat ? 'Rotera höger 22.5°' : 'Välj en oplacerad båt'">
+              <RotateCw class="button-icon" />
+            </button>
+          </div>
 
           <div class="toolbar-separator"></div>
 
-          <!-- Status select (shadcn select to be wired later) -->
+          <!-- Status select (shadcn later; native for now) -->
           <div class="toolbar-group">
             <span class="toolbar-label">Status:</span>
             <select v-model="defaultPlacementStatus" class="status-select">
@@ -161,9 +172,24 @@
 
           <div class="toolbar-separator"></div>
 
+          <!-- Quick status icons -->
           <div class="toolbar-group">
             <button @click="setAllBoatsAsPlaced" class="toolbar-button" title="Placera oplacerade"><Bookmark class="button-icon place-icon" /></button>
             <button @click="setAllBoatsAsReserved" class="toolbar-button" title="Reservera oplacerade"><Bookmark class="button-icon reserve-icon" /></button>
+          </div>
+
+          <div class="toolbar-separator"></div>
+
+          <!-- Boat label toggles and size -->
+          <div class="toolbar-group">
+            <span class="toolbar-label">Text:</span>
+            <button :class="['toolbar-button', { active: boatLabelName }]" @click="boatLabelName = !boatLabelName" title="Visa namn"><Type class="button-icon" /></button>
+            <button :class="['toolbar-button', { active: boatLabelReg }]" @click="boatLabelReg = !boatLabelReg" title="Visa regnr"><Hash class="button-icon" /></button>
+            <button :class="['toolbar-button', { active: boatLabelOwner }]" @click="boatLabelOwner = !boatLabelOwner" title="Visa ägare"><User class="button-icon" /></button>
+            <div class="input-group">
+              <input v-model.number="boatLabelFont" type="number" min="6" max="14" step="1" class="toolbar-input zoom-input" />
+              <span class="input-unit">px</span>
+            </div>
           </div>
 
           <div class="toolbar-separator"></div>
@@ -3126,6 +3152,8 @@ onMounted(async () => {
   top: 0;
   z-index: 20;
 }
+.global-hairline { position: sticky; top: 56px; height: 0; z-index: 19; }
+.global-hairline::before { content: ""; position: absolute; left: 0; right: 0; top: 0; border-top: 1px solid rgba(0,0,0,.12); transform: scaleY(0.5); transform-origin: 0 0; }
 .global-search {
   padding: 0 1rem 0.5rem 1rem;
 }
