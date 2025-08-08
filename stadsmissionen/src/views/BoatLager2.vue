@@ -1317,13 +1317,22 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
   const currentHullRect = createRotatedRectangle(currentX, currentY, hullWidth, hullHeight, currentRotation);
   const currentMarginRect = createRotatedRectangle(currentX, currentY, hullWidth + marginSize, hullHeight + marginSize, currentRotation);
 
-  // Check storage boundaries collision (använd margin för boundary check)
+  // Check storage/dock boundary rule using margin rectangle
   const storageWidth = selectedStorage.value.Height * 10;
   const storageHeight = selectedStorage.value.width * 10;
 
-  if (isRectangleOutsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
-    console.log(`🔴 Storage boundary collision: ${currentBoat.name} (${currentRotation * 180 / Math.PI}°) utanför lager`);
-    return 'margin_collision';
+  // Lager: båt måste vara INNE i rektangeln → kollision om den går UTANFÖR
+  // Brygga: båt måste vara UTANFÖR rektangeln (bryggan) → kollision om den går INNANFÖR
+  if (selectedStorage.value.Type === 'Brygga') {
+    if (isRectangleInsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
+      console.log(`🟡 Dock overlap: ${currentBoat.name} får inte ligga ovanpå bryggan`);
+      return 'margin_collision';
+    }
+  } else {
+    if (isRectangleOutsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
+      console.log(`🔴 Storage boundary collision: ${currentBoat.name} utanför lagergränsen`);
+      return 'margin_collision';
+    }
   }
 
   // Check collisions with other boats (ENDAST SAMMA VÅNING!)
@@ -1505,6 +1514,19 @@ const isRectangleOutsideStorage = (rect: RotatedRectangle, storageX: number, sto
         corner.y < storageY ||
         corner.y > storageY + storageHeight) {
       return true;
+    }
+  }
+  return false;
+};
+
+// Kolla om en roterad rektangel ligger helt eller delvis INNANFÖR storage-ytan
+const isRectangleInsideStorage = (rect: RotatedRectangle, storageX: number, storageY: number, storageWidth: number, storageHeight: number): boolean => {
+  for (const corner of rect.corners) {
+    if (corner.x >= storageX &&
+        corner.x <= storageX + storageWidth &&
+        corner.y >= storageY &&
+        corner.y <= storageY + storageHeight) {
+      return true; // minst en punkt inuti ⇒ räknas som överlapp
     }
   }
   return false;
