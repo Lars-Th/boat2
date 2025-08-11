@@ -586,9 +586,10 @@ const SVG_CONSTANTS = {
 
 // Den faktiska pathen fyller inte hela viewboxen. För kollision använder vi
 // samma visuella fyllnadsgrad som ritningen så att konturen och logiken matchar.
-const SHAPE_FILL_RATIO = {
-  x: 154 / 174, // pathen sträcker sig från x=10 till x=164 ⇒ 154
-  y: 68 / 78    // pathen sträcker sig från y=5 till y=73 ⇒ 68
+// Exakta path-gränser (enligt HULL_PATH/MARGIN_PATH koordinater)
+const PATH_BOUNDS = {
+  width: 164 - 10, // 154
+  height: 73 - 5   // 68
 };
 
 // State styles - EXAKT samma som BoatDetailCanvas.vue
@@ -1540,7 +1541,8 @@ const isRectangleOutsideStorage = (
   storageHeight: number
 ): boolean => {
   // Epsilon för flyttalsfel (px = dm). Tillåter "nästan på väggen" utan falsklarm
-  const EPS = 0.2; // 0.2 px/dm ≈ 2 mm i verkligheten
+  // 1 m = 10 px, så 0.1 dm = 1 mm ≈ 0.01 px → välj liten tolerans
+  const EPS = 0.1; // 0.1 px/dm
   for (const corner of rect.corners) {
     if (corner.x < storageX - EPS ||
         corner.x > storageX + storageWidth + EPS ||
@@ -2149,8 +2151,9 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
 
   // Scale hull
   // Skala pathen till verkliga mått (utan fill-ratio-korrektion) så ritning matchar grid
-  const hullScaleX = baseLength / SVG_CONSTANTS.HULL_VB.w;
-  const hullScaleY = baseWidth / SVG_CONSTANTS.HULL_VB.h;
+  // Skala pathen så att dess faktiska tecknade område (PATH_BOUNDS) motsvarar verkliga mått
+  const hullScaleX = baseLength / PATH_BOUNDS.width;
+  const hullScaleY = baseWidth / PATH_BOUNDS.height;
 
   hullPath.scale({ x: hullScaleX, y: hullScaleY });
   hullPath.offset({
@@ -2159,8 +2162,8 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   });
 
   // Scale margin
-  const marginScaleX = (baseLength + 2 * baseMargin) / SVG_CONSTANTS.MARGIN_VB.w;
-  const marginScaleY = (baseWidth + 2 * baseMargin) / SVG_CONSTANTS.MARGIN_VB.h;
+  const marginScaleX = (baseLength + 2 * baseMargin) / PATH_BOUNDS.width;
+  const marginScaleY = (baseWidth + 2 * baseMargin) / PATH_BOUNDS.height;
 
   marginPath.scale({ x: marginScaleX, y: marginScaleY });
   marginPath.offset({
