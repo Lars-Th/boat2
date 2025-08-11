@@ -175,6 +175,7 @@
           <div class="toolbar-group">
             <button @click="setAllBoatsAsPlaced" class="toolbar-button" title="Placera oplacerade"><Bookmark class="button-icon place-icon" /></button>
             <button @click="setAllBoatsAsReserved" class="toolbar-button" title="Reservera oplacerade"><Bookmark class="button-icon reserve-icon" /></button>
+            <button @click="autoDistributeDocks()" class="toolbar-button" title="Auto-fördela bryggbåtar i kolumner"><Columns3 class="button-icon" /></button>
           </div>
 
           <div class="toolbar-separator"></div>
@@ -500,6 +501,7 @@ import {
     User,
     Ship,
     Bookmark,
+    Columns3,
     Type,
     Hash
 } from 'lucide-vue-next';
@@ -1023,6 +1025,40 @@ const tooltipCustomer = computed(() => {
     return !inThisStorage;
   };
 
+  // Auto-distribute boats on docks into tight columns (no overlap)
+  const autoDistributeDocks = () => {
+    const docks = storages.value.filter(s => s.Type === 'Brygga');
+    const startX = 50; const startY = 50;
+    for (const dock of docks) {
+      const dockPlacements = placements.value.filter(p => p.storage_unit_id === dock.id);
+      // Sortera båtar efter längd (störst först) för bättre packning
+      dockPlacements.sort((a, b) => {
+        const ba = boats.value.find(x => x.id === a.boat_id)!;
+        const bb = boats.value.find(x => x.id === b.boat_id)!;
+        return (bb.length - ba.length);
+      });
+      const dockWidthPx = dock.Height * 10; // ritad längd i px (decimeter)
+      const leftEdge = startX + 0;
+      const rightEdge = startX + dockWidthPx;
+      const columnSpacing = 60; // px mellan kolumner tvärs bryggan
+      const alongStep = 80; // px mellan båtar längs bryggan
+      let colIndex = 0;
+      let alongOffset = 40; // startmarginal
+      for (const p of dockPlacements) {
+        const boat = boats.value.find(b => b.id === p.boat_id);
+        if (!boat) continue;
+        const isLeft = (colIndex % 2 === 0);
+        const x = isLeft ? (leftEdge + alongOffset) : (rightEdge - alongOffset);
+        const y = startY + (isLeft ? 40 : -40) + (colIndex * columnSpacing * 0.0); // två kolumner mot bryggan
+        p.position.x = (x - startX);
+        p.position.y = (isLeft ? 90 : 10); // nära bryggan
+        p.position.rotation = isLeft ? 180 : 0; // fören mot bryggan från båda sidor
+        alongOffset += alongStep;
+      }
+    }
+    drawStorage();
+  };
+
 // Helper functions
 const getStorageBoatCount = (storageId: number): number => {
   return placements.value.filter(p => p.storage_unit_id === storageId).length;
@@ -1505,8 +1541,19 @@ const rotateBoat = (angleDelta: number) => {
   console.log('Rotation attempt - selectedPlacedBoat:', selectedPlacedBoat.value?.name);
 
   if (!selectedPlacedBoat.value) {
-    console.warn('❌ Ingen båt vald för rotation - klicka på en OPLACERAD båt först!');
-    return;
+    // Försök auto-selektera oplacerad båt under muspekaren om möjligt
+    const hovered = placements.value.find(p => p.status === 'oplacerad');
+    if (hovered) {
+      const boat = boats.value.find(b => b.id === hovered.boat_id);
+      if (boat) {
+        selectedPlacedBoat.value = boat;
+        selectedPlacement.value = hovered;
+      }
+    }
+    if (!selectedPlacedBoat.value) {
+      console.warn('❌ Ingen båt vald för rotation - klicka på en OPLACERAD båt först!');
+      return;
+    }
   }
 
   // Find the placement for the selected boat
@@ -2356,6 +2403,15 @@ const selectBoat = (boat: Boat) => {
   }
 
   console.log('Selected boat:', boat.name);
+
+    // Om båten är oplacerad i valt lager: välj för rotation direkt
+    if (selectedStorage.value) {
+      const p = placements.value.find(pp => pp.boat_id === boat.id && pp.storage_unit_id === selectedStorage.value!.id);
+      if (p && p.status === 'oplacerad') {
+        selectedPlacedBoat.value = boat;
+        selectedPlacement.value = p;
+      }
+    }
 };
 
 // Initialize router
