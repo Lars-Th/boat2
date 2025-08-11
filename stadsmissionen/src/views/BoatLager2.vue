@@ -1340,7 +1340,8 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
       return 'margin_collision';
     }
   } else {
-    if (isRectangleOutsideStorage(currentHullRect, startX, startY, storageWidth, storageHeight)) {
+    // Warehouse boundary: margin rectangle must be fully inside; touching is OK (epsilon tolerant)
+    if (isRectangleOutsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
       console.log(`🔴 Storage boundary collision: ${currentBoat.name} utanför lagergränsen`);
       return 'margin_collision';
     }
@@ -1523,13 +1524,20 @@ const projectRectangleOnAxis = (rect: RotatedRectangle, axis: Point): { min: num
 };
 
 // Kolla om en roterad rektangel är utanför storage boundaries
-const isRectangleOutsideStorage = (rect: RotatedRectangle, storageX: number, storageY: number, storageWidth: number, storageHeight: number): boolean => {
-  // Kolla om någon corner är utanför storage
+const isRectangleOutsideStorage = (
+  rect: RotatedRectangle,
+  storageX: number,
+  storageY: number,
+  storageWidth: number,
+  storageHeight: number
+): boolean => {
+  // Epsilon för flyttalsfel (px = dm). Tillåter "nästan på väggen" utan falsklarm
+  const EPS = 0.2; // 0.2 px/dm ≈ 2 mm i verkligheten
   for (const corner of rect.corners) {
-    if (corner.x < storageX ||
-        corner.x > storageX + storageWidth ||
-        corner.y < storageY ||
-        corner.y > storageY + storageHeight) {
+    if (corner.x < storageX - EPS ||
+        corner.x > storageX + storageWidth + EPS ||
+        corner.y < storageY - EPS ||
+        corner.y > storageY + storageHeight + EPS) {
       return true;
     }
   }

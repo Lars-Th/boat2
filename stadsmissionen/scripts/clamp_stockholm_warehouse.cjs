@@ -56,9 +56,9 @@ function main() {
     const theta = rotationDeg * Math.PI / 180;
 
     // Max half-extent along x/y in meters, then convert to decimeters
-    // Boundary check ska endast ta hänsyn till skrov, inte marginal
-    const dx_m = Math.abs(Math.cos(theta)) * (L / 2) + Math.abs(Math.sin(theta)) * (W / 2);
-    const dy_m = Math.abs(Math.sin(theta)) * (L / 2) + Math.abs(Math.cos(theta)) * (W / 2);
+    // Boundary check ska ta hänsyn till skrov + marginal så att marginalen hålls inne
+    const dx_m = Math.abs(Math.cos(theta)) * (L / 2 + M) + Math.abs(Math.sin(theta)) * (W / 2 + M);
+    const dy_m = Math.abs(Math.sin(theta)) * (L / 2 + M) + Math.abs(Math.cos(theta)) * (W / 2 + M);
     const dx_dm = dx_m * 10;
     const dy_dm = dy_m * 10;
 
