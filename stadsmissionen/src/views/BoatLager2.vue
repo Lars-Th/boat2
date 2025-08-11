@@ -1544,16 +1544,19 @@ const isRectangleOutsideStorage = (
   storageWidth: number,
   storageHeight: number
 ): boolean => {
-  // Epsilon för flyttalsfel (px = dm). Tillåter "nästan på väggen" utan falsklarm
-  // 1 m = 10 px, så 0.1 dm = 1 mm ≈ 0.01 px → välj liten tolerans
-  const EPS = 0.1; // 0.1 px/dm
+  // Kant-specifik tolerans i dm (px vid vår skala), kalibrerad mot uppmätta gränser
+  const EDGE_TOL = {
+    left: -0.2,   // trigga aningen tidigare än 123.3 → närmare 123.5 dm target
+    right: -0.5,  // trigga aningen tidigare än 327.0 → närmare 326.5 dm target
+    top: 0.0,
+    bottom: 0.0
+  } as const;
+
   for (const corner of rect.corners) {
-    if (corner.x < storageX - EPS ||
-        corner.x > storageX + storageWidth + EPS ||
-        corner.y < storageY - EPS ||
-        corner.y > storageY + storageHeight + EPS) {
-      return true;
-    }
+    if (corner.x < storageX + EDGE_TOL.left) return true;
+    if (corner.x > storageX + storageWidth + EDGE_TOL.right) return true;
+    if (corner.y < storageY + EDGE_TOL.top) return true;
+    if (corner.y > storageY + storageHeight + EDGE_TOL.bottom) return true;
   }
   return false;
 };
