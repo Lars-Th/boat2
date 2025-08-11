@@ -1037,23 +1037,32 @@ const tooltipCustomer = computed(() => {
         const bb = boats.value.find(x => x.id === b.boat_id)!;
         return (bb.length - ba.length);
       });
-      const dockWidthPx = dock.Height * 10; // ritad längd i px (decimeter)
-      const leftEdge = startX + 0;
-      const rightEdge = startX + dockWidthPx;
-      const columnSpacing = 60; // px mellan kolumner tvärs bryggan
-      const alongStep = 80; // px mellan båtar längs bryggan
-      let colIndex = 0;
-      let alongOffset = 40; // startmarginal
+      const dockLenPx = dock.Height * 10; // längs x, i decimeter
+      const leftEdge = startX;
+      const rightEdge = startX + dockLenPx;
+      const alongStep = 80; // avstånd mellan båtar längs bryggan (dm)
+      const sideGapDm = 5; // extra luft mot bryggkanten (dm)
+      let alongOffset = 40; // startmarginal (dm)
+      let topSide = true; // börja på ovansidan
       for (const p of dockPlacements) {
         const boat = boats.value.find(b => b.id === p.boat_id);
         if (!boat) continue;
-        const isLeft = (colIndex % 2 === 0);
-        const x = isLeft ? (leftEdge + alongOffset) : (rightEdge - alongOffset);
-        const y = startY + (isLeft ? 40 : -40) + (colIndex * columnSpacing * 0.0); // två kolumner mot bryggan
+        const halfLenDm = (boat.length * 10) / 2;
+        const marginDm = (boat.safety_margin ?? 0.5) * 10;
+        const x = leftEdge + alongOffset;
         p.position.x = (x - startX);
-        p.position.y = (isLeft ? 90 : 10); // nära bryggan
-        p.position.rotation = isLeft ? 180 : 0; // fören mot bryggan från båda sidor
-        alongOffset += alongStep;
+        if (topSide) {
+          // Ovanför bryggan: omvänd orientering (180° flip) -> 270°
+          p.position.rotation = 270;
+          p.position.y = - (halfLenDm + marginDm + sideGapDm);
+        } else {
+          // Nedanför bryggan: omvänd orientering (180° flip) -> 90°
+          p.position.rotation = 90;
+          const dockHeightDm = (dock.width ?? 2) * 10; // om width finns i data; fallback 2m
+          p.position.y = dockHeightDm + halfLenDm + marginDm + sideGapDm;
+        }
+        alongOffset += Math.max(alongStep, (boat.width * 10) + marginDm);
+        topSide = !topSide;
       }
     }
     drawStorage();
