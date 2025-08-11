@@ -138,10 +138,9 @@
 
           <div class="toolbar-separator"></div>
 
-          <!-- Pan/center/reset as icons -->
+          <!-- Pan/center as icons -->
           <div class="toolbar-group">
             <button @click="centerStorage" class="toolbar-button" title="Centrera lagret"><Navigation2 class="button-icon" /></button>
-            <button @click="resetView" class="toolbar-button" title="Återställ vy"><RotateCcw class="button-icon" /></button>
             <button @click="togglePanMode" :class="['toolbar-button', { active: isPanMode }]" title="Panoreringsläge"><Move class="button-icon" /></button>
           </div>
 
@@ -173,9 +172,12 @@
 
           <!-- Quick status icons -->
           <div class="toolbar-group">
-            <button @click="setAllBoatsAsPlaced" class="toolbar-button" title="Placera oplacerade"><Bookmark class="button-icon place-icon" /></button>
-            <button @click="setAllBoatsAsReserved" class="toolbar-button" title="Reservera oplacerade"><Bookmark class="button-icon reserve-icon" /></button>
-            <button @click="autoDistributeDocks()" class="toolbar-button" title="Auto-fördela bryggbåtar i kolumner"><Columns3 class="button-icon" /></button>
+            <button @click="setAllBoatsAsPlaced" class="toolbar-button" title="Placera oplacerade">
+              <span class="status-dot dot-blue"></span>
+            </button>
+            <button @click="setAllBoatsAsReserved" class="toolbar-button" title="Reservera oplacerade">
+              <span class="status-dot dot-gray"></span>
+            </button>
           </div>
 
           <div class="toolbar-separator"></div>
@@ -261,33 +263,7 @@
 
           <div class="toolbar-separator"></div>
 
-          <!-- Save Placements -->
-          <div class="toolbar-group">
-            <span class="toolbar-label">
-              <Save class="inline w-4 h-4 mr-1" />
-              Data:
-            </span>
-            <button @click="savePlacements" class="toolbar-button save-btn" title="Spara alla båtpositioner till boatPlacements.json">
-              <Save class="button-icon" />
-              Uppdatera JSON
-            </button>
-            <button @click="syncBoatsFile" class="toolbar-button" title="Synka statusfält i boats.json med aktuella placeringar">
-              Synka status
-            </button>
-            <span v-if="lastSaved" class="save-status">
-              Sparad {{ lastSaved }}
-            </span>
-          </div>
-
-          <div class="toolbar-separator"></div>
-
-          <!-- Reset -->
-          <div class="toolbar-group">
-            <button @click="resetCanvas" class="toolbar-button" title="Återställ vy">
-              <RotateCcw class="button-icon" />
-              Reset
-            </button>
-          </div>
+          <!-- Removed data + reset groups per request -->
         </div>
 
         <!-- Konva Canvas Container -->
@@ -338,10 +314,10 @@
               <Move class="button-icon" />
             </button>
             <button class="tooltip-btn icon" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'placerad')" title="Placera (blå)">
-              <Bookmark class="button-icon place-icon" />
+              <span class="status-dot dot-blue"></span>
             </button>
             <button class="tooltip-btn icon" @click="setBoatStatusFromTooltip(tooltipData.boat, tooltipData.placement, 'reserverad')" title="Reservera (grå)">
-              <Bookmark class="button-icon reserve-icon" />
+              <span class="status-dot dot-gray"></span>
             </button>
             <button class="tooltip-btn icon" @click="goToCustomer(tooltipData.boat)" title="Kundkort">
               <User class="button-icon" />
@@ -527,11 +503,8 @@ import {
     User,
     Ship,
     Bookmark,
-    Columns3,
     Type,
-    Hash,
-    Search,
-    X
+    Hash
 } from 'lucide-vue-next';
 
 // Import JSON data
@@ -3603,16 +3576,19 @@ onMounted(async () => {
 .toolbar-button {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.25rem;
-  padding: 0.375rem 0.75rem;
+  padding: 0; /* square */
   font-size: 0.75rem;
   font-weight: 500;
   color: #374151;
   background: white;
   border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.15s ease;
+  width: 2rem; /* square like floor tabs */
+  height: 2rem;
 }
 
 .toolbar-button:hover {
@@ -3627,8 +3603,8 @@ onMounted(async () => {
 }
 
 .button-icon {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 .status-select {
@@ -3812,8 +3788,16 @@ onMounted(async () => {
 .tooltip-btn:hover {background: #374151;}
 .tooltip-btn.danger {background: #7f1d1d; border-color: rgba(239,68,68,.5);}
 .tooltip-btn.danger:hover {background: #991b1b;}
-.place-icon { color: #2563eb; }
-.reserve-icon { color: #9ca3af; }
+
+/* Status dots for place/reserve */
+.status-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+}
+.dot-blue { background-color: #2563eb; }
+.dot-gray { background-color: #9ca3af; }
 
 /* Båtlista - Originalklasser */
 .boat-name {
