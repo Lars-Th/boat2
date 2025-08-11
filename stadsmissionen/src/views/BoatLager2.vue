@@ -361,19 +361,45 @@
         </div>
 
         <!-- Boat Filter -->
-          <div class="filter-section">
-          <div class="filter-row">
+        <div class="filter-section">
+          <div class="filter-row gap-2 items-center">
             <label class="filter-label">Visa:</label>
-            <select v-model="boatListScope" class="filter-select">
-              <option value="default">Standard</option>
-              <option value="all">Alla</option>
-              <option value="placed">Placerade</option>
-              <option value="reserved">Reserverade</option>
-              <option value="partial">Delvis placerade</option>
-            </select>
+            <!-- shadcn/ui Select -->
+            <Select v-model="boatListScope">
+              <SelectTrigger class="text-base md:text-xs h-8 min-w-[170px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Standard</SelectItem>
+                <SelectItem value="all">Alla</SelectItem>
+                <SelectItem value="placed">Placerade</SelectItem>
+                <SelectItem value="reserved">Reserverade</SelectItem>
+                <SelectItem value="partial">Delvis placerade</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <!-- Search input removed per request -->
-          <div class="list-meta">Visar {{ filteredBoats.length }} av {{ boats.length }}</div>
+
+          <!-- shadcn/ui Input: sök namn, regnr, kund + rensa -->
+          <div class="filter-row mt-2">
+            <div class="relative w-full">
+              <Search class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                v-model="boatSearchQuery"
+                placeholder="Sök båt, regnr eller kund..."
+                class="pl-8 pr-8 h-8 text-base md:text-xs"
+              />
+              <button
+                v-if="boatSearchQuery"
+                class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+                @click="clearBoatSearch"
+                aria-label="Rensa sökning"
+              >
+                <X class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div class="list-meta mt-1">Visar {{ filteredBoats.length }} av {{ boats.length }}</div>
         </div>
 
         <!-- Boat List -->
@@ -503,11 +529,15 @@ import {
     Bookmark,
     Columns3,
     Type,
-    Hash
+    Hash,
+    Search,
+    X
 } from 'lucide-vue-next';
 
 // Import JSON data
 import storageData from '@/assets/data/combinedStorage.json';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import boatsData from '@/assets/data/boats.json';
 import placementsData from '@/assets/data/boatPlacements.json';
 import customersData from '@/assets/data/customers.json';
@@ -634,6 +664,7 @@ const selectedPlacedBoat = ref<Boat | null>(null);
 const selectedPlacement = ref<BoatPlacement | null>(null);
 const storageFilter = ref<string>('all');
 const boatSearchQuery = ref<string>('');
+const clearBoatSearch = () => { boatSearchQuery.value = ''; };
   const boatListScope = ref<'default'|'all'|'placed'|'reserved'|'partial'>('default');
 
 const zoomLevel = ref<number>(1);
@@ -857,12 +888,18 @@ const getBoatLocationCompatibility = (boat: Boat) => {
 
 // Smart boat filtering based on selected storage
 const filteredBoats = computed(() => {
-  let filteredBoatList = boatSearchQuery.value
-    ? boats.value.filter(boat =>
-        boat.name.toLowerCase().includes(boatSearchQuery.value.toLowerCase()) ||
-        boat.registreringsnummer.toLowerCase().includes(boatSearchQuery.value.toLowerCase())
-      )
-    : boats.value;
+  let filteredBoatList = boats.value;
+  if (boatSearchQuery.value) {
+    const q = boatSearchQuery.value.toLowerCase();
+    filteredBoatList = boats.value.filter(boat => {
+      const nameHit = boat.name.toLowerCase().includes(q);
+      const regHit = boat.registreringsnummer.toLowerCase().includes(q);
+      const customer = customers.value.find(c => c.id === boat.customer_id);
+      const customerName = customer?.display_name?.toLowerCase() || '';
+      const customerHit = customerName.includes(q);
+      return nameHit || regHit || customerHit;
+    });
+  }
 
   // Smart filtering based on selected storage
   if (boatListScope.value === 'all') {
