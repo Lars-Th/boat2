@@ -584,6 +584,13 @@ const SVG_CONSTANTS = {
   PX_PER_M: 10 // Används för båt-skalning (inte position)
 };
 
+// Den faktiska pathen fyller inte hela viewboxen. För kollision använder vi
+// samma visuella fyllnadsgrad som ritningen så att konturen och logiken matchar.
+const SHAPE_FILL_RATIO = {
+  x: 154 / 174, // pathen sträcker sig från x=10 till x=164 ⇒ 154
+  y: 68 / 78    // pathen sträcker sig från y=5 till y=73 ⇒ 68
+};
+
 // State styles - EXAKT samma som BoatDetailCanvas.vue
 const stateStyles: Record<string, { hull: any; margin: any }> = {
   // PLACEMENT STATUS (korrekta från BoatDetailCanvas)
@@ -1314,8 +1321,9 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
   const currentY = startY + currentPlacement.position.y * pixelsPerDecimeter;
   const currentRotation = (currentPlacement.position.rotation || 0) * Math.PI / 180; // Convert to radians
 
-  const hullWidth = currentBoat.length * SVG_CONSTANTS.PX_PER_M;
-  const hullHeight = currentBoat.width * SVG_CONSTANTS.PX_PER_M;
+  // Skrovets "faktiska" bredd/höjd i pixlar följer pathens effektiva area
+  const hullWidth = currentBoat.length * SVG_CONSTANTS.PX_PER_M * SHAPE_FILL_RATIO.x;
+  const hullHeight = currentBoat.width * SVG_CONSTANTS.PX_PER_M * SHAPE_FILL_RATIO.y;
   const marginSize = (currentBoat.safety_margin ?? 0.5) * SVG_CONSTANTS.PX_PER_M;
 
   // Create rotated rectangles for current boat
@@ -1363,8 +1371,8 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
     const otherY = startY + otherPlacement.position.y * pixelsPerDecimeter;
     const otherRotation = (otherPlacement.position.rotation || 0) * Math.PI / 180;
 
-    const otherHullWidth = otherBoat.length * SVG_CONSTANTS.PX_PER_M;
-    const otherHullHeight = otherBoat.width * SVG_CONSTANTS.PX_PER_M;
+    const otherHullWidth = otherBoat.length * SVG_CONSTANTS.PX_PER_M * SHAPE_FILL_RATIO.x;
+    const otherHullHeight = otherBoat.width * SVG_CONSTANTS.PX_PER_M * SHAPE_FILL_RATIO.y;
     const otherMarginSize = (otherBoat.safety_margin ?? 0.5) * SVG_CONSTANTS.PX_PER_M;
 
     // Create rotated rectangles for other boat
@@ -2140,8 +2148,9 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   const baseMargin = (boat.safety_margin ?? 0.5) * SVG_CONSTANTS.PX_PER_M;
 
   // Scale hull
-  const hullScaleX = baseLength / SVG_CONSTANTS.HULL_VB.w;
-  const hullScaleY = baseWidth / SVG_CONSTANTS.HULL_VB.h;
+  // Skala pathen så att dess visuella del (SHAPE_FILL_RATIO) motsvarar båtens verkliga mått
+  const hullScaleX = (baseLength / SHAPE_FILL_RATIO.x) / SVG_CONSTANTS.HULL_VB.w;
+  const hullScaleY = (baseWidth / SHAPE_FILL_RATIO.y) / SVG_CONSTANTS.HULL_VB.h;
 
   hullPath.scale({ x: hullScaleX, y: hullScaleY });
   hullPath.offset({
@@ -2150,8 +2159,8 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   });
 
   // Scale margin
-  const marginScaleX = (baseLength + 2 * baseMargin) / SVG_CONSTANTS.MARGIN_VB.w;
-  const marginScaleY = (baseWidth + 2 * baseMargin) / SVG_CONSTANTS.MARGIN_VB.h;
+  const marginScaleX = ((baseLength + 2 * baseMargin) / SHAPE_FILL_RATIO.x) / SVG_CONSTANTS.MARGIN_VB.w;
+  const marginScaleY = ((baseWidth + 2 * baseMargin) / SHAPE_FILL_RATIO.y) / SVG_CONSTANTS.MARGIN_VB.h;
 
   marginPath.scale({ x: marginScaleX, y: marginScaleY });
   marginPath.offset({
