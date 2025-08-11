@@ -1332,7 +1332,7 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
   const storageWidth = selectedStorage.value.Height * 10;
   const storageHeight = selectedStorage.value.width * 10;
 
-  // Lager: båt måste vara INNE i rektangeln → kollision om den går UTANFÖR
+  // Lager: skrov måste vara INNE i rektangeln (marginal får korsa väggar) → kollision om skrovet går UTANFÖR
   // Brygga: båt måste vara UTANFÖR rektangeln (bryggan) → kollision om den går INNANFÖR
   if (selectedStorage.value.Type === 'Brygga') {
     if (isRectangleInsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
@@ -1340,7 +1340,7 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
       return 'margin_collision';
     }
   } else {
-    if (isRectangleOutsideStorage(currentMarginRect, startX, startY, storageWidth, storageHeight)) {
+    if (isRectangleOutsideStorage(currentHullRect, startX, startY, storageWidth, storageHeight)) {
       console.log(`🔴 Storage boundary collision: ${currentBoat.name} utanför lagergränsen`);
       return 'margin_collision';
     }
