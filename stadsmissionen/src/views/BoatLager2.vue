@@ -1864,6 +1864,7 @@ const drawGrid = (storage: Storage, pixelsPerMeter: number, storageOffsetX: numb
 // Draw restriction zones (from StorageDesigner styling)
 const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, storageOffsetY: number) => {
   if (!layer.value || restrictionZones.value.length === 0) return;
+  if (selectedStorage.value?.Type === 'Brygga') return; // döljer på bryggor
 
   console.log(`🛡️ Drawing ${restrictionZones.value.length} restriction zones...`);
 
