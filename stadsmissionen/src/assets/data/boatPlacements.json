@@ -47,9 +47,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 291,
-      "y": 132,
-      "rotation": 270
+      "x": 120,
+      "y": 147,
+      "rotation": 90
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -127,9 +127,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 151,
-      "y": 93,
-      "rotation": 180
+      "x": 40,
+      "y": -128,
+      "rotation": 270
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -167,9 +167,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 266.7,
-      "y": 10,
-      "rotation": 0
+      "x": 40,
+      "y": -77.5,
+      "rotation": 270
     },
     "placed_by_user_id": 1,
     "placed_date": "2024-08-22T15:54:59.676706Z",
@@ -187,9 +187,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 434,
-      "y": 10,
-      "rotation": 180
+      "x": 200,
+      "y": -123.5,
+      "rotation": 270
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -247,9 +247,9 @@
     "floor_number": 0,
     "status": "reserverad",
     "position": {
-      "x": 400,
-      "y": 8.7,
-      "rotation": 180
+      "x": 200,
+      "y": -57,
+      "rotation": 270
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-07-12T15:54:59.676753Z",
@@ -267,8 +267,8 @@
     "floor_number": 1,
     "status": "reserverad",
     "position": {
-      "x": 111,
-      "y": 79.5,
+      "x": 40,
+      "y": -49.5,
       "rotation": 270
     },
     "placed_by_user_id": 1,
@@ -347,9 +347,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 1173,
-      "y": 10,
-      "rotation": 180
+      "x": 760,
+      "y": 105.5,
+      "rotation": 90
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -367,9 +367,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 705,
-      "y": 10,
-      "rotation": 180
+      "x": 360,
+      "y": -117,
+      "rotation": 270
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -487,9 +487,9 @@
     "floor_number": 0,
     "status": "reserverad",
     "position": {
-      "x": 533.3,
-      "y": 12.2,
-      "rotation": 0
+      "x": 120,
+      "y": 83.5,
+      "rotation": 90
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-05T15:54:59.676931Z",
@@ -527,9 +527,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 430,
-      "y": 10,
-      "rotation": 0
+      "x": 280,
+      "y": 141,
+      "rotation": 90
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -547,8 +547,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 102.2,
-      "y": 129.4,
+      "x": 680,
+      "y": -97,
       "rotation": 270
     },
     "placed_by_user_id": 3,
@@ -587,9 +587,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 698,
-      "y": 10,
-      "rotation": 0
+      "x": 440,
+      "y": 137,
+      "rotation": 90
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -607,9 +607,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 955,
-      "y": 10,
-      "rotation": 180
+      "x": 520,
+      "y": -103,
+      "rotation": 270
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -627,9 +627,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 943,
-      "y": 10,
-      "rotation": 0
+      "x": 600,
+      "y": 118.5,
+      "rotation": 90
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
@@ -647,9 +647,9 @@
     "floor_number": 0,
     "status": "placerad",
     "position": {
-      "x": 1151,
-      "y": 10,
-      "rotation": 0
+      "x": 840,
+      "y": -79.5,
+      "rotation": 270
     },
     "placed_by_user_id": 1,
     "placed_date": "2025-08-08T07:30:34.545Z",
