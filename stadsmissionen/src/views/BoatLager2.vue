@@ -31,16 +31,35 @@
           Lager & Bryggor
         </div>
 
-        <!-- Storage Filter -->
+        <!-- Storage Filter (shadcn Select) -->
         <div class="filter-section">
-          <div class="toggle-group">
-            <button :class="['toggle-btn', { active: storageFilter === 'all' }]" @click="storageFilter = 'all'">Alla</button>
-            <button :class="['toggle-btn', { active: storageFilter === 'Lager' }]" @click="storageFilter = 'Lager'">Lager</button>
-            <button :class="['toggle-btn', { active: storageFilter === 'Brygga' }]" @click="storageFilter = 'Brygga'">Bryggor</button>
-          </div>
+          <Select v-model="storageFilter">
+            <SelectTrigger class="text-base md:text-xs h-8 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alla</SelectItem>
+              <SelectItem value="Lager">Lager</SelectItem>
+              <SelectItem value="Brygga">Bryggor</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <!-- Storage List -->
+        <!-- Storage Select (shadcn) + Floors -->
+        <div class="filter-section">
+          <Select v-model="storageSelectValue" @update:modelValue="onStorageSelect">
+            <SelectTrigger class="text-base md:text-xs h-8 w-full">
+              <SelectValue placeholder="Välj lager/brygga" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="s in filteredStorages" :key="s.id" :value="String(s.id)">
+                {{ s.name }} <span class="storage-type-small">({{ s.Type }})</span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <!-- Storage List (kept for additional info) -->
         <div class="storage-list">
           <div v-if="filteredStorages.length === 0" class="empty-state">
             Inga lager eller bryggor hittades
@@ -64,8 +83,8 @@
               </div>
               <p class="storage-type">{{ storage.Type }}</p>
               <p class="storage-size">{{ storage.Height }}m × {{ storage.width }}m</p>
-              <div class="storage-meta-row">
-                <span class="boat-count">{{ getStorageBoatCount(storage.id) }}</span>
+              <div class="storage-meta-row compact">
+                <span class="boat-count-small">{{ getStorageBoatCount(storage.id) }}</span>
                 <span class="meta-label">båtar</span>
                 <span v-if="getStorageStatusCounts(storage.id).total > 0" class="status-breakdown">
                   ({{ getStorageStatusCounts(storage.id).placerad }}P/{{ getStorageStatusCounts(storage.id).reserverad }}R/{{ getStorageStatusCounts(storage.id).oplacerad }}O)
@@ -131,7 +150,7 @@
             <button @click="zoomOut" class="toolbar-button" title="Zooma ut"><ZoomOut class="button-icon" /></button>
             <button @click="zoomIn" class="toolbar-button" title="Zooma in"><ZoomIn class="button-icon" /></button>
             <div class="input-group">
-              <input v-model="zoomPercentage" @change="setZoomFromPercentage" class="toolbar-input zoom-input" type="number" min="25" max="300" step="25" />
+              <input v-model="zoomPercentage" @change="setZoomFromPercentage" class="toolbar-input zoom-input wide" type="number" min="25" max="300" step="25" />
               <span class="input-unit">%</span>
             </div>
           </div>
@@ -636,6 +655,7 @@ const selectedBoat = ref<Boat | null>(null);
 const selectedPlacedBoat = ref<Boat | null>(null);
 const selectedPlacement = ref<BoatPlacement | null>(null);
 const storageFilter = ref<string>('all');
+const storageSelectValue = ref<string | null>(null);
 const boatSearchQuery = ref<string>('');
 const clearBoatSearch = () => { boatSearchQuery.value = ''; };
   const boatListScope = ref<'default'|'all'|'placed'|'reserved'|'partial'>('default');
@@ -836,6 +856,15 @@ const filteredStorages = computed(() => {
   }
   return storages.value.filter(s => s.Type === storageFilter.value);
 });
+
+const onStorageSelect = (val: string) => {
+  const id = Number(val);
+  const s = storages.value.find(st => st.id === id);
+  if (s) {
+    storageSelectValue.value = String(id);
+    selectStorage(s, true);
+  }
+};
 
 // Storage compatibility check
 const isBoatCompatibleWithStorage = (boat: Boat, storage: Storage) => {
@@ -3566,6 +3595,7 @@ onMounted(async () => {
 .zoom-input {
   width: 3rem;
 }
+.zoom-input.wide { width: 4.5rem; }
 
 .input-unit {
   font-size: 0.625rem;
@@ -3873,6 +3903,12 @@ onMounted(async () => {
 .boat-count {
   font-weight: 600;
   color: #374151;
+}
+
+.boat-count-small {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.75rem; /* match rest */
 }
 
 .status-breakdown {
