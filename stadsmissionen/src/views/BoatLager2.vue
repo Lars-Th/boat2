@@ -3528,6 +3528,11 @@ onMounted(async () => {
   margin: 0;
 }
 
+.meta-label {
+  font-size: 0.625rem;
+  color: #6b7280;
+}
+
 .storage-floors {
   color: #2563eb;
   font-weight: 500;
