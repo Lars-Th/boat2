@@ -592,6 +592,10 @@ const PATH_BOUNDS = {
   height: 73 - 5   // 68
 };
 
+// Kalibreringsfaktor för att kompensera pathens kurv-spets som sticker ut visuellt
+// Minskar ritad längd ~2% så 23.7m + 1.0m marginal ≈ 24.7 rutor istället för ~25.2
+const PATH_FUDGE_X = 0.98; // endast längsled
+
 // State styles - EXAKT samma som BoatDetailCanvas.vue
 const stateStyles: Record<string, { hull: any; margin: any }> = {
   // PLACEMENT STATUS (korrekta från BoatDetailCanvas)
@@ -2152,7 +2156,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   // Scale hull
   // Skala pathen till verkliga mått (utan fill-ratio-korrektion) så ritning matchar grid
   // Skala pathen så att dess faktiska tecknade område (PATH_BOUNDS) motsvarar verkliga mått
-  const hullScaleX = baseLength / PATH_BOUNDS.width;
+  const hullScaleX = (baseLength / PATH_BOUNDS.width) * PATH_FUDGE_X;
   const hullScaleY = baseWidth / PATH_BOUNDS.height;
 
   hullPath.scale({ x: hullScaleX, y: hullScaleY });
@@ -2162,7 +2166,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   });
 
   // Scale margin
-  const marginScaleX = (baseLength + 2 * baseMargin) / PATH_BOUNDS.width;
+  const marginScaleX = ((baseLength + 2 * baseMargin) / PATH_BOUNDS.width) * PATH_FUDGE_X;
   const marginScaleY = (baseWidth + 2 * baseMargin) / PATH_BOUNDS.height;
 
   marginPath.scale({ x: marginScaleX, y: marginScaleY });
