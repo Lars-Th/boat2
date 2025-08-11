@@ -25,5 +25,3 @@ function main() {
 }
 
 main();
-
-

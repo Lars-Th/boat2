@@ -1316,11 +1316,17 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
 
   const hullWidth = currentBoat.length * SVG_CONSTANTS.PX_PER_M;
   const hullHeight = currentBoat.width * SVG_CONSTANTS.PX_PER_M;
-  const marginSize = currentBoat.safety_margin * SVG_CONSTANTS.PX_PER_M;
+  const marginSize = (currentBoat.safety_margin ?? 0.5) * SVG_CONSTANTS.PX_PER_M;
 
   // Create rotated rectangles for current boat
   const currentHullRect = createRotatedRectangle(currentX, currentY, hullWidth, hullHeight, currentRotation);
-  const currentMarginRect = createRotatedRectangle(currentX, currentY, hullWidth + marginSize, hullHeight + marginSize, currentRotation);
+  const currentMarginRect = createRotatedRectangle(
+    currentX,
+    currentY,
+    hullWidth + 2 * marginSize,
+    hullHeight + 2 * marginSize,
+    currentRotation
+  );
 
   // Check storage/dock boundary rule using margin rectangle
   const storageWidth = selectedStorage.value.Height * 10;
@@ -1358,11 +1364,17 @@ const checkBoatCollisions = (currentBoat: Boat, currentPlacement: BoatPlacement)
 
     const otherHullWidth = otherBoat.length * SVG_CONSTANTS.PX_PER_M;
     const otherHullHeight = otherBoat.width * SVG_CONSTANTS.PX_PER_M;
-    const otherMarginSize = otherBoat.safety_margin * SVG_CONSTANTS.PX_PER_M;
+    const otherMarginSize = (otherBoat.safety_margin ?? 0.5) * SVG_CONSTANTS.PX_PER_M;
 
     // Create rotated rectangles for other boat
     const otherHullRect = createRotatedRectangle(otherX, otherY, otherHullWidth, otherHullHeight, otherRotation);
-    const otherMarginRect = createRotatedRectangle(otherX, otherY, otherHullWidth + otherMarginSize, otherHullHeight + otherMarginSize, otherRotation);
+    const otherMarginRect = createRotatedRectangle(
+      otherX,
+      otherY,
+      otherHullWidth + 2 * otherMarginSize,
+      otherHullHeight + 2 * otherMarginSize,
+      otherRotation
+    );
 
     // HULL COLLISION TEMPORÄRT KOMMENTERAD BORT (2024-12-27)
     // Kommenteras bort för att ge mer frihet i placering utan stress av helt röda båtar
@@ -2117,7 +2129,7 @@ const drawBoat = (boat: Boat, placement: BoatPlacement) => {
   // Calculate scaling
   const baseLength = boat.length * SVG_CONSTANTS.PX_PER_M;
   const baseWidth = boat.width * SVG_CONSTANTS.PX_PER_M;
-  const baseMargin = boat.safety_margin * SVG_CONSTANTS.PX_PER_M;
+  const baseMargin = (boat.safety_margin ?? 0.5) * SVG_CONSTANTS.PX_PER_M;
 
   // Scale hull
   const hullScaleX = baseLength / SVG_CONSTANTS.HULL_VB.w;
