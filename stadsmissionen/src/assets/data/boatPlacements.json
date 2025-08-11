@@ -27,8 +27,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 40,
-      "y": 25,
+      "x": 122,
+      "y": 37,
       "rotation": 0
     },
     "placed_by_user_id": 3,
@@ -37,7 +37,7 @@
     "physical_placement_date": "2025-05-19T15:54:59.676643Z",
     "notes": "Automatiskt genererad placement för Ocean Pearl i Stockholm Centrallager",
     "created_at": "2024-08-13T15:54:59.676644Z",
-    "updated_at": "2025-08-05T15:54:59.676646Z"
+    "updated_at": "2025-08-11T07:07:00.293Z"
   },
   {
     "id": 36,
@@ -147,7 +147,7 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 520,
+      "x": 501.5,
       "y": 200,
       "rotation": 90
     },
@@ -157,7 +157,7 @@
     "physical_placement_date": "2025-05-09T15:54:59.676699Z",
     "notes": "Automatiskt genererad placement för Wave Master i Stockholm Centrallager",
     "created_at": "2025-05-04T15:54:59.676700Z",
-    "updated_at": "2025-07-09T15:54:59.676702Z"
+    "updated_at": "2025-08-11T07:07:00.293Z"
   },
   {
     "id": 7,
@@ -388,7 +388,7 @@
     "status": "reserverad",
     "position": {
       "x": 250,
-      "y": 320,
+      "y": 299,
       "rotation": 0
     },
     "placed_by_user_id": 2,
@@ -397,7 +397,7 @@
     "physical_placement_date": null,
     "notes": "Automatiskt genererad placement för Storm Rider i Stockholm Centrallager",
     "created_at": "2024-09-16T15:54:59.676849Z",
-    "updated_at": "2025-07-19T15:54:59.676851Z"
+    "updated_at": "2025-08-11T07:07:00.293Z"
   },
   {
     "id": 20,
@@ -407,8 +407,8 @@
     "floor_number": 1,
     "status": "placerad",
     "position": {
-      "x": 428,
-      "y": 291,
+      "x": 423,
+      "y": 289,
       "rotation": 0
     },
     "placed_by_user_id": 3,
@@ -417,7 +417,7 @@
     "physical_placement_date": "2025-05-19T15:54:59.676881Z",
     "notes": "Automatiskt genererad placement för Sun Seeker i Stockholm Centrallager",
     "created_at": "2024-09-12T15:54:59.676883Z",
-    "updated_at": "2025-07-13T15:54:59.676884Z"
+    "updated_at": "2025-08-11T07:07:00.293Z"
   },
   {
     "id": 21,
