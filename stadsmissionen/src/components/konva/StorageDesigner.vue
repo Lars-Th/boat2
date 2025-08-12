@@ -247,8 +247,8 @@
         </div>
       </template>
 
-      <!-- Restriction Zones Section (only on main floor) -->
-      <template v-if="isMainFloor && !isStorageFloor">
+      <!-- Restriction Zones Section (main floor) -->
+      <template v-if="isMainFloor">
         <div class="toolbar-separator"></div>
 
         <div class="zones-section">
@@ -829,9 +829,8 @@ const initCanvas = () => {
     // Setup mouse events for drawing
     setupDrawingEvents();
 
-    // Draw initial layout
-    updateStorageLayout();
-    renderRestrictionZones();
+    // Draw initial layout respecting storage type
+    updateActiveFloorDisplay();
 
     // Center storage on initial load
     centerStorage();
@@ -1075,9 +1074,8 @@ const handleResize = () => {
     stage.width(canvasSize.value.width);
     stage.height(canvasSize.value.height);
 
-    // Redraw everything
-    updateStorageLayout();
-    renderRestrictionZones();
+    // Redraw everything respecting storage type
+    updateActiveFloorDisplay();
   }, 100);
 };
 
@@ -1271,7 +1269,7 @@ const drawGrid = () => {
   }
 };
 
-// Create restriction zone
+// Create restriction zone (allowed for both warehouses and docks)
 const createRestrictionZone = (x: number, y: number, width: number, height: number) => {
   const zone: RestrictionZone = {
     id: nextZoneId.value,
@@ -1335,18 +1333,19 @@ const renderRestrictionZones = () => {
     });
 
         // Add label (centered in the middle of the zone, relative to group)
+    const baseFontSize = storageType.value === 'dock' ? 10 : Math.max(10, pixelsPerMeter.value * 1.5);
     const text = new Konva.Text({
       x: pixelWidth / 2,
       y: pixelHeight / 2,
       text: zone.name,
-      fontSize: 10,
+      fontSize: baseFontSize,
       fill: isOtherSelected ? '#a0a0a0' : '#800000', // Dim text color for unselected zones
       fontFamily: 'Arial',
       fontStyle: 'bold',
       align: 'center',
       verticalAlign: 'middle',
       offsetX: 0, // Will be set based on text width
-      offsetY: 5, // Half of fontSize to center vertically
+      offsetY: baseFontSize / 2, // Center vertically based on font size
       listening: true, // Enable clicking on text too
     });
 
@@ -1588,7 +1587,7 @@ const loadFloorDesign = async () => {
       storageWidth.value = 30.0;
     }
 
-    // Load restriction zones for this storage (main floor data)
+    // Load restriction zones for this storage (main floor data) - warehouses only
     await loadRestrictionZones();
 
     // Ensure active floor is valid for this storage
@@ -1672,7 +1671,7 @@ const updateActiveFloorDisplay = () => {
   updateStorageLayout();
 
   if (isMainFloor.value) {
-    // Main floor - show restriction zones (max unlimited per floor)
+    // Main floor - show restriction zones for both warehouses and docks
     renderRestrictionZones();
     console.log('🏢 Displaying main floor - restriction zones');
   } else if (isStorageFloor.value) {

@@ -38,12 +38,7 @@ const getLocationStatusText = (status: string) => {
   return statusMap[status] || status;
 };
 
-const getNotificationStatus = (sms: boolean, email: boolean) => {
-  if (sms && email) return 'SMS + E-post';
-  if (sms) return 'SMS';
-  if (email) return 'E-post';
-  return 'Inga';
-};
+// notifications removed
 
 // Enrich boats with customer and storage information
 const enrichedBoats = computed(() => {
@@ -71,16 +66,8 @@ const enrichedBoats = computed(() => {
       move_from_storage_formatted: boat.move_from_storage_date
         ? new Date(boat.move_from_storage_date).toLocaleDateString('sv-SE')
         : '-',
-      move_to_brygga_formatted: boat.move_to_brygga_date
-        ? new Date(boat.move_to_brygga_date).toLocaleDateString('sv-SE')
-        : '-',
-      move_from_brygga_formatted: boat.move_from_brygga_date
-        ? new Date(boat.move_from_brygga_date).toLocaleDateString('sv-SE')
-        : '-',
-      service_date_formatted: boat.service_date
-        ? new Date(boat.service_date).toLocaleDateString('sv-SE')
-        : '-',
-      notifications_status: getNotificationStatus(boat.sms_notifications, boat.email_notifications),
+      // removed brygga date columns; keep only storage dates used elsewhere
+      // removed servicedatum and notifications from table view
     };
   });
 });
@@ -140,21 +127,7 @@ const columns = [
     label: 'Platstyp',
     sortable: true,
   },
-  {
-    key: 'storage_location',
-    label: 'Lagringsplats',
-    sortable: true,
-  },
-  {
-    key: 'service_date_formatted',
-    label: 'Servicedatum',
-    sortable: true,
-  },
-  {
-    key: 'notifications_status',
-    label: 'Notiser',
-    sortable: true,
-  },
+  // Removed both storage location columns
   {
     key: 'actions',
     label: 'Åtgärder',
@@ -175,6 +148,7 @@ const addActions = [
         id: Math.max(...boatsData.map(b => b.id)) + 1,
         customer_id: 1, // Default to first customer
         name: '',
+        registreringsnummer: '',
         length: 0,
         width: 0,
         safety_margin: 0,
@@ -183,10 +157,8 @@ const addActions = [
         current_status: 'oplacerad',
         location_status: 'lager',
         current_placement_id: null,
-        move_to_storage_date: null,
-        move_from_storage_date: null,
-        move_to_brygga_date: null,
-        move_from_brygga_date: null,
+        move_to_storage_date: '',
+        move_from_storage_date: '',
         service_date: null,
         notes: '',
         created_at: new Date().toISOString(),
@@ -199,7 +171,7 @@ const addActions = [
       boatsData.push(newBoat);
       router.push(`/boats/${newBoat.id}?isNew=true`);
     },
-    variant: 'default' as const,
+    variant: 'primary' as const,
   },
 ];
 

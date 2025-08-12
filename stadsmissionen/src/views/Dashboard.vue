@@ -85,11 +85,15 @@
     <!-- Map Content -->
         <div class="mx-4 mt-4">
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <!-- Storage List Panel - Narrower -->
+        <!-- Storage List Panel - Styled like BoatLager2.vue -->
         <div class="lg:col-span-1">
-          <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div class="p-3 border-b border-gray-200">
-              <h3 class="text-base font-semibold text-gray-900 mb-2">Lagringsplatser</h3>
+          <div class="storage-panel">
+            <div class="panel-title">
+              <Building2 class="panel-icon" />
+              Lagringsplatser
+            </div>
+
+            <div class="filter-section">
               <button
                 @click="startAddNewStorage"
                 :disabled="isRelocateMode"
@@ -98,36 +102,42 @@
                 + Lägg till ny
               </button>
             </div>
-            <!-- Flexible height container with proper scrolling -->
-            <div class="max-h-[calc(100vh-300px)] min-h-[400px] overflow-y-auto">
-              <div class="p-3 space-y-2">
-                <div v-for="location in combinedStorageData" :key="location.id"
-                     class="p-2 border rounded-lg hover:bg-gray-50 transition-colors">
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1 min-w-0">
-                      <h4 class="font-medium text-gray-900 text-xs truncate">{{ location.name }}</h4>
-                      <p class="text-xs text-gray-600 mt-1">{{ location.Type }}</p>
-                      <p class="text-xs text-gray-500 mt-1 truncate">{{ location.Lat.toFixed(3) }}, {{ location.Long.toFixed(3) }}</p>
-                    </div>
-                    <div class="flex flex-col items-end space-y-1 flex-shrink-0">
-                      <div class="w-2 h-2 rounded-full"
-                           :class="location.Type === 'Brygga' ? 'bg-green-500' : location.Type === 'Ny' ? 'bg-orange-500' : 'bg-red-500'"></div>
-                      <div class="flex space-x-1">
-                        <button
-                          @click="highlightLocationOnMap(location.id, location.name)"
-                          :disabled="isRelocateMode"
-                          class="text-xs px-1.5 py-0.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
-                        >
-                          Visa på karta
-                        </button>
-                        <button
-                          @click="startRelocate(location.id, location.name)"
-                          :disabled="isRelocateMode"
-                          class="text-xs px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors disabled:opacity-50"
-                        >
-                          Flytta
-                        </button>
-                      </div>
+
+            <div class="storage-list">
+              <div v-if="combinedStorageData.length === 0" class="empty-state">
+                Inga lagringsplatser hittades
+              </div>
+              <div v-for="location in combinedStorageData" :key="location.id"
+                   :class="['storage-item', { active: false }]"
+                   :data-type="location.Type">
+                <div class="storage-info">
+                  <h4 class="storage-name">{{ location.name }} ({{ location.id }})</h4>
+                  <p class="storage-type">{{ location.Type }}</p>
+                  <p class="storage-size">{{ location.Height }}m × {{ location.width }}m</p>
+                  <p class="storage-status">{{ location.Lat.toFixed(3) }}, {{ location.Long.toFixed(3) }}</p>
+                  <div class="storage-owner-row">
+                    <Building2 v-if="location.Type === 'Lager'" class="w-3 h-3 mr-1" />
+                    <Anchor v-else class="w-3 h-3 mr-1" />
+                    <span class="storage-meta">{{ location.Type }}</span>
+                  </div>
+                  <div class="compatibility-row">
+                    <div class="compat-actions">
+                      <button
+                        @click="highlightLocationOnMap(location.id, location.name)"
+                        :disabled="isRelocateMode"
+                        class="icon-btn"
+                        title="Visa på karta"
+                      >
+                        <MapPin class="button-icon" />
+                      </button>
+                      <button
+                        @click="startRelocate(location.id, location.name)"
+                        :disabled="isRelocateMode"
+                        class="icon-btn"
+                        title="Flytta"
+                      >
+                        <Move class="button-icon" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -139,28 +149,14 @@
         <!-- Map Container - Takes more space -->
         <div class="lg:col-span-4">
           <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <!-- Map header -->
-            <div class="p-6 border-b border-gray-200">
-              <h2 class="text-xl font-semibold text-gray-900 mb-2">Interaktiv karta</h2>
-              <p class="text-gray-600 text-sm">
-                {{ companiesData[0]?.display_name }} - {{ companiesData[0]?.city }} • {{ currentStyleName }}
-              </p>
-            </div>
+
 
             <!-- Instructions Panel -->
-            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-green-50 border-b border-gray-200">
-              <div class="flex items-center text-sm">
-                <div class="flex-shrink-0 mr-3">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"></path>
-                  </svg>
-                </div>
-                <div class="text-blue-800">
-                  <strong>🗺️ Kartvy aktiv</strong> som standard •
-                  <strong>📋 Använd listan</strong> för att hantera lagringsplatser •
-                  <strong>🎯 Klicka "Flytta"</strong> för att flytta markörer
-                </div>
+            <div class="dashboard-toolbar">
+              <div class="toolbar-text">
+                <strong>Kartvy aktiv</strong> som standard •
+                <strong>Använd listan</strong> för att hantera lagringsplatser •
+                <strong>Klicka "Flytta"</strong> för att flytta markörer
               </div>
             </div>
 
@@ -184,7 +180,7 @@
                   @change="changeMapStyle"
                   class="mr-2"
                 />
-                <span class="text-gray-700">🗺️ Gatukarta</span>
+                <span class="text-gray-700">Gatukarta</span>
               </label>
               <label class="flex items-center text-sm">
                 <input
@@ -194,7 +190,7 @@
                   @change="changeMapStyle"
                   class="mr-2"
                 />
-                <span class="text-gray-700">🛰️ Satellitvy</span>
+                <span class="text-gray-700">Satellitvy</span>
               </label>
               <label class="flex items-center text-sm">
                 <input
@@ -204,7 +200,7 @@
                   @change="changeMapStyle"
                   class="mr-2"
                 />
-                <span class="text-gray-700">🌍 Hybrid</span>
+                <span class="text-gray-700">Hybrid</span>
               </label>
             </div>
           </div>
@@ -256,6 +252,7 @@ import { useRoute } from 'vue-router';
 import { Map, NavigationControl, Marker, Popup } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useToast } from '@/composables/useToast';
+import { Building2, Anchor, MapPin, Move } from 'lucide-vue-next';
 
 // Components
 import StandardHeader from '@/components/layout/StandardHeader.vue';
@@ -476,9 +473,7 @@ const mapStyles = {
   }
 };
 
-const currentStyleName = computed(() => {
-  return mapStyles[selectedStyle.value as keyof typeof mapStyles]?.name || 'Okänd stil';
-});
+
 
 // Map new storage data structure to old format for compatibility
 const combinedStorageData = computed(() => {
@@ -929,5 +924,263 @@ input[type="radio"] {
 :deep(.highlighted-marker) {
   filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.6));
   z-index: 1000 !important;
+}
+
+/* Dashboard toolbar matching BoatLager2.vue canvas toolbar */
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid #e2e8f0;
+  min-height: 3.5rem;
+}
+
+.toolbar-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Storage panel styling matching BoatLager2.vue */
+.storage-panel {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  height: 100%;
+  max-height: calc(100vh - 200px);
+  min-height: 400px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.panel-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.filter-section {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.storage-list {
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+/* Scrollbar styling matching BoatLager2.vue */
+.storage-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.storage-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.storage-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  border: 1px solid #f1f5f9;
+}
+
+.storage-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.storage-item {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.storage-item:last-child {
+  margin-bottom: 0.75rem;
+}
+
+.storage-item:hover {
+  border-color: #3b82f6;
+  background: #f8fafc;
+}
+
+.storage-item.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.storage-item[data-type="Lager"] {
+  border-left: 3px solid #7c3aed;
+}
+
+.storage-item[data-type="Brygga"] {
+  border-left: 3px solid #0ea5e9;
+}
+
+.storage-info {
+  flex: 1;
+}
+
+.storage-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.25rem 0;
+}
+
+.storage-type,
+.storage-size,
+.storage-status {
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.storage-owner-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin: 0.25rem 0;
+}
+
+.storage-meta {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.compatibility-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.375rem;
+  gap: 0.5rem;
+}
+
+.compat-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.empty-state {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px dashed #e5e7eb;
+  border-radius: 0.375rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+/* Responsive adjustments for better list display */
+@media (max-height: 700px) {
+  .storage-panel {
+    max-height: calc(100vh - 150px);
+    min-height: 300px;
+  }
+}
+
+@media (max-height: 600px) {
+  .storage-panel {
+    max-height: calc(100vh - 120px);
+    min-height: 250px;
+  }
+
+  .storage-item {
+    padding: 0.5rem;
+  }
+
+  .panel-title {
+    padding: 0.75rem;
+  }
+
+  .filter-section {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-height: 500px) {
+  .storage-panel {
+    max-height: calc(100vh - 100px);
+    min-height: 200px;
+  }
+}
+
+/* Tablet and smaller screens */
+@media (max-width: 1024px) {
+  .storage-panel {
+    max-height: calc(100vh - 180px);
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 768px) {
+  .storage-panel {
+    max-height: calc(100vh - 160px);
+    min-height: 300px;
+  }
+
+  .storage-item {
+    padding: 0.5rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .storage-name {
+    font-size: 0.8rem;
+  }
 }
 </style>

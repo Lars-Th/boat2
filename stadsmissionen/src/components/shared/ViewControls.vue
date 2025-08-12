@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Component, computed } from 'vue';
+import { type Component, computed, ref, watchEffect } from 'vue';
 import Button from '@/components/common/Button.vue';
 import { Input } from '@/components/ui/input';
 import {
@@ -85,6 +85,13 @@ const emit = defineEmits<{
   'update:viewMode': [value: 'list' | 'grid'];
 }>();
 
+// Local mirror for filter values to ensure immediate Select UI updates
+const localFilterValues = ref<string[]>([]);
+
+watchEffect(() => {
+  localFilterValues.value = props.filters.map(f => f.modelValue ?? '');
+});
+
 // Computed property to get the correct action buttons (support both prop names)
 const leftActionButtons = computed(() => {
   return props.addActions.length > 0 ? props.addActions : props.actionButtons;
@@ -106,10 +113,11 @@ const updateSecondaryFilter = (value: unknown) => {
   emit('update:secondaryFilter', stringValue);
 };
 
-// Helper function to handle filter changes
-const handleFilterChange = (filter: Filter) => {
+// Index-aware change handler keeps local and parent in sync
+const handleIndexedFilterChange = (index: number, filter: Filter) => {
   return (value: unknown) => {
     const stringValue = String(value ?? '');
+    localFilterValues.value[index] = stringValue;
     filter.onChange(stringValue);
   };
 };
@@ -159,7 +167,7 @@ const handleFilterChange = (filter: Filter) => {
           :model-value="searchQuery"
           :placeholder="searchPlaceholder"
           class="w-64 h-8 text-xs"
-          @update:model-value="updateSearchQuery"
+          @update:modelValue="updateSearchQuery"
         />
       </div>
 
@@ -171,8 +179,8 @@ const handleFilterChange = (filter: Filter) => {
           <Select
             v-for="(filter, index) in filters"
             :key="index"
-            :model-value="filter.modelValue"
-            @update:model-value="handleFilterChange(filter)"
+            :model-value="localFilterValues[index]"
+            @update:modelValue="handleIndexedFilterChange(index, filter)"
           >
             <SelectTrigger class="w-[160px] h-8 text-xs">
               <SelectValue :placeholder="filter.placeholder" />
@@ -191,7 +199,7 @@ const handleFilterChange = (filter: Filter) => {
           <Select
             v-if="filterOptions.length > 0"
             :model-value="statusFilter"
-            @update:model-value="updateStatusFilter"
+            @update:modelValue="updateStatusFilter"
           >
             <SelectTrigger class="w-[160px] h-8 text-xs">
               <SelectValue placeholder="Filtrera status" />
@@ -207,7 +215,7 @@ const handleFilterChange = (filter: Filter) => {
           <Select
             v-if="secondaryFilterOptions.length > 0"
             :model-value="secondaryFilter"
-            @update:model-value="updateSecondaryFilter"
+            @update:modelValue="updateSecondaryFilter"
           >
             <SelectTrigger class="w-[180px] h-8 text-xs">
               <SelectValue :placeholder="`Filtrera ${secondaryFilterLabel.toLowerCase()}`" />

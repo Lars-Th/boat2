@@ -63,6 +63,7 @@ const customerBoats = computed(() => {
     }));
 });
 
+
 // Form fields
 const mainFields = [
   {
@@ -408,4 +409,6 @@ const handleSubItemClick = (tableKey: string, item: any) => {
   <div v-else class="flex items-center justify-center h-64">
     <p class="text-gray-500">Kund hittades inte</p>
   </div>
+
+
 </template>

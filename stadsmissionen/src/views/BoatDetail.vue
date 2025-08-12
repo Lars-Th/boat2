@@ -5,8 +5,7 @@ import { useToast } from '@/composables/useToast';
 import DetailPage from '@/components/shared/DetailPage.vue';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, MessageSquare, Send, Calendar, Ship, User, MapPin } from 'lucide-vue-next';
-import BoatDetailCanvas from '@/components/konva/BoatDetailCanvas.vue';
+import { Calendar, Ship, User, MapPin } from 'lucide-vue-next';
 
 // Import data
 import boatsData from '@/assets/data/boats.json';
@@ -29,9 +28,6 @@ interface ExtendedBoat {
   current_placement_id: number | null;
   move_to_storage_date: string | null;
   move_from_storage_date: string | null;
-  move_to_brygga_date: string | null;
-  move_from_brygga_date: string | null;
-  service_date: string | null;
   notes: string;
   created_at: string;
   updated_at: string;
@@ -44,7 +40,6 @@ interface ExtendedBoat {
   dimensions?: string;
   area?: string;
   weight_display?: string;
-  current_status_text?: string;
   location_status_text?: string;
   // Index signature for dynamic field access
   [key: string]: any;
@@ -67,7 +62,7 @@ const boatId = computed(() => {
   return parseInt(route.params['id'] as string);
 });
 
-const boatData = computed(() => {
+const boatData = computed<ExtendedBoat | null>(() => {
   const foundBoat = boatsData.find(b => b.id === boatId.value);
   if (!foundBoat) return null;
 
@@ -92,9 +87,8 @@ const boatData = computed(() => {
     dimensions: `${foundBoat.length} × ${foundBoat.width} m`,
     area: `${(foundBoat.length * foundBoat.width).toFixed(1)} m²`,
     weight_display: foundBoat.weight ? `${foundBoat.weight} kg` : '-',
-    current_status_text: getStatusText(foundBoat.current_status),
     location_status_text: getLocationStatusText(foundBoat.location_status),
-  };
+  } as ExtendedBoat;
 });
 
 // Customer options for dropdown
@@ -104,13 +98,6 @@ const customerOptions = computed(() => {
     label: customer.display_name,
   }));
 });
-
-// Status options - KORREKTA status-värden
-const statusOptions = [
-  { value: 'oplacerad', label: 'Oplacerad' },
-  { value: 'placerad', label: 'Placerad' },
-  { value: 'reserverad', label: 'Reserverad' },
-];
 
 const locationStatusOptions = [
   { value: 'lager', label: 'Lager' },
@@ -133,22 +120,13 @@ const mainFields = [
   { key: 'safety_margin', label: 'Säkerhetsmarginal (m)', type: 'number' as const },
   { key: 'weight', label: 'Vikt (kg)', type: 'number' as const },
   {
-    key: 'current_status',
-    label: 'Aktuell status',
-    type: 'select' as const,
-    options: statusOptions
-  },
-  {
     key: 'location_status',
     label: 'Platstyp',
     type: 'select' as const,
     options: locationStatusOptions
   },
-  { key: 'move_to_storage_date', label: 'Flytta till lager', type: 'date' as const },
-  { key: 'move_from_storage_date', label: 'Flytta från lager', type: 'date' as const },
-  { key: 'move_to_brygga_date', label: 'Flytta till brygga', type: 'date' as const },
-  { key: 'move_from_brygga_date', label: 'Flytta från brygga', type: 'date' as const },
-  { key: 'service_date', label: 'Servicedatum', type: 'date' as const },
+  { key: 'move_to_storage_date', label: 'Flytt till lager (höst)', type: 'date' as const },
+  { key: 'move_from_storage_date', label: 'Ut från lager (vår)', type: 'date' as const },
   { key: 'notes', label: 'Anteckningar', type: 'textarea' as const },
 ];
 
@@ -158,7 +136,6 @@ const sidebarFields = [
   { key: 'area', label: 'Area', type: 'text' as const },
   { key: 'weight_display', label: 'Vikt', type: 'text' as const },
   { key: 'storage_location', label: 'Lagerplats', type: 'text' as const },
-  { key: 'current_status_text', label: 'Status', type: 'text' as const },
   { key: 'location_status_text', label: 'Platstyp', type: 'text' as const },
   { key: 'created_at', label: 'Skapad', type: 'date' as const },
   { key: 'updated_at', label: 'Uppdaterad', type: 'date' as const },
@@ -181,41 +158,15 @@ const stats = computed(() => {
 
   return [
     {
-      label: 'Status',
-      value: boat.value.current_status_text || '-',
-      color: getStatusColor(boat.value.current_status),
-    },
-    {
       label: 'Platstyp',
       value: boat.value.location_status_text || '-',
       color: getLocationColor(boat.value.location_status),
     },
-    {
-      label: 'SMS',
-      value: boat.value.sms_notifications ? 'Aktivt' : 'Inaktivt',
-      color: boat.value.sms_notifications ? 'green' : 'gray',
-    },
-    {
-      label: 'E-post',
-      value: boat.value.email_notifications ? 'Aktivt' : 'Inaktivt',
-      color: boat.value.email_notifications ? 'green' : 'gray',
-    },
+    // Notifications removed from stats
   ];
 });
 
 // Helper functions
-const getStatusText = (status: string) => {
-  const statusMap: { [key: string]: string } = {
-    oplacerad: 'Oplacerad',
-    placerad: 'Placerad',
-    reserverad: 'Reserverad',
-    // Legacy support (gamla felaktiga värden)
-    i_lager: 'Placerad (i lager)',
-    vid_brygga: 'Placerad (vid brygga)',
-  };
-  return statusMap[status] || status;
-};
-
 const getLocationStatusText = (status: string) => {
   const statusMap: { [key: string]: string } = {
     lager: 'Lager',
@@ -223,18 +174,6 @@ const getLocationStatusText = (status: string) => {
     lager_brygga: 'Lager & Brygga',
   };
   return statusMap[status] || status;
-};
-
-const getStatusColor = (status: string) => {
-  const colorMap: { [key: string]: string } = {
-    oplacerad: 'green',     // Grön för oplacerad (kan placeras)
-    placerad: 'blue',       // Blå för placerad fysiskt
-    reserverad: 'gray',     // Grå för reserverad plats
-    // Legacy support (gamla felaktiga värden)
-    i_lager: 'blue',
-    vid_brygga: 'blue',
-  };
-  return colorMap[status] || 'gray';
 };
 
 const getLocationColor = (status: string) => {
@@ -246,31 +185,7 @@ const getLocationColor = (status: string) => {
   return colorMap[status] || 'gray';
 };
 
-// Notification functions
-const sendNotification = (type: 'sms' | 'email' | 'both') => {
-  if (!boat.value) return;
-
-  const customer = customersData.find(c => c.id === boat.value!.customer_id);
-
-  let message = '';
-  switch (type) {
-    case 'sms':
-      message = `SMS skickat till ${customer?.display_name || 'kund'} angående båt ${boat.value.name}`;
-      break;
-    case 'email':
-      message = `E-post skickat till ${customer?.display_name || 'kund'} angående båt ${boat.value.name}`;
-      break;
-    case 'both':
-      message = `SMS och e-post skickat till ${customer?.display_name || 'kund'} angående båt ${boat.value.name}`;
-      break;
-  }
-
-  addToast({
-    title: 'Notifikation skickad',
-    message,
-    type: 'success',
-  });
-};
+// Notification actions removed
 
 // Event handlers
 const handleSave = async () => {
@@ -331,8 +246,8 @@ const navigateBack = () => {
   if (fromCustomerId.value) {
     router.push(`/customers/${fromCustomerId.value}`);
   } else {
-      router.push('/boats');
-    }
+    router.push('/boats');
+  }
 };
 
 const handleDiscardChanges = () => {
@@ -351,36 +266,34 @@ const handleDiscardChanges = () => {
 const handleFieldChange = (key: string, value: any) => {
   if (!boat.value) return;
 
-    if (key === 'customer_id') {
+  if (key === 'customer_id') {
     boat.value.customer_id = parseInt(value);
 
     // Update customer info
-      const customer = customersData.find(c => c.id === boat.value!.customer_id);
-      if (customer) {
-        boat.value.customer_name = customer.display_name;
-        boat.value.customer_type = customer.first_name ? 'individual' : 'company';
-      }
-    } else if (key === 'sms_notifications' || key === 'email_notifications') {
-      (boat.value as any)[key] = value === 'true';
-    } else {
-      (boat.value as any)[key] = value;
+    const customer = customersData.find(c => c.id === boat.value!.customer_id);
+    if (customer) {
+      boat.value.customer_name = customer.display_name;
+      boat.value.customer_type = customer.first_name ? 'individual' : 'company';
+    }
+  } else if (key === 'sms_notifications' || key === 'email_notifications') {
+    (boat.value as any)[key] = value === 'true';
+  } else {
+    (boat.value as any)[key] = value;
 
     // Update computed fields
     if (key === 'length' || key === 'width') {
       boat.value.dimensions = `${boat.value.length} × ${boat.value.width} m`;
       boat.value.area = `${(boat.value.length * boat.value.width).toFixed(1)} m²`;
-      } else if (key === 'weight') {
-        boat.value.weight_display = boat.value.weight ? `${boat.value.weight} kg` : '-';
-      } else if (key === 'current_status') {
-      boat.value.current_status_text = getStatusText(value);
-      } else if (key === 'location_status') {
+    } else if (key === 'weight') {
+      boat.value.weight_display = boat.value.weight ? `${boat.value.weight} kg` : '-';
+    } else if (key === 'location_status') {
       boat.value.location_status_text = getLocationStatusText(value);
-      }
     }
+  }
 
-    if (!isInitialLoad.value) {
-      hasUnsavedChanges.value = true;
-    }
+  if (!isInitialLoad.value) {
+    hasUnsavedChanges.value = true;
+  }
 };
 
 // Initialize data
@@ -418,9 +331,6 @@ onMounted(() => {
       current_placement_id: null,
       move_to_storage_date: null,
       move_from_storage_date: null,
-      move_to_brygga_date: null,
-      move_from_brygga_date: null,
-      service_date: null,
       notes: '',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -433,7 +343,6 @@ onMounted(() => {
       dimensions: '0 × 0 m',
       area: '0.0 m²',
       weight_display: '-',
-      current_status_text: 'Oplacerad',
       location_status_text: 'Lager',
     };
 
@@ -464,7 +373,7 @@ watch(
       setTimeout(() => {
         isInitialLoad.value = false;
       }, 100);
-  }
+    }
   }
 );
 </script>
@@ -537,57 +446,9 @@ watch(
           </div>
         </div>
       </div>
-
-      <!-- Boat Canvas - Interactive 3D Preview -->
-      <div class="mt-6">
-        <div class="bg-white rounded-lg border p-6">
-          <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-700">
-            <Ship class="h-5 w-5" />
-            Båtvisualisering
-          </h3>
-          <div class="text-sm text-gray-600 mb-4">
-            Interaktiv förhandsvisning av båten med dimensioner och visuella tillstånd
-          </div>
-          <BoatDetailCanvas
-            :initial-boat-data="boat as any"
-            class="w-full"
-          />
-        </div>
-      </div>
     </template>
 
-    <template #header-actions>
-      <!-- Action buttons -->
-      <div class="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="!boat.sms_notifications"
-          @click="sendNotification('sms')"
-        >
-          <MessageSquare class="h-3 w-3 mr-1" />
-          SMS
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          :disabled="!boat.email_notifications"
-          @click="sendNotification('email')"
-        >
-          <Send class="h-3 w-3 mr-1" />
-          E-post
-        </Button>
-        <Button
-          variant="default"
-          size="sm"
-          :disabled="!boat.sms_notifications && !boat.email_notifications"
-          @click="sendNotification('both')"
-                      >
-          <Bell class="h-3 w-3 mr-1" />
-          Båda
-        </Button>
-                        </div>
-    </template>
+    <!-- header actions removed -->
 
     <template #sidebar-content>
       <!-- Enhanced sidebar with additional info -->
@@ -606,9 +467,9 @@ watch(
                     new Date(boat[field.key]).toLocaleDateString('sv-SE') :
                     boat[field.key] || '-' }}
               </div>
-              </div>
-              </div>
-              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Contact Information -->
         <div class="bg-white rounded-lg border p-4" v-if="boat.customer_id">
@@ -617,83 +478,51 @@ watch(
             Kontaktinformation
           </h3>
           <div class="space-y-2">
-              <div class="space-y-1">
+            <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Ägare</label>
               <div class="text-xs text-gray-700">{{ boat.customer_name }}</div>
-              </div>
-              <div class="space-y-1">
+            </div>
+            <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Typ</label>
               <div class="text-xs text-gray-700">
                 <Badge :variant="boat.customer_type === 'individual' ? 'default' : 'secondary'">
                   {{ boat.customer_type === 'individual' ? 'Privatperson' : 'Företag' }}
                 </Badge>
               </div>
-              </div>
             </div>
           </div>
+        </div>
 
         <!-- Placement Information -->
         <div class="bg-white rounded-lg border p-4">
           <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
             <MapPin class="h-4 w-4" />
             Placeringsinformation
-            </h3>
+          </h3>
           <div class="space-y-2">
             <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Aktuell plats</label>
               <div class="text-xs text-gray-700">{{ boat.storage_location }}</div>
-              </div>
-            <div class="space-y-1">
-              <label class="text-[10px] font-medium text-gray-500">Status</label>
-              <div class="text-xs">
-                <Badge :variant="getStatusColor(boat.current_status) === 'green' ? 'default' : 'secondary'">
-                  {{ boat.current_status_text }}
-                </Badge>
-              </div>
             </div>
           </div>
         </div>
 
-        <!-- Notifications -->
-        <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
-            <Bell class="h-4 w-4" />
-            Notifieringar
-            </h3>
-            <div class="space-y-2">
-              <div class="space-y-1">
-              <label class="text-[10px] font-medium text-gray-500">SMS</label>
-              <div class="text-xs">
-                <Badge :variant="boat.sms_notifications ? 'default' : 'secondary'">
-                  {{ boat.sms_notifications ? 'Aktiverat' : 'Inaktiverat' }}
-                </Badge>
-              </div>
-              </div>
-              <div class="space-y-1">
-              <label class="text-[10px] font-medium text-gray-500">E-post</label>
-              <div class="text-xs">
-                <Badge :variant="boat.email_notifications ? 'default' : 'secondary'">
-                  {{ boat.email_notifications ? 'Aktiverat' : 'Inaktiverat' }}
-                </Badge>
-              </div>
-              </div>
-            </div>
-          </div>
+        <!-- notifications section removed -->
 
         <!-- Timestamps -->
         <div class="bg-white rounded-lg border p-4">
-            <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
+          <h3 class="text-sm font-semibold mb-3 flex items-center gap-2 text-gray-600">
             <Calendar class="h-4 w-4" />
             Tidsstämplar
-            </h3>
-            <div class="space-y-2">
-              <div class="space-y-1">
+          </h3>
+          <div class="space-y-2">
+            <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Skapad</label>
               <div class="text-xs text-gray-700">
                 {{ new Date(boat.created_at).toLocaleDateString('sv-SE') }}
               </div>
-              </div>
-              <div class="space-y-1">
+            </div>
+            <div class="space-y-1">
               <label class="text-[10px] font-medium text-gray-500">Uppdaterad</label>
               <div class="text-xs text-gray-700">
                 {{ new Date(boat.updated_at).toLocaleDateString('sv-SE') }}

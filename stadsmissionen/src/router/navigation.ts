@@ -52,6 +52,12 @@ export const mainNavigationItems: MainNavigationItem[] = [
             icon: Anchor,
             permissions: ['H', 'A', 'SA'],
           },
+          {
+            name: 'Planeringslista',
+            path: '/customers/planning',
+            icon: Anchor,
+            permissions: ['H', 'A', 'SA'],
+          },
         ],
       },
     ],
@@ -74,12 +80,6 @@ export const mainNavigationItems: MainNavigationItem[] = [
           },
           {
             name: 'Båtlager',
-            path: '/boat-placement',
-            icon: Package,
-            permissions: ['H', 'A', 'SA'],
-          },
-          {
-            name: 'Båtlager 2.0',
             path: '/boat-lager2',
             icon: Package,
             permissions: ['H', 'A', 'SA'],

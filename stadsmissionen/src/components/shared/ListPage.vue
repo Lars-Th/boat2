@@ -102,7 +102,7 @@ const isLoadingState = computed(() => props.loading);
     <!-- View Controls with search, filters, and actions -->
     <ViewControls
       v-if="!isLoadingState"
-      :model-value="searchQuery"
+      :search-query="searchQuery"
       :search-placeholder="searchPlaceholder"
       :add-actions="addActions"
       :additional-actions="additionalActions"
@@ -137,9 +137,9 @@ const isLoadingState = computed(() => props.loading);
         :columns="columns"
         :search-fields="searchFields"
         :loading="loading"
-        @row-click="emit('row-click', $event)"
-        @edit="emit('edit', $event)"
-        @delete="(item: any, event: Event) => emit('delete', item, event)"
+        @row-click="(row) => emit('row-click', row)"
+        @edit="(row) => emit('edit', row)"
+        @delete="(item, event) => emit('delete', item, event)"
       >
         <!-- Pass through all slots -->
         <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">

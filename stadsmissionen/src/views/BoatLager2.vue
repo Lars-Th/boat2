@@ -72,41 +72,70 @@
               'storage-item',
               { active: selectedStorage?.id === storage.id }
             ]"
+            :data-type="storage.Type"
           >
             <div class="storage-info">
-              <div class="storage-header-row">
-                <div class="storage-type-icon" :class="{ dock: storage.Type !== 'Lager' }">
-                  <Building2 v-if="storage.Type === 'Lager'" class="w-4 h-4" />
-                  <Anchor v-else class="w-4 h-4" />
-                </div>
-                <h4 class="storage-name">{{ storage.name }}</h4>
-              </div>
+              <h4 class="storage-name">{{ storage.name }} ({{ storage.id }})</h4>
               <p class="storage-type">{{ storage.Type }}</p>
               <p class="storage-size">{{ storage.Height }}m × {{ storage.width }}m</p>
-              <div class="storage-meta-row compact">
-                <span class="boat-count-small">{{ getStorageBoatCount(storage.id) }}</span>
-                <span class="meta-label">båtar</span>
+              <p class="storage-status">{{ getStorageBoatCount(storage.id) }} båtar</p>
+              <div class="storage-owner-row">
+                <Building2 v-if="storage.Type === 'Lager'" class="w-3 h-3 mr-1" />
+                <Anchor v-else class="w-3 h-3 mr-1" />
+                <span class="storage-meta">{{ storage.Type }}</span>
+                <span v-if="getStorageStatusCounts(storage.id).total > 0" class="owner-sep">•</span>
                 <span v-if="getStorageStatusCounts(storage.id).total > 0" class="status-breakdown">
-                  ({{ getStorageStatusCounts(storage.id).placerad }}P/{{ getStorageStatusCounts(storage.id).reserverad }}R/{{ getStorageStatusCounts(storage.id).oplacerad }}O)
+                  {{ getStorageStatusCounts(storage.id).placerad }}P/{{ getStorageStatusCounts(storage.id).reserverad }}R/{{ getStorageStatusCounts(storage.id).oplacerad }}O
                 </span>
               </div>
-              <div v-if="storage.Type === 'Lager' && getStorageFloorCount(storage.id) > 1 && storageFloors && storageFloors.value" class="storage-floors-row">
-                <span class="meta-label">Våningar:</span>
-                <button
-                  v-for="floor in (storageFloors?.value?.filter(f => f.storage_id === storage.id) || [])"
-                  :key="'stfloor-'+floor.id"
-                  class="floor-chip"
-                  :class="{ active: selectedStorage?.id === storage.id && selectedFloor === floor.floor_number }"
-                  @click.stop="selectStorageAndFloor(storage, floor.floor_number)"
-                  :title="`${floor.floor_name}`"
-                >
-                  {{ floor.floor_number }}
-                </button>
-              </div>
-              <div class="storage-actions">
-                <button class="icon-btn" @click.stop="navigateToStorageOnMap(storage)" title="Karta">
-                  <MapPin class="button-icon" />
-                </button>
+                            <div class="compatibility-row">
+                <div class="floor-icons" title="Våningar">
+                  <!-- Visa alla våningar för lager med flera våningar -->
+                  <template v-if="storage.Type === 'Lager' && getStorageFloorCount(storage.id) > 1 && storageFloors && storageFloors.length > 0">
+                    <button
+                      v-for="floor in (storageFloors?.filter((f: any) => f.storage_id === storage.id) || [])"
+                      :key="'stfloor-'+floor.id"
+                      class="floor-chip"
+                      :class="{ active: selectedStorage?.id === storage.id && selectedFloor === floor.floor_number }"
+                      @click.stop="selectStorageAndFloor(storage, floor.floor_number)"
+                      :title="`${floor.floor_name}`"
+                    >
+                      {{ floor.floor_number }}
+                    </button>
+                  </template>
+                  <!-- Visa bara "Våning 1" för lager med en våning eller bryggor -->
+                  <template v-else>
+                    <button
+                      class="floor-chip"
+                      :class="{ active: selectedStorage?.id === storage.id && selectedFloor === 1 }"
+                      @click.stop="selectStorageAndFloor(storage, 1)"
+                      title="Huvudvåning"
+                    >
+                      1
+                    </button>
+                  </template>
+                </div>
+                <div class="compat-actions">
+                  <button class="icon-btn" @click.stop="navigateToStorageOnMap(storage)" title="Visa på karta">
+                    <MapPin class="button-icon" />
+                  </button>
+                  <button
+                    v-if="storage.Type === 'Lager'"
+                    class="icon-btn"
+                    @click.stop="navigateToStorageDetail(storage)"
+                    title="Lagerkort"
+                  >
+                    <Building2 class="button-icon" />
+                  </button>
+                  <button
+                    v-else
+                    class="icon-btn"
+                    @click.stop="navigateToStorageDetail(storage)"
+                    title="Bryggkort"
+                  >
+                    <Anchor class="button-icon" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -662,14 +691,14 @@ const clearBoatSearch = () => { boatSearchQuery.value = ''; };
 
 const zoomLevel = ref<number>(1);
 const zoomPercentage = ref<number>(100);
-const isPanMode = ref<boolean>(false);
+const isPanMode = ref<boolean>(true);
 const isDragging = ref<boolean>(false);
 
   // Boat label controls
   const boatLabelName = ref<boolean>(true);
-  const boatLabelReg = ref<boolean>(false);
-  const boatLabelOwner = ref<boolean>(false);
-  const boatLabelFont = ref<number>(9);
+  const boatLabelReg = ref<boolean>(true);
+  const boatLabelOwner = ref<boolean>(true);
+  const boatLabelFont = ref<number>(6);
 
   // Redraw canvas when label settings change
   watch([boatLabelName, boatLabelReg, boatLabelOwner, boatLabelFont], () => {
@@ -744,9 +773,9 @@ const headerStats = computed(() => {
   const totalPlacements = placements.value.length; // informationsvärde från boatPlacements.json
 
   return [
-    { label: 'Totalt antal båtar', value: totalBoats, variant: 'default' },
+    { label: 'Totalt antal båtar', value: totalBoats, variant: 'default' as const },
     { label: 'Placerade', value: placedBoats, color: 'text-blue-600' },
-    { label: 'Reserverade', value: reservedBoats, variant: 'outline' },
+    { label: 'Reserverade', value: reservedBoats, variant: 'outline' as const },
     { label: 'Oplacerade', value: unplacedBoats, color: 'text-green-600' },
     { label: 'Placeringar', value: totalPlacements, color: 'text-blue-600' }
   ];
@@ -857,8 +886,9 @@ const filteredStorages = computed(() => {
   return storages.value.filter(s => s.Type === storageFilter.value);
 });
 
-const onStorageSelect = (val: string) => {
-  const id = Number(val);
+const onStorageSelect = (val: any) => {
+  if (!val) return;
+  const id = typeof val === 'string' ? Number(val) : typeof val === 'bigint' ? Number(val) : typeof val === 'object' ? Number(val.toString()) : Number(val);
   const s = storages.value.find(st => st.id === id);
   if (s) {
     storageSelectValue.value = String(id);
@@ -1039,18 +1069,7 @@ const tooltipCustomer = computed(() => {
     }
   };
 
-  const navigateToStorageOnMap = (storage: Storage) => {
-    router.push({
-      path: '/dashboard',
-      query: {
-        lat: (storage.Lat ?? 0).toString(),
-        lng: (storage.Long ?? 0).toString(),
-        zoom: '17',
-        focus: (storage.id ?? '').toString(),
-        name: storage.name
-      }
-    });
-  };
+
 
   // Deep links
   const goToCustomer = (boat: Boat) => {
@@ -1060,6 +1079,27 @@ const tooltipCustomer = computed(() => {
   };
   const goToBoatDetail = (boat: Boat) => {
     router.push({ name: 'boat-detail', params: { id: boat.id } });
+  };
+
+  // Storage navigation functions
+  const navigateToStorageDetail = (storage: Storage) => {
+    router.push({
+      name: 'storage-location-detail',
+      params: { id: storage.id }
+    });
+  };
+
+  const navigateToStorageOnMap = (storage: Storage) => {
+    router.push({
+      path: '/dashboard',
+      query: {
+        lat: storage.Lat || 0,
+        lng: storage.Long || 0,
+        zoom: '17',
+        focus: storage.id,
+        name: storage.name
+      }
+    });
   };
 
   // Helper: Select storage and floor from left list
@@ -1996,7 +2036,6 @@ const drawGrid = (storage: Storage, pixelsPerMeter: number, storageOffsetX: numb
 // Draw restriction zones (from StorageDesigner styling)
 const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, storageOffsetY: number) => {
   if (!layer.value || restrictionZones.value.length === 0) return;
-  if (selectedStorage.value?.Type === 'Brygga') return; // döljer på bryggor
 
   console.log(`🛡️ Drawing ${restrictionZones.value.length} restriction zones...`);
 
@@ -2008,6 +2047,8 @@ const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, st
     opacity: 1.0,
     dash: [3, 3]        // Dashed border
   };
+
+  const isDock = selectedStorage.value?.Type === 'Brygga';
 
   restrictionZones.value.forEach((zone, index) => {
     console.log(`📦 Drawing zone ${index + 1}: ${zone.name} at (${zone.x}, ${zone.y}) size ${zone.width}x${zone.height}m`);
@@ -2030,7 +2071,8 @@ const drawRestrictionZones = (pixelsPerMeter: number, storageOffsetX: number, st
     layer.value!.add(zoneRect);
 
     // Add zone label (centered in the middle of the zone)
-    const fontSize = Math.min(10, Math.max(8, pixelsPerMeter * 0.8));
+    // On docks, force minimal label size (10px) to indicate berth numbers discreetly
+    const fontSize = isDock ? 10 : Math.min(10, Math.max(8, pixelsPerMeter * 0.8));
     const zoneText = new Konva.Text({
       x: zoneX + (zoneWidth / 2),
       y: zoneY + (zoneHeight / 2),
@@ -3077,7 +3119,7 @@ const handleDrop = (event: DragEvent) => {
           const removeIndex = placements.value.findIndex(p => p.id === otherUnplaced.id);
           if (removeIndex !== -1) placements.value.splice(removeIndex, 1);
           const oldBoatIdx = boats.value.findIndex(b => b.id === otherUnplaced.boat_id);
-          if (oldBoatIdx !== -1) boats.value[oldBoatIdx].current_status = 'oplacerad';
+          if (oldBoatIdx !== -1 && boats.value[oldBoatIdx]) boats.value[oldBoatIdx].current_status = 'oplacerad';
         }
       }
 
@@ -3090,7 +3132,7 @@ const handleDrop = (event: DragEvent) => {
 
       // Uppdatera båtens status (behåll befintlig status)
       const boatIdx = boats.value.findIndex(b => b.id === boat.id);
-      if (boatIdx !== -1) boats.value[boatIdx].current_status = existingSameType.status;
+      if (boatIdx !== -1 && boats.value[boatIdx]) boats.value[boatIdx].current_status = existingSameType.status;
 
       drawStorage();
       info('Båt flyttad', `${boat.name} flyttad till ${currentStorageRef.name}.`);
@@ -3206,6 +3248,12 @@ onMounted(async () => {
     selectStorage(storages.value[0] as Storage, true); // true = auto-center
   }
 
+  // Set pan mode cursor as default since isPanMode starts as true
+  await nextTick();
+  if (stage.value) {
+    stage.value.container().style.cursor = 'grab';
+  }
+
   // Close tooltip when clicking outside
   const handleDocumentClick = (event: MouseEvent) => {
     const target = event.target as Element;
@@ -3278,9 +3326,11 @@ onMounted(async () => {
 <style scoped>
 .boat-lager2-container {
   height: 100vh;
+  max-height: 100vh;
   display: flex;
   flex-direction: column;
   background: #ffffff; /* match ListPage white background */
+  overflow: hidden; /* Prevent container from growing beyond viewport */
 }
 
 /* Sticky headers & toolbar */
@@ -3378,9 +3428,11 @@ onMounted(async () => {
 
 /* Keep rest of styles */
 .main-layout {
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0; /* Critical: Allow flex item to shrink below content size */
   display: grid;
   grid-template-columns: 280px 1fr 300px;
+  grid-template-rows: 1fr; /* Ensure grid row takes full height */
   gap: 0;
   overflow: hidden;
 }
@@ -3392,8 +3444,9 @@ onMounted(async () => {
   border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-    overflow: hidden;
-    min-height: 0; /* critical for nested flex scroll */
+  overflow: hidden;
+  min-height: 0; /* critical for nested flex scroll */
+  height: 100%; /* Ensure panels take full grid height */
 }
 
 .boat-panel {
@@ -3458,10 +3511,13 @@ onMounted(async () => {
 /* Storage List */
 .storage-list,
 .boat-list {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1 1 0; /* Use 0 base to allow proper shrinking */
+  min-height: 0; /* Critical: Allow shrinking below content size */
+  max-height: 100%; /* Prevent growing beyond container */
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0.5rem;
+  padding-bottom: 1rem; /* Extra padding to ensure last item is fully visible */
   /* allow full height inside flex without hard max-height */
 }
 
@@ -3473,6 +3529,12 @@ onMounted(async () => {
   border-radius: 0.375rem;
   cursor: pointer;
   transition: all 0.15s ease;
+}
+
+/* Ensure last item in list has proper spacing */
+.storage-item:last-child,
+.boat-item:last-child {
+  margin-bottom: 0.75rem;
 }
 
 .storage-item:hover,
@@ -3520,6 +3582,7 @@ onMounted(async () => {
 .storage-size,
 .storage-boats,
 .storage-floors,
+.storage-status,
 .boat-reg,
 .boat-dims,
 .boat-status {
@@ -3538,9 +3601,139 @@ onMounted(async () => {
   font-weight: 500;
 }
 
+/* Storage item specific styling to match boat-item */
+.storage-owner-row,
+.boat-owner-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.625rem;
+  color: #6b7280;
+  margin: 0.25rem 0;
+}
 
+.storage-meta,
+.owner-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
 
+.owner-link:hover:not(.disabled) {
+  text-decoration: underline;
+}
 
+.owner-link.disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.owner-sep {
+  color: #9ca3af;
+  margin: 0 0.125rem;
+}
+
+.status-breakdown {
+  font-size: 0.625rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.compatibility-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.375rem;
+  gap: 0.5rem;
+}
+
+.floor-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.floor-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.125rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.floor-chip:hover {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+  color: #2563eb;
+}
+
+.floor-chip.active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.compat-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover:not(:disabled):not(.disabled) {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.icon-btn:disabled,
+.icon-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+.tooltip-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Storage type-specific left border styling like boat items */
+.storage-item[data-type="Lager"] {
+  border-left: 3px solid #7c3aed;
+}
+
+.storage-item[data-type="Brygga"] {
+  border-left: 3px solid #0ea5e9;
+}
 
 /* Canvas Area */
 .canvas-area {
@@ -4064,10 +4257,13 @@ onMounted(async () => {
 
 /* Konva Canvas */
 .konva-canvas {
-  flex: 1 1 auto;
-  min-height: 520px; /* säkerställ höjd i avlånga vyer för bryggor */
+  flex: 1 1 0; /* Use 0 base for proper shrinking */
+  min-height: 0; /* Allow shrinking */
+  max-height: 100%; /* Prevent overflow */
+  min-height: 400px; /* Minimum usable height - reduced from 520px */
   background: #ffffff; /* White background like StorageDesigner */
   cursor: crosshair;
+  overflow: hidden; /* Prevent canvas overflow */
 }
 
 /* Drop Zone Overlay */
@@ -4106,18 +4302,25 @@ onMounted(async () => {
 /* Scrollbars */
 .storage-list::-webkit-scrollbar,
 .boat-list::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .storage-list::-webkit-scrollbar-track,
 .boat-list::-webkit-scrollbar-track {
   background: #f1f5f9;
+  border-radius: 3px;
 }
 
 .storage-list::-webkit-scrollbar-thumb,
 .boat-list::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 2px;
+  border-radius: 3px;
+  border: 1px solid #f1f5f9;
+}
+
+.storage-list::-webkit-scrollbar-thumb:hover,
+.boat-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* Floor navigation styling (from StorageDesigner) */
@@ -4154,5 +4357,27 @@ onMounted(async () => {
   border-color: #1d4ed8;
   color: white;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-height: 600px) {
+  .storage-list,
+  .boat-list {
+    padding-bottom: 0.5rem; /* Reduce padding on small screens */
+  }
+
+  .konva-canvas {
+    min-height: 300px; /* Smaller minimum height for very short screens */
+  }
+}
+
+@media (max-height: 500px) {
+  .panel-title {
+    padding: 0.75rem; /* Reduce header padding on very small screens */
+  }
+
+  .filter-section {
+    padding: 0.5rem; /* Reduce filter section padding */
+  }
 }
 </style>

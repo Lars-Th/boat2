@@ -121,25 +121,25 @@
   {
     "id": 5,
     "storage_id": 5,
-    "storage_name": "Göteborg Hamn",
-    "storage_type": "Lager",
+    "storage_name": "Vinterbrygga E",
+    "storage_type": "Brygga",
     "restriction_zones": [
       {
         "id": 1,
-        "name": "Hamnport",
-        "x": 0,
-        "y": 10,
-        "width": 4,
-        "height": 8,
+        "name": "1",
+        "x": 10,
+        "y": 0,
+        "width": 2,
+        "height": 2,
         "description": "Hamnport mot kajkanten"
       },
       {
         "id": 2,
-        "name": "Nödutgång",
-        "x": 51,
-        "y": 8,
-        "width": 4,
-        "height": 4,
+        "name": "2",
+        "x": 30,
+        "y": 0,
+        "width": 2,
+        "height": 2,
         "description": "Nödutgång mot landsidan"
       }
     ],

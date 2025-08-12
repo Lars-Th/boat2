@@ -17,6 +17,7 @@ const BoatList = () => import('@/views/BoatList.vue');
 const BoatDetail = () => import('@/views/BoatDetail.vue');
 const BoatPlacement = () => import('@/views/BoatPlacement.vue');
 const BoatLager2 = () => import('@/views/BoatLager2.vue');
+const CustomerPlanningList = () => import('@/views/CustomerPlanningList.vue');
 
 // Storage management
 const StorageLocationList = () => import('@/views/StorageLocationList.vue');
@@ -87,6 +88,11 @@ export const boatStorageRoutes: RouteRecordRaw[] = [
     path: '/boat-lager2',
     name: 'boat-lager2',
     component: BoatLager2,
+  },
+  {
+    path: '/customers/planning',
+    name: 'customer-planning',
+    component: CustomerPlanningList,
   },
 ];
 
